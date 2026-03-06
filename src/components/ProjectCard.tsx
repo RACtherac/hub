@@ -1,12 +1,16 @@
+import { useNavigate } from "react-router-dom";
 import { type Project } from "../types";
+
 
 type Props = {
   project: Project;
 };
 
 export default function ProjectCard({ project }: Props) {
+  const navigate = useNavigate();
+
   const handleClick = () => {
-    alert(`Switch to branch: ${project.branch}`);
+    navigate(`/${project.branch}`);
   };
 
   return (
@@ -16,6 +20,7 @@ export default function ProjectCard({ project }: Props) {
       <button onClick={handleClick}>Open Project</button>
     </div>
   );
+  
 }
 
 const cardStyle: React.CSSProperties = {
