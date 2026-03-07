@@ -12,6 +12,11 @@ const projects: Project[] = [
     description: "Task management application.",
     branch: "todo-app",
   },
+ {
+    name: "Pokemon TCG Tool",
+    description: "Track Pokémon health and energy during battles.",
+    branch: "pokemon-tcg-tool",
+  },
 ];
 
 export default function Home() {
