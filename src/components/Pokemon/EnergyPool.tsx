@@ -1,21 +1,38 @@
-import type { EnergyType } from "../../types/pokemon";
+import type{ EnergyType } from "../../types/pokemon";
 
-type Props = {
-  addEnergy: (type: EnergyType) => void;
-  disabled?: boolean;
-};
+const energies: EnergyType[] = [
+  "Fire",
+  "Water",
+  "Electric",
+  "Grass",
+  "Psychic",
+  "Fighting",
+];
 
-const energies: EnergyType[] = ["Fire", "Water", "Electric", "Grass", "Psychic", "Fighting"];
-
-export default function EnergyPool({ addEnergy, disabled }: Props) {
+export default function EnergyPool() {
   return (
-    <div>
+    <div style={{ marginTop: "30px" }}>
       <h2>Energy Pool</h2>
-      <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
-        {energies.map((e) => (
-          <button key={e} onClick={() => addEnergy(e)} disabled={disabled}>
-            {energyIcon(e)} {e}
-          </button>
+
+      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        {energies.map((energy) => (
+          <div
+            key={energy}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("energy", energy);
+            }}
+            style={{
+              padding: "10px 14px",
+              border: "2px solid black",
+              borderRadius: "6px",
+              cursor: "grab",
+              background: "#fff",
+              userSelect: "none",
+            }}
+          >
+            {energyIcon(energy)} {energy}
+          </div>
         ))}
       </div>
     </div>
@@ -31,5 +48,6 @@ function energyIcon(type: EnergyType) {
     Psychic: "🔮",
     Fighting: "🥊",
   };
+
   return icons[type];
 }
