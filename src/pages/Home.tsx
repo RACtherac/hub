@@ -17,6 +17,11 @@ const projects: Project[] = [
     description: "Track Pokémon health and energy during battles.",
     branch: "pokemon-tcg-tool",
   },
+  {
+    name: "Warhammer pictuer army builder",
+    description: "See the army you build",
+    branch: "warhammer-army-builder"
+  },
 ];
 
 export default function Home() {
