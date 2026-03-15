@@ -1,11 +1,10 @@
-import React from "react"
-import type { Character } from "../../../types/warhammer"
+import type { Character } from "../../../types/warhammer";
 
 interface Props {
-  unitId: string
-  characters: Character[]
-  attachedCharacter?: string
-  onAttach: (characterId?: string) => void
+  unitId: string;
+  characters: Character[];
+  attachedCharacter?: string;
+  onAttach: (c?: string) => void;
 }
 
 export default function CharacterAttachment({
@@ -14,10 +13,9 @@ export default function CharacterAttachment({
   attachedCharacter,
   onAttach,
 }: Props) {
-
-  const availableCharacters = characters.filter((c) =>
+  const available = characters.filter((c) =>
     c.canAttachTo.includes(unitId)
-  )
+  );
 
   return (
     <div>
@@ -29,12 +27,12 @@ export default function CharacterAttachment({
       >
         <option value="">None</option>
 
-        {availableCharacters.map((c) => (
+        {available.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name}
           </option>
         ))}
       </select>
     </div>
-  )
+  );
 }

@@ -1,16 +1,16 @@
-import React from "react"
-import type { Unit, Character } from "../../../types/warhammer"
-import UnitImage from "../../../assets/WarhammerImages/UnitImage/UnitImage"
-import WargearSelector from "../WargearSelector/WargearSelector"
-import CharacterAttachment from "../CharacterAttachment/CharacterAttachment"
+import React from "react";
+import type { Unit, Character } from "../../../types/warhammer";
+import UnitImage from "../UnitImage/UnitImage";
+import WargearSelector from "../WargearSelector/WargearSelector";
+import CharacterAttachment from "../CharacterAttachment/CharacterAttachment";
 
 interface Props {
-  unit: Unit
-  characters: Character[]
-  selectedWargear: string[]
-  attachedCharacter?: string
-  onWargearChange: (wargear: string[]) => void
-  onCharacterAttach: (characterId?: string) => void
+  unit: Unit;
+  characters: Character[];
+  selectedWargear: string[];
+  attachedCharacter?: string;
+  onWargearChange: (w: string[]) => void;
+  onCharacterAttach: (c?: string) => void;
 }
 
 export default function UnitCard({
@@ -21,15 +21,8 @@ export default function UnitCard({
   onWargearChange,
   onCharacterAttach,
 }: Props) {
-
   return (
-    <div
-      style={{
-        border: "1px solid gray",
-        padding: "16px",
-        marginBottom: "16px",
-      }}
-    >
+    <div style={{ border: "1px solid gray", padding: 20, marginBottom: 20 }}>
       <h3>{unit.name}</h3>
 
       <UnitImage unit={unit} selectedWargear={selectedWargear} />
@@ -47,5 +40,5 @@ export default function UnitCard({
         onAttach={onCharacterAttach}
       />
     </div>
-  )
+  );
 }

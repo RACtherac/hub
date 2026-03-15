@@ -15,7 +15,7 @@ export interface Character {
   id: string
   name: string
   image: string
-  canAttachTo: string[] // unit IDs
+  canAttachTo: string[]
 }
 
 export interface ArmyUnit {

@@ -1,40 +1,50 @@
-import React, { useState } from "react"
-import type { Unit, ArmyUnit } from "../../../types/warhammer"
+import React, { useState } from "react";
+import type { Unit, Character, ArmyUnit } from "../../../types/warhammer";
+import UnitCard from "../Unitcard/Unitcard";
 
 interface Props {
-  units: Unit[]
+  units: Unit[];
+  characters: Character[];
 }
 
-export default function ArmyBuilder({ units }: Props) {
-  const [army, setArmy] = useState<ArmyUnit[]>([])
+export default function ArmyBuilder({ units, characters }: Props) {
+  const [army, setArmy] = useState<ArmyUnit[]>([
+    {
+      unitId: units[0].id,
+      selectedWargear: [],
+    },
+  ]);
 
-  const addUnit = (unitId: string) => {
-    setArmy([
-      ...army,
-      {
-        unitId,
-        selectedWargear: []
-      }
-    ])
-  }
+  const updateWargear = (index: number, wargear: string[]) => {
+    const updated = [...army];
+    updated[index].selectedWargear = wargear;
+    setArmy(updated);
+  };
+
+  const attachCharacter = (index: number, characterId?: string) => {
+    const updated = [...army];
+    updated[index].attachedCharacter = characterId;
+    setArmy(updated);
+  };
 
   return (
     <div>
-      <h1>Warhammer Army Builder</h1>
+      {army.map((armyUnit, index) => {
+        const unit = units.find((u) => u.id === armyUnit.unitId);
+        if (!unit) return null;
 
-      <h2>Available Units</h2>
-      {units.map((unit) => (
-        <button key={unit.id} onClick={() => addUnit(unit.id)}>
-          Add {unit.name}
-        </button>
-      ))}
-
-      <h2>Your Army</h2>
-      {army.map((u, index) => (
-        <div key={index}>
-          {u.unitId}
-        </div>
-      ))}
+        return (
+          <UnitCard
+            key={index}
+            unit={unit}
+            characters={characters}
+            selectedWargear={armyUnit.selectedWargear}
+            attachedCharacter={armyUnit.attachedCharacter}
+            onWargearChange={(w) => updateWargear(index, w)}
+            onCharacterAttach={(c) => attachCharacter(index, c)}
+          />
+        );
+      })}
     </div>
-  )
+  );
 }

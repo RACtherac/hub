@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Portfolio from "./pages/portfolio";
 import PokemonTCGTool from "./pages/pokemonTCGTool";
-// import TodoApp from "./pages/TodoApp"; // later
+import ArmyBuilder from "./pages/army-builder";
 
 export default function App() {
   return (
@@ -12,7 +12,7 @@ export default function App() {
   <Route path="/" element={<Home />} />
   <Route path="/portfolio" element={<Portfolio />} />
   <Route path="/pokemon-tcg-tool" element={<PokemonTCGTool />} />
-</Routes>
+  <Route path="/warhammer-army-builder" element={<ArmyBuilder />} /></Routes>
     </BrowserRouter>
   );
 }
