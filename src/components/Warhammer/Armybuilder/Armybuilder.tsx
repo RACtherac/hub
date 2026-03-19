@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import type { Unit, Character, ArmyUnit } from "../../../types/warhammer";
 import UnitCard from "../Unitcard/Unitcard";
 
@@ -8,23 +8,21 @@ interface Props {
 }
 
 export default function ArmyBuilder({ units, characters }: Props) {
+
   const [army, setArmy] = useState<ArmyUnit[]>([
     {
       unitId: units[0].id,
+      modelCount: 5,
       selectedWargear: [],
+      attachedCharacter: undefined,
+      characterWargear: [],
     },
   ]);
 
-  const updateWargear = (index: number, wargear: string[]) => {
-    const updated = [...army];
-    updated[index].selectedWargear = wargear;
-    setArmy(updated);
-  };
-
-  const attachCharacter = (index: number, characterId?: string) => {
-    const updated = [...army];
-    updated[index].attachedCharacter = characterId;
-    setArmy(updated);
+  const updateUnit = (index: number, updated: Partial<ArmyUnit>) => {
+    const newArmy = [...army];
+    newArmy[index] = { ...newArmy[index], ...updated };
+    setArmy(newArmy);
   };
 
   return (
@@ -38,10 +36,26 @@ export default function ArmyBuilder({ units, characters }: Props) {
             key={index}
             unit={unit}
             characters={characters}
+            modelCount={armyUnit.modelCount}
             selectedWargear={armyUnit.selectedWargear}
             attachedCharacter={armyUnit.attachedCharacter}
-            onWargearChange={(w) => updateWargear(index, w)}
-            onCharacterAttach={(c) => attachCharacter(index, c)}
+            characterWargear={armyUnit.characterWargear}
+
+            onModelCountChange={(count) =>
+              updateUnit(index, { modelCount: count })
+            }
+
+            onWargearChange={(w) =>
+              updateUnit(index, { selectedWargear: w })
+            }
+
+            onCharacterAttach={(c) =>
+              updateUnit(index, { attachedCharacter: c })
+            }
+
+            onCharacterWargearChange={(w) =>
+              updateUnit(index, { characterWargear: w })
+            }
           />
         );
       })}
