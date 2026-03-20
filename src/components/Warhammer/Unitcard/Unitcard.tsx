@@ -43,6 +43,17 @@ export default function UnitCard({
         characterWargear={characterWargear}
       />
 
+      {/* <div
+  style={{
+    border: "2px solid #333",
+    borderRadius: "10px",
+    padding: "20px",
+    marginBottom: "20px",
+    background: "#1a1a1a",
+    color: "white",
+  }}
+></div> */}
+
       {/* Squad size */}
       <h4>Squad Size</h4>
       <select

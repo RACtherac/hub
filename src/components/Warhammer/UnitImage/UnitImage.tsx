@@ -1,4 +1,5 @@
 import type { Unit, Character } from "../../../types/warhammer";
+import "./UnitImage.css";
 
 interface Props {
   unit: Unit;
@@ -18,46 +19,74 @@ export default function UnitImage({
   characterWargear = [],
 }: Props) {
 
-  // ✅ IF for 5 vs 10 models
   let unitImage = unit.image5;
   if (modelCount === 10) {
     unitImage = unit.image10;
   }
 
-  // Unit wargear images
   const wargearImages = unit.wargear
     .filter((w) => selectedWargear.includes(w.id) && w.image)
     .map((w) => w.image);
 
-  // Character
   const character = characters.find((c) => c.id === attachedCharacter);
 
-  // Character wargear images
   const characterWargearImages =
     character?.wargear
       ?.filter((w) => characterWargear.includes(w.id) && w.image)
       .map((w) => w.image) || [];
 
   return (
-    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+    <div className="unit-container">
 
-      {/* Unit */}
-      <img src={unitImage} width={200} />
+      {/* UNIT FRAME */}
+      <div className="image-frame">
+        <div className="image-stack">
 
-      {/* Unit wargear */}
-      {wargearImages.map((img, i) => (
-        <img key={i} src={img} width={80} />
-      ))}
+          {/* Wargear behind */}
+          {wargearImages.map((img, index) => (
+            <img
+              key={index}
+              src={img}
+              className="stack-image wargear"
+              style={{ zIndex: index }}
+            />
+          ))}
 
-      {/* Character */}
+          {/* Unit on top */}
+          <img
+            src={unitImage}
+            className="stack-image unit"
+            style={{ zIndex: 100 }}
+          />
+
+        </div>
+      </div>
+
+      {/* CHARACTER FRAME (FIXED) */}
       {character && (
-        <img src={character.image} width={120} />
-      )}
+        <div className="image-frame">
+          <div className="image-stack">
 
-      {/* Character wargear */}
-      {characterWargearImages.map((img, i) => (
-        <img key={`char-${i}`} src={img} width={80} />
-      ))}
+            {/* Character wargear behind */}
+            {characterWargearImages.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                className="stack-image wargear"
+                style={{ zIndex: index }}
+              />
+            ))}
+
+            {/* Character on top */}
+            <img
+              src={character.image}
+              className="stack-image unit"
+              style={{ zIndex: 100 }}
+            />
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

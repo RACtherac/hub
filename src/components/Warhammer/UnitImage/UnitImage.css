@@ -1,0 +1,50 @@
+.unit-container {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+/* Frame */
+.image-frame {
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 20px;
+  background: transparent;
+}
+
+/* Stack */
+.image-stack {
+  position: relative;
+  width: 260px;
+  height: 260px;
+}
+
+/* Base image */
+.stack-image {
+  position: absolute;
+  width: 220px;
+  top: 0;
+  left: 0;
+  transition: all 0.3s ease;
+}
+
+/* Front image */
+.unit {
+  transform: translate(0px, 0px);
+}
+
+/* Behind images */
+.wargear:nth-child(1) { transform: translate(20px, 20px); }
+.wargear:nth-child(2) { transform: translate(40px, 40px); }
+.wargear:nth-child(3) { transform: translate(60px, 60px); }
+
+/* Hover spread */
+.image-stack:hover .wargear:nth-child(1) {
+  transform: translate(-80px, 0);
+}
+.image-stack:hover .wargear:nth-child(2) {
+  transform: translate(-20px, 0);
+}
+.image-stack:hover .wargear:nth-child(3) {
+  transform: translate(40px, 0);
+}
