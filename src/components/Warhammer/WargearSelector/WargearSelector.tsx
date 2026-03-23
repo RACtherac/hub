@@ -1,38 +1,41 @@
-import type { Unit } from "../../../types/warhammer";
+import type { WargearOption } from "../../../types/warhammer";
 
 interface Props {
-  unit: Unit;
-  selectedWargear: string[];
-  onChange: (wargear: string[]) => void;
+  wargear: WargearOption[];
+  selected: string[];
+  onChange: (gear: string[]) => void;
 }
 
 export default function WargearSelector({
-  unit,
-  selectedWargear,
+  wargear,
+  selected,
   onChange,
 }: Props) {
-  const toggle = (id: string) => {
-    if (selectedWargear.includes(id)) {
-      onChange(selectedWargear.filter((w) => w !== id));
+
+  const toggleWargear = (id: string) => {
+    if (selected.includes(id)) {
+      onChange(selected.filter((g) => g !== id));
     } else {
-      onChange([...selectedWargear, id]);
+      onChange([...selected, id]);
     }
   };
 
   return (
-    <div>
+    <div style={{ marginTop: "10px" }}>
+
       <h4>Wargear</h4>
 
-      {unit.wargear.map((gear) => (
+      {wargear.map((gear) => (
         <label key={gear.id} style={{ display: "block" }}>
           <input
             type="checkbox"
-            checked={selectedWargear.includes(gear.id)}
-            onChange={() => toggle(gear.id)}
+            checked={selected.includes(gear.id)}
+            onChange={() => toggleWargear(gear.id)}
           />
           {gear.name}
         </label>
       ))}
+
     </div>
   );
 }

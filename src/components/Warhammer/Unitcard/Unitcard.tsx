@@ -9,13 +9,15 @@ interface Props {
 
   modelCount: number;
   selectedWargear: string[];
+
   attachedCharacter?: string;
-  characterWargear?: string[];
+  characterWargear: string[];
 
   onModelCountChange: (count: number) => void;
-  onWargearChange: (w: string[]) => void;
-  onCharacterAttach: (c?: string) => void;
-  onCharacterWargearChange: (w: string[]) => void;
+  onWargearChange: (gear: string[]) => void;
+
+  onCharacterChange: (char?: string) => void;
+  onCharacterWargearChange: (gear: string[]) => void;
 }
 
 export default function UnitCard({
@@ -24,16 +26,42 @@ export default function UnitCard({
   modelCount,
   selectedWargear,
   attachedCharacter,
-  characterWargear = [],
+  characterWargear,
   onModelCountChange,
   onWargearChange,
-  onCharacterAttach,
+  onCharacterChange,
   onCharacterWargearChange,
 }: Props) {
+
+  const allowedCharacters = characters.filter((c) =>
+    c.canAttachTo.includes(unit.id)
+  );
+
+  const selectedCharacter = characters.find(
+    (c) => c.id === attachedCharacter
+  );
+
   return (
-    <div style={{ border: "1px solid gray", padding: 20, marginBottom: 20 }}>
+    <div>
+
       <h3>{unit.name}</h3>
 
+      {/* MODEL COUNT */}
+      <div style={{ marginBottom: "10px" }}>
+        <label>Models: </label>
+
+        <select
+          value={modelCount}
+          onChange={(e) =>
+            onModelCountChange(Number(e.target.value))
+          }
+        >
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+        </select>
+      </div>
+
+      {/* UNIT IMAGE */}
       <UnitImage
         unit={unit}
         modelCount={modelCount}
@@ -43,43 +71,29 @@ export default function UnitCard({
         characterWargear={characterWargear}
       />
 
-      {/* <div
-  style={{
-    border: "2px solid #333",
-    borderRadius: "10px",
-    padding: "20px",
-    marginBottom: "20px",
-    background: "#1a1a1a",
-    color: "white",
-  }}
-></div> */}
-
-      {/* Squad size */}
-      <h4>Squad Size</h4>
-      <select
-        value={modelCount}
-        onChange={(e) => onModelCountChange(Number(e.target.value))}
-      >
-        <option value={5}>5 Models</option>
-        <option value={10}>10 Models</option>
-      </select>
-
-      {/* Unit wargear */}
+      {/* UNIT WARGEAR */}
       <WargearSelector
-        unit={unit}
-        selectedWargear={selectedWargear}
+        wargear={unit.wargear}
+        selected={selectedWargear}
         onChange={onWargearChange}
       />
 
-      {/* Character */}
+      {/* CHARACTER */}
       <CharacterAttachment
-        unitId={unit.id}
-        characters={characters}
-        attachedCharacter={attachedCharacter}
-        characterWargear={characterWargear}
-        onAttach={onCharacterAttach}
-        onCharacterWargearChange={onCharacterWargearChange}
+        characters={allowedCharacters}
+        selectedCharacter={attachedCharacter}
+        onChange={onCharacterChange}
       />
+
+      {/* CHARACTER WARGEAR */}
+      {selectedCharacter && selectedCharacter.wargear && (
+  <WargearSelector
+    wargear={selectedCharacter.wargear}
+    selected={characterWargear}
+    onChange={onCharacterWargearChange}
+  />
+)}
+
     </div>
   );
 }

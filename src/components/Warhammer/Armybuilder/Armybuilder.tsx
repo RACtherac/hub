@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Unit, Character, ArmyUnit } from "../../../types/warhammer";
+import type { Unit, Character } from "../../../types/warhammer";
 import UnitCard from "../Unitcard/Unitcard";
 
 interface Props {
@@ -7,58 +7,125 @@ interface Props {
   characters: Character[];
 }
 
+interface ArmyUnit {
+  id: number;
+  unitId: string;
+  modelCount: number;
+  wargear: string[];
+  attachedCharacter?: string;
+  characterWargear: string[];
+}
+
 export default function ArmyBuilder({ units, characters }: Props) {
 
-  const [army, setArmy] = useState<ArmyUnit[]>([
+  const [armyUnits, setArmyUnits] = useState<ArmyUnit[]>([
     {
+      id: 1,
       unitId: units[0].id,
       modelCount: 5,
-      selectedWargear: [],
+      wargear: [],
       attachedCharacter: undefined,
       characterWargear: [],
     },
   ]);
 
-  const updateUnit = (index: number, updated: Partial<ArmyUnit>) => {
-    const newArmy = [...army];
-    newArmy[index] = { ...newArmy[index], ...updated };
-    setArmy(newArmy);
+  const addUnit = () => {
+    const newUnit: ArmyUnit = {
+      id: Date.now(),
+      unitId: units[0].id,
+      modelCount: 5,
+      wargear: [],
+      attachedCharacter: undefined,
+      characterWargear: [],
+    };
+
+    setArmyUnits([...armyUnits, newUnit]);
+  };
+
+  const updateUnit = (id: number, updated: Partial<ArmyUnit>) => {
+    setArmyUnits(
+      armyUnits.map((unit) =>
+        unit.id === id ? { ...unit, ...updated } : unit
+      )
+    );
   };
 
   return (
     <div>
-      {army.map((armyUnit, index) => {
-        const unit = units.find((u) => u.id === armyUnit.unitId);
-        if (!unit) return null;
+
+      <h2>Army Builder</h2>
+
+      {armyUnits.map((armyUnit) => {
+
+        const selectedUnit = units.find(
+          (u) => u.id === armyUnit.unitId
+        );
+
+        if (!selectedUnit) return null;
 
         return (
-          <UnitCard
-            key={index}
-            unit={unit}
-            characters={characters}
-            modelCount={armyUnit.modelCount}
-            selectedWargear={armyUnit.selectedWargear}
-            attachedCharacter={armyUnit.attachedCharacter}
-            characterWargear={armyUnit.characterWargear}
+          <div key={armyUnit.id} style={{ marginBottom: "30px" }}>
 
-            onModelCountChange={(count) =>
-              updateUnit(index, { modelCount: count })
-            }
+            {/* 🔽 UNIT DROPDOWN */}
+            <select
+              value={armyUnit.unitId}
+              onChange={(e) =>
+                updateUnit(armyUnit.id, {
+                  unitId: e.target.value,
+                  wargear: [],
+                  attachedCharacter: undefined,
+                  characterWargear: [],
+                })
+              }
+            >
+              {units.map((unit) => (
+                <option key={unit.id} value={unit.id}>
+                  {unit.name}
+                </option>
+              ))}
+            </select>
 
-            onWargearChange={(w) =>
-              updateUnit(index, { selectedWargear: w })
-            }
+            <UnitCard
+              unit={selectedUnit}
+              characters={characters}
+              modelCount={armyUnit.modelCount}
+              selectedWargear={armyUnit.wargear}
+              attachedCharacter={armyUnit.attachedCharacter}
+              characterWargear={armyUnit.characterWargear}
+              onModelCountChange={(count) =>
+                updateUnit(armyUnit.id, { modelCount: count })
+              }
+              onWargearChange={(gear) =>
+                updateUnit(armyUnit.id, { wargear: gear })
+              }
+              onCharacterChange={(char: any) =>
+                updateUnit(armyUnit.id, {
+                  attachedCharacter: char,
+                  characterWargear: [],
+                })
+              }
+              onCharacterWargearChange={(gear) =>
+                updateUnit(armyUnit.id, { characterWargear: gear })
+              }
+            />
 
-            onCharacterAttach={(c) =>
-              updateUnit(index, { attachedCharacter: c })
-            }
-
-            onCharacterWargearChange={(w) =>
-              updateUnit(index, { characterWargear: w })
-            }
-          />
+          </div>
         );
       })}
+
+      {/* ➕ ADD UNIT BUTTON */}
+      <button
+        onClick={addUnit}
+        style={{
+          padding: "10px 20px",
+          border: "1px solid black",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        Add Unit
+      </button>
+
     </div>
   );
 }
