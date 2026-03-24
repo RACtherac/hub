@@ -1,6 +1,6 @@
 import { useState } from "react";
 import UnitCard from "../Unitcard/Unitcard";
-import type{
+import type {
   Unit,
   Character,
   UnitCategory,
@@ -80,9 +80,7 @@ export default function ArmyBuilder({
   ) => {
     setArmyUnits(
       armyUnits.map((unit) =>
-        unit.id === id
-          ? { ...unit, ...updated }
-          : unit
+        unit.id === id ? { ...unit, ...updated } : unit
       )
     );
   };
@@ -99,34 +97,25 @@ export default function ArmyBuilder({
 
     armyUnit.wargear.forEach((w) => {
       const gear =
-        unit.wargear.find(
-          (g) => g.id === w
-        );
-      if (gear?.points)
-        total += gear.points;
+        unit.wargear.find((g) => g.id === w);
+      if (gear?.points) total += gear.points;
     });
 
     if (armyUnit.attachedCharacter) {
       const char =
         characters.find(
-          (c) =>
-            c.id ===
-            armyUnit.attachedCharacter
+          (c) => c.id === armyUnit.attachedCharacter
         );
 
       if (char) {
         total += char.points;
 
-        armyUnit.characterWargear.forEach(
-          (w) => {
-            const gear =
-              char.wargear?.find(
-                (g) => g.id === w
-              );
-            if (gear?.points)
-              total += gear.points;
-          }
-        );
+        armyUnit.characterWargear.forEach((w) => {
+          const gear = char.wargear?.find(
+            (g) => g.id === w
+          );
+          if (gear?.points) total += gear.points;
+        });
       }
     }
 
@@ -135,15 +124,27 @@ export default function ArmyBuilder({
 
   const totalArmyPoints =
     armyUnits.reduce(
-      (sum, unit) =>
-        sum +
-        calculateUnitPoints(unit),
+      (sum, unit) => sum + calculateUnitPoints(unit),
       0
     );
 
+  // Categories with dynamic Vehicle -> Monster for Tyranids
+  const baseCategories: UnitCategory[] = [
+    "battleline",
+    "infantry",
+    "vehicle",
+    "transport",
+  ];
+
+  const categories =
+    selectedFaction === "tyranids"
+      ? baseCategories.map((cat) =>
+          cat === "vehicle" ? "monster" : cat
+        )
+      : baseCategories;
+
   return (
     <div>
-
       {/* FACTION SELECTOR */}
       <div
         style={{
@@ -154,14 +155,11 @@ export default function ArmyBuilder({
       >
         <button
           onClick={() =>
-            setSelectedFaction(
-              "space-marines"
-            )
+            setSelectedFaction("space-marines")
           }
         >
           Space Marines
         </button>
-
         <button
           onClick={() =>
             setSelectedFaction("chaos")
@@ -169,12 +167,9 @@ export default function ArmyBuilder({
         >
           Chaos
         </button>
-
         <button
           onClick={() =>
-            setSelectedFaction(
-              "tyranids"
-            )
+            setSelectedFaction("tyranids")
           }
         >
           Tyranids
@@ -188,108 +183,60 @@ export default function ArmyBuilder({
           gap: "12px",
           marginBottom: "25px",
           alignItems: "center",
-          borderBottom:
-            "2px solid black",
+          borderBottom: "2px solid black",
           paddingBottom: "10px",
         }}
       >
-        {(
-          [
-            "battleline",
-            "infantry",
-            "vehicle",
-            "transport",
-          ] as UnitCategory[]
-        ).map((category) => (
-          <div
-            key={category}
-            style={{
-              position: "relative",
-            }}
-          >
+        {categories.map((category) => (
+          <div key={category} style={{ position: "relative" }}>
             <button
               disabled={!addingUnit}
               onClick={() =>
                 setOpenCategory(
-                  openCategory ===
-                    category
-                    ? null
-                    : category
+                  openCategory === category ? null : category
                 )
               }
               style={{
-                padding:
-                  "8px 14px",
-                border:
-                  "2px solid black",
-                background:
-                  addingUnit
-                    ? "white"
-                    : "#ccc",
-                cursor:
-                  addingUnit
-                    ? "pointer"
-                    : "not-allowed",
+                padding: "8px 14px",
+                border: "2px solid black",
+                background: addingUnit ? "white" : "#ccc",
+                cursor: addingUnit ? "pointer" : "not-allowed",
               }}
             >
               {category.toUpperCase()} ▼
             </button>
 
-            {openCategory ===
-              category && (
+            {/* Dropdown */}
+            {openCategory === category && (
               <div
                 style={{
-                  position:
-                    "absolute",
+                  position: "absolute",
                   top: "40px",
                   left: "0",
-                  background:
-                    "white",
-                  border:
-                    "2px solid black",
-                  boxShadow:
-                    "4px 4px 0px black",
-                  padding:
-                    "10px",
-                  minWidth:
-                    "180px",
+                  background: "white",
+                  border: "2px solid black",
+                  boxShadow: "4px 4px 0px black",
+                  padding: "10px",
+                  minWidth: "180px",
                   zIndex: 10,
                 }}
               >
-                {getUnitsByCategory(
-                  category
-                ).map(
-                  (unit) => (
-                    <button
-                      key={
-                        unit.id
-                      }
-                      onClick={() =>
-                        addUnit(
-                          unit.id
-                        )
-                      }
-                      style={{
-                        width:
-                          "100%",
-                        padding:
-                          "6px",
-                        textAlign:
-                          "left",
-                        border:
-                          "none",
-                        background:
-                          "white",
-                        cursor:
-                          "pointer",
-                      }}
-                    >
-                      {
-                        unit.name
-                      }
-                    </button>
-                  )
-                )}
+                {getUnitsByCategory(category).map((unit) => (
+                  <button
+                    key={unit.id}
+                    onClick={() => addUnit(unit.id)}
+                    style={{
+                      width: "100%",
+                      padding: "6px",
+                      textAlign: "left",
+                      border: "none",
+                      background: "white",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {unit.name}
+                  </button>
+                ))}
               </div>
             )}
           </div>
@@ -297,22 +244,12 @@ export default function ArmyBuilder({
 
         {/* ADD UNIT */}
         <button
-          onClick={() =>
-            setAddingUnit(
-              !addingUnit
-            )
-          }
+          onClick={() => setAddingUnit(!addingUnit)}
           style={{
-            background:
-              addingUnit
-                ? "#d4ffd4"
-                : "white",
-            border:
-              "3px solid black",
-            padding:
-              "8px 16px",
-            fontWeight:
-              "bold",
+            background: addingUnit ? "#d4ffd4" : "white",
+            border: "3px solid black",
+            padding: "8px 16px",
+            fontWeight: "bold",
             cursor: "pointer",
           }}
         >
@@ -321,18 +258,12 @@ export default function ArmyBuilder({
 
         {/* BACK BUTTON */}
         <button
-          onClick={() =>
-            (window.location.href =
-              "/")
-          }
+          onClick={() => (window.location.href = "/")}
           style={{
             marginLeft: "auto",
-            border:
-              "2px solid black",
-            padding:
-              "8px 14px",
-            background:
-              "white",
+            border: "2px solid black",
+            padding: "8px 14px",
+            background: "white",
             cursor: "pointer",
           }}
         >
@@ -352,179 +283,78 @@ export default function ArmyBuilder({
       </div>
 
       {/* UNITS */}
-      {armyUnits.map(
-        (armyUnit) => {
-          const selectedUnit =
-            units.find(
-              (u) =>
-                u.id ===
-                armyUnit.unitId
-            );
+      {armyUnits.map((armyUnit) => {
+        const selectedUnit = units.find((u) => u.id === armyUnit.unitId);
+        if (!selectedUnit) return null;
 
-          if (!selectedUnit)
-            return null;
-
-          return (
+        return (
+          <div
+            key={armyUnit.id}
+            style={{
+              border: "2px solid black",
+              padding: "15px",
+              marginBottom: "20px",
+              background: "#fafafa",
+            }}
+          >
             <div
-              key={
-                armyUnit.id
-              }
               style={{
-                border:
-                  "2px solid black",
-                padding:
-                  "15px",
-                marginBottom:
-                  "20px",
-                background:
-                  "#fafafa",
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "10px",
               }}
             >
-              <div
+              <strong>
+                {selectedUnit.name} ({calculateUnitPoints(armyUnit)} pts)
+              </strong>
+
+              <button
+                onClick={() => removeUnit(armyUnit.id)}
                 style={{
-                  display:
-                    "flex",
-                  justifyContent:
-                    "space-between",
-                  marginBottom:
-                    "10px",
+                  border: "2px solid red",
+                  background: "white",
+                  cursor: "pointer",
                 }}
               >
-                <strong>
-                  {
-                    selectedUnit.name
-                  }{" "}
-                  (
-                  {calculateUnitPoints(
-                    armyUnit
-                  )}{" "}
-                  pts)
-                </strong>
-
-                <button
-                  onClick={() =>
-                    removeUnit(
-                      armyUnit.id
-                    )
-                  }
-                  style={{
-                    border:
-                      "2px solid red",
-                    background:
-                      "white",
-                    cursor:
-                      "pointer",
-                  }}
-                >
-                  ❌ Remove
-                </button>
-              </div>
-
-              <UnitCard
-                unit={
-                  selectedUnit
-                }
-                characters={
-                  characters
-                }
-                allUnits={
-                  units
-                }
-
-                modelCount={
-                  armyUnit.modelCount
-                }
-
-                selectedWargear={
-                  armyUnit.wargear
-                }
-
-                attachedCharacter={
-                  armyUnit.attachedCharacter
-                }
-
-                characterWargear={
-                  armyUnit.characterWargear
-                }
-
-                transportedUnits={
-                  armyUnit.transportedUnits
-                }
-
-                onModelCountChange={(
-                  count
-                ) =>
-                  updateUnit(
-                    armyUnit.id,
-                    {
-                      modelCount:
-                        count,
-                    }
-                  )
-                }
-
-                onWargearChange={(
-                  gear
-                ) =>
-                  updateUnit(
-                    armyUnit.id,
-                    {
-                      wargear:
-                        gear,
-                    }
-                  )
-                }
-
-                onCharacterChange={(
-                  char
-                ) =>
-                  updateUnit(
-                    armyUnit.id,
-                    {
-                      attachedCharacter:
-                        char,
-                      characterWargear:
-                        [],
-                    }
-                  )
-                }
-
-                onCharacterWargearChange={(
-                  gear
-                ) =>
-                  updateUnit(
-                    armyUnit.id,
-                    {
-                      characterWargear:
-                        gear,
-                    }
-                  )
-                }
-
-                onTransportChange={(
-                  unitsInside
-                ) =>
-                  updateUnit(
-                    armyUnit.id,
-                    {
-                      transportedUnits:
-                        unitsInside,
-                    }
-                  )
-                }
-              />
+                ❌ Remove
+              </button>
             </div>
-          );
-        }
-      )}
+
+            <UnitCard
+              unit={selectedUnit}
+              characters={characters}
+              allUnits={units}
+              modelCount={armyUnit.modelCount}
+              selectedWargear={armyUnit.wargear}
+              attachedCharacter={armyUnit.attachedCharacter}
+              characterWargear={armyUnit.characterWargear}
+              transportedUnits={armyUnit.transportedUnits}
+              onModelCountChange={(count) =>
+                updateUnit(armyUnit.id, { modelCount: count })
+              }
+              onWargearChange={(gear) =>
+                updateUnit(armyUnit.id, { wargear: gear })
+              }
+              onCharacterChange={(char) =>
+                updateUnit(armyUnit.id, {
+                  attachedCharacter: char,
+                  characterWargear: [],
+                })
+              }
+              onCharacterWargearChange={(gear) =>
+                updateUnit(armyUnit.id, { characterWargear: gear })
+              }
+              onTransportChange={(unitsInside) =>
+                updateUnit(armyUnit.id, { transportedUnits: unitsInside })
+              }
+            />
+          </div>
+        );
+      })}
 
       {armyUnits.length === 0 && (
         <p>
-          No units added yet.
-          Click{" "}
-          <strong>
-            + Add Unit
-          </strong>
+          No units added yet. Click <strong>+ Add Unit</strong>
         </p>
       )}
     </div>

@@ -5,11 +5,7 @@ export interface WargearOption {
   image?: string;
 }
 
-export type UnitCategory =
-  | "battleline"
-  | "infantry"
-  | "vehicle"
-  | "transport";
+export type UnitCategory = "battleline" | "infantry" | "vehicle" | "transport" | "monster";
 
 export interface Unit {
   faction: string;
