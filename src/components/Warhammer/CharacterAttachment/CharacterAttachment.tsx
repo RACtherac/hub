@@ -1,4 +1,4 @@
-import type { Character } from "../../../types/warhammer";
+import type { Character } from "../../../types/Warhammer";
 
 interface Props {
   characters: Character[];

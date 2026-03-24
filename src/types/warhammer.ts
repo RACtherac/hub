@@ -1,14 +1,30 @@
 export interface WargearOption {
+  points: number;
   id: string;
   name: string;
   image?: string;
 }
 
+export type UnitCategory =
+  | "battleline"
+  | "infantry"
+  | "vehicle"
+  | "transport";
+
 export interface Unit {
+  faction: string;
   id: string;
   name: string;
-  image5: string;
-  image10: string;
+  category: UnitCategory;
+
+  image3?: string;
+  image6?: string;
+  image5?: string;
+  image10?: string;
+  image?: string;
+
+  points: number;
+
   wargear: WargearOption[];
 }
 
@@ -18,6 +34,8 @@ export interface Character {
   image: string;
   canAttachTo: string[];
   wargear?: WargearOption[];
+
+  points: number;
 }
 
 export interface ArmyUnit {
@@ -27,3 +45,8 @@ export interface ArmyUnit {
   attachedCharacter?: string;
   characterWargear?: string[];
 }
+
+export type Faction =
+  | "space-marines"
+  | "chaos"
+  | "tyranids";
