@@ -56,7 +56,7 @@ export const tyranidsUnits: Unit[] = [
     faction: "tyranids",
     category: "monster",
 
-    image: "/warhammerimages/carnifex.png",
+    image: "../../public/warhammerimages/Tyranids/carnifex.png",
 
     points: 140,
 
@@ -85,6 +85,19 @@ export const tyranidsUnits: Unit[] = [
     image: "/warhammerimages/tyrannocyte.png",
 
     points: 105,
+
+    wargear: [],
+  },
+  {
+    id: "genestealers",
+    name: "GeneStealers",
+    faction: "tyranids",
+    category: "infantry",
+
+    image5: "/warhammerimages/tyrannocyte.png",
+    image10: "/warhammerimages/tyrannocyte.png",
+
+    points: 75,
 
     wargear: [],
   },

@@ -8,25 +8,19 @@ export const tyranidsCharacters: Character[] = [
 
     image: "/warhammerimages/hive-tyrant.png",
 
-    points: 210,
+    points: 195,
 
     canAttachTo: [
-      "termagants",
-      "hormagaunts",
+      "tyrant guard",
+      
     ],
 
     wargear: [
       {
-        id: "bonesword",
-        name: "Bonesword",
+        id: "bonesword/lashwhip",
+        name: "Bonesword & lash whip",
         image: "/warhammerimages/bonesword.png",
-        points: 10,
-      },
-      {
-        id: "lash-whip",
-        name: "Lash Whip",
-        image: "/warhammerimages/lash-whip.png",
-        points: 5,
+        points: 0,
       },
     ],
   },
@@ -40,7 +34,7 @@ export const tyranidsCharacters: Character[] = [
     points: 95,
 
     canAttachTo: [
-      "hormagaunts",
+      "genestealers",
     ],
 
     wargear: [],
@@ -52,19 +46,26 @@ export const tyranidsCharacters: Character[] = [
 
     image: "/warhammerimages/neurotyrant.png",
 
-    points: 120,
+    points: 105,
 
     canAttachTo: [
-      "termagants",
+      "'neurogaunts'","'tyrantguard'","'zoanthropes'"
     ],
 
-    wargear: [
-      {
-        id: "neuro-lash",
-        name: "Neuro Lash",
-        image: "/warhammerimages/neuro-lash.png",
-        points: 5,
-      },
+    wargear: [],
+  },
+  {
+    id: "oldoneeye",
+    name: "Old one eye",
+
+    image: "../../public/warhammerimages/Tyranids/old-one-eye.png",
+
+    points: 95,
+
+    canAttachTo: [
+      "carnifex",
     ],
+
+    wargear: [],
   },
 ];

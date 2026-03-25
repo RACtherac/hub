@@ -8,8 +8,8 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "battleline",
 
-    image5: "/warhammerimages/intercessor5.png",
-    image10: "/warhammerimages/intercessor10.png",
+    image5: "../../public/warhammerimages/SpaceMarine/intercessor5.png",
+    image10: "../../public/warhammerimages/SpaceMarine/intercessor10.png",
 
     points: 95,
 
@@ -17,8 +17,8 @@ export const spaceMarinesUnits: Unit[] = [
       {
         id: "grenade",
         name: "Grenade",
-        image: "/warhammerimages/intercessor-grenade.png",
-        points: 5,
+        image: "../../public/warhammerimages/SpaceMarine/intercessor-grenade.png",
+        points: 0,
       },
     ],
   },
@@ -27,13 +27,20 @@ export const spaceMarinesUnits: Unit[] = [
     id: "assault-intercessors",
     name: "Assault Intercessor Squad",
     faction: "space-marines",
-    category: "infantry",
+    category: "battleline",
 
-    image5: "/warhammerimages/assault5.png",
-    image10: "/warhammerimages/assault10.png",
+    image5: "/warhammerimages/assault-interceessor5.png",
+    image10: "../../public/warhammerimages/SpaceMarine/assault-intercessor10.png",
 
     points: 90,
-    wargear: [],
+    wargear: [
+        {
+             id: "power fist",
+        name: "Power fist",
+        image: "../../public/warhammerimages/SpaceMarine/assault-intercessor-powerfist.png",
+        points: 0,
+        }
+    ],
   },
 
   {
@@ -42,7 +49,7 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
 
-    image: "/warhammerimages/rhino.png",
+    image: "../../public/warhammerimages/SpaceMArine/rhino.png",
     points: 75,
     wargear: [],
   },
