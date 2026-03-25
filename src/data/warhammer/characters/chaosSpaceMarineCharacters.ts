@@ -6,6 +6,7 @@ export const chaosCharacters: Character[] = [
     name: "Chaos Lord",
     image: "/warhammerimages/chaos-lord.png",
     points: 90,
+    faction: "chaos-space-marine",
     canAttachTo: ["chaos-space-marines"],
     wargear: [
       {

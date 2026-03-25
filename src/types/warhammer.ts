@@ -1,48 +1,64 @@
+export type SuperFaction =
+  | "imperium"
+  | "chaos"
+  | "xenos";
+
+export type Faction =
+  | "space-marines"
+  | "astra-militarum"
+  | "adeptus-mechanicus"
+  | "chaos-space-marine"
+  | "death-guard"
+  | "thousand-sons"
+  | "tyranids"
+  | "necrons"
+  | "orks";
+
+export type UnitCategory =
+  | "battleline"
+  | "infantry"
+  | "vehicle"
+  | "transport"
+  | "monster";
+
 export interface WargearOption {
-  points: number;
   id: string;
   name: string;
-  image?: string;
+  image: string;
+  points?: number;
 }
 
-export type UnitCategory = "battleline" | "infantry" | "vehicle" | "transport" | "monster";
-
 export interface Unit {
-  faction: string;
   id: string;
   name: string;
+
+  faction: Faction;
   category: UnitCategory;
 
   image3?: string;
-  image6?: string;
   image5?: string;
+  image6?: string;
   image10?: string;
   image?: string;
 
   points: number;
 
   wargear: WargearOption[];
+
+  transportCapacity?: number;
 }
 
 export interface Character {
   id: string;
   name: string;
+
+  faction: Faction;
+
   image: string;
-  canAttachTo: string[];
-  wargear?: WargearOption[];
 
   points: number;
-}
 
-export interface ArmyUnit {
-  unitId: string;
-  modelCount: number;
-  selectedWargear: string[];
-  attachedCharacter?: string;
-  characterWargear?: string[];
-}
+  canAttachTo: string[];
 
-export type Faction =
-  | "space-marines"
-  | "chaos"
-  | "tyranids";
+  wargear?: WargearOption[];
+}

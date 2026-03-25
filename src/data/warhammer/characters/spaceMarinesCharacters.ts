@@ -5,11 +5,9 @@ export const spaceMarinesCharacters: Character[] = [
   {
     id: "captain",
     name: "Space Marine Captain",
-
     image: "/warhammerimages/captain.png",
-
     points: 80,
-
+    faction:"space-marines",
     canAttachTo: [
       "intercessors",
       "assault-intercessors",
@@ -28,11 +26,9 @@ export const spaceMarinesCharacters: Character[] = [
   {
     id: "lieutenant",
     name: "Space Marine Lieutenant",
-
     image: "/warhammerimages/lieutenant.png",
-
     points: 65,
-
+        faction:"space-marines",
     canAttachTo: [
       "intercessors",
       "assault-intercessors",

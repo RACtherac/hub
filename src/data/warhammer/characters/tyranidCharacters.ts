@@ -5,11 +5,9 @@ export const tyranidsCharacters: Character[] = [
   {
     id: "hive-tyrant",
     name: "Hive Tyrant",
-
     image: "/warhammerimages/hive-tyrant.png",
-
     points: 195,
-
+    faction:"tyranids",
     canAttachTo: [
       "tyrant guard",
       
@@ -28,11 +26,9 @@ export const tyranidsCharacters: Character[] = [
   {
     id: "broodlord",
     name: "Broodlord",
-
     image: "/warhammerimages/broodlord.png",
-
     points: 95,
-
+    faction:"tyranids",
     canAttachTo: [
       "genestealers",
     ],
@@ -43,29 +39,23 @@ export const tyranidsCharacters: Character[] = [
   {
     id: "neurotyrant",
     name: "Neurotyrant",
-
     image: "/warhammerimages/neurotyrant.png",
-
     points: 105,
-
+    faction:"tyranids",
     canAttachTo: [
       "'neurogaunts'","'tyrantguard'","'zoanthropes'"
     ],
-
     wargear: [],
   },
   {
     id: "oldoneeye",
     name: "Old one eye",
-
     image: "../../public/warhammerimages/Tyranids/old-one-eye.png",
-
     points: 95,
-
+        faction:"tyranids",
     canAttachTo: [
       "carnifex",
     ],
-
     wargear: [],
   },
 ];

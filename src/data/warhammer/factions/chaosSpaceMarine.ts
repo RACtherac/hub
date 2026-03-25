@@ -5,7 +5,7 @@ export const chaosUnits: Unit[] = [
   {
     id: "chaos-space-marines",
     name: "Chaos Space Marines",
-    faction: "chaos",
+    faction: "chaos-space-marine",
     category: "battleline",
 
     image5: "/warhammerimages/chaos-marines5.png",
@@ -26,7 +26,7 @@ export const chaosUnits: Unit[] = [
   {
     id: "obliterator",
     name: "Obliterator",
-    faction: "chaos",
+    faction: "chaos-space-marine",
     category: "vehicle",
 
     image: "/warhammerimages/obliterator.png",
@@ -45,7 +45,7 @@ export const chaosUnits: Unit[] = [
   {
     id: "chaos-rhino",
     name: "Chaos Rhino",
-    faction: "chaos",
+    faction: "chaos-space-marine",
     category: "transport",
 
     image: "/warhammerimages/chaos-rhino.png",
