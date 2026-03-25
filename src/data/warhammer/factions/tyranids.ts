@@ -1,4 +1,4 @@
-import type { Unit } from "../../../types/Warhammer";
+import type { Unit } from "../../../types/warhammer";
 
 export const tyranidsUnits: Unit[] = [
 

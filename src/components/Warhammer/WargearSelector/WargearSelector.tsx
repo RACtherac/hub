@@ -1,4 +1,4 @@
-import type { WargearOption } from "../../../types/Warhammer";
+import type { WargearOption } from "../../../types/warhammer";
 
 interface Props {
   wargear: WargearOption[];

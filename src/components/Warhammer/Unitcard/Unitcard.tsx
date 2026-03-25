@@ -1,4 +1,4 @@
-import type { Unit, Character } from "../../../types/Warhammer";
+import type { Unit, Character } from "../../../types/warhammer";
 import UnitImage from "../UnitImage/UnitImage";
 import WargearSelector from "../WargearSelector/WargearSelector";
 import CharacterAttachment from "../CharacterAttachment/CharacterAttachment";

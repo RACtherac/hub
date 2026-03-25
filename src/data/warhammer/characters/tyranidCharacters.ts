@@ -1,4 +1,4 @@
-import type { Character } from "../../../types/Warhammer";
+import type { Character } from "../../../types/warhammer";
 
 export const tyranidsCharacters: Character[] = [
 

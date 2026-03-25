@@ -6,7 +6,7 @@ import type {
   UnitCategory,
   Faction,
   SuperFaction,
-} from "../../../types/Warhammer";
+} from "../../../types/warhammer";
 
 interface Props {
   units: Unit[];

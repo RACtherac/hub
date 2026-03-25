@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
+import "../components/styles/rotator.css";
 
-const images = [
-  "/src/assets/portfolio/project1.png",
-  "/src/assets/portfolio/project2.png",
-  "/src/assets/portfolio/project3.png",
+import project1 from "../assets/portfolio/portfoliointern.png";
+import project2 from "../assets/portfolio/project1.png";
+import project3 from "../assets/portfolio/project3.png";
+
+const images: string[] = [
+  project1,
+  project2,
+  project3,
 ];
 
 export default function PhotoRotator() {
@@ -12,41 +17,21 @@ export default function PhotoRotator() {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
-    }, 4000); // rotate every 4 seconds
+    }, 4000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div style={containerStyle}>
+    <section className="rotator">
       {images.map((img, i) => (
         <img
           key={img}
           src={img}
-          style={{
-            ...imageStyle,
-            opacity: i === index ? 1 : 0,
-          }}
+          alt={`Project ${i + 1}`}
+          className={`rotator-image ${i === index ? "active" : ""}`}
         />
       ))}
-    </div>
+    </section>
   );
 }
-
-const containerStyle: React.CSSProperties = {
-  position: "relative",
-  width: "500px",
-  height: "300px", // fixed height prevents page shifting
-  margin: "2rem auto",
-  overflow: "hidden",
-};
-
-const imageStyle: React.CSSProperties = {
-  position: "absolute",
-  top: 0,
-  left: 0,
-  width: "100%",
-  height: "100%",
-  objectFit: "cover",
-  transition: "opacity 1s ease-in-out",
-};

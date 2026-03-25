@@ -1,4 +1,4 @@
-import type { Unit, Character } from "../../../types/Warhammer";
+import type { Unit, Character } from "../../../types/warhammer";
 
 interface Props {
   unit: Unit;

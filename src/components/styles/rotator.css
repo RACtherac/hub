@@ -1,0 +1,21 @@
+.rotator {
+  position: relative;
+  width: 600px;
+  height: 350px;
+  margin: 2rem auto;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.rotator-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.rotator-image.active {
+  opacity: 1;
+}

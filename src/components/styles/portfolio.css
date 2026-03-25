@@ -1,0 +1,29 @@
+.portfolio-links {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.portfolio-links a {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  color: white;
+  background-color: #333;
+  transition: background-color 0.3s;
+}
+
+.portfolio-links a:hover {
+  background-color: #555;
+}
+
+.cv-link { background-color: #1f77b4; }
+.cv-link:hover { background-color: #155a8a; }
+
+.github-link { background-color: #24292f; }
+.github-link:hover { background-color: #0d1117; }
+
+.linkedin-link { background-color: #0077b5; }
+.linkedin-link:hover { background-color: #005582; }
