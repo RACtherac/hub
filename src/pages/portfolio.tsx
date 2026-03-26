@@ -8,7 +8,6 @@ export default function Portfolio() {
   return (
     <main className="portfolio">
 
-      {/* Header */}
       <header className="portfolio-header">
         <button
           className="back-button"
@@ -20,7 +19,6 @@ export default function Portfolio() {
         <h1>Oscar Hugosson</h1>
         <p>Junior Developer</p>
 
-        {/* CV & Links */}
         <div className="portfolio-links">
           {/* <a
             href="../../assets/portfolio/oscar_hugosson_cv.docx.pdf"
@@ -49,10 +47,8 @@ export default function Portfolio() {
         </div>
       </header>
 
-      {/* Photo Rotator */}
       <PhotoRotator />
 
-      {/* About / Skills */}
       <section className="about">
         <h2>About Me</h2>
         <p>
@@ -62,11 +58,10 @@ export default function Portfolio() {
 
         <h3>Skills</h3>
         <p>
-          React • TypeScript • HTML5 • CSS3 • SQL • C# • Git • Agile
+          React • TypeScript • HTML5 • CSS3 • SQL • C# • Agile • Javascript 
         </p>
       </section>
 
-      {/* Projects */}
       <section className="projects">
         <h2>Projects</h2>
         <div className="project-grid">
