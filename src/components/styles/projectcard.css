@@ -1,13 +1,103 @@
 .project-card {
-  padding: 1.5rem;
-  border-radius: 10px;
-  border: 1px solid #ddd;
+  position: relative;
+  padding: 2rem 2rem 2.2rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   cursor: pointer;
-  transition: 0.3s;
-  background: white;
+  overflow: hidden;
+  background: var(--surface);
+  transition: background 0.25s ease;
+  opacity: 0;
+  animation: cardIn 0.5s ease forwards;
 }
 
 .project-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  background: var(--surface-2);
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  transition: border-color 0.25s ease;
+  pointer-events: none;
+}
+
+.project-card:hover::before {
+  border-color: var(--accent);
+}
+
+.project-card-index {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
+}
+
+.project-card-bg-num {
+  position: absolute;
+  top: -0.15em;
+  right: -0.08em;
+  font-size: 7rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-faint);
+  pointer-events: none;
+  user-select: none;
+  transition: color 0.25s ease;
+  letter-spacing: -0.04em;
+}
+
+.project-card:hover .project-card-bg-num {
+  color: var(--accent-dim);
+}
+
+.project-card h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f0ece4;
+  line-height: 1.2;
+  margin-bottom: 0.7rem;
+  position: relative;
+  z-index: 1;
+}
+
+.project-card p {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+  position: relative;
+  z-index: 1;
+}
+
+.project-card-arrow {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  transition: color 0.25s ease, transform 0.25s ease;
+  z-index: 1;
+}
+
+.project-card:hover .project-card-arrow {
+  color: var(--accent);
+  transform: translate(3px, -3px);
+}
+
+/* Staggered entrance per nth-child */
+.project-card:nth-child(1) { animation-delay: 0.3s; }
+.project-card:nth-child(2) { animation-delay: 0.38s; }
+.project-card:nth-child(3) { animation-delay: 0.46s; }
+.project-card:nth-child(4) { animation-delay: 0.54s; }
+.project-card:nth-child(5) { animation-delay: 0.62s; }
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

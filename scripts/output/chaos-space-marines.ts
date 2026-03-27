@@ -2,8 +2,6 @@ import type { Unit } from "../../../types/warhammer";
 
 export const chaosSpaceMarinesUnits: Unit[] = [
 
-  // ── Battleline ──────────────────────────────────────────────────────────
-
   {
     id: "cultist-mob",
     name: "Cultist Mob",
@@ -41,92 +39,11 @@ export const chaosSpaceMarinesUnits: Unit[] = [
   },
 
   {
-    id: "abaddon-the-despoiler",
-    name: "Abaddon The Despoiler",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 280,
-    wargear: [],
-  },
-
-  {
     id: "chaos-bikers",
     name: "Chaos Bikers",
     faction: "chaos-space-marine",
     category: "infantry",
     points: 70,
-    wargear: [],
-  },
-
-  {
-    id: "chaos-lord",
-    name: "Chaos Lord",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 90,
-    wargear: [],
-  },
-
-  {
-    id: "chaos-lord-in-terminator-armour",
-    name: "Chaos Lord In Terminator Armour",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 95,
-    wargear: [],
-  },
-
-  {
-    id: "chaos-lord-on-bike",
-    name: "Chaos Lord On Bike",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 95,
-    wargear: [],
-  },
-
-  {
-    id: "chaos-lord-on-disc-of-tzeentch",
-    name: "Chaos Lord On Disc Of Tzeentch",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 100,
-    wargear: [],
-  },
-
-  {
-    id: "chaos-lord-on-juggernaut",
-    name: "Chaos Lord On Juggernaut",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 115,
-    wargear: [],
-  },
-
-  {
-    id: "chaos-lord-on-palanquin-of-nurgle",
-    name: "Chaos Lord On Palanquin Of Nurgle",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 90,
-    wargear: [],
-  },
-
-  {
-    id: "chaos-lord-on-steed-of-slaanesh",
-    name: "Chaos Lord On Steed Of Slaanesh",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 100,
-    wargear: [],
-  },
-
-  {
-    id: "chaos-lord-with-jump-pack",
-    name: "Chaos Lord With Jump Pack",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 90,
     wargear: [],
   },
 
@@ -154,87 +71,6 @@ export const chaosSpaceMarinesUnits: Unit[] = [
     faction: "chaos-space-marine",
     category: "infantry",
     points: 125,
-    wargear: [],
-  },
-
-  {
-    id: "cultist-firebrand",
-    name: "Cultist Firebrand",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 45,
-    wargear: [],
-  },
-
-  {
-    id: "cypher",
-    name: "Cypher",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 90,
-    wargear: [],
-  },
-
-  {
-    id: "exalted-champion",
-    name: "Exalted Champion",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 70,
-    wargear: [],
-  },
-
-  {
-    id: "haarken-worldclaimer",
-    name: "Haarken Worldclaimer",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 90,
-    wargear: [],
-  },
-
-  {
-    id: "huron-blackheart",
-    name: "Huron Blackheart",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 80,
-    wargear: [],
-  },
-
-  {
-    id: "lord-discordant-on-helstalker",
-    name: "Lord Discordant On Helstalker",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 160,
-    wargear: [],
-  },
-
-  {
-    id: "lucius-the-eternal",
-    name: "Lucius The Eternal",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 95,
-    wargear: [],
-  },
-
-  {
-    id: "master-of-executions",
-    name: "Master Of Executions",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 80,
-    wargear: [],
-  },
-
-  {
-    id: "master-of-possession",
-    name: "Master Of Possession",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 70,
     wargear: [],
   },
 
@@ -311,15 +147,6 @@ export const chaosSpaceMarinesUnits: Unit[] = [
   },
 
   {
-    id: "renegade-enforcer",
-    name: "Renegade Enforcer",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 65,
-    wargear: [],
-  },
-
-  {
     id: "renegade-heavy-weapons-squad",
     name: "Renegade Heavy Weapons Squad",
     faction: "chaos-space-marine",
@@ -347,83 +174,11 @@ export const chaosSpaceMarinesUnits: Unit[] = [
   },
 
   {
-    id: "rogue-psyker",
-    name: "Rogue Psyker",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 60,
-    wargear: [],
-  },
-
-  {
-    id: "sorcerer",
-    name: "Sorcerer",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 60,
-    wargear: [],
-  },
-
-  {
-    id: "sorcerer-in-terminator-armour",
-    name: "Sorcerer In Terminator Armour",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 80,
-    wargear: [],
-  },
-
-  {
-    id: "sorcerer-on-bike",
-    name: "Sorcerer On Bike",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 75,
-    wargear: [],
-  },
-
-  {
-    id: "sorcerer-on-disc-of-tzeentch",
-    name: "Sorcerer On Disc Of Tzeentch",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 80,
-    wargear: [],
-  },
-
-  {
-    id: "sorcerer-on-palanquin-of-nurgle",
-    name: "Sorcerer On Palanquin Of Nurgle",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 80,
-    wargear: [],
-  },
-
-  {
-    id: "sorcerer-on-steed-of-slaanesh",
-    name: "Sorcerer On Steed Of Slaanesh",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 85,
-    wargear: [],
-  },
-
-  {
     id: "warp-talons",
     name: "Warp Talons",
     faction: "chaos-space-marine",
     category: "infantry",
     points: 125,
-    wargear: [],
-  },
-
-  {
-    id: "warpsmith",
-    name: "Warpsmith",
-    faction: "chaos-space-marine",
-    category: "infantry",
-    points: 70,
     wargear: [],
   },
 
@@ -721,33 +476,6 @@ export const chaosSpaceMarinesUnits: Unit[] = [
     faction: "chaos-space-marine",
     category: "vehicle",
     points: 115,
-    wargear: [],
-  },
-
-  {
-    id: "heretic-astartes-daemon-prince",
-    name: "Heretic Astartes Daemon Prince",
-    faction: "chaos-space-marine",
-    category: "monster",
-    points: 165,
-    wargear: [],
-  },
-
-  {
-    id: "heretic-astartes-daemon-prince-with-wings",
-    name: "Heretic Astartes Daemon Prince With Wings",
-    faction: "chaos-space-marine",
-    category: "monster",
-    points: 180,
-    wargear: [],
-  },
-
-  {
-    id: "vashtorr-the-arkifane",
-    name: "Vashtorr The Arkifane",
-    faction: "chaos-space-marine",
-    category: "monster",
-    points: 175,
     wargear: [],
   },
 

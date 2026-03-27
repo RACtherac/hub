@@ -19,7 +19,7 @@ const projects: Project[] = [
     branch: "pokemon-tcg-tool",
   },
   {
-    name: "Warhammer Picture Army Builder",
+    name: "Warhammer Army Builder",
     description: "See the army you build.",
     branch: "warhammer-army-builder",
   },
@@ -29,14 +29,29 @@ export default function Home() {
   return (
     <main className="home">
 
-      <header className="home-header">
-        <h1>🚀 My Project Hub</h1>
-        <p>Select a project to open</p>
+      <div className="home-topbar">
+        <span className="home-logo">OH<span>/</span>Hub</span>
+        <span className="home-nav-label">Project Directory</span>
+      </div>
+
+      <header className="home-hero">
+        <p className="home-eyebrow">// workspace</p>
+        <h1 className="home-title">
+          Select a <em>project</em> to open
+        </h1>
+        <p className="home-subtitle">
+          {projects.length} projects available &nbsp;·&nbsp; Oscar Hugosson
+        </p>
       </header>
 
+      <div className="home-grid-header">
+        <span className="home-grid-label">Projects</span>
+        <div className="home-grid-line" />
+      </div>
+
       <section className="project-list">
-        {projects.map((project) => (
-          <ProjectCard key={project.branch} project={project} />
+        {projects.map((project, i) => (
+          <ProjectCard key={project.branch} project={project} index={i + 1} />
         ))}
       </section>
 

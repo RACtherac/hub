@@ -6,37 +6,73 @@ interface Props {
   onChange: (char?: string) => void;
 }
 
-export default function CharacterAttachment({
-  characters,
-  selectedCharacter,
-  onChange,
-}: Props) {
+export default function CharacterAttachment({ characters, selectedCharacter, onChange }: Props) {
   return (
-    <div style={{ marginTop: "15px" }}>
-      <h4>Attach Character</h4>
+    <div>
+      <div style={{
+        fontFamily: "var(--font-mono)",
+        fontSize: "10px",
+        letterSpacing: "0.15em",
+        textTransform: "uppercase",
+        color: "var(--text-dim)",
+        marginBottom: "10px",
+      }}>
+        Attached Character
+      </div>
 
-      <select
-        value={selectedCharacter || ""}
-        onChange={(e) =>
-          onChange(e.target.value || undefined)
-        }
-        style={{
-          padding: "6px",
-          borderRadius: "5px",
-          border: "1px solid black",
-        }}
-      >
-        <option value="">None</option>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+        <button
+          onClick={() => onChange(undefined)}
+          style={{
+            background: !selectedCharacter ? "var(--accent-dim)" : "none",
+            border: `1px solid ${!selectedCharacter ? "var(--accent)" : "var(--border-2)"}`,
+            color: !selectedCharacter ? "var(--accent)" : "var(--text-dim)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "10px",
+            letterSpacing: "0.08em",
+            padding: "5px 12px",
+            cursor: "pointer",
+            transition: "all 0.15s",
+          }}
+        >
+          None
+        </button>
 
-        {characters.map((character) => (
-          <option
-            key={character.id}
-            value={character.id}
-          >
-            {character.name}
-          </option>
-        ))}
-      </select>
+        {characters.map((char) => {
+          const active = selectedCharacter === char.id;
+          return (
+            <button
+              key={char.id}
+              onClick={() => onChange(active ? undefined : char.id)}
+              style={{
+                background: active ? "var(--accent-dim)" : "none",
+                border: `1px solid ${active ? "var(--accent)" : "var(--border-2)"}`,
+                color: active ? "var(--accent)" : "var(--text-dim)",
+                fontFamily: "var(--font-mono)",
+                fontSize: "10px",
+                letterSpacing: "0.08em",
+                padding: "5px 12px",
+                cursor: "pointer",
+                transition: "all 0.15s",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <span style={{
+                width: "5px",
+                height: "5px",
+                background: active ? "var(--accent)" : "var(--border-2)",
+                clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
+                flexShrink: 0,
+                transition: "background 0.15s",
+              }} />
+              {char.name}
+              <span style={{ opacity: 0.6 }}>{char.points}pts</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -2,8 +2,6 @@ import type { Unit } from "../../../types/warhammer";
 
 export const spaceMarinesUnits: Unit[] = [
 
-  // ── Battleline ──────────────────────────────────────────────────────────
-
   {
     id: "assault-intercessor-squad",
     name: "Assault Intercessor Squad",
@@ -50,42 +48,6 @@ export const spaceMarinesUnits: Unit[] = [
   },
 
   {
-    id: "ancient",
-    name: "Ancient",
-    faction: "space-marines",
-    category: "infantry",
-    points: 50,
-    wargear: [],
-  },
-
-  {
-    id: "ancient-in-terminator-armour",
-    name: "Ancient In Terminator Armour",
-    faction: "space-marines",
-    category: "infantry",
-    points: 75,
-    wargear: [],
-  },
-
-  {
-    id: "apothecary",
-    name: "Apothecary",
-    faction: "space-marines",
-    category: "infantry",
-    points: 50,
-    wargear: [],
-  },
-
-  {
-    id: "apothecary-biologis",
-    name: "Apothecary Biologis",
-    faction: "space-marines",
-    category: "infantry",
-    points: 70,
-    wargear: [],
-  },
-
-  {
     id: "assault-intercessors-with-jump-packs",
     name: "Assault Intercessors With Jump Packs",
     faction: "space-marines",
@@ -95,65 +57,11 @@ export const spaceMarinesUnits: Unit[] = [
   },
 
   {
-    id: "bladeguard-ancient",
-    name: "Bladeguard Ancient",
-    faction: "space-marines",
-    category: "infantry",
-    points: 45,
-    wargear: [],
-  },
-
-  {
     id: "bladeguard-veteran-squad",
     name: "Bladeguard Veteran Squad",
     faction: "space-marines",
     category: "infantry",
     points: 80,
-    wargear: [],
-  },
-
-  {
-    id: "captain",
-    name: "Captain",
-    faction: "space-marines",
-    category: "infantry",
-    points: 80,
-    wargear: [],
-  },
-
-  {
-    id: "captain-in-gravis-armour",
-    name: "Captain In Gravis Armour",
-    faction: "space-marines",
-    category: "infantry",
-    points: 80,
-    wargear: [],
-  },
-
-  {
-    id: "captain-in-phobos-armour",
-    name: "Captain In Phobos Armour",
-    faction: "space-marines",
-    category: "infantry",
-    points: 70,
-    wargear: [],
-  },
-
-  {
-    id: "captain-in-terminator-armour",
-    name: "Captain In Terminator Armour",
-    faction: "space-marines",
-    category: "infantry",
-    points: 95,
-    wargear: [],
-  },
-
-  {
-    id: "captain-with-jump-pack",
-    name: "Captain With Jump Pack",
-    faction: "space-marines",
-    category: "infantry",
-    points: 85,
     wargear: [],
   },
 
@@ -172,42 +80,6 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 165,
-    wargear: [],
-  },
-
-  {
-    id: "chaplain",
-    name: "Chaplain",
-    faction: "space-marines",
-    category: "infantry",
-    points: 60,
-    wargear: [],
-  },
-
-  {
-    id: "chaplain-in-terminator-armour",
-    name: "Chaplain In Terminator Armour",
-    faction: "space-marines",
-    category: "infantry",
-    points: 75,
-    wargear: [],
-  },
-
-  {
-    id: "chaplain-on-bike",
-    name: "Chaplain On Bike",
-    faction: "space-marines",
-    category: "infantry",
-    points: 75,
-    wargear: [],
-  },
-
-  {
-    id: "chaplain-with-jump-pack",
-    name: "Chaplain With Jump Pack",
-    faction: "space-marines",
-    category: "infantry",
-    points: 75,
     wargear: [],
   },
 
@@ -302,78 +174,6 @@ export const spaceMarinesUnits: Unit[] = [
   },
 
   {
-    id: "judiciar",
-    name: "Judiciar",
-    faction: "space-marines",
-    category: "infantry",
-    points: 70,
-    wargear: [],
-  },
-
-  {
-    id: "librarian",
-    name: "Librarian",
-    faction: "space-marines",
-    category: "infantry",
-    points: 65,
-    wargear: [],
-  },
-
-  {
-    id: "librarian-in-phobos-armour",
-    name: "Librarian In Phobos Armour",
-    faction: "space-marines",
-    category: "infantry",
-    points: 70,
-    wargear: [],
-  },
-
-  {
-    id: "librarian-in-terminator-armour",
-    name: "Librarian In Terminator Armour",
-    faction: "space-marines",
-    category: "infantry",
-    points: 75,
-    wargear: [],
-  },
-
-  {
-    id: "lieutenant",
-    name: "Lieutenant",
-    faction: "space-marines",
-    category: "infantry",
-    points: 65,
-    wargear: [],
-  },
-
-  {
-    id: "lieutenant-in-phobos-armour",
-    name: "Lieutenant In Phobos Armour",
-    faction: "space-marines",
-    category: "infantry",
-    points: 55,
-    wargear: [],
-  },
-
-  {
-    id: "lieutenant-in-reiver-armour",
-    name: "Lieutenant In Reiver Armour",
-    faction: "space-marines",
-    category: "infantry",
-    points: 55,
-    wargear: [],
-  },
-
-  {
-    id: "lieutenant-with-combi-weapon",
-    name: "Lieutenant With Combi Weapon",
-    faction: "space-marines",
-    category: "infantry",
-    points: 70,
-    wargear: [],
-  },
-
-  {
     id: "reiver-squad",
     name: "Reiver Squad",
     faction: "space-marines",
@@ -406,15 +206,6 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 75,
-    wargear: [],
-  },
-
-  {
-    id: "techmarine",
-    name: "Techmarine",
-    faction: "space-marines",
-    category: "infantry",
-    points: 55,
     wargear: [],
   },
 

@@ -2,8 +2,6 @@ import type { Unit } from "../../../types/warhammer";
 
 export const tyranidsUnits: Unit[] = [
 
-  // ── Battleline ──────────────────────────────────────────────────────────
-
   {
     id: "gargoyles",
     name: "Gargoyles",
@@ -50,24 +48,6 @@ export const tyranidsUnits: Unit[] = [
   },
 
   {
-    id: "broodlord",
-    name: "Broodlord",
-    faction: "tyranids",
-    category: "infantry",
-    points: 80,
-    wargear: [],
-  },
-
-  {
-    id: "deathleaper",
-    name: "Deathleaper",
-    faction: "tyranids",
-    category: "infantry",
-    points: 80,
-    wargear: [],
-  },
-
-  {
     id: "genestealers",
     name: "Genestealers",
     faction: "tyranids",
@@ -95,15 +75,6 @@ export const tyranidsUnits: Unit[] = [
   },
 
   {
-    id: "malanthrope",
-    name: "Malanthrope",
-    faction: "tyranids",
-    category: "infantry",
-    points: 75,
-    wargear: [],
-  },
-
-  {
     id: "mucolid-spores",
     name: "Mucolid Spores",
     faction: "tyranids",
@@ -115,15 +86,6 @@ export const tyranidsUnits: Unit[] = [
   {
     id: "neurolictor",
     name: "Neurolictor",
-    faction: "tyranids",
-    category: "infantry",
-    points: 80,
-    wargear: [],
-  },
-
-  {
-    id: "parasite-of-mortrex",
-    name: "Parasite Of Mortrex",
     faction: "tyranids",
     category: "infantry",
     points: 80,
@@ -221,15 +183,6 @@ export const tyranidsUnits: Unit[] = [
   },
 
   {
-    id: "winged-tyranid-prime",
-    name: "Winged Tyranid Prime",
-    faction: "tyranids",
-    category: "infantry",
-    points: 65,
-    wargear: [],
-  },
-
-  {
     id: "zoanthropes",
     name: "Zoanthropes",
     faction: "tyranids",
@@ -302,15 +255,6 @@ export const tyranidsUnits: Unit[] = [
   },
 
   {
-    id: "hive-tyrant",
-    name: "Hive Tyrant",
-    faction: "tyranids",
-    category: "monster",
-    points: 225,
-    wargear: [],
-  },
-
-  {
     id: "maleceptor",
     name: "Maleceptor",
     faction: "tyranids",
@@ -329,15 +273,6 @@ export const tyranidsUnits: Unit[] = [
   },
 
   {
-    id: "neurotyrant",
-    name: "Neurotyrant",
-    faction: "tyranids",
-    category: "monster",
-    points: 105,
-    wargear: [],
-  },
-
-  {
     id: "norn-assimilator",
     name: "Norn Assimilator",
     faction: "tyranids",
@@ -352,15 +287,6 @@ export const tyranidsUnits: Unit[] = [
     faction: "tyranids",
     category: "monster",
     points: 260,
-    wargear: [],
-  },
-
-  {
-    id: "old-one-eye",
-    name: "Old One Eye",
-    faction: "tyranids",
-    category: "monster",
-    points: 150,
     wargear: [],
   },
 
@@ -401,24 +327,6 @@ export const tyranidsUnits: Unit[] = [
   },
 
   {
-    id: "tervigon",
-    name: "Tervigon",
-    faction: "tyranids",
-    category: "monster",
-    points: 175,
-    wargear: [],
-  },
-
-  {
-    id: "the-swarmlord",
-    name: "The Swarmlord",
-    faction: "tyranids",
-    category: "monster",
-    points: 240,
-    wargear: [],
-  },
-
-  {
     id: "toxicrene",
     name: "Toxicrene",
     faction: "tyranids",
@@ -439,15 +347,6 @@ export const tyranidsUnits: Unit[] = [
   {
     id: "tyrannofex",
     name: "Tyrannofex",
-    faction: "tyranids",
-    category: "monster",
-    points: 200,
-    wargear: [],
-  },
-
-  {
-    id: "winged-hive-tyrant",
-    name: "Winged Hive Tyrant",
     faction: "tyranids",
     category: "monster",
     points: 200,

@@ -5,57 +5,58 @@ export const tyranidsCharacters: Character[] = [
   {
     id: "hive-tyrant",
     name: "Hive Tyrant",
-    image: "/warhammerimages/hive-tyrant.png",
+    image: "",
     points: 195,
-    faction:"tyranids",
-    canAttachTo: [
-      "tyrant guard",
-      
-    ],
-
+    faction: "tyranids",
+    canAttachTo: ["tyrant-guard"],
     wargear: [
-      {
-        id: "bonesword/lashwhip",
-        name: "Bonesword & lash whip",
-        image: "/warhammerimages/bonesword.png",
-        points: 0,
-      },
+      { id: "bonesword-lashwhip",  name: "Bonesword & Lash Whip",  image: "", points: 0  },
+      { id: "tyrant-heavy-venom",  name: "Heavy Venom Cannon",      image: "", points: 10 },
     ],
   },
 
   {
     id: "broodlord",
     name: "Broodlord",
-    image: "/warhammerimages/broodlord.png",
+    image: "",
     points: 95,
-    faction:"tyranids",
-    canAttachTo: [
-      "genestealers",
+    faction: "tyranids",
+    canAttachTo: ["genestealers"],
+    wargear: [
+      { id: "broodlord-claws", name: "Monstrous Rending Claws", image: "", points: 0 },
     ],
-
-    wargear: [],
   },
 
   {
     id: "neurotyrant",
     name: "Neurotyrant",
-    image: "/warhammerimages/neurotyrant.png",
+    image: "",
     points: 105,
-    faction:"tyranids",
-    canAttachTo: [
-      "'neurogaunts'","'tyrantguard'","'zoanthropes'"
-    ],
+    faction: "tyranids",
+    canAttachTo: ["neurogaunts", "tyrant-guard", "zoanthropes"],
     wargear: [],
   },
+
   {
-    id: "oldoneeye",
-    name: "Old one eye",
-    image: "../../public/warhammerimages/Tyranids/old-one-eye.png",
+    id: "old-one-eye",
+    name: "Old One Eye",
+    image: "/Warhammerimages/Tyranids/old-one-eye.png",
     points: 95,
-        faction:"tyranids",
-    canAttachTo: [
-      "carnifex",
+    faction: "tyranids",
+    canAttachTo: ["carnifex"],
+    wargear: [
+      { id: "one-eye-claws", name: "Crushing Claws", image: "", points: 0 },
     ],
+  },
+
+  {
+    id: "norn-emissary",
+    name: "Norn Emissary",
+    image: "",
+    points: 210,
+    faction: "tyranids",
+    canAttachTo: ["tyranid-warriors", "hive-guard"],
     wargear: [],
   },
+
 ];
