@@ -320,6 +320,14 @@ function ArmySelect({ player, takenId, onSelect }: { player: 1 | 2; takenId?: st
   );
 }
 
+// Positions for up to 4 portrait tokens around the frame (corners, clockwise)
+const FRAME_POSITIONS = [
+  { top: "1rem",    left: "1rem"    },
+  { top: "1rem",    right: "1rem"   },
+  { bottom: "1rem", right: "1rem"   },
+  { bottom: "1rem", left: "1rem"    },
+];
+
 function UnitSelect({ player, army, onDeploy }: { player: 1 | 2; army: Army; onDeploy: (units: TacticsUnit[]) => void }) {
   const [selected, setSelected] = useState<string[]>([]);
   function toggle(id: string) {
@@ -327,7 +335,29 @@ function UnitSelect({ player, army, onDeploy }: { player: 1 | 2; army: Army; onD
   }
   const selectedUnits = army.units.filter(u => selected.includes(u.id));
   return (
-    <div className="wt-setup">
+    <div className="wt-setup wt-setup--framed" style={{ "--army-color": army.color } as React.CSSProperties}>
+      {/* Corner portrait tokens */}
+      {selectedUnits.map((unit, i) => (
+        <div
+          key={unit.id}
+          className="wt-frame-token"
+          style={FRAME_POSITIONS[i] as React.CSSProperties}
+          title={unit.name}
+        >
+          <span className="wt-frame-token-emoji">{unit.portrait}</span>
+          <span className="wt-frame-token-name">{unit.name}</span>
+        </div>
+      ))}
+      {/* Empty placeholder slots */}
+      {Array.from({ length: 4 - selectedUnits.length }).map((_, i) => (
+        <div
+          key={`empty-${i}`}
+          className="wt-frame-token wt-frame-token--empty"
+          style={FRAME_POSITIONS[selectedUnits.length + i] as React.CSSProperties}
+        >
+          <span className="wt-frame-token-emoji">·</span>
+        </div>
+      ))}
       <p className="wt-setup-hint">
         Player {player} · <strong>{army.name}</strong> · select 4 soldiers &nbsp;
         <span className="wt-select-count">{selected.length} / 4</span>
