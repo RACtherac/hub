@@ -33,6 +33,11 @@ const projects: Project[] = [
     description: "Draw pixel art on an 8×8, 16×16, or 32×32 canvas.",
     branch: "pixel-art",
   },
+  {
+    name: "Warhammer Tactics",
+    description: "Pick a faction and fight the AI in a turn-based grid battle.",
+    branch: "warhammer-tactics",
+  },
 ];
 
 export default function Home() {

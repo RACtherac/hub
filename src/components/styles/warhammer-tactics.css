@@ -1,0 +1,592 @@
+/* ── Warhammer Tactics ──────────────────────────────────────────────────────── */
+
+.wt-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── Top bar ── */
+.wt-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.wt-topbar-back {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.wt-topbar-back span {
+  color: var(--accent);
+}
+
+.wt-topbar-back:hover {
+  color: var(--text);
+}
+
+.wt-topbar-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ── Hero ── */
+.wt-hero {
+  padding: 4rem 2.5rem 3rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.wt-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: wtFadeUp 0.5s ease forwards;
+}
+
+.wt-title {
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: #f0ece4;
+  max-width: 16ch;
+  opacity: 0;
+  animation: wtFadeUp 0.5s 0.08s ease forwards;
+}
+
+.wt-title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.wt-subtitle {
+  margin-top: 1.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  opacity: 0;
+  animation: wtFadeUp 0.5s 0.16s ease forwards;
+}
+
+@keyframes wtFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Setup Screen ── */
+.wt-setup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.wt-faction-section {
+  padding: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.wt-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.wt-faction-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.wt-faction-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+
+.wt-faction-btn:hover {
+  border-color: var(--border-2);
+  background: var(--surface-2, #1d2130);
+}
+
+.wt-faction-btn.wt-faction-btn--selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.wt-faction-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.wt-faction-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.wt-faction-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.wt-faction-units {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.wt-setup-actions {
+  padding: 2rem 2.5rem;
+}
+
+.wt-deploy-btn {
+  padding: 0.9rem 2.4rem;
+  background: var(--accent);
+  color: #0e1017;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.wt-deploy-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.wt-deploy-btn:not(:disabled):hover {
+  opacity: 0.85;
+}
+
+/* ── Playing Layout ── */
+.wt-playing {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.wt-panel {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 1rem 0.8rem;
+  gap: 0.5rem;
+}
+
+.wt-panel--right {
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+
+.wt-panel-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+  padding: 0 0.2rem;
+}
+
+/* ── Unit Cards ── */
+.wt-unit-card {
+  padding: 0.6rem 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.12s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.wt-unit-card:hover {
+  border-color: var(--border-2);
+}
+
+.wt-unit-card--selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.wt-unit-card--enemy {
+  cursor: default;
+}
+
+.wt-unit-card--dead {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+.wt-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wt-card-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+
+.wt-card-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+  flex: 1;
+}
+
+.wt-hp-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.wt-hp-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+
+.wt-hp-bar-fill--low {
+  background: #e05a5a;
+}
+
+.wt-card-stats {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.wt-card-stat {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  letter-spacing: 0.03em;
+}
+
+.wt-card-stat span {
+  color: var(--text);
+}
+
+.wt-card-status {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.wt-end-turn-btn {
+  margin-top: auto;
+  padding: 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.wt-end-turn-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.wt-end-turn-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Battle Log ── */
+.wt-log {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.wt-log-entry {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  padding: 0.3rem 0.4rem;
+  border-left: 2px solid transparent;
+}
+
+.wt-log-entry--recent {
+  color: var(--text);
+  border-left-color: var(--accent);
+}
+
+/* ── Grid Area ── */
+.wt-grid-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.wt-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  width: min(560px, calc(100vh - 180px), calc(100vw - 430px));
+  height: min(560px, calc(100vh - 180px), calc(100vw - 430px));
+  border: 1px solid var(--border);
+  gap: 1px;
+  background: var(--border);
+}
+
+.wt-cell {
+  background: var(--bg);
+  position: relative;
+  cursor: default;
+  transition: background 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wt-cell--move {
+  background: rgba(90, 180, 224, 0.15);
+  cursor: pointer;
+}
+
+.wt-cell--move:hover {
+  background: rgba(90, 180, 224, 0.3);
+}
+
+.wt-cell--attack {
+  background: rgba(224, 90, 90, 0.2);
+  cursor: pointer;
+}
+
+.wt-cell--attack:hover {
+  background: rgba(224, 90, 90, 0.35);
+}
+
+.wt-cell--selected {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+/* ── Unit Tokens ── */
+.wt-token {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  padding: 2px;
+}
+
+.wt-token-circle {
+  width: 68%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  font-size: clamp(0.35rem, 1.4vw, 0.6rem);
+  letter-spacing: 0;
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+  transition: border-color 0.1s;
+}
+
+.wt-token-circle--team0 {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.wt-token-circle--team1 {
+  border-color: rgba(255, 0, 0, 0.4);
+}
+
+.wt-cell--selected .wt-token-circle {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.wt-token-hp {
+  width: 68%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.wt-token-hp-fill {
+  height: 100%;
+  background: #4adf6a;
+  border-radius: 2px;
+  transition: width 0.2s;
+}
+
+.wt-token-hp-fill--low {
+  background: #e05a5a;
+}
+
+/* ── Turn indicator ── */
+.wt-turn-indicator {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.wt-turn-indicator--ai {
+  color: #e05a5a;
+}
+
+/* ── Gameover Screen ── */
+.wt-gameover {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 3rem;
+  text-align: center;
+}
+
+.wt-gameover-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.wt-gameover-title {
+  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #f0ece4;
+}
+
+.wt-gameover-title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.wt-gameover-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.wt-restart-btn {
+  padding: 0.9rem 2.4rem;
+  background: var(--accent);
+  color: #0e1017;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  margin-top: 0.5rem;
+}
+
+.wt-restart-btn:hover {
+  opacity: 0.85;
+}
+
+/* ── Scrollbar ── */
+.wt-panel::-webkit-scrollbar {
+  width: 4px;
+}
+
+.wt-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.wt-panel::-webkit-scrollbar-thumb {
+  background: var(--border-2);
+  border-radius: 2px;
+}
