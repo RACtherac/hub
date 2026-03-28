@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ARMIES } from "../data/tactics/armies";
-import type { Army, TacticsUnit } from "../data/tactics/armies";
+import type { Army, TacticsUnit, Ability } from "../data/tactics/armies";
 import "../components/styles/warhammer-tactics.css";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -23,6 +23,7 @@ interface GameUnit {
   name: string;
   portrait: string;
   armyColor: string;
+  ability: Ability;
   team: 0 | 1;
   hp: number;
   maxHp: number;
@@ -33,6 +34,8 @@ interface GameUnit {
   y: number;
   hasMoved: boolean;
   hasAttacked: boolean;
+  shielded: boolean;
+  undyingUsed: boolean;
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -53,7 +56,6 @@ function getMoveRange(unit: GameUnit, all: GameUnit[]): Set<string> {
   const reachable = new Set<string>();
   const queue = [{ x: unit.x, y: unit.y, steps: 0 }];
   const visited = new Set([`${unit.x},${unit.y}`]);
-
   while (queue.length) {
     const cur = queue.shift()!;
     if (cur.steps > 0) reachable.add(`${cur.x},${cur.y}`);
@@ -70,8 +72,62 @@ function getMoveRange(unit: GameUnit, all: GameUnit[]): Set<string> {
   return reachable;
 }
 
-function getAttackable(unit: GameUnit, all: GameUnit[]): GameUnit[] {
-  return all.filter(u => u.team !== unit.team && manhattan(unit.x, unit.y, u.x, u.y) <= unit.range);
+function getAttackable(unit: GameUnit, all: GameUnit[], overrideRange?: number): GameUnit[] {
+  const r = overrideRange ?? unit.range;
+  return all.filter(u => u.team !== unit.team && manhattan(unit.x, unit.y, u.x, u.y) <= r);
+}
+
+function getAdjacentFriendlies(unit: GameUnit, all: GameUnit[]): number {
+  return all.filter(u => u.team === unit.team && u.instanceId !== unit.instanceId && manhattan(u.x, u.y, unit.x, unit.y) === 1).length;
+}
+
+function effectiveAttack(attacker: GameUnit, all: GameUnit[], isRanged = false): number {
+  let atk = attacker.attack;
+  if (attacker.ability.id === "berserker" && attacker.hp <= attacker.maxHp / 2) atk += 2;
+  if (attacker.ability.id === "pack-tactics") atk += getAdjacentFriendlies(attacker, all);
+  if (attacker.ability.id === "overwatch" && isRanged) atk += 1;
+  return atk;
+}
+
+function applyDamage(dmg: number, target: GameUnit): number {
+  let d = dmg;
+  if (target.ability.id === "tough") d = Math.max(1, d - 1);
+  if (target.shielded) d = Math.max(1, d - 1);
+  return d;
+}
+
+// Returns new unit list after one attack; handles drain + undying
+function resolveAttack(
+  attacker: GameUnit,
+  target: GameUnit,
+  units: GameUnit[],
+  log: (msg: string) => void,
+  isRanged = false,
+): GameUnit[] {
+  const dmg = applyDamage(effectiveAttack(attacker, units, isRanged), target);
+  log(`${attacker.name} strikes ${target.name} for ${dmg}!`);
+
+  let next = units.map(u => {
+    if (u.instanceId === target.instanceId) return { ...u, hp: u.hp - dmg };
+    if (u.instanceId === attacker.instanceId) return { ...u, hasAttacked: true };
+    return u;
+  });
+
+  const targetAfter = next.find(u => u.instanceId === target.instanceId)!;
+  if (targetAfter.hp <= 0) {
+    if (target.ability.id === "undying" && !target.undyingUsed) {
+      log(`${target.name} rises from the dead with 1 HP!`);
+      next = next.map(u => u.instanceId === target.instanceId ? { ...u, hp: 1, undyingUsed: true } : u);
+    } else {
+      log(`${target.name} is destroyed!`);
+      next = next.filter(u => u.instanceId !== target.instanceId);
+      if (attacker.ability.id === "drain") {
+        next = next.map(u => u.instanceId === attacker.instanceId ? { ...u, hp: Math.min(u.maxHp, u.hp + 2) } : u);
+        log(`${attacker.name} drains 2 HP!`);
+      }
+    }
+  }
+  return next;
 }
 
 function buildGameUnits(units: TacticsUnit[], army: Army, team: 0 | 1): GameUnit[] {
@@ -82,6 +138,7 @@ function buildGameUnits(units: TacticsUnit[], army: Army, team: 0 | 1): GameUnit
     name: u.name,
     portrait: u.portrait,
     armyColor: army.color,
+    ability: u.ability,
     team,
     hp: u.hp,
     maxHp: u.hp,
@@ -92,6 +149,8 @@ function buildGameUnits(units: TacticsUnit[], army: Army, team: 0 | 1): GameUnit
     y: startY,
     hasMoved: false,
     hasAttacked: false,
+    shielded: false,
+    undyingUsed: false,
   }));
 }
 
@@ -100,27 +159,68 @@ function buildGameUnits(units: TacticsUnit[], army: Army, team: 0 | 1): GameUnit
 function runAI(units: GameUnit[]): { units: GameUnit[]; log: string[] } {
   let state = [...units];
   const msgs: string[] = [];
+  const log = (m: string) => msgs.push(m);
 
   for (const aiUnit of units.filter(u => u.team === 1)) {
     let cur = state.find(u => u.instanceId === aiUnit.instanceId);
     if (!cur) continue;
 
-    // Attack if in range
-    let targets = getAttackable(cur, state);
-    if (targets.length > 0 && !cur.hasAttacked) {
-      const target = [...targets].sort((a, b) => a.hp - b.hp)[0];
-      msgs.push(`${cur.name} strikes ${target.name} for ${cur.attack}.`);
-      state = state
-        .map(u => {
-          if (u.instanceId === target.instanceId) return { ...u, hp: u.hp - cur!.attack };
-          if (u.instanceId === cur!.instanceId) return { ...u, hasAttacked: true };
-          return u;
-        })
-        .filter(u => u.hp > 0);
-      if (!state.find(u => u.instanceId === target.instanceId))
-        msgs.push(`${target.name} is destroyed!`);
+    // Use fortify if low HP and not yet attacked
+    if (!cur.hasAttacked && cur.ability.id === "fortify" && cur.hp <= cur.maxHp / 2 && !cur.shielded) {
+      log(`${cur.name} uses ${cur.ability.name}!`);
+      state = state.map(u => u.instanceId === cur!.instanceId ? { ...u, shielded: true, hasAttacked: true } : u);
       cur = state.find(u => u.instanceId === aiUnit.instanceId);
       if (!cur) continue;
+    }
+
+    // Use heal if low HP
+    if (!cur.hasAttacked && cur.ability.id === "heal" && cur.hp <= cur.maxHp / 2) {
+      log(`${cur.name} uses ${cur.ability.name} and heals 2 HP!`);
+      state = state.map(u => u.instanceId === cur!.instanceId ? { ...u, hp: Math.min(u.maxHp, u.hp + 2), hasAttacked: true } : u);
+      cur = state.find(u => u.instanceId === aiUnit.instanceId);
+      if (!cur) continue;
+    }
+
+    // Use volley if multiple targets in range
+    if (!cur.hasAttacked && cur.ability.id === "volley") {
+      const targets = getAttackable(cur, state);
+      if (targets.length > 1) {
+        log(`${cur.name} uses ${cur.ability.name}!`);
+        for (const t of targets) {
+          const fresh = state.find(u => u.instanceId === cur!.instanceId);
+          const tgt = state.find(u => u.instanceId === t.instanceId);
+          if (fresh && tgt) state = resolveAttack(fresh, tgt, state, log, cur.range > 1);
+        }
+        state = state.map(u => u.instanceId === cur!.instanceId ? { ...u, hasAttacked: true } : u);
+        cur = state.find(u => u.instanceId === aiUnit.instanceId);
+        if (!cur) continue;
+      }
+    }
+
+    // Normal attack or long-shot
+    if (!cur.hasAttacked) {
+      let targets = getAttackable(cur, state);
+      let isLongShot = false;
+      if (!targets.length && cur.ability.id === "long-shot") {
+        targets = getAttackable(cur, state, cur.range * 3);
+        isLongShot = true;
+        if (targets.length) log(`${cur.name} uses ${cur.ability.name}!`);
+      }
+      if (targets.length) {
+        const target = [...targets].sort((a, b) => a.hp - b.hp)[0];
+        const isRanged = (isLongShot ? cur.range * 3 : cur.range) > 1;
+        state = resolveAttack(cur, target, state, log, isRanged);
+        if (cur.ability.id === "double-strike") {
+          const curNow = state.find(u => u.instanceId === cur!.instanceId);
+          const tgtNow = state.find(u => u.instanceId === target.instanceId);
+          if (curNow && tgtNow) {
+            log(`${cur.name} strikes again!`);
+            state = resolveAttack(curNow, tgtNow, state, log, isRanged);
+          }
+        }
+        cur = state.find(u => u.instanceId === aiUnit.instanceId);
+        if (!cur) continue;
+      }
     }
 
     // Move towards nearest enemy
@@ -135,33 +235,26 @@ function runAI(units: GameUnit[]): { units: GameUnit[]; log: string[] } {
         const best = [...range]
           .map(k => { const [x, y] = k.split(",").map(Number); return { x, y, d: manhattan(x, y, nearest.x, nearest.y) }; })
           .sort((a, b) => a.d - b.d)[0];
-        state = state.map(u =>
-          u.instanceId === cur!.instanceId ? { ...u, x: best.x, y: best.y, hasMoved: true } : u
-        );
+        state = state.map(u => u.instanceId === cur!.instanceId ? { ...u, x: best.x, y: best.y, hasMoved: true } : u);
         cur = state.find(u => u.instanceId === aiUnit.instanceId);
         if (!cur) continue;
       }
 
-      // Attack again after moving
-      targets = getAttackable(cur, state);
-      if (targets.length > 0 && !cur.hasAttacked) {
-        const target = [...targets].sort((a, b) => a.hp - b.hp)[0];
-        msgs.push(`${cur.name} strikes ${target.name} for ${cur.attack}.`);
-        state = state
-          .map(u => {
-            if (u.instanceId === target.instanceId) return { ...u, hp: u.hp - cur!.attack };
-            if (u.instanceId === cur!.instanceId) return { ...u, hasAttacked: true };
-            return u;
-          })
-          .filter(u => u.hp > 0);
-        if (!state.find(u => u.instanceId === target.instanceId))
-          msgs.push(`${target.name} is destroyed!`);
+      // Attack after moving
+      if (!cur.hasAttacked) {
+        const targets = getAttackable(cur, state);
+        if (targets.length) {
+          const target = [...targets].sort((a, b) => a.hp - b.hp)[0];
+          state = resolveAttack(cur, target, state, log, cur.range > 1);
+          cur = state.find(u => u.instanceId === aiUnit.instanceId);
+          if (!cur) continue;
+        }
       }
     }
   }
 
   return {
-    units: state.map(u => u.team === 1 ? { ...u, hasMoved: false, hasAttacked: false } : u),
+    units: state.map(u => u.team === 1 ? { ...u, hasMoved: false, hasAttacked: false, shielded: false } : u),
     log: msgs,
   };
 }
@@ -187,18 +280,9 @@ function ModeSelect({ onSelect }: { onSelect: (m: GameMode) => void }) {
   );
 }
 
-function ArmySelect({
-  player,
-  takenId,
-  onSelect,
-}: {
-  player: 1 | 2;
-  takenId?: string;
-  onSelect: (id: string) => void;
-}) {
+function ArmySelect({ player, takenId, onSelect }: { player: 1 | 2; takenId?: string; onSelect: (id: string) => void }) {
   const [hovered, setHovered] = useState<string | null>(null);
   const preview = ARMIES.find(a => a.id === (hovered ?? ""));
-
   return (
     <div className="wt-setup">
       <p className="wt-setup-hint">Player {player} — choose your army</p>
@@ -219,7 +303,6 @@ function ArmySelect({
           </button>
         ))}
       </div>
-
       {preview && (
         <div className="wt-army-preview" style={{ "--army-color": preview.color } as React.CSSProperties}>
           <p className="wt-army-preview-lore">{preview.lore}</p>
@@ -237,29 +320,12 @@ function ArmySelect({
   );
 }
 
-function UnitSelect({
-  player,
-  army,
-  onDeploy,
-}: {
-  player: 1 | 2;
-  army: Army;
-  onDeploy: (units: TacticsUnit[]) => void;
-}) {
+function UnitSelect({ player, army, onDeploy }: { player: 1 | 2; army: Army; onDeploy: (units: TacticsUnit[]) => void }) {
   const [selected, setSelected] = useState<string[]>([]);
-
   function toggle(id: string) {
-    setSelected(prev =>
-      prev.includes(id)
-        ? prev.filter(x => x !== id)
-        : prev.length < 4
-        ? [...prev, id]
-        : prev
-    );
+    setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 4 ? [...prev, id] : prev);
   }
-
   const selectedUnits = army.units.filter(u => selected.includes(u.id));
-
   return (
     <div className="wt-setup">
       <p className="wt-setup-hint">
@@ -290,16 +356,17 @@ function UnitSelect({
                   <span title="Attack">⚔ {unit.attack}</span>
                   <span title="Range">◎ {unit.range}</span>
                 </div>
+                <div className={`wt-unit-select-ability wt-unit-select-ability--${unit.ability.type}`}>
+                  <span className="wt-ability-pip">{unit.ability.type === "active" ? "⚡" : "◆"}</span>
+                  <span className="wt-ability-name">{unit.ability.name}</span>
+                  <span className="wt-ability-desc">— {unit.ability.description}</span>
+                </div>
               </div>
             </button>
           );
         })}
       </div>
-      <button
-        className="wt-deploy-btn"
-        disabled={selected.length < 4}
-        onClick={() => onDeploy(selectedUnits)}
-      >
+      <button className="wt-deploy-btn" disabled={selected.length < 4} onClick={() => onDeploy(selectedUnits)}>
         {selected.length < 4 ? `Select ${4 - selected.length} more` : "Deploy Forces →"}
       </button>
     </div>
@@ -311,48 +378,40 @@ function UnitSelect({
 export default function WarhammerTactics() {
   const navigate = useNavigate();
 
-  const [phase, setPhase] = useState<Phase>("mode-select");
-  const [gameMode, setGameMode] = useState<GameMode>("1vPC");
-  const [p1ArmyId, setP1ArmyId] = useState("");
-  const [p2ArmyId, setP2ArmyId] = useState("");
-  const [units, setUnits] = useState<GameUnit[]>([]);
+  const [phase, setPhase]           = useState<Phase>("mode-select");
+  const [gameMode, setGameMode]     = useState<GameMode>("1vPC");
+  const [p1ArmyId, setP1ArmyId]   = useState("");
+  const [p2ArmyId, setP2ArmyId]   = useState("");
+  const [units, setUnits]           = useState<GameUnit[]>([]);
   const [currentTeam, setCurrentTeam] = useState<0 | 1>(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [log, setLog] = useState<string[]>([]);
-  const [winner, setWinner] = useState<0 | 1 | null>(null);
+  const [abilityMode, setAbilityMode] = useState<"long-shot" | null>(null);
+  const [log, setLog]               = useState<string[]>([]);
+  const [winner, setWinner]         = useState<0 | 1 | null>(null);
   const aiRunning = useRef(false);
+  const pendingLog = useRef<string[]>([]);
 
   function addLog(...msgs: string[]) {
-    setLog(prev => [...msgs, ...prev].slice(0, 10));
+    setLog(prev => [...msgs, ...prev].slice(0, 12));
   }
 
   function resetGame() {
     setPhase("mode-select");
-    setP1ArmyId("");
-    setP2ArmyId("");
-    setUnits([]);
-    setLog([]);
-    setWinner(null);
-    setSelectedId(null);
+    setP1ArmyId(""); setP2ArmyId("");
+    setUnits([]); setLog([]); setWinner(null);
+    setSelectedId(null); setAbilityMode(null);
     aiRunning.current = false;
   }
 
-  // ── Setup flow ────────────────────────────────────────────────────────────
+  // ── Setup ─────────────────────────────────────────────────────────────────
 
-  function handleModeSelect(mode: GameMode) {
-    setGameMode(mode);
-    setPhase("p1-army");
-  }
-
-  function handleP1Army(armyId: string) {
-    setP1ArmyId(armyId);
-    setPhase("p1-units");
-  }
+  function handleModeSelect(mode: GameMode) { setGameMode(mode); setPhase("p1-army"); }
+  function handleP1Army(id: string) { setP1ArmyId(id); setPhase("p1-units"); }
+  function handleP2Army(id: string) { setP2ArmyId(id); setPhase("p2-units"); }
 
   function handleP1Units(selected: TacticsUnit[]) {
     const p1Army = ARMIES.find(a => a.id === p1ArmyId)!;
     const team0 = buildGameUnits(selected, p1Army, 0);
-
     if (gameMode === "1v1") {
       setUnits(team0);
       setPhase("p2-army");
@@ -363,17 +422,10 @@ export default function WarhammerTactics() {
       const team1 = buildGameUnits(aiUnits, aiArmy, 1);
       setP2ArmyId(aiArmy.id);
       setUnits([...team0, ...team1]);
-      setCurrentTeam(0);
-      setSelectedId(null);
-      setWinner(null);
+      setCurrentTeam(0); setSelectedId(null); setWinner(null);
       addLog(`${p1Army.name} vs ${aiArmy.name} — battle begins!`);
       setPhase("playing");
     }
-  }
-
-  function handleP2Army(armyId: string) {
-    setP2ArmyId(armyId);
-    setPhase("p2-units");
   }
 
   function handleP2Units(selected: TacticsUnit[]) {
@@ -382,9 +434,7 @@ export default function WarhammerTactics() {
     const team0 = units.filter(u => u.team === 0);
     const team1 = buildGameUnits(selected, p2Army, 1);
     setUnits([...team0, ...team1]);
-    setCurrentTeam(0);
-    setSelectedId(null);
-    setWinner(null);
+    setCurrentTeam(0); setSelectedId(null); setWinner(null);
     addLog(`${p1Army.name} vs ${p2Army.name} — battle begins!`);
     setPhase("playing");
   }
@@ -397,10 +447,21 @@ export default function WarhammerTactics() {
     return null;
   }
 
+  function commitUnits(next: GameUnit[], extraLog: string[] = []) {
+    setUnits(next);
+    if (extraLog.length) addLog(...extraLog);
+    const w = checkWin(next);
+    if (w !== null) { setWinner(w); setPhase("gameover"); return true; }
+    return false;
+  }
+
   function endTurn(forTeam: 0 | 1) {
     if (forTeam !== currentTeam) return;
-    const reset = units.map(u => u.team === currentTeam ? { ...u, hasMoved: false, hasAttacked: false } : u);
     setSelectedId(null);
+    setAbilityMode(null);
+    const reset = units.map(u =>
+      u.team === currentTeam ? { ...u, hasMoved: false, hasAttacked: false, shielded: false } : u
+    );
 
     if (gameMode === "1v1") {
       const next: 0 | 1 = currentTeam === 0 ? 1 : 0;
@@ -416,26 +477,75 @@ export default function WarhammerTactics() {
         aiRunning.current = false;
         const w = checkWin(afterAI);
         setUnits(afterAI);
-        if (aiLog.length) addLog(...aiLog, "Your turn.");
-        else addLog("Enemy forces have acted.", "Your turn.");
+        addLog(...(aiLog.length ? aiLog : ["Enemy forces have acted."]), "Your turn.");
         if (w !== null) { setWinner(w); setPhase("gameover"); }
         else setCurrentTeam(0);
       }, 600);
     }
   }
 
-  // ── Cell interactions ─────────────────────────────────────────────────────
+  // ── Ability actions ───────────────────────────────────────────────────────
+
+  function handleAbilityClick(unit: GameUnit) {
+    if (unit.hasAttacked || unit.team !== currentTeam) return;
+    const logs: string[] = [];
+    const logFn = (m: string) => logs.push(m);
+
+    switch (unit.ability.id) {
+      case "fortify": {
+        const next = units.map(u => u.instanceId === unit.instanceId ? { ...u, shielded: true, hasAttacked: true } : u);
+        logFn(`${unit.name} uses ${unit.ability.name}! (takes 1 less damage this turn)`);
+        commitUnits(next, logs);
+        break;
+      }
+      case "heal": {
+        const healed = Math.min(2, unit.maxHp - unit.hp);
+        const next = units.map(u => u.instanceId === unit.instanceId ? { ...u, hp: Math.min(u.maxHp, u.hp + 2), hasAttacked: true } : u);
+        logFn(`${unit.name} uses ${unit.ability.name} and recovers ${healed} HP!`);
+        commitUnits(next, logs);
+        break;
+      }
+      case "volley": {
+        const targets = getAttackable(unit, units);
+        if (!targets.length) { addLog("No targets in range for volley!"); return; }
+        logFn(`${unit.name} uses ${unit.ability.name}!`);
+        let next = [...units];
+        for (const t of targets) {
+          const freshAttacker = next.find(u => u.instanceId === unit.instanceId);
+          const freshTarget   = next.find(u => u.instanceId === t.instanceId);
+          if (freshAttacker && freshTarget) next = resolveAttack(freshAttacker, freshTarget, next, logFn, unit.range > 1);
+        }
+        next = next.map(u => u.instanceId === unit.instanceId ? { ...u, hasAttacked: true } : u);
+        if (commitUnits(next, logs)) return;
+        setUnits(next);
+        addLog(...logs);
+        break;
+      }
+      case "long-shot":
+        setAbilityMode("long-shot");
+        addLog(`${unit.name} readying ${unit.ability.name} — pick a target…`);
+        break;
+      case "double-strike":
+        addLog(`${unit.name} readying ${unit.ability.name} — pick a target to strike twice!`);
+        // double-strike is resolved in handleCellClick when abilityMode is null but unit has the ability
+        break;
+    }
+  }
+
+  // ── Cell click ────────────────────────────────────────────────────────────
 
   const selectedUnit = units.find(u => u.instanceId === selectedId) ?? null;
 
+  const attackRange = abilityMode === "long-shot" ? (selectedUnit?.range ?? 1) * 3 : selectedUnit?.range ?? 1;
+
   const moveRange =
-    selectedUnit && !selectedUnit.hasMoved && selectedUnit.team === currentTeam
+    selectedUnit && !selectedUnit.hasMoved && selectedUnit.team === currentTeam && !abilityMode
       ? getMoveRange(selectedUnit, units)
       : new Set<string>();
 
   const attackable =
     selectedUnit && !selectedUnit.hasAttacked && selectedUnit.team === currentTeam
-      ? new Set(getAttackable(selectedUnit, units).map(u => u.instanceId))
+      ? new Set(getAttackable(selectedUnit, units, attackRange).map(u => u.instanceId))
       : new Set<string>();
 
   function handleCellClick(x: number, y: number) {
@@ -444,96 +554,123 @@ export default function WarhammerTactics() {
 
     const clicked = units.find(u => u.x === x && u.y === y);
 
+    // Select own unit
     if (clicked?.team === currentTeam) {
       setSelectedId(clicked.instanceId);
+      setAbilityMode(null);
       return;
     }
 
     if (!selectedUnit) return;
 
-    // Attack
+    // Attack (normal or ability-powered)
     if (clicked && attackable.has(clicked.instanceId)) {
-      const dmg = selectedUnit.attack;
-      let next = units
-        .map(u => {
-          if (u.instanceId === clicked.instanceId) return { ...u, hp: u.hp - dmg };
-          if (u.instanceId === selectedUnit.instanceId) return { ...u, hasAttacked: true };
-          return u;
-        })
-        .filter(u => u.hp > 0);
+      const logs: string[] = [];
+      const logFn = (m: string) => logs.push(m);
+      const isRanged = attackRange > 1;
+      const isDoubleStrike = selectedUnit.ability.id === "double-strike" && !abilityMode;
+      const isLongShot = abilityMode === "long-shot";
 
-      addLog(`${selectedUnit.name} strikes ${clicked.name} for ${dmg}!`);
-      if (!next.find(u => u.instanceId === clicked.instanceId))
-        addLog(`${clicked.name} is destroyed!`);
+      if (isLongShot) logFn(`${selectedUnit.name} uses ${selectedUnit.ability.name}!`);
 
-      setUnits(next);
-      const w = checkWin(next);
-      if (w !== null) { setWinner(w); setPhase("gameover"); return; }
+      let next = resolveAttack(selectedUnit, clicked, units, logFn, isRanged);
+
+      if (isDoubleStrike) {
+        const updAttacker = next.find(u => u.instanceId === selectedUnit.instanceId);
+        const updTarget   = next.find(u => u.instanceId === clicked.instanceId);
+        if (updAttacker && updTarget) {
+          logFn(`${selectedUnit.name} strikes again!`);
+          next = resolveAttack(updAttacker, updTarget, next, logFn, isRanged);
+        }
+      }
+
+      setAbilityMode(null);
+      if (commitUnits(next, logs)) return;
+
       const upd = next.find(u => u.instanceId === selectedUnit.instanceId);
       if (upd?.hasMoved && upd?.hasAttacked) setSelectedId(null);
       return;
     }
 
     // Move
-    if (moveRange.has(`${x},${y}`)) {
-      const next = units.map(u =>
-        u.instanceId === selectedUnit.instanceId ? { ...u, x, y, hasMoved: true } : u
-      );
+    if (!abilityMode && moveRange.has(`${x},${y}`)) {
+      const next = units.map(u => u.instanceId === selectedUnit.instanceId ? { ...u, x, y, hasMoved: true } : u);
       setUnits(next);
       const upd = next.find(u => u.instanceId === selectedUnit.instanceId);
       if (upd?.hasAttacked) setSelectedId(null);
       return;
     }
 
+    // Cancel ability mode or deselect
+    if (abilityMode) { setAbilityMode(null); return; }
     setSelectedId(null);
   }
 
-  // ── Render helpers ────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
 
   const p1Army = ARMIES.find(a => a.id === p1ArmyId);
   const p2Army = ARMIES.find(a => a.id === p2ArmyId);
-
-  function teamLabel(t: 0 | 1): string {
-    if (gameMode === "1v1") return `Player ${t + 1}`;
-    return t === 0 ? "You" : "AI";
-  }
+  function teamLabel(t: 0 | 1) { return gameMode === "1v1" ? `Player ${t + 1}` : t === 0 ? "You" : "AI"; }
 
   function UnitPanel({ team }: { team: 0 | 1 }) {
-    const isActive = currentTeam === team && phase === "playing";
+    const isActive = currentTeam === team && phase === "playing" && !aiRunning.current;
     const panelUnits = units.filter(u => u.team === team);
     return (
       <aside className={`wt-panel ${isActive ? "wt-panel--active" : "wt-panel--dim"}`}>
         <div className="wt-panel-label">// {teamLabel(team)}</div>
         <div className="wt-panel-units">
-          {panelUnits.map(u => (
-            <div
-              key={u.instanceId}
-              className={`wt-unit-card ${u.instanceId === selectedId ? "wt-unit-card--selected" : ""}`}
-              style={{ "--army-color": u.armyColor } as React.CSSProperties}
-              onClick={() => isActive && setSelectedId(u.instanceId)}
-            >
-              <span className="wt-card-portrait">{u.portrait}</span>
-              <div className="wt-card-body">
-                <span className="wt-card-name">{u.name}</span>
-                <div className="wt-card-hp-bar">
-                  <div className="wt-card-hp-fill" style={{ width: `${(u.hp / u.maxHp) * 100}%`, background: u.armyColor }} />
+          {panelUnits.map(u => {
+            const isSel = u.instanceId === selectedId;
+            const canAct = isActive && isSel && !u.hasAttacked;
+            return (
+              <div
+                key={u.instanceId}
+                className={`wt-unit-card ${isSel ? "wt-unit-card--selected" : ""}`}
+                style={{ "--army-color": u.armyColor } as React.CSSProperties}
+                onClick={() => isActive && setSelectedId(u.instanceId)}
+              >
+                <span className="wt-card-portrait">{u.portrait}</span>
+                <div className="wt-card-body">
+                  <div className="wt-card-name-row">
+                    <span className="wt-card-name">{u.name}</span>
+                    {u.shielded && <span className="wt-card-status">🛡</span>}
+                    {u.undyingUsed && <span className="wt-card-status">💀</span>}
+                  </div>
+                  <div className="wt-card-hp-bar">
+                    <div className="wt-card-hp-fill" style={{ width: `${(u.hp / u.maxHp) * 100}%`, background: u.armyColor }} />
+                  </div>
+                  <div className="wt-card-stats">
+                    <span>♥{u.hp}/{u.maxHp}</span>
+                    <span>⊕{u.move}</span>
+                    <span>⚔{u.attack}</span>
+                    <span>◎{u.range}</span>
+                  </div>
+                  {isSel && (
+                    <div className={`wt-card-ability wt-card-ability--${u.ability.type}`}>
+                      <span>{u.ability.type === "active" ? "⚡" : "◆"}</span>
+                      <span>{u.ability.name}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="wt-card-stats">
-                  <span>♥{u.hp}/{u.maxHp}</span>
-                  <span>⊕{u.move}</span>
-                  <span>⚔{u.attack}</span>
-                  <span>◎{u.range}</span>
-                </div>
+                {canAct && u.ability.type === "active" && (
+                  <button
+                    className="wt-ability-btn"
+                    onClick={e => { e.stopPropagation(); handleAbilityClick(u); }}
+                    title={u.ability.description}
+                  >
+                    ⚡
+                  </button>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {(gameMode === "1v1" || team === 0) && (
           <button
             className="wt-end-btn"
             onClick={() => endTurn(team)}
-            disabled={!isActive || (gameMode === "1vPC" && team !== 0) || aiRunning.current}
+            disabled={!isActive || (gameMode === "1vPC" && team !== 0)}
           >
             End Turn
           </button>
@@ -553,16 +690,13 @@ export default function WarhammerTactics() {
     );
   }
 
-  // ── Hero text by phase ────────────────────────────────────────────────────
-
   const heroMap: Partial<Record<Phase, { eyebrow: string; title: JSX.Element; sub: string }>> = {
-    "mode-select": { eyebrow: "// tactical battle",  title: <>Choose your <em>mode</em></>,   sub: "build your army · deploy your forces · fight" },
+    "mode-select": { eyebrow: "// tactical battle",  title: <>Choose your <em>mode</em></>,   sub: "build your army · pick your soldiers · fight" },
     "p1-army":    { eyebrow: "// army selection",    title: <>Choose your <em>army</em></>,   sub: "Player 1 · hover to preview soldiers" },
     "p1-units":   { eyebrow: "// deploy",            title: <>Build your <em>warband</em></>, sub: `${p1Army?.name ?? ""} · select 4 soldiers` },
     "p2-army":    { eyebrow: "// army selection",    title: <>Choose your <em>army</em></>,   sub: "Player 2 · hover to preview soldiers" },
     "p2-units":   { eyebrow: "// deploy",            title: <>Build your <em>warband</em></>, sub: `${p2Army?.name ?? ""} · select 4 soldiers` },
   };
-
   const hero = heroMap[phase];
 
   return (
@@ -594,20 +728,19 @@ export default function WarhammerTactics() {
       {phase === "playing" && (
         <div className="wt-game">
           <UnitPanel team={0} />
-
           <div className="wt-grid-wrap">
             <div className="wt-grid">
               {Array.from({ length: GRID * GRID }, (_, i) => {
                 const x = i % GRID, y = Math.floor(i / GRID);
                 const unit = units.find(u => u.x === x && u.y === y);
                 const key = `${x},${y}`;
-                const inMove = moveRange.has(key);
+                const inMove   = moveRange.has(key);
                 const inAttack = unit ? attackable.has(unit.instanceId) : false;
-                const isSel = unit?.instanceId === selectedId;
+                const isSel    = unit?.instanceId === selectedId;
                 return (
                   <div
                     key={key}
-                    className={`wt-cell${inMove ? " wt-cell--move" : ""}${inAttack ? " wt-cell--attack" : ""}${isSel ? " wt-cell--selected" : ""}`}
+                    className={`wt-cell${inMove ? " wt-cell--move" : ""}${inAttack ? (abilityMode === "long-shot" ? " wt-cell--longshot" : " wt-cell--attack") : ""}${isSel ? " wt-cell--selected" : ""}`}
                     onClick={() => handleCellClick(x, y)}
                   >
                     {unit && (
@@ -623,7 +756,6 @@ export default function WarhammerTactics() {
               })}
             </div>
           </div>
-
           <UnitPanel team={1} />
         </div>
       )}
@@ -632,11 +764,7 @@ export default function WarhammerTactics() {
         <div className="wt-gameover">
           <p className="wt-eyebrow">// battle complete</p>
           <h1 className="wt-title">
-            {winner === 0
-              ? <><em>Victory!</em></>
-              : gameMode === "1v1"
-              ? <>Player 2 <em>wins!</em></>
-              : <><em>Defeated.</em></>}
+            {winner === 0 ? <><em>Victory!</em></> : gameMode === "1v1" ? <>Player 2 <em>wins!</em></> : <><em>Defeated.</em></>}
           </h1>
           <p className="wt-subtitle">
             {winner === 0
