@@ -422,7 +422,7 @@ function UnitSelect({ player, army, onDeploy }: { player: 1 | 2; army: Army; onD
                   <div className={`wt-unit-select-ability wt-unit-select-ability--${unit.ability.type}`}>
                     <span className="wt-ability-pip">{unit.ability.type === "active" ? "⚡" : "◆"}</span>
                     <span className="wt-ability-name">{unit.ability.name}</span>
-                    <span className="wt-ability-desc">— {unit.ability.description}</span>
+                    <span className="wt-ability-desc">{unit.ability.description}</span>
                   </div>
                 </div>
               </button>
