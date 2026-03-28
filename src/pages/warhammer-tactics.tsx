@@ -348,72 +348,110 @@ function ArmySelect({ player, takenId, onSelect }: { player: 1 | 2; takenId?: st
   );
 }
 
+// Side panel: 2 large portrait slots. Indices 0,1 on the left; 2,3 on the right.
+function SidePortraits({ units, slots }: { units: (TacticsUnit | undefined)[]; slots: number[] }) {
+  return (
+    <div className="wt-side-portraits">
+      {slots.map(i => {
+        const unit = units[i];
+        return (
+          <div key={i} className={`wt-side-slot ${unit ? "wt-side-slot--filled" : "wt-side-slot--empty"}`}>
+            {unit?.image ? (
+              <img src={unit.image} alt={unit.name} className="wt-side-img" draggable={false} />
+            ) : unit ? (
+              <>
+                <span className="wt-side-emoji">{unit.portrait}</span>
+                <span className="wt-side-name">{unit.name}</span>
+              </>
+            ) : (
+              <span className="wt-side-placeholder">?</span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function UnitSelect({ player, army, onDeploy }: { player: 1 | 2; army: Army; onDeploy: (units: TacticsUnit[]) => void }) {
   const [selected, setSelected] = useState<string[]>([]);
   function toggle(id: string) {
     setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 4 ? [...prev, id] : prev);
   }
   const selectedUnits = army.units.filter(u => selected.includes(u.id));
+  // Pad to 4 slots so side panels always show 2 each
+  const slots: (TacticsUnit | undefined)[] = [
+    selectedUnits[0], selectedUnits[1], selectedUnits[2], selectedUnits[3],
+  ];
+
   return (
     <div className="wt-setup wt-setup--framed" style={{ "--army-color": army.color } as React.CSSProperties}>
-      <p className="wt-setup-hint">
-        Player {player} · <strong>{army.name}</strong> · select 4 soldiers &nbsp;
-        <span className="wt-select-count">{selected.length} / 4</span>
-      </p>
-      <div className="wt-unit-select-grid">
-        {army.units.map(unit => {
-          const isSel = selected.includes(unit.id);
-          const isDisabled = !isSel && selected.length >= 4;
-          return (
-            <button
-              key={unit.id}
-              className={`wt-unit-select-card ${isSel ? "wt-unit-select-card--selected" : ""} ${isDisabled ? "wt-unit-select-card--disabled" : ""}`}
-              onClick={() => toggle(unit.id)}
-              style={{ "--army-color": army.color } as React.CSSProperties}
-            >
-              <div className="wt-unit-portrait-wrap">
-                <Portrait portrait={unit.portrait} image={unit.image} className="wt-unit-portrait-emoji" />
-                {isSel && <span className="wt-unit-select-check">✓</span>}
-              </div>
-              <div className="wt-unit-select-body">
-                <span className="wt-unit-select-name">{unit.name}</span>
-                <span className="wt-unit-select-desc">{unit.description}</span>
-                <div className="wt-unit-select-stats">
-                  <span title="HP">♥ {unit.hp}</span>
-                  <span title="Move">⊕ {unit.move}</span>
-                  <span title="Attack">⚔ {unit.attack}</span>
-                  <span title="Range">◎ {unit.range}</span>
-                </div>
-                <div className={`wt-unit-select-ability wt-unit-select-ability--${unit.ability.type}`}>
-                  <span className="wt-ability-pip">{unit.ability.type === "active" ? "⚡" : "◆"}</span>
-                  <span className="wt-ability-name">{unit.ability.name}</span>
-                  <span className="wt-ability-desc">— {unit.ability.description}</span>
-                </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-      <button className="wt-deploy-btn" disabled={selected.length < 4} onClick={() => onDeploy(selectedUnits)}>
-        {selected.length < 4 ? `Select ${4 - selected.length} more` : "Deploy Forces →"}
-      </button>
+      {/* Left side: soldiers 1 & 2 */}
+      <SidePortraits units={slots} slots={[0, 1]} />
 
-      {/* Selected unit portraits row */}
-      <div className="wt-frame-row">
-        {Array.from({ length: 4 }).map((_, i) => {
-          const unit = selectedUnits[i];
-          return unit ? (
-            <div key={unit.id} className="wt-frame-token" title={unit.name}>
-              <Portrait portrait={unit.portrait} image={unit.image} className="wt-frame-token-emoji" />
-              <span className="wt-frame-token-name">{unit.name}</span>
-            </div>
-          ) : (
-            <div key={`empty-${i}`} className="wt-frame-token wt-frame-token--empty">
-              <span className="wt-frame-token-emoji">·</span>
-            </div>
-          );
-        })}
+      {/* Center content */}
+      <div className="wt-setup-center">
+        <p className="wt-setup-hint">
+          Player {player} · <strong>{army.name}</strong> · select 4 soldiers &nbsp;
+          <span className="wt-select-count">{selected.length} / 4</span>
+        </p>
+        <div className="wt-unit-select-grid">
+          {army.units.map(unit => {
+            const isSel = selected.includes(unit.id);
+            const isDisabled = !isSel && selected.length >= 4;
+            return (
+              <button
+                key={unit.id}
+                className={`wt-unit-select-card ${isSel ? "wt-unit-select-card--selected" : ""} ${isDisabled ? "wt-unit-select-card--disabled" : ""}`}
+                onClick={() => toggle(unit.id)}
+                style={{ "--army-color": army.color } as React.CSSProperties}
+              >
+                <div className="wt-unit-portrait-wrap">
+                  <Portrait portrait={unit.portrait} image={unit.image} className="wt-unit-portrait-emoji" />
+                  {isSel && <span className="wt-unit-select-check">✓</span>}
+                </div>
+                <div className="wt-unit-select-body">
+                  <span className="wt-unit-select-name">{unit.name}</span>
+                  <span className="wt-unit-select-desc">{unit.description}</span>
+                  <div className="wt-unit-select-stats">
+                    <span title="HP">♥ {unit.hp}</span>
+                    <span title="Move">⊕ {unit.move}</span>
+                    <span title="Attack">⚔ {unit.attack}</span>
+                    <span title="Range">◎ {unit.range}</span>
+                  </div>
+                  <div className={`wt-unit-select-ability wt-unit-select-ability--${unit.ability.type}`}>
+                    <span className="wt-ability-pip">{unit.ability.type === "active" ? "⚡" : "◆"}</span>
+                    <span className="wt-ability-name">{unit.ability.name}</span>
+                    <span className="wt-ability-desc">— {unit.ability.description}</span>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+        <button className="wt-deploy-btn" disabled={selected.length < 4} onClick={() => onDeploy(selectedUnits)}>
+          {selected.length < 4 ? `Select ${4 - selected.length} more` : "Deploy Forces →"}
+        </button>
+
+        {/* Small emoji row at the bottom */}
+        <div className="wt-frame-row">
+          {slots.map((unit, i) =>
+            unit ? (
+              <div key={unit.id} className="wt-frame-token" title={unit.name}>
+                <Portrait portrait={unit.portrait} image={unit.image} className="wt-frame-token-emoji" />
+                <span className="wt-frame-token-name">{unit.name}</span>
+              </div>
+            ) : (
+              <div key={`empty-${i}`} className="wt-frame-token wt-frame-token--empty">
+                <span className="wt-frame-token-emoji">·</span>
+              </div>
+            )
+          )}
+        </div>
       </div>
+
+      {/* Right side: soldiers 3 & 4 */}
+      <SidePortraits units={slots} slots={[2, 3]} />
     </div>
   );
 }
