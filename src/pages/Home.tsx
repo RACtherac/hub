@@ -23,6 +23,16 @@ const projects: Project[] = [
     description: "See the army you build.",
     branch: "warhammer-army-builder",
   },
+  {
+    name: "Mini Paint Tracker",
+    description: "Save paint recipes and photos for your miniatures.",
+    branch: "paint-tracker",
+  },
+  {
+    name: "Pixel Art Editor",
+    description: "Draw pixel art on an 8×8, 16×16, or 32×32 canvas.",
+    branch: "pixel-art",
+  },
 ];
 
 export default function Home() {
@@ -51,7 +61,7 @@ export default function Home() {
 
       <section className="project-list">
         {projects.map((project, i) => (
-          <ProjectCard key={project.branch} project={project} index={i + 1} />
+          <ProjectCard key={project.branch} project={project} index={i + 1} total={projects.length} />
         ))}
       </section>
 

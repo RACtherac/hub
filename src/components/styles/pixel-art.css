@@ -1,0 +1,339 @@
+/* ── Pixel Art Editor ─────────────────────────────────────────────────────── */
+
+.px-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  user-select: none;
+}
+
+/* ── Topbar ── */
+.px-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.px-topbar-back {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.px-topbar-back span { color: var(--accent); }
+.px-topbar-back:hover { color: var(--text); }
+
+.px-topbar-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ── Hero ── */
+.px-hero {
+  padding: 3rem 2.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.px-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  opacity: 0;
+  animation: pxFadeUp 0.5s ease forwards;
+}
+
+.px-title {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #f0ece4;
+  opacity: 0;
+  animation: pxFadeUp 0.5s 0.08s ease forwards;
+}
+
+.px-title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.px-subtitle {
+  margin-top: 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  opacity: 0;
+  animation: pxFadeUp 0.5s 0.16s ease forwards;
+}
+
+/* ── Editor Layout ── */
+.px-editor {
+  display: flex;
+  flex: 1;
+  opacity: 0;
+  animation: pxFadeUp 0.5s 0.24s ease forwards;
+}
+
+/* ── Sidebar ── */
+.px-sidebar {
+  width: 176px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  padding: 1.25rem 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.px-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-top: 0.4rem;
+}
+
+/* ── Tools ── */
+.px-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.px-tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.55rem;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+
+.px-tool-btn:hover {
+  color: var(--text);
+  border-color: var(--border-2);
+}
+
+.px-tool-btn--active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.px-tool-icon {
+  font-size: 0.82rem;
+  width: 0.9rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.px-tool-label { flex: 1; }
+
+/* ── Color ── */
+.px-current-color {
+  width: 100%;
+  height: 2.2rem;
+  border: 1px solid var(--border);
+}
+
+.px-palette {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+}
+
+.px-swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.1s;
+}
+
+.px-swatch:hover {
+  transform: scale(1.18);
+  border-color: var(--text);
+}
+
+.px-swatch--active {
+  border-color: var(--accent) !important;
+  outline: 1px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.px-custom-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.px-custom-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.px-color-input {
+  flex: 1;
+  height: 1.7rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  padding: 1px 2px;
+}
+
+/* ── Canvas Size ── */
+.px-size-btns {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.px-size-btn {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  padding: 0.35rem 0;
+  text-align: center;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+
+.px-size-btn:hover {
+  color: var(--text);
+  border-color: var(--border-2);
+}
+
+.px-size-btn--active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* ── Actions ── */
+.px-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.px-action-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.5rem;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+
+.px-action-btn:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--border-2);
+}
+
+.px-action-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.px-action-btn--danger:hover:not(:disabled) {
+  color: #e05a5a !important;
+  border-color: #e05a5a !important;
+}
+
+.px-action-btn--export {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.px-action-btn--export:hover {
+  color: var(--bg) !important;
+  background: var(--accent) !important;
+}
+
+/* ── Canvas Area ── */
+.px-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  overflow: auto;
+}
+
+/* Checkerboard for transparent background */
+.px-canvas {
+  display: grid;
+  border: 1px solid var(--border);
+  cursor: crosshair;
+  background-color: #2a2a2a;
+  background-image:
+    linear-gradient(45deg, #333 25%, transparent 25%),
+    linear-gradient(-45deg, #333 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #333 75%),
+    linear-gradient(-45deg, transparent 75%, #333 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+}
+
+.px-cell {
+  box-sizing: border-box;
+  border: 0.5px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+.px-cell:hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+/* ── Animations ── */
+@keyframes pxFadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
