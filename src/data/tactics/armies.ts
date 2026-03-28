@@ -9,7 +9,8 @@ export interface TacticsUnit {
   id: string;
   name: string;
   description: string;
-  portrait: string;
+  portrait: string;  // emoji fallback
+  image?: string;    // optional image URL — set this to replace the emoji
   hp: number;
   move: number;
   attack: number;
@@ -39,9 +40,9 @@ export const ARMIES: Army[] = [
       { id: "ironclad",      name: "Ironclad",      portrait: "🤖", description: "A walking fortress. Slow but nearly indestructible.",        hp: 8, move: 1, attack: 4, range: 1, ability: { id: "fortify",       name: "Armored Stance", type: "active",  description: "Take 1 less damage until your next turn." } },
       { id: "warden",        name: "Warden",        portrait: "🛡️", description: "Balanced frontline warrior, backbone of the Bastion.",       hp: 5, move: 2, attack: 3, range: 1, ability: { id: "tough",         name: "Shield Up",      type: "passive", description: "Always takes 1 less damage from attacks." } },
       { id: "siege-breaker", name: "Siege Breaker", portrait: "🔨", description: "Devastating hammer strikes that shatter anything.",           hp: 6, move: 1, attack: 5, range: 1, ability: { id: "double-strike", name: "Crushing Blow",  type: "active",  description: "Attacks the target twice in one turn." } },
-      { id: "bombadier",     name: "Bombadier",     portrait: "💣", description: "Lobs explosives from a safe distance.",                      hp: 3, move: 2, attack: 3, range: 3, ability: { id: "volley",        name: "Carpet Bomb",    type: "active",  description: "Attacks all enemies within range at once." } },
+      { id: "bombadier",     name: "Bombadier",     portrait: "💣", image: "/Tacticalgame/Bombaider.png", description: "Lobs explosives from a safe distance.",                      hp: 3, move: 2, attack: 3, range: 3, ability: { id: "volley",        name: "Carpet Bomb",    type: "active",  description: "Attacks all enemies within range at once." } },
       { id: "bastion-scout", name: "Scout",         portrait: "🎯", description: "Lightly armored but swift. Spots weaknesses in enemy lines.", hp: 3, move: 4, attack: 2, range: 1, ability: { id: "pack-tactics",  name: "Flanking",       type: "passive", description: "+1 attack for each adjacent friendly unit." } },
-      { id: "rifleman",      name: "Rifleman",      portrait: "🔫", description: "Disciplined marksman with pinpoint accuracy.",               hp: 4, move: 2, attack: 3, range: 2, ability: { id: "overwatch",     name: "Precise Shot",   type: "passive", description: "+1 damage on every ranged attack." } },
+      { id: "rifleman",      name: "Rifleman",      portrait: "🔫", image: "/Tacticalgame/Rifleman.png", description: "Disciplined marksman with pinpoint accuracy.",               hp: 4, move: 2, attack: 3, range: 2, ability: { id: "overwatch",     name: "Precise Shot",   type: "passive", description: "+1 damage on every ranged attack." } },
     ],
   },
   {
