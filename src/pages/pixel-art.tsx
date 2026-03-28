@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles/pixel-art.css";
 
@@ -72,8 +72,25 @@ export default function PixelArt() {
   const [tool, setTool] = useState<Tool>("pencil");
   const [color, setColor] = useState("#e05a5a");
   const [undoStack, setUndoStack] = useState<string[][]>([]);
+  const [highlightColor, setHighlightColor] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const isDrawing = useRef(false);
   const exportCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Derive used colors sorted by pixel count descending
+  const usedColors = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const c of grid) {
+      if (c) map.set(c, (map.get(c) ?? 0) + 1);
+    }
+    return [...map.entries()].sort((a, b) => b[1] - a[1]);
+  }, [grid]);
+
+  const filteredColors = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return usedColors;
+    return usedColors.filter(([c]) => c.toLowerCase().includes(q));
+  }, [usedColors, searchQuery]);
 
   function pushUndo(snapshot: string[]) {
     setUndoStack(s => {
@@ -98,11 +115,15 @@ export default function PixelArt() {
     const next = makeGrid(size);
     setGridSize(size);
     setUndoStack([]);
+    setHighlightColor(null);
+    setSearchQuery("");
     applyGrid(next, size);
   }
 
   function clear() {
     pushUndo(grid);
+    setHighlightColor(null);
+    setSearchQuery("");
     applyGrid(makeGrid(gridSize));
   }
 
@@ -150,6 +171,10 @@ export default function PixelArt() {
     isDrawing.current = false;
   }
 
+  function toggleHighlight(c: string) {
+    setHighlightColor(h => h === c ? null : c);
+  }
+
   function exportPNG() {
     const canvas = exportCanvasRef.current;
     if (!canvas) return;
@@ -187,12 +212,12 @@ export default function PixelArt() {
         <p className="px-eyebrow">// creative tool</p>
         <h1 className="px-title">Paint <em>pixel</em> by pixel</h1>
         <p className="px-subtitle">
-          {gridSize}×{gridSize} canvas &nbsp;·&nbsp; {pixelCount} pixels painted &nbsp;·&nbsp; {undoStack.length} undo steps
+          {gridSize}×{gridSize} canvas &nbsp;·&nbsp; {pixelCount} pixels painted &nbsp;·&nbsp; {usedColors.length} colors used
         </p>
       </header>
 
       <div className="px-editor">
-        {/* Sidebar */}
+        {/* Left Sidebar */}
         <aside className="px-sidebar">
           <div className="px-section-label">// tools</div>
           <div className="px-tools">
@@ -267,17 +292,68 @@ export default function PixelArt() {
               gridTemplateRows: `repeat(${gridSize}, ${cellPx}px)`,
             }}
           >
-            {grid.map((cell, i) => (
-              <div
-                key={i}
-                className="px-cell"
-                style={{ width: cellPx, height: cellPx, background: cell || undefined }}
-                onMouseDown={() => handleMouseDown(i)}
-                onMouseEnter={() => handleMouseEnter(i)}
-              />
-            ))}
+            {grid.map((cell, i) => {
+              const isHighlighted = highlightColor ? cell === highlightColor : null;
+              return (
+                <div
+                  key={i}
+                  className={`px-cell${
+                    isHighlighted === true ? " px-cell--highlight" :
+                    isHighlighted === false ? " px-cell--dim" : ""
+                  }`}
+                  style={{ width: cellPx, height: cellPx, background: cell || undefined }}
+                  onMouseDown={() => handleMouseDown(i)}
+                  onMouseEnter={() => handleMouseEnter(i)}
+                />
+              );
+            })}
           </div>
         </div>
+
+        {/* Right: Search Panel */}
+        <aside className="px-search-panel">
+          <div className="px-section-label">// color search</div>
+
+          <div className="px-search-input-wrap">
+            <input
+              className="px-search-input"
+              type="text"
+              placeholder="#hex…"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+            {(searchQuery || highlightColor) && (
+              <button
+                className="px-search-clear"
+                onClick={() => { setSearchQuery(""); setHighlightColor(null); }}
+                title="Clear"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
+          {usedColors.length === 0 ? (
+            <p className="px-search-empty">No colors yet.</p>
+          ) : filteredColors.length === 0 ? (
+            <p className="px-search-empty">No match.</p>
+          ) : (
+            <div className="px-used-list">
+              {filteredColors.map(([c, count]) => (
+                <button
+                  key={c}
+                  className={`px-used-row ${highlightColor === c ? "px-used-row--active" : ""}`}
+                  onClick={() => toggleHighlight(c)}
+                  title={`Click to highlight ${c}`}
+                >
+                  <span className="px-used-swatch" style={{ background: c }} />
+                  <span className="px-used-hex">{c}</span>
+                  <span className="px-used-count">{count}px</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </aside>
       </div>
 
       <canvas ref={exportCanvasRef} style={{ display: "none" }} />

@@ -291,6 +291,131 @@
   background: var(--accent) !important;
 }
 
+/* ── Search Panel ── */
+.px-search-panel {
+  width: 168px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  padding: 1.25rem 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.px-search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--border);
+  transition: border-color 0.12s;
+}
+
+.px-search-input-wrap:focus-within {
+  border-color: var(--accent);
+}
+
+.px-search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.55rem;
+}
+
+.px-search-input::placeholder {
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.px-search-clear {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 0.4rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.12s;
+}
+
+.px-search-clear:hover {
+  color: #e05a5a;
+}
+
+.px-search-empty {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  padding: 0.5rem 0;
+}
+
+.px-used-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  overflow-y: auto;
+  max-height: 420px;
+}
+
+.px-used-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.45rem;
+  background: none;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.px-used-row:hover {
+  border-color: var(--border-2);
+  background: var(--surface);
+}
+
+.px-used-row--active {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.px-used-swatch {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.px-used-hex {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.px-used-row--active .px-used-hex {
+  color: var(--accent);
+}
+
+.px-used-count {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+
 /* ── Canvas Area ── */
 .px-canvas-wrap {
   flex: 1;
@@ -320,6 +445,16 @@
   box-sizing: border-box;
   border: 0.5px solid rgba(255, 255, 255, 0.05);
   position: relative;
+}
+
+.px-cell--dim {
+  opacity: 0.15;
+}
+
+.px-cell--highlight {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+  z-index: 1;
 }
 
 .px-cell:hover::after {
