@@ -510,6 +510,50 @@
   flex-wrap: wrap;
 }
 
+/* ── Ability tag in unit select card ── */
+.wt-unit-select-ability {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
+}
+
+.wt-unit-select-ability--active {
+  border-color: #c8845a;
+  background: color-mix(in srgb, #c8845a 12%, transparent);
+  color: #c8845a;
+}
+
+.wt-unit-select-ability--passive {
+  border-color: #5ab4e0;
+  background: color-mix(in srgb, #5ab4e0 10%, transparent);
+  color: #5ab4e0;
+}
+
+.wt-ability-pip {
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+.wt-ability-name {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.wt-ability-desc {
+  font-size: 0.62rem;
+  opacity: 0.85;
+  line-height: 1.4;
+}
+
 /* ── Deploy button ── */
 .wt-deploy-btn {
   font-family: var(--font-mono);
