@@ -8,6 +8,7 @@ export type EnergyType =
 
 export type Pokemon = {
   hp: number;
+  maxHp: number;
   energy: EnergyType[];
 };
 

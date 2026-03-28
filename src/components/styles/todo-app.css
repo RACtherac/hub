@@ -1,0 +1,305 @@
+/* ── Todo App ───────────────────────────────────────────────────────────────── */
+
+.td-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── Top bar ── */
+.td-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.td-topbar-back {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.td-topbar-back span {
+  color: var(--accent);
+}
+
+.td-topbar-back:hover {
+  color: var(--text);
+}
+
+.td-topbar-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ── Body ── */
+.td-body {
+  flex: 1;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Hero ── */
+.td-hero {
+  padding: 4rem 0 3rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.td-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  opacity: 0;
+  animation: tdFadeUp 0.5s ease forwards;
+}
+
+.td-title {
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #f0ece4;
+  opacity: 0;
+  animation: tdFadeUp 0.5s 0.08s ease forwards;
+}
+
+.td-title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.td-subtitle {
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  opacity: 0;
+  animation: tdFadeUp 0.5s 0.16s ease forwards;
+}
+
+/* ── Input ── */
+.td-input-row {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.2rem;
+}
+
+.td-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-right: none;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.td-input:focus {
+  border-color: var(--accent);
+}
+
+.td-input::placeholder {
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.td-add-btn {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--accent);
+  border: none;
+  padding: 0.75rem 1.4rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+
+.td-add-btn:hover {
+  opacity: 0.85;
+}
+
+/* ── Filters ── */
+.td-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.td-filter-btn {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.td-filter-btn:hover {
+  color: var(--text);
+  border-color: var(--border-2);
+}
+
+.td-filter-btn--active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.td-clear-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+  margin-left: auto;
+  transition: color 0.15s;
+}
+
+.td-clear-btn:hover {
+  color: #e05a5a;
+}
+
+/* ── Empty ── */
+.td-empty {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  padding: 3rem 0;
+  text-align: center;
+  opacity: 0.6;
+}
+
+/* ── List ── */
+.td-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+}
+
+.td-item {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+.td-item:hover .td-delete {
+  opacity: 1;
+}
+
+/* ── Checkbox ── */
+.td-check {
+  width: 1.3rem;
+  height: 1.3rem;
+  border: 1px solid var(--border-2);
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.td-check:hover {
+  border-color: var(--accent);
+}
+
+.td-item--done .td-check {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.td-check-mark {
+  font-size: 0.65rem;
+  color: var(--bg);
+  line-height: 1;
+}
+
+/* ── Text ── */
+.td-text {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.4;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+.td-item--done .td-text {
+  color: var(--text-dim);
+  text-decoration: line-through;
+  text-decoration-color: var(--border-2);
+}
+
+/* ── Delete ── */
+.td-delete {
+  width: 1.4rem;
+  height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  flex-shrink: 0;
+  transition: color 0.15s, opacity 0.15s;
+}
+
+.td-delete:hover {
+  color: #e05a5a;
+}
+
+/* ── Animations ── */
+@keyframes tdFadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
