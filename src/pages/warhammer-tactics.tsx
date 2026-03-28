@@ -21,7 +21,8 @@ interface GameUnit {
   instanceId: string;
   unitId: string;
   name: string;
-  portrait: string;
+  portrait: string;  // emoji fallback
+  image?: string;    // optional image URL
   armyColor: string;
   ability: Ability;
   team: 0 | 1;
@@ -137,6 +138,7 @@ function buildGameUnits(units: TacticsUnit[], army: Army, team: 0 | 1): GameUnit
     unitId: u.id,
     name: u.name,
     portrait: u.portrait,
+    image: u.image,
     armyColor: army.color,
     ability: u.ability,
     team,
@@ -259,6 +261,32 @@ function runAI(units: GameUnit[]): { units: GameUnit[]; log: string[] } {
   };
 }
 
+// ── Portrait helper ────────────────────────────────────────────────────────────
+// Shows an image if one is set on the unit, otherwise falls back to the emoji.
+// To add your own image to a unit, set image: "/portraits/my-unit.png" in armies.ts.
+
+function Portrait({
+  portrait,
+  image,
+  className,
+}: {
+  portrait: string;
+  image?: string;
+  className?: string;
+}) {
+  if (image) {
+    return (
+      <img
+        src={image}
+        alt={portrait}
+        className={`wt-portrait-img ${className ?? ""}`}
+        draggable={false}
+      />
+    );
+  }
+  return <span className={className}>{portrait}</span>;
+}
+
 // ── Setup screens ──────────────────────────────────────────────────────────────
 
 function ModeSelect({ onSelect }: { onSelect: (m: GameMode) => void }) {
@@ -309,7 +337,7 @@ function ArmySelect({ player, takenId, onSelect }: { player: 1 | 2; takenId?: st
           <div className="wt-army-preview-roster">
             {preview.units.map(u => (
               <div key={u.id} className="wt-army-preview-unit">
-                <span className="wt-army-preview-portrait">{u.portrait}</span>
+                <Portrait portrait={u.portrait} image={u.image} className="wt-army-preview-portrait" />
                 <span className="wt-army-preview-name">{u.name}</span>
               </div>
             ))}
@@ -320,14 +348,6 @@ function ArmySelect({ player, takenId, onSelect }: { player: 1 | 2; takenId?: st
   );
 }
 
-// Positions for up to 4 portrait tokens around the frame (corners, clockwise)
-const FRAME_POSITIONS = [
-  { top: "1rem",    left: "1rem"    },
-  { top: "1rem",    right: "1rem"   },
-  { bottom: "1rem", right: "1rem"   },
-  { bottom: "1rem", left: "1rem"    },
-];
-
 function UnitSelect({ player, army, onDeploy }: { player: 1 | 2; army: Army; onDeploy: (units: TacticsUnit[]) => void }) {
   const [selected, setSelected] = useState<string[]>([]);
   function toggle(id: string) {
@@ -336,28 +356,6 @@ function UnitSelect({ player, army, onDeploy }: { player: 1 | 2; army: Army; onD
   const selectedUnits = army.units.filter(u => selected.includes(u.id));
   return (
     <div className="wt-setup wt-setup--framed" style={{ "--army-color": army.color } as React.CSSProperties}>
-      {/* Corner portrait tokens */}
-      {selectedUnits.map((unit, i) => (
-        <div
-          key={unit.id}
-          className="wt-frame-token"
-          style={FRAME_POSITIONS[i] as React.CSSProperties}
-          title={unit.name}
-        >
-          <span className="wt-frame-token-emoji">{unit.portrait}</span>
-          <span className="wt-frame-token-name">{unit.name}</span>
-        </div>
-      ))}
-      {/* Empty placeholder slots */}
-      {Array.from({ length: 4 - selectedUnits.length }).map((_, i) => (
-        <div
-          key={`empty-${i}`}
-          className="wt-frame-token wt-frame-token--empty"
-          style={FRAME_POSITIONS[selectedUnits.length + i] as React.CSSProperties}
-        >
-          <span className="wt-frame-token-emoji">·</span>
-        </div>
-      ))}
       <p className="wt-setup-hint">
         Player {player} · <strong>{army.name}</strong> · select 4 soldiers &nbsp;
         <span className="wt-select-count">{selected.length} / 4</span>
@@ -374,7 +372,7 @@ function UnitSelect({ player, army, onDeploy }: { player: 1 | 2; army: Army; onD
               style={{ "--army-color": army.color } as React.CSSProperties}
             >
               <div className="wt-unit-portrait-wrap">
-                <span className="wt-unit-portrait-emoji">{unit.portrait}</span>
+                <Portrait portrait={unit.portrait} image={unit.image} className="wt-unit-portrait-emoji" />
                 {isSel && <span className="wt-unit-select-check">✓</span>}
               </div>
               <div className="wt-unit-select-body">
@@ -399,6 +397,23 @@ function UnitSelect({ player, army, onDeploy }: { player: 1 | 2; army: Army; onD
       <button className="wt-deploy-btn" disabled={selected.length < 4} onClick={() => onDeploy(selectedUnits)}>
         {selected.length < 4 ? `Select ${4 - selected.length} more` : "Deploy Forces →"}
       </button>
+
+      {/* Selected unit portraits row */}
+      <div className="wt-frame-row">
+        {Array.from({ length: 4 }).map((_, i) => {
+          const unit = selectedUnits[i];
+          return unit ? (
+            <div key={unit.id} className="wt-frame-token" title={unit.name}>
+              <Portrait portrait={unit.portrait} image={unit.image} className="wt-frame-token-emoji" />
+              <span className="wt-frame-token-name">{unit.name}</span>
+            </div>
+          ) : (
+            <div key={`empty-${i}`} className="wt-frame-token wt-frame-token--empty">
+              <span className="wt-frame-token-emoji">·</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -659,7 +674,7 @@ export default function WarhammerTactics() {
                 style={{ "--army-color": u.armyColor } as React.CSSProperties}
                 onClick={() => isActive && setSelectedId(u.instanceId)}
               >
-                <span className="wt-card-portrait">{u.portrait}</span>
+                <Portrait portrait={u.portrait} image={u.image} className="wt-card-portrait" />
                 <div className="wt-card-body">
                   <div className="wt-card-name-row">
                     <span className="wt-card-name">{u.name}</span>
@@ -775,7 +790,7 @@ export default function WarhammerTactics() {
                   >
                     {unit && (
                       <div className="wt-token" style={{ background: unit.armyColor }}>
-                        <span className="wt-token-emoji">{unit.portrait}</span>
+                        <Portrait portrait={unit.portrait} image={unit.image} className="wt-token-emoji" />
                         <div className="wt-token-hp">
                           <div className="wt-token-hp-fill" style={{ width: `${(unit.hp / unit.maxHp) * 100}%` }} />
                         </div>
