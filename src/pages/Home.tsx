@@ -34,9 +34,9 @@ const projects: Project[] = [
     branch: "pixel-art",
   },
   {
-    name: "Warhammer Tactics",
-    description: "Pick a faction and fight the AI in a turn-based grid battle.",
-    branch: "warhammer-tactics",
+    name: "Tactics Game",
+    description: "Pick a faction and fight either against the PC or a friend in a turn-based game.",
+    branch: "tactics-game",
   },
 ];
 

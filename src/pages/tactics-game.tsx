@@ -1,8 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ARMIES } from "../data/tactics/armies";
 import type { Army, TacticsUnit, Ability } from "../data/tactics/armies";
-import "../components/styles/warhammer-tactics.css";
+import "../components/styles/tactics-game.css";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -14,6 +14,7 @@ type Phase =
   | "p1-units"
   | "p2-army"
   | "p2-units"
+  | "coin-flip"
   | "playing"
   | "gameover";
 
@@ -50,7 +51,7 @@ function manhattan(ax: number, ay: number, bx: number, by: number) {
   return Math.abs(ax - bx) + Math.abs(ay - by);
 }
 
-function getMoveRange(unit: GameUnit, all: GameUnit[]): Set<string> {
+function getMoveRange(unit: GameUnit, all: GameUnit[], walls: Set<string> = new Set()): Set<string> {
   const occupied = new Set(
     all.filter(u => u.instanceId !== unit.instanceId).map(u => `${u.x},${u.y}`)
   );
@@ -65,12 +66,44 @@ function getMoveRange(unit: GameUnit, all: GameUnit[]): Set<string> {
       const nx = cur.x + dx, ny = cur.y + dy;
       const key = `${nx},${ny}`;
       if (nx < 0 || nx >= GRID || ny < 0 || ny >= GRID) continue;
-      if (visited.has(key) || occupied.has(key)) continue;
+      if (visited.has(key) || occupied.has(key) || walls.has(key)) continue;
       visited.add(key);
       queue.push({ x: nx, y: ny, steps: cur.steps + 1 });
     }
   }
   return reachable;
+}
+
+function isAdjacentToWall(unit: GameUnit, walls: Set<string>): boolean {
+  for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+    if (walls.has(`${unit.x + dx},${unit.y + dy}`)) return true;
+  }
+  return false;
+}
+
+function generateWalls(): Set<string> {
+  const walls = new Set<string>();
+  const taken = new Set<string>();
+  for (let i = 0; i < 6; i++) {
+    let x: number, y: number, key: string, tries = 0;
+    do {
+      x = 1 + Math.floor(Math.random() * (GRID - 2));
+      y = 2 + Math.floor(Math.random() * (GRID - 4));
+      key = `${x},${y}`;
+      tries++;
+    } while (taken.has(key) && tries < 20);
+    if (taken.has(key)) continue;
+    taken.add(key);
+    walls.add(key);
+    const dirs: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1]].sort(() => Math.random() - 0.5) as [number, number][];
+    for (const [dx, dy] of dirs) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 1 || nx >= GRID - 1 || ny < 2 || ny >= GRID - 2) continue;
+      const nkey = `${nx},${ny}`;
+      if (!taken.has(nkey)) { taken.add(nkey); walls.add(nkey); break; }
+    }
+  }
+  return walls;
 }
 
 function getAttackable(unit: GameUnit, all: GameUnit[], overrideRange?: number): GameUnit[] {
@@ -90,10 +123,11 @@ function effectiveAttack(attacker: GameUnit, all: GameUnit[], isRanged = false):
   return atk;
 }
 
-function applyDamage(dmg: number, target: GameUnit): number {
+function applyDamage(dmg: number, target: GameUnit, hasCover = false): number {
   let d = dmg;
   if (target.ability.id === "tough") d = Math.max(1, d - 1);
   if (target.shielded) d = Math.max(1, d - 1);
+  if (hasCover) d = Math.max(1, d - 1);
   return d;
 }
 
@@ -104,8 +138,11 @@ function resolveAttack(
   units: GameUnit[],
   log: (msg: string) => void,
   isRanged = false,
+  walls: Set<string> = new Set(),
 ): GameUnit[] {
-  const dmg = applyDamage(effectiveAttack(attacker, units, isRanged), target);
+  const cover = isRanged && isAdjacentToWall(target, walls);
+  if (cover) log(`${target.name} has cover! (-1 damage)`);
+  const dmg = applyDamage(effectiveAttack(attacker, units, isRanged), target, cover);
   log(`${attacker.name} strikes ${target.name} for ${dmg}!`);
 
   let next = units.map(u => {
@@ -158,7 +195,7 @@ function buildGameUnits(units: TacticsUnit[], army: Army, team: 0 | 1): GameUnit
 
 // ── AI ─────────────────────────────────────────────────────────────────────────
 
-function runAI(units: GameUnit[]): { units: GameUnit[]; log: string[] } {
+function runAI(units: GameUnit[], walls: Set<string> = new Set()): { units: GameUnit[]; log: string[] } {
   let state = [...units];
   const msgs: string[] = [];
   const log = (m: string) => msgs.push(m);
@@ -191,7 +228,7 @@ function runAI(units: GameUnit[]): { units: GameUnit[]; log: string[] } {
         for (const t of targets) {
           const fresh = state.find(u => u.instanceId === cur!.instanceId);
           const tgt = state.find(u => u.instanceId === t.instanceId);
-          if (fresh && tgt) state = resolveAttack(fresh, tgt, state, log, cur.range > 1);
+          if (fresh && tgt) state = resolveAttack(fresh, tgt, state, log, cur.range > 1, walls);
         }
         state = state.map(u => u.instanceId === cur!.instanceId ? { ...u, hasAttacked: true } : u);
         cur = state.find(u => u.instanceId === aiUnit.instanceId);
@@ -211,13 +248,13 @@ function runAI(units: GameUnit[]): { units: GameUnit[]; log: string[] } {
       if (targets.length) {
         const target = [...targets].sort((a, b) => a.hp - b.hp)[0];
         const isRanged = (isLongShot ? cur.range * 3 : cur.range) > 1;
-        state = resolveAttack(cur, target, state, log, isRanged);
+        state = resolveAttack(cur, target, state, log, isRanged, walls);
         if (cur.ability.id === "double-strike") {
           const curNow = state.find(u => u.instanceId === cur!.instanceId);
           const tgtNow = state.find(u => u.instanceId === target.instanceId);
           if (curNow && tgtNow) {
             log(`${cur.name} strikes again!`);
-            state = resolveAttack(curNow, tgtNow, state, log, isRanged);
+            state = resolveAttack(curNow, tgtNow, state, log, isRanged, walls);
           }
         }
         cur = state.find(u => u.instanceId === aiUnit.instanceId);
@@ -232,7 +269,7 @@ function runAI(units: GameUnit[]): { units: GameUnit[]; log: string[] } {
       const nearest = [...enemies].sort(
         (a, b) => manhattan(cur!.x, cur!.y, a.x, a.y) - manhattan(cur!.x, cur!.y, b.x, b.y)
       )[0];
-      const range = getMoveRange(cur, state);
+      const range = getMoveRange(cur, state, walls);
       if (range.size > 0) {
         const best = [...range]
           .map(k => { const [x, y] = k.split(",").map(Number); return { x, y, d: manhattan(x, y, nearest.x, nearest.y) }; })
@@ -247,7 +284,7 @@ function runAI(units: GameUnit[]): { units: GameUnit[]; log: string[] } {
         const targets = getAttackable(cur, state);
         if (targets.length) {
           const target = [...targets].sort((a, b) => a.hp - b.hp)[0];
-          state = resolveAttack(cur, target, state, log, cur.range > 1);
+          state = resolveAttack(cur, target, state, log, cur.range > 1, walls);
           cur = state.find(u => u.instanceId === aiUnit.instanceId);
           if (!cur) continue;
         }
@@ -456,9 +493,34 @@ function UnitSelect({ player, army, onDeploy }: { player: 1 | 2; army: Army; onD
   );
 }
 
+// ── Coin flip ─────────────────────────────────────────────────────────────────
+
+function CoinFlip({ winnerLabel, onDone }: { winnerLabel: string; onDone: () => void }) {
+  const [revealed, setRevealed] = useState(false);
+  useEffect(() => {
+    const t1 = setTimeout(() => setRevealed(true), 1500);
+    const t2 = setTimeout(onDone, 3000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <div className="wt-coinflip">
+      <p className="wt-eyebrow">// initiative</p>
+      <span className={`wt-coinflip-icon${revealed ? "" : " wt-coinflip-icon--spin"}`}>⚔️</span>
+      {revealed ? (
+        <div className="wt-coinflip-reveal">
+          <h2 className="wt-title"><em>{winnerLabel}</em> strikes first!</h2>
+          <p className="wt-subtitle">Prepare your forces…</p>
+        </div>
+      ) : (
+        <p className="wt-subtitle">Rolling for initiative…</p>
+      )}
+    </div>
+  );
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────────
 
-export default function WarhammerTactics() {
+export default function TacticsGame() {
   const navigate = useNavigate();
 
   const [phase, setPhase]           = useState<Phase>("mode-select");
@@ -466,6 +528,8 @@ export default function WarhammerTactics() {
   const [p1ArmyId, setP1ArmyId]   = useState("");
   const [p2ArmyId, setP2ArmyId]   = useState("");
   const [units, setUnits]           = useState<GameUnit[]>([]);
+  const [walls, setWalls]           = useState<Set<string>>(new Set());
+  const [hitUnits, setHitUnits]     = useState<Set<string>>(new Set());
   const [currentTeam, setCurrentTeam] = useState<0 | 1>(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [abilityMode, setAbilityMode] = useState<"long-shot" | null>(null);
@@ -473,6 +537,7 @@ export default function WarhammerTactics() {
   const [winner, setWinner]         = useState<0 | 1 | null>(null);
   const aiRunning = useRef(false);
   const pendingLog = useRef<string[]>([]);
+  const aiGoesFirstRef = useRef(false);
 
   function addLog(...msgs: string[]) {
     setLog(prev => [...msgs, ...prev].slice(0, 12));
@@ -481,9 +546,9 @@ export default function WarhammerTactics() {
   function resetGame() {
     setPhase("mode-select");
     setP1ArmyId(""); setP2ArmyId("");
-    setUnits([]); setLog([]); setWinner(null);
+    setUnits([]); setWalls(new Set()); setLog([]); setWinner(null);
     setSelectedId(null); setAbilityMode(null);
-    aiRunning.current = false;
+    aiRunning.current = false; aiGoesFirstRef.current = false;
   }
 
   // ── Setup ─────────────────────────────────────────────────────────────────
@@ -503,11 +568,13 @@ export default function WarhammerTactics() {
       const aiArmy = aiArmies[Math.floor(Math.random() * aiArmies.length)];
       const aiUnits = [...aiArmy.units].sort(() => Math.random() - 0.5).slice(0, 4);
       const team1 = buildGameUnits(aiUnits, aiArmy, 1);
+      const firstTeam: 0 | 1 = Math.random() < 0.5 ? 0 : 1;
       setP2ArmyId(aiArmy.id);
       setUnits([...team0, ...team1]);
-      setCurrentTeam(0); setSelectedId(null); setWinner(null);
-      addLog(`${p1Army.name} vs ${aiArmy.name} — battle begins!`);
-      setPhase("playing");
+      setWalls(generateWalls());
+      setCurrentTeam(firstTeam); setSelectedId(null); setWinner(null);
+      if (firstTeam === 1) aiGoesFirstRef.current = true;
+      setPhase("coin-flip");
     }
   }
 
@@ -516,11 +583,38 @@ export default function WarhammerTactics() {
     const p2Army = ARMIES.find(a => a.id === p2ArmyId)!;
     const team0 = units.filter(u => u.team === 0);
     const team1 = buildGameUnits(selected, p2Army, 1);
+    const firstTeam: 0 | 1 = Math.random() < 0.5 ? 0 : 1;
     setUnits([...team0, ...team1]);
-    setCurrentTeam(0); setSelectedId(null); setWinner(null);
-    addLog(`${p1Army.name} vs ${p2Army.name} — battle begins!`);
+    setWalls(generateWalls());
+    setCurrentTeam(firstTeam); setSelectedId(null); setWinner(null);
+    setPhase("coin-flip");
+  }
+
+  function handleCoinFlipDone() {
+    const p1Army = ARMIES.find(a => a.id === p1ArmyId)!;
+    const p2Army = ARMIES.find(a => a.id === p2ArmyId)!;
+    addLog(`${p1Army.name} vs ${p2Army.name} — ${teamLabel(currentTeam)} strikes first!`);
     setPhase("playing");
   }
+
+  // If AI wins the coin flip, auto-trigger their first turn once game starts
+  useEffect(() => {
+    if (!aiGoesFirstRef.current || phase !== "playing") return;
+    aiGoesFirstRef.current = false;
+    const snapshot = [...units];
+    const wallSnap = walls;
+    aiRunning.current = true;
+    setTimeout(() => {
+      const { units: afterAI, log: aiLog } = runAI(snapshot, wallSnap);
+      aiRunning.current = false;
+      flashHit(snapshot, afterAI);
+      setUnits(afterAI);
+      addLog(...(aiLog.length ? aiLog : ["Enemy forces advance."]), "Your turn.");
+      const w = checkWin(afterAI);
+      if (w !== null) { setWinner(w); setPhase("gameover"); }
+      else setCurrentTeam(0);
+    }, 800);
+  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Game logic ────────────────────────────────────────────────────────────
 
@@ -530,7 +624,19 @@ export default function WarhammerTactics() {
     return null;
   }
 
+  function flashHit(before: GameUnit[], after: GameUnit[]) {
+    const hit = new Set(after.filter(u => {
+      const prev = before.find(p => p.instanceId === u.instanceId);
+      return prev && u.hp < prev.hp;
+    }).map(u => u.instanceId));
+    if (hit.size > 0) {
+      setHitUnits(hit);
+      setTimeout(() => setHitUnits(new Set()), 600);
+    }
+  }
+
   function commitUnits(next: GameUnit[], extraLog: string[] = []) {
+    flashHit(units, next);
     setUnits(next);
     if (extraLog.length) addLog(...extraLog);
     const w = checkWin(next);
@@ -556,9 +662,10 @@ export default function WarhammerTactics() {
       setUnits(reset);
       aiRunning.current = true;
       setTimeout(() => {
-        const { units: afterAI, log: aiLog } = runAI(reset);
+        const { units: afterAI, log: aiLog } = runAI(reset, walls);
         aiRunning.current = false;
         const w = checkWin(afterAI);
+        flashHit(reset, afterAI);
         setUnits(afterAI);
         addLog(...(aiLog.length ? aiLog : ["Enemy forces have acted."]), "Your turn.");
         if (w !== null) { setWinner(w); setPhase("gameover"); }
@@ -596,7 +703,7 @@ export default function WarhammerTactics() {
         for (const t of targets) {
           const freshAttacker = next.find(u => u.instanceId === unit.instanceId);
           const freshTarget   = next.find(u => u.instanceId === t.instanceId);
-          if (freshAttacker && freshTarget) next = resolveAttack(freshAttacker, freshTarget, next, logFn, unit.range > 1);
+          if (freshAttacker && freshTarget) next = resolveAttack(freshAttacker, freshTarget, next, logFn, unit.range > 1, walls);
         }
         next = next.map(u => u.instanceId === unit.instanceId ? { ...u, hasAttacked: true } : u);
         if (commitUnits(next, logs)) return;
@@ -623,7 +730,7 @@ export default function WarhammerTactics() {
 
   const moveRange =
     selectedUnit && !selectedUnit.hasMoved && selectedUnit.team === currentTeam && !abilityMode
-      ? getMoveRange(selectedUnit, units)
+      ? getMoveRange(selectedUnit, units, walls)
       : new Set<string>();
 
   const attackable =
@@ -656,14 +763,14 @@ export default function WarhammerTactics() {
 
       if (isLongShot) logFn(`${selectedUnit.name} uses ${selectedUnit.ability.name}!`);
 
-      let next = resolveAttack(selectedUnit, clicked, units, logFn, isRanged);
+      let next = resolveAttack(selectedUnit, clicked, units, logFn, isRanged, walls);
 
       if (isDoubleStrike) {
         const updAttacker = next.find(u => u.instanceId === selectedUnit.instanceId);
         const updTarget   = next.find(u => u.instanceId === clicked.instanceId);
         if (updAttacker && updTarget) {
           logFn(`${selectedUnit.name} strikes again!`);
-          next = resolveAttack(updAttacker, updTarget, next, logFn, isRanged);
+          next = resolveAttack(updAttacker, updTarget, next, logFn, isRanged, walls);
         }
       }
 
@@ -807,6 +914,7 @@ export default function WarhammerTactics() {
       {phase === "p1-units"   && p1Army && <UnitSelect player={1} army={p1Army} onDeploy={handleP1Units} />}
       {phase === "p2-army"    && <ArmySelect player={2} takenId={p1ArmyId} onSelect={handleP2Army} />}
       {phase === "p2-units"   && p2Army && <UnitSelect player={2} army={p2Army} onDeploy={handleP2Units} />}
+      {phase === "coin-flip"  && <CoinFlip winnerLabel={teamLabel(currentTeam)} onDone={handleCoinFlipDone} />}
 
       {phase === "playing" && (
         <div className="wt-game">
@@ -817,17 +925,19 @@ export default function WarhammerTactics() {
                 const x = i % GRID, y = Math.floor(i / GRID);
                 const unit = units.find(u => u.x === x && u.y === y);
                 const key = `${x},${y}`;
-                const inMove   = moveRange.has(key);
+                const isWall   = walls.has(key);
+                const inMove   = !isWall && moveRange.has(key);
                 const inAttack = unit ? attackable.has(unit.instanceId) : false;
                 const isSel    = unit?.instanceId === selectedId;
                 return (
                   <div
                     key={key}
-                    className={`wt-cell${inMove ? " wt-cell--move" : ""}${inAttack ? (abilityMode === "long-shot" ? " wt-cell--longshot" : " wt-cell--attack") : ""}${isSel ? " wt-cell--selected" : ""}`}
-                    onClick={() => handleCellClick(x, y)}
+                    className={`wt-cell${isWall ? " wt-cell--wall" : ""}${inMove ? " wt-cell--move" : ""}${inAttack ? (abilityMode === "long-shot" ? " wt-cell--longshot" : " wt-cell--attack") : ""}${isSel ? " wt-cell--selected" : ""}`}
+                    onClick={() => !isWall && handleCellClick(x, y)}
                   >
+                    {isWall && <div className="wt-wall-block" />}
                     {unit && (
-                      <div className="wt-token" style={{ background: unit.armyColor }}>
+                      <div className={`wt-token${hitUnits.has(unit.instanceId) ? " wt-token--hit" : ""}`} style={{ background: unit.armyColor }}>
                         <Portrait portrait={unit.portrait} image={unit.image} className="wt-token-emoji" />
                         <div className="wt-token-hp">
                           <div className="wt-token-hp-fill" style={{ width: `${(unit.hp / unit.maxHp) * 100}%` }} />
