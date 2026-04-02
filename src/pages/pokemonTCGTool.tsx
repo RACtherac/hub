@@ -165,11 +165,23 @@ export default function PokemonTCGTool() {
     pokemon: Pokemon, fromType: "active" | "bench", fromIndex?: number
   ) => {
     const updated = { ...board };
-    const player = updated[turn];
-    if (fromType === "active") player.active = null;
-    if (fromType === "bench" && fromIndex !== undefined) player.bench[fromIndex] = null;
+    const player = { ...updated[turn], bench: [...updated[turn].bench] };
+    updated[turn] = player;
+
+    // Capture whatever is currently in the destination slot
+    const displaced: Pokemon | null =
+      toType === "active" ? player.active
+      : toIndex !== undefined ? player.bench[toIndex]
+      : null;
+
+    // Place dragged pokemon into destination
     if (toType === "active") player.active = pokemon;
     if (toType === "bench" && toIndex !== undefined) player.bench[toIndex] = pokemon;
+
+    // Put the displaced pokemon into the source slot (swap)
+    if (fromType === "active") player.active = displaced;
+    if (fromType === "bench" && fromIndex !== undefined) player.bench[fromIndex] = displaced;
+
     setBoard(updated);
   };
 

@@ -7,6 +7,7 @@ import ArmyBuilder from "./pages/army-builder";
 import PaintTracker from "./pages/paint-tracker";
 import TodoApp from "./pages/todo-app";
 import PixelArt from "./pages/pixel-art";
+import TacticsGame from "./pages/tactics-game";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/paint-tracker" element={<PaintTracker />} />
         <Route path="/todo-app" element={<TodoApp />} />
         <Route path="/pixel-art" element={<PixelArt />} />
+        <Route path="/tactics-game" element={<TacticsGame />} />
       </Routes>
     </BrowserRouter>
   );

@@ -33,6 +33,11 @@ const projects: Project[] = [
     description: "Draw pixel art on an 8×8, 16×16, or 32×32 canvas.",
     branch: "pixel-art",
   },
+  {
+    name: "Tactics Game",
+    description: "Pick a faction and fight either against the PC or a friend in a turn-based game.",
+    branch: "tactics-game",
+  },
 ];
 
 export default function Home() {
