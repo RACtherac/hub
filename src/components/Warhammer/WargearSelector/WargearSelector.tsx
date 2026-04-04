@@ -6,14 +6,35 @@ interface Props {
   wargear: WargearOption[];
   selected: string[];
   onChange: (gear: string[]) => void;
+  groups?: string[][];
+  counts?: Record<string, number>;
+  onCountChange?: (updates: Record<string, number>) => void;
+  modelCount?: number;
+  checkedNotes?: string[];
 }
 
-export default function WargearSelector({ label = "Wargear", wargear, selected, onChange }: Props) {
+export default function WargearSelector({ label = "Wargear", wargear, selected, onChange, groups, counts = {}, onCountChange, modelCount, checkedNotes = [] }: Props) {
   const [showImages, setShowImages] = useState(false);
 
+  const getLinked = (id: string) => wargear.find((w) => w.id === id)?.linkedWargear ?? [];
+
   const toggle = (id: string) => {
-    if (selected.includes(id)) onChange(selected.filter((g) => g !== id));
-    else onChange([...selected, id]);
+    if (selected.includes(id)) {
+      // Deselect this item and its linked items
+      const toRemove = new Set([id, ...getLinked(id)]);
+      onChange(selected.filter((g) => !toRemove.has(g)));
+    } else {
+      // Deselect all exclusive group members (across all groups containing this item) and their linked items
+      const matchingGroups = groups?.filter((g) => g.includes(id)) ?? [];
+      const allGroupMembers = matchingGroups.flatMap((g) => g);
+      const groupDeselected = allGroupMembers.filter((g) => selected.includes(g));
+      const linkedFromGroup = groupDeselected.flatMap((g) => getLinked(g));
+      const toRemove = new Set([...allGroupMembers, ...linkedFromGroup]);
+      const filtered = selected.filter((g) => !toRemove.has(g));
+      // Add this item and its linked items
+      const toAdd = [id, ...getLinked(id)];
+      onChange([...filtered, ...toAdd.filter((a) => !filtered.includes(a))]);
+    }
   };
 
   const withImages = wargear.filter((g) => g.image);
@@ -36,7 +57,7 @@ export default function WargearSelector({ label = "Wargear", wargear, selected, 
           {label}
         </div>
 
-        {withImages.length > 0 && (
+        {(
           <button
             onClick={() => setShowImages(!showImages)}
             style={{
@@ -116,6 +137,99 @@ export default function WargearSelector({ label = "Wargear", wargear, selected, 
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
         {wargear.map((gear) => {
+          if (gear.countable) {
+            const baseMax = modelCount != null && gear.maxCountByModelCount
+              ? (gear.maxCountByModelCount[modelCount] ?? 0)
+              : 99;
+            const noteReduction = (gear.maxCountReducedByNotes ?? []).filter(id => checkedNotes.includes(id)).length;
+            const max = Math.max(0, baseMax - noteReduction);
+
+            // Linked counter: this item's display count is derived from its linked partner
+            const isLinked = !!gear.linkedCounterId;
+            const primaryCount = counts[isLinked ? gear.linkedCounterId! : gear.id] ?? 0;
+            const count = isLinked ? max - primaryCount : primaryCount;
+            const active = count > 0;
+
+            const handleDecrement = () => {
+              if (isLinked) {
+                // Decreasing this (e.g. power fist) increases the linked (chainfist)
+                onCountChange?.({ [gear.linkedCounterId!]: Math.min(max, primaryCount + 1) });
+              } else {
+                const linked = wargear.find(w => w.linkedCounterId === gear.id);
+                onCountChange?.({ [gear.id]: Math.max(0, count - 1), ...(linked ? {} : {}) });
+              }
+            };
+            const handleIncrement = () => {
+              if (isLinked) {
+                // Increasing this (e.g. power fist) decreases the linked (chainfist)
+                onCountChange?.({ [gear.linkedCounterId!]: Math.max(0, primaryCount - 1) });
+              } else {
+                onCountChange?.({ [gear.id]: Math.min(max, count + 1) });
+              }
+            };
+
+            return (
+              <div key={gear.id} style={{
+                display: "flex",
+                alignItems: "center",
+                border: `1px solid ${active ? "var(--accent)" : "var(--border-2)"}`,
+                background: active ? "var(--accent-dim)" : "none",
+                transition: "all 0.15s",
+              }}>
+                <span style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "10px",
+                  letterSpacing: "0.08em",
+                  color: active ? "var(--accent)" : "var(--text-dim)",
+                  padding: "5px 10px",
+                }}>
+                  {gear.name}
+                  {gear.points != null && gear.points > 0 && (
+                    <span style={{ opacity: 0.7, marginLeft: "4px" }}>+{gear.points}ea</span>
+                  )}
+                </span>
+                <button
+                  onClick={handleDecrement}
+                  disabled={count === 0}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    borderLeft: `1px solid ${active ? "var(--accent)" : "var(--border-2)"}`,
+                    color: count === 0 ? "var(--border-2)" : "var(--accent)",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "13px",
+                    padding: "3px 8px",
+                    cursor: count === 0 ? "default" : "pointer",
+                    lineHeight: 1,
+                  }}
+                >−</button>
+                <span style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "11px",
+                  color: active ? "var(--accent)" : "var(--text-dim)",
+                  padding: "0 6px",
+                  minWidth: "20px",
+                  textAlign: "center",
+                }}>{count}</span>
+                <button
+                  onClick={handleIncrement}
+                  disabled={count >= max}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    borderLeft: `1px solid ${active ? "var(--accent)" : "var(--border-2)"}`,
+                    color: count >= max ? "var(--border-2)" : "var(--accent)",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "13px",
+                    padding: "3px 8px",
+                    cursor: count >= max ? "default" : "pointer",
+                    lineHeight: 1,
+                  }}
+                >+</button>
+              </div>
+            );
+          }
+
           const active = selected.includes(gear.id);
           return (
             <button

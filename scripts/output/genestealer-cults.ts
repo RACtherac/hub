@@ -1,11 +1,25 @@
 import type { Unit } from "../../../types/warhammer";
 
-export const astraMilitarumUnits: Unit[] = [
+export const genestealerCultsUnits: Unit[] = [
+
+  {
+    id: "atalan-jackals",
+    name: "Atalan Jackals",
+    faction: "genestealer-cults",
+    category: "mounted",
+    points: 80,
+    defaultWargear: [],
+    wargear: [
+      { id: "atalan-incinerator", name: "Atalan incinerator", image: "" },
+      { id: "mining-laser", name: "Mining laser", image: "" },
+    ],
+    ledBy: [],
+  },
 
   {
     id: "attilan-rough-riders",
     name: "Attilan Rough Riders",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "mounted",
     points: 60,
     defaultWargear: [
@@ -25,31 +39,23 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "death-riders",
     name: "Death Riders",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "mounted",
-    points: 60,
-    modelCountOptions: [5, 10],
-    pointsByModelCount: { 5: 60, 10: 120 },
-    abilities: [
-      {
-        name: "Screening Line",
-        description: "Once per turn, when an enemy unit ends a Normal, Advance or Fall Back move within 9\" of this unit, if this unit is not within Engagement Range of one or more enemy units, it can make a Normal move of up to 6\".",
-      },
-    ],
+    points: 70,
     defaultWargear: [
-      { id: "death-rider-lascarbine", name: "Death Rider lascarbine", image: "", profiles: [{ range: '18"', attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["ASSAULT"] }] },
-      { id: "frag-lance", name: "Frag lance", image: "", profiles: [{ range: "Melee", attacks: "D6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LANCE"] }] },
-      { id: "power-sabre", name: "Power sabre", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "-2", damage: "1" }] },
-      { id: "steeds-savage-claws", name: "Steed's savage claws", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "4", ap: "-1", damage: "1", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "death-rider-lascarbine", name: "Death Rider lascarbine", image: "" },
+      { id: "frag-lance", name: "Frag lance", image: "" },
+      { id: "power-sabre", name: "Power sabre", image: "" },
+      { id: "steeds-savage-claws", name: "Steed's savage claws", image: "" },
     ],
     wargear: [],
-    ledBy: ["lord-marshal-dreir","lord-solar-leontus"],
+    ledBy: [],
   },
 
   {
     id: "mukaali-riders",
     name: "Mukaali Riders",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "mounted",
     points: 110,
     defaultWargear: [
@@ -73,7 +79,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "tauros-assault-vehicle",
     name: "Tauros Assault Vehicle",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "mounted",
     points: 50,
     defaultWargear: [
@@ -91,7 +97,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "tauros-venator",
     name: "Tauros Venator",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "mounted",
     points: 55,
     defaultWargear: [
@@ -106,9 +112,43 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
+    id: "acolyte-hybrids-with-autopistols",
+    name: "Acolyte Hybrids With Autopistols",
+    faction: "genestealer-cults",
+    category: "battleline",
+    points: 65,
+    defaultWargear: [
+      { id: "autopistol", name: "Autopistol", image: "" },
+      { id: "cult-claws-and-knife", name: "Cult claws and knife", image: "" },
+    ],
+    wargear: [
+      { id: "heavy-mining-tool", name: "Heavy mining tool", image: "" },
+      { id: "leader-s-bio-weapons", name: "Leader’s bio-weapons", image: "" },
+    ],
+    ledBy: ["acolyte-iconward","benefictus","biophagus","clamavus","locus","magus","nexos","primus"],
+  },
+
+  {
+    id: "acolyte-hybrids-with-hand-flamers",
+    name: "Acolyte Hybrids With Hand Flamers",
+    faction: "genestealer-cults",
+    category: "battleline",
+    points: 70,
+    defaultWargear: [
+      { id: "hand-flamer", name: "Hand flamer", image: "" },
+      { id: "cult-claws-and-knife", name: "Cult claws and knife", image: "" },
+    ],
+    wargear: [
+      { id: "demolition-charges", name: "Demolition charges", image: "" },
+      { id: "leader-s-bio-weapons", name: "Leader’s bio-weapons", image: "" },
+    ],
+    ledBy: ["acolyte-iconward","benefictus","biophagus","clamavus","locus","magus","nexos","primus"],
+  },
+
+  {
     id: "cadian-shock-troops",
     name: "Cadian Shock Troops",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "battleline",
     points: 65,
     defaultWargear: [
@@ -123,13 +163,13 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "plasma-gun-standard", name: "Plasma gun – standard", image: "" },
       { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "" },
     ],
-    ledBy: ["cadian-castellan","cadian-command-squad","commissar","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","ursula-creed","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
     id: "catachan-jungle-fighters",
     name: "Catachan Jungle Fighters",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "battleline",
     points: 65,
     defaultWargear: [
@@ -140,13 +180,13 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "flamer", name: "Flamer", image: "" },
       { id: "lasgun", name: "Lasgun", image: "" },
     ],
-    ledBy: ["catachan-command-squad","commissar","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
     id: "death-korps-of-krieg",
     name: "Death Korps Of Krieg",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "battleline",
     points: 65,
     defaultWargear: [
@@ -165,13 +205,59 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "" },
       { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
     ],
-    ledBy: ["commissar","krieg-command-squad","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+  },
+
+  {
+    id: "gargoyles",
+    name: "Gargoyles",
+    faction: "genestealer-cults",
+    category: "battleline",
+    points: 85,
+    defaultWargear: [
+      { id: "fleshborer", name: "Fleshborer", image: "" },
+      { id: "blinding-venom", name: "Blinding venom", image: "" },
+    ],
+    wargear: [],
+    ledBy: [],
+  },
+
+  {
+    id: "neophyte-hybrids",
+    name: "Neophyte Hybrids",
+    faction: "genestealer-cults",
+    category: "battleline",
+    points: 65,
+    defaultWargear: [
+      { id: "autopistol", name: "Autopistol", image: "" },
+      { id: "hybrid-firearm", name: "Hybrid firearm", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "anointed-pistol", name: "Anointed pistol", image: "" },
+      { id: "chainsword", name: "Chainsword", image: "" },
+      { id: "power-weapon", name: "Power weapon", image: "" },
+    ],
+    ledBy: ["acolyte-iconward","benefictus","biophagus","clamavus","locus","magus","nexos","primus"],
+  },
+
+  {
+    id: "aberrants",
+    name: "Aberrants",
+    faction: "genestealer-cults",
+    category: "infantry",
+    points: 135,
+    defaultWargear: [
+      { id: "aberrant-weapons", name: "Aberrant weapons", image: "" },
+    ],
+    wargear: [],
+    ledBy: ["abominant","biophagus"],
   },
 
   {
     id: "aegis-defence-line",
     name: "Aegis Defence Line",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 145,
     defaultWargear: [],
@@ -182,42 +268,45 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "artillery-team",
     name: "Artillery Team",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 95,
-    modelCountOptions: [1],
-    abilities: [
-      {
-        name: "Remorseless Barrage",
-        description: "In your Shooting phase, after this model has shot, if one or more of those attacks made with an Indirect Fire weapon scored a hit against an enemy unit, that unit must take a Battle-shock test (if an INFANTRY unit is hit by one or more attacks made by a multiple rocket launcher, they must subtract 1 from their Battle-shock test when doing so).",
-      },
-    ],
     defaultWargear: [
-      { id: "lasgun", name: "Lasgun", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
+      { id: "heavy-mortar", name: "Heavy mortar", image: "" },
+      { id: "lasgun", name: "Lasgun", image: "" },
       { id: "crew-close-combat-weapons", name: "Crew close combat weapons", image: "" },
     ],
     wargear: [
-      { id: "heavy-mortar", name: "Heavy mortar", image: "", profiles: [{ range: '48"', attacks: "D6+3", skill: "5+", strength: "8", ap: "-1", damage: "2", keywords: ["BLAST", "HEAVY", "INDIRECT FIRE"] }] },
-      { id: "siege-cannon", name: "Siege cannon", image: "", profiles: [{ range: '48"', attacks: "D6", skill: "5+", strength: "12", ap: "-2", damage: "3", keywords: ["BLAST", "HEAVY", "INDIRECT FIRE"] }] },
-      { id: "heavy-quad-launcher", name: "Heavy quad launcher", image: "", profiles: [{ range: '48"', attacks: "2D6", skill: "5+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST", "HEAVY", "INDIRECT FIRE", "TWIN-LINKED"] }] },
-      { id: "multiple-rocket-launcher", name: "Multiple rocket launcher", image: "", profiles: [{ range: '48"', attacks: "D6+3", skill: "5+", strength: "2", ap: "-1", damage: "1", keywords: ["ANTI-INFANTRY 3+", "BLAST", "HEAVY", "INDIRECT FIRE"] }] },
+      { id: "heavy-quad-launcher", name: "Heavy quad launcher", image: "" },
+      { id: "multiple-rocket-launcher", name: "Multiple rocket launcher", image: "" },
+      { id: "siege-cannon", name: "Siege cannon", image: "" },
     ],
-    wargearGroups: [["heavy-mortar", "siege-cannon", "heavy-quad-launcher", "multiple-rocket-launcher"]],
     ledBy: [],
   },
 
   {
-    id: "bullgryn-squad",
-    name: "Bullgryn Squad",
-    faction: "astra-militarum",
+    id: "cadian-command-squad",
+    name: "Cadian Command Squad",
+    faction: "genestealer-cults",
     category: "infantry",
-    points: 110,
+    points: 65,
     defaultWargear: [
-      { id: "grenadier-gauntlet", name: "Grenadier gauntlet", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "laspistol", name: "Laspistol", image: "" },
+      { id: "chainsword", name: "Chainsword", image: "" },
     ],
     wargear: [
-      { id: "bullgryn-maul", name: "Bullgryn maul", image: "" },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "flamer", name: "Flamer", image: "" },
+      { id: "grenade-launcher-frag", name: "Grenade launcher – frag", image: "" },
+      { id: "grenade-launcher-krak", name: "Grenade launcher – krak", image: "" },
+      { id: "lasgun", name: "Lasgun", image: "" },
+      { id: "meltagun", name: "Meltagun", image: "" },
+      { id: "plasma-gun-standard", name: "Plasma gun – standard", image: "" },
+      { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "" },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "power-fist", name: "Power fist", image: "" },
+      { id: "power-weapon", name: "Power weapon", image: "" },
     ],
     ledBy: [],
   },
@@ -225,7 +314,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "cadian-heavy-weapons-squad",
     name: "Cadian Heavy Weapons Squad",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 65,
     defaultWargear: [
@@ -244,9 +333,39 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
+    id: "catachan-command-squad",
+    name: "Catachan Command Squad",
+    faction: "genestealer-cults",
+    category: "infantry",
+    points: 65,
+    defaultWargear: [
+      { id: "laspistol", name: "Laspistol", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "boltgun", name: "Boltgun", image: "" },
+      { id: "flamer", name: "Flamer", image: "" },
+      { id: "grenade-launcher-frag", name: "Grenade launcher – frag", image: "" },
+      { id: "grenade-launcher-krak", name: "Grenade launcher – krak", image: "" },
+      { id: "heavy-flamer", name: "Heavy flamer", image: "" },
+      { id: "lasgun", name: "Lasgun", image: "" },
+      { id: "meltagun", name: "Meltagun", image: "" },
+      { id: "plasma-gun-standard", name: "Plasma gun – standard", image: "" },
+      { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "" },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
+      { id: "sniper-rifle", name: "Sniper rifle", image: "" },
+      { id: "chainsword", name: "Chainsword", image: "" },
+      { id: "power-fist", name: "Power fist", image: "" },
+      { id: "power-weapon", name: "Power weapon", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
     id: "catachan-heavy-weapons-squad",
     name: "Catachan Heavy Weapons Squad",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 65,
     defaultWargear: [
@@ -267,7 +386,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "death-korps-grenadier-squad",
     name: "Death Korps Grenadier Squad",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 110,
     defaultWargear: [
@@ -292,7 +411,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "earthshaker-platform",
     name: "Earthshaker Platform",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 110,
     defaultWargear: [
@@ -306,7 +425,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "elysian-sniper-squad",
     name: "Elysian Sniper Squad",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 65,
     defaultWargear: [
@@ -321,7 +440,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "field-ordnance-battery",
     name: "Field Ordnance Battery",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 110,
     defaultWargear: [
@@ -338,31 +457,9 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
-    id: "gaunt-s-ghosts",
-    name: "Gaunt S Ghosts",
-    faction: "astra-militarum",
-    category: "infantry",
-    points: 110,
-    defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "gaunt-s-chainsword", name: "Gaunt’s chainsword", image: "" },
-    ],
-    wargear: [
-      { id: "bragg-s-autocannon", name: "Bragg’s autocannon", image: "" },
-      { id: "corbec-s-hot-shot-lascarbine", name: "Corbec’s hot-shot lascarbine", image: "" },
-      { id: "larkin-s-long-las", name: "Larkin’s long-las", image: "" },
-      { id: "lascarbine", name: "Lascarbine", image: "" },
-      { id: "rawne-s-lascarbine", name: "Rawne’s lascarbine", image: "" },
-      { id: "straight-silver-knife", name: "Straight silver knife", image: "" },
-      { id: "mkoll-s-straight-silver-knife", name: "Mkoll’s straight silver knife", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
     id: "heavy-mortar-team",
     name: "Heavy Mortar Team",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 50,
     defaultWargear: [
@@ -376,7 +473,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "heavy-quad-launcher-team",
     name: "Heavy Quad Launcher Team",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 50,
     defaultWargear: [
@@ -388,9 +485,27 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
+    id: "hybrid-metamorphs",
+    name: "Hybrid Metamorphs",
+    faction: "genestealer-cults",
+    category: "infantry",
+    points: 80,
+    defaultWargear: [
+      { id: "autopistol", name: "Autopistol", image: "" },
+      { id: "leader-s-bio-weapons", name: "Leader’s bio-weapons", image: "" },
+    ],
+    wargear: [
+      { id: "hand-flamer", name: "Hand flamer", image: "" },
+      { id: "metamorph-mutations-strike", name: "Metamorph mutations – strike", image: "" },
+      { id: "metamorph-mutations-sweep", name: "Metamorph mutations – sweep", image: "" },
+    ],
+    ledBy: ["acolyte-iconward","benefictus","biophagus","clamavus","locus","magus","nexos","primus"],
+  },
+
+  {
     id: "hydra-platform",
     name: "Hydra Platform",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 95,
     defaultWargear: [
@@ -404,7 +519,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "kasrkin",
     name: "Kasrkin",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 110,
     defaultWargear: [
@@ -424,13 +539,13 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "" },
       { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
     ],
-    ledBy: ["cadian-castellan","commissar","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","ursula-creed"],
+    ledBy: [],
   },
 
   {
     id: "krieg-combat-engineers",
     name: "Krieg Combat Engineers",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 70,
     defaultWargear: [
@@ -441,13 +556,37 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "flamer", name: "Flamer", image: "" },
       { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
     ],
-    ledBy: ["commissar","krieg-command-squad","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer"],
+    ledBy: [],
+  },
+
+  {
+    id: "krieg-command-squad",
+    name: "Krieg Command Squad",
+    faction: "genestealer-cults",
+    category: "infantry",
+    points: 65,
+    defaultWargear: [
+      { id: "laspistol", name: "Laspistol", image: "" },
+      { id: "power-weapon", name: "Power weapon", image: "" },
+    ],
+    wargear: [
+      { id: "boltgun", name: "Boltgun", image: "" },
+      { id: "flamer", name: "Flamer", image: "" },
+      { id: "grenade-launcher-frag", name: "Grenade launcher – frag", image: "" },
+      { id: "grenade-launcher-krak", name: "Grenade launcher – krak", image: "" },
+      { id: "meltagun", name: "Meltagun", image: "" },
+      { id: "plasma-gun-standard", name: "Plasma gun – standard", image: "" },
+      { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "" },
+      { id: "chainsword", name: "Chainsword", image: "" },
+      { id: "trench-club", name: "Trench club", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
     id: "krieg-heavy-weapons-squad",
     name: "Krieg Heavy Weapons Squad",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 75,
     defaultWargear: [
@@ -463,9 +602,22 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
+    id: "lictor",
+    name: "Lictor",
+    faction: "genestealer-cults",
+    category: "infantry",
+    points: 60,
+    defaultWargear: [
+      { id: "lictor-claws-and-talons", name: "Lictor claws and talons", image: "" },
+    ],
+    wargear: [],
+    ledBy: [],
+  },
+
+  {
     id: "manticore-platform",
     name: "Manticore Platform",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 95,
     defaultWargear: [
@@ -479,7 +631,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "munitorum-servitors",
     name: "Munitorum Servitors",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 35,
     defaultWargear: [
@@ -495,13 +647,26 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
-    id: "ogryn-squad",
-    name: "Ogryn Squad",
-    faction: "astra-militarum",
+    id: "neurolictor",
+    name: "Neurolictor",
+    faction: "genestealer-cults",
     category: "infantry",
-    points: 60,
+    points: 80,
     defaultWargear: [
-      { id: "ripper-gun", name: "Ripper gun", image: "" },
+      { id: "piercing-claws-and-talons", name: "Piercing claws and talons", image: "" },
+    ],
+    wargear: [],
+    ledBy: [],
+  },
+
+  {
+    id: "purestrain-genestealers",
+    name: "Purestrain Genestealers",
+    faction: "genestealer-cults",
+    category: "infantry",
+    points: 75,
+    defaultWargear: [
+      { id: "cult-claws-and-talons", name: "Cult claws and talons", image: "" },
     ],
     wargear: [],
     ledBy: [],
@@ -510,7 +675,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "quartermaster-cadre-squad",
     name: "Quartermaster Cadre Squad",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 45,
     defaultWargear: [
@@ -526,7 +691,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "rapier-laser-destroyer-battery",
     name: "Rapier Laser Destroyer Battery",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 70,
     defaultWargear: [
@@ -538,25 +703,23 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
-    id: "ratlings",
-    name: "Ratlings",
-    faction: "astra-militarum",
+    id: "raveners",
+    name: "Raveners",
+    faction: "genestealer-cults",
     category: "infantry",
-    points: 60,
+    points: 75,
     defaultWargear: [
-      { id: "sniper-rifle", name: "Sniper rifle", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "thoracic-bio-weapon", name: "Thoracic bio-weapon", image: "" },
+      { id: "ravener-claws-and-talons", name: "Ravener claws and talons", image: "" },
     ],
-    wargear: [
-      { id: "tankstopper-rifle", name: "Tankstopper rifle", image: "" },
-    ],
+    wargear: [],
     ledBy: [],
   },
 
   {
     id: "regimental-attach-s",
     name: "Regimental Attach S",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 40,
     defaultWargear: [
@@ -572,7 +735,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "sabre-weapons-battery",
     name: "Sabre Weapons Battery",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "infantry",
     points: 45,
     defaultWargear: [
@@ -588,62 +751,40 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
-    id: "tempestus-aquilons",
-    name: "Tempestus Aquilons",
-    faction: "astra-militarum",
+    id: "von-ryan-s-leapers",
+    name: "Von Ryan S Leapers",
+    faction: "genestealer-cults",
     category: "infantry",
-    points: 110,
+    points: 70,
     defaultWargear: [
-      { id: "hot-shot-lascarbine", name: "Hot-shot lascarbine", image: "" },
-      { id: "sentry-flamer", name: "Sentry flamer", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "leaper-s-talons", name: "Leaper’s talons", image: "" },
+    ],
+    wargear: [],
+    ledBy: [],
+  },
+
+  {
+    id: "achilles-ridgerunners",
+    name: "Achilles Ridgerunners",
+    faction: "genestealer-cults",
+    category: "vehicle",
+    points: 85,
+    defaultWargear: [
+      { id: "heavy-mining-laser", name: "Heavy mining laser", image: "" },
+      { id: "twin-heavy-stubber", name: "Twin heavy stubber", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
     ],
     wargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "hot-shot-laspistol", name: "Hot-shot laspistol", image: "" },
-      { id: "sentry-grenade-launcher-frag", name: "Sentry grenade launcher – frag", image: "" },
-      { id: "sentry-grenade-launcher-krak", name: "Sentry grenade launcher – krak", image: "" },
-      { id: "sentry-hot-shot-volley-gun", name: "Sentry hot-shot volley gun", image: "" },
-      { id: "melta-carbine", name: "Melta carbine", image: "" },
-      { id: "plasma-carbine-standard", name: "Plasma carbine – standard", image: "" },
-      { id: "plasma-carbine-supercharge", name: "Plasma carbine – supercharge", image: "" },
-      { id: "chainsword", name: "Chainsword", image: "" },
-      { id: "power-weapon", name: "Power weapon", image: "" },
+      { id: "achilles-missile-launcher", name: "Achilles missile launcher", image: "" },
+      { id: "heavy-mortar", name: "Heavy mortar", image: "" },
     ],
     ledBy: [],
   },
 
   {
-    id: "tempestus-scions",
-    name: "Tempestus Scions",
-    faction: "astra-militarum",
-    category: "infantry",
-    points: 70,
-    defaultWargear: [
-      { id: "hot-shot-laspistol", name: "Hot-shot laspistol", image: "" },
-      { id: "chainsword", name: "Chainsword", image: "" },
-    ],
-    wargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "flamer", name: "Flamer", image: "" },
-      { id: "grenade-launcher-frag", name: "Grenade launcher – frag", image: "" },
-      { id: "grenade-launcher-krak", name: "Grenade launcher – krak", image: "" },
-      { id: "hot-shot-lasgun", name: "Hot-shot lasgun", image: "" },
-      { id: "hot-shot-volley-gun", name: "Hot-shot volley gun", image: "" },
-      { id: "meltagun", name: "Meltagun", image: "" },
-      { id: "plasma-gun-standard", name: "Plasma gun – standard", image: "" },
-      { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "" },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
-      { id: "power-fist", name: "Power fist", image: "" },
-      { id: "power-weapon", name: "Power weapon", image: "" },
-    ],
-    ledBy: ["commissar","militarum-tempestus-command-squad","ministorum-priest","primaris-psyker"],
-  },
-
-  {
     id: "arkurian-stormhammer",
     name: "Arkurian Stormhammer",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 480,
     defaultWargear: [
@@ -665,7 +806,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "armageddon-pattern-medusa",
     name: "Armageddon Pattern Medusa",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 105,
     defaultWargear: [
@@ -683,7 +824,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "armoured-sentinels",
     name: "Armoured Sentinels",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 65,
     defaultWargear: [
@@ -705,7 +846,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "atlas-recovery-vehicle",
     name: "Atlas Recovery Vehicle",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 80,
     defaultWargear: [
@@ -720,25 +861,9 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
-    id: "avenger-strike-fighter",
-    name: "Avenger Strike Fighter",
-    faction: "astra-militarum",
-    category: "vehicle",
-    points: 130,
-    defaultWargear: [
-      { id: "avenger-bolt-cannon", name: "Avenger bolt cannon", image: "" },
-      { id: "heavy-stubber", name: "Heavy stubber", image: "" },
-      { id: "lascannon", name: "Lascannon", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
-    ],
-    wargear: [],
-    ledBy: [],
-  },
-
-  {
     id: "baneblade",
     name: "Baneblade",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 480,
     defaultWargear: [
@@ -758,7 +883,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "banesword",
     name: "Banesword",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 480,
     defaultWargear: [
@@ -775,7 +900,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "basilisk",
     name: "Basilisk",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 140,
     defaultWargear: [
@@ -793,7 +918,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "carnodon",
     name: "Carnodon",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 160,
     defaultWargear: [
@@ -817,7 +942,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "colossus",
     name: "Colossus",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 160,
     defaultWargear: [
@@ -834,7 +959,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "cyclops-demolition-vehicle",
     name: "Cyclops Demolition Vehicle",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 25,
     defaultWargear: [],
@@ -845,7 +970,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "deathstrike",
     name: "Deathstrike",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 145,
     defaultWargear: [
@@ -863,7 +988,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "dominus-armoured-siege-bombard",
     name: "Dominus Armoured Siege Bombard",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 325,
     defaultWargear: [
@@ -884,7 +1009,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "elysian-drop-sentinel",
     name: "Elysian Drop Sentinel",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 85,
     defaultWargear: [
@@ -901,7 +1026,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "griffon-mortar-carrier",
     name: "Griffon Mortar Carrier",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 115,
     defaultWargear: [
@@ -919,7 +1044,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "hades-breaching-drill",
     name: "Hades Breaching Drill",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 110,
     defaultWargear: [
@@ -932,7 +1057,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "hellhammer",
     name: "Hellhammer",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 450,
     defaultWargear: [
@@ -952,7 +1077,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "hellhound",
     name: "Hellhound",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 125,
     defaultWargear: [
@@ -972,7 +1097,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "hydra",
     name: "Hydra",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 95,
     defaultWargear: [
@@ -990,7 +1115,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "leman-russ-battle-tank",
     name: "Leman Russ Battle Tank",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 175,
     defaultWargear: [
@@ -1011,7 +1136,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "leman-russ-demolisher",
     name: "Leman Russ Demolisher",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 190,
     defaultWargear: [
@@ -1032,7 +1157,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "leman-russ-eradicator",
     name: "Leman Russ Eradicator",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 170,
     defaultWargear: [
@@ -1053,7 +1178,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "leman-russ-executioner",
     name: "Leman Russ Executioner",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 170,
     defaultWargear: [
@@ -1075,7 +1200,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "leman-russ-exterminator",
     name: "Leman Russ Exterminator",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 180,
     defaultWargear: [
@@ -1096,7 +1221,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "leman-russ-punisher",
     name: "Leman Russ Punisher",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 150,
     defaultWargear: [
@@ -1117,7 +1242,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "leman-russ-vanquisher",
     name: "Leman Russ Vanquisher",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 145,
     defaultWargear: [
@@ -1138,7 +1263,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "macharius",
     name: "Macharius",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 310,
     defaultWargear: [
@@ -1158,7 +1283,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "macharius-omega",
     name: "Macharius Omega",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 310,
     defaultWargear: [
@@ -1179,7 +1304,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "macharius-vanquisher",
     name: "Macharius Vanquisher",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 285,
     defaultWargear: [
@@ -1199,7 +1324,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "macharius-vulcan",
     name: "Macharius Vulcan",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 310,
     defaultWargear: [
@@ -1219,7 +1344,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "malcador",
     name: "Malcador",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 250,
     defaultWargear: [
@@ -1239,7 +1364,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "malcador-annihilator",
     name: "Malcador Annihilator",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 270,
     defaultWargear: [
@@ -1260,7 +1385,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "malcador-defender",
     name: "Malcador Defender",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 310,
     defaultWargear: [
@@ -1280,7 +1405,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "malcador-infernus",
     name: "Malcador Infernus",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 235,
     defaultWargear: [
@@ -1301,7 +1426,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "manticore",
     name: "Manticore",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 165,
     defaultWargear: [
@@ -1317,42 +1442,9 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
-    id: "marauder-bomber",
-    name: "Marauder Bomber",
-    faction: "astra-militarum",
-    category: "vehicle",
-    points: 345,
-    defaultWargear: [
-      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
-      { id: "lascannon", name: "Lascannon", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
-    ],
-    wargear: [],
-    ledBy: [],
-  },
-
-  {
-    id: "marauder-destroyer",
-    name: "Marauder Destroyer",
-    faction: "astra-militarum",
-    category: "vehicle",
-    points: 375,
-    defaultWargear: [
-      { id: "assault-cannon", name: "Assault cannon", image: "" },
-      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
-      { id: "marauder-nose-autocannons", name: "Marauder nose autocannons", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
-    ],
-    wargear: [
-      { id: "hellstrike-missile-rack", name: "Hellstrike missile rack", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
     id: "praetor",
     name: "Praetor",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 275,
     defaultWargear: [
@@ -1371,7 +1463,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "rogal-dorn-battle-tank",
     name: "Rogal Dorn Battle Tank",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 240,
     defaultWargear: [
@@ -1391,7 +1483,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "salamander-command-vehicle",
     name: "Salamander Command Vehicle",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 80,
     defaultWargear: [
@@ -1409,7 +1501,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "salamander-scout-vehicle",
     name: "Salamander Scout Vehicle",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 95,
     defaultWargear: [
@@ -1427,7 +1519,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "scout-sentinels",
     name: "Scout Sentinels",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 55,
     defaultWargear: [
@@ -1449,7 +1541,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "sentinel-powerlifter",
     name: "Sentinel Powerlifter",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 55,
     defaultWargear: [
@@ -1462,7 +1554,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "shadowsword",
     name: "Shadowsword",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 440,
     defaultWargear: [
@@ -1479,7 +1571,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "stormblade",
     name: "Stormblade",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 415,
     defaultWargear: [
@@ -1498,7 +1590,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "stormsword",
     name: "Stormsword",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 495,
     defaultWargear: [
@@ -1515,7 +1607,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "stygies-destroyer-tank-hunter",
     name: "Stygies Destroyer Tank Hunter",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 180,
     defaultWargear: [
@@ -1532,7 +1624,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "tarantula-battery",
     name: "Tarantula Battery",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 40,
     defaultWargear: [
@@ -1546,9 +1638,22 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
+    id: "tectonic-fragdrill",
+    name: "Tectonic Fragdrill",
+    faction: "genestealer-cults",
+    category: "vehicle",
+    points: 125,
+    defaultWargear: [
+      { id: "fragdrill", name: "Fragdrill", image: "" },
+    ],
+    wargear: [],
+    ledBy: [],
+  },
+
+  {
     id: "trojan-support-vehicle",
     name: "Trojan Support Vehicle",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 80,
     defaultWargear: [
@@ -1565,7 +1670,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "valdor",
     name: "Valdor",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 285,
     defaultWargear: [
@@ -1584,43 +1689,9 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
-    id: "voss-pattern-lightning",
-    name: "Voss Pattern Lightning",
-    faction: "astra-militarum",
-    category: "vehicle",
-    points: 130,
-    defaultWargear: [
-      { id: "lascannon", name: "Lascannon", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
-    ],
-    wargear: [
-      { id: "lightning-hellstrike-rack", name: "Lightning hellstrike rack", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "vulture-gunship",
-    name: "Vulture Gunship",
-    faction: "astra-militarum",
-    category: "vehicle",
-    points: 225,
-    defaultWargear: [
-      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
-      { id: "multiple-rocket-pod", name: "Multiple rocket pod", image: "" },
-      { id: "vulture-hellstrike-rack", name: "Vulture hellstrike rack", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
-    ],
-    wargear: [
-      { id: "vulture-gatling-cannon", name: "Vulture gatling cannon", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
     id: "wyvern",
     name: "Wyvern",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "vehicle",
     points: 110,
     defaultWargear: [
@@ -1636,30 +1707,28 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
-    id: "aquila-lander",
-    name: "Aquila Lander",
-    faction: "astra-militarum",
-    category: "transport",
-    points: 120,
+    id: "mawloc",
+    name: "Mawloc",
+    faction: "genestealer-cults",
+    category: "monster",
+    points: 145,
     defaultWargear: [
-      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
+      { id: "distensible-jaw", name: "Distensible jaw", image: "" },
+      { id: "mawloc-scything-talons", name: "Mawloc scything talons", image: "" },
     ],
-    wargear: [
-      { id: "autocannon", name: "Autocannon", image: "" },
-      { id: "multi-laser", name: "Multi-laser", image: "" },
-    ],
+    wargear: [],
     ledBy: [],
   },
 
   {
-    id: "arvus-lighter",
-    name: "Arvus Lighter",
-    faction: "astra-militarum",
-    category: "transport",
-    points: 95,
+    id: "trygon",
+    name: "Trygon",
+    faction: "genestealer-cults",
+    category: "monster",
+    points: 140,
     defaultWargear: [
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
+      { id: "bio-electric-pulse", name: "Bio-electric pulse", image: "" },
+      { id: "trygon-scything-talons", name: "Trygon scything talons", image: "" },
     ],
     wargear: [],
     ledBy: [],
@@ -1668,7 +1737,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "banehammer",
     name: "Banehammer",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 450,
     defaultWargear: [
@@ -1685,7 +1754,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "centaur-light-carrier",
     name: "Centaur Light Carrier",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 40,
     defaultWargear: [
@@ -1701,7 +1770,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "chimera",
     name: "Chimera",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 85,
     defaultWargear: [
@@ -1721,7 +1790,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "crassus",
     name: "Crassus",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 180,
     defaultWargear: [
@@ -1738,7 +1807,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "doomhammer",
     name: "Doomhammer",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 445,
     defaultWargear: [
@@ -1753,9 +1822,44 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
+    id: "goliath-rockgrinder",
+    name: "Goliath Rockgrinder",
+    faction: "genestealer-cults",
+    category: "transport",
+    points: 120,
+    defaultWargear: [
+      { id: "demolition-charge-cache", name: "Demolition charge cache", image: "" },
+      { id: "heavy-mining-laser", name: "Heavy mining laser", image: "" },
+      { id: "heavy-stubber", name: "Heavy stubber", image: "" },
+      { id: "drilldozer-blade", name: "Drilldozer blade", image: "" },
+    ],
+    wargear: [
+      { id: "clearance-incinerator", name: "Clearance incinerator", image: "" },
+      { id: "heavy-seismic-cannon", name: "Heavy seismic cannon", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "goliath-truck",
+    name: "Goliath Truck",
+    faction: "genestealer-cults",
+    category: "transport",
+    points: 85,
+    defaultWargear: [
+      { id: "demolition-charge-cache", name: "Demolition charge cache", image: "" },
+      { id: "heavy-stubber", name: "Heavy stubber", image: "" },
+      { id: "twin-autocannon", name: "Twin autocannon", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [],
+    ledBy: [],
+  },
+
+  {
     id: "gorgon-heavy-transport",
     name: "Gorgon Heavy Transport",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 275,
     defaultWargear: [
@@ -1774,7 +1878,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "minotaur",
     name: "Minotaur",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 225,
     defaultWargear: [
@@ -1788,7 +1892,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "storm-chimera",
     name: "Storm Chimera",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 90,
     defaultWargear: [
@@ -1806,7 +1910,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "stormlord",
     name: "Stormlord",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 460,
     defaultWargear: [
@@ -1824,7 +1928,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "taurox",
     name: "Taurox",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 65,
     defaultWargear: [
@@ -1840,7 +1944,7 @@ export const astraMilitarumUnits: Unit[] = [
   {
     id: "taurox-prime",
     name: "Taurox Prime",
-    faction: "astra-militarum",
+    faction: "genestealer-cults",
     category: "transport",
     points: 90,
     defaultWargear: [
@@ -1857,54 +1961,16 @@ export const astraMilitarumUnits: Unit[] = [
   },
 
   {
-    id: "valkyrie",
-    name: "Valkyrie",
-    faction: "astra-militarum",
+    id: "tyrannocyte",
+    name: "Tyrannocyte",
+    faction: "genestealer-cults",
     category: "transport",
-    points: 190,
+    points: 105,
     defaultWargear: [
-      { id: "hellstrike-missiles", name: "Hellstrike missiles", image: "" },
-      { id: "multi-laser", name: "Multi-laser", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
+      { id: "tyrannocyte-bio-weapons", name: "Tyrannocyte bio-weapons", image: "" },
+      { id: "flensing-whips", name: "Flensing whips", image: "" },
     ],
-    wargear: [
-      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
-      { id: "lascannon", name: "Lascannon", image: "" },
-      { id: "multiple-rocket-pod", name: "Multiple rocket pod", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "valkyrie-sky-talon",
-    name: "Valkyrie Sky Talon",
-    faction: "astra-militarum",
-    category: "transport",
-    points: 185,
-    defaultWargear: [
-      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
-      { id: "hellstrike-missile", name: "Hellstrike missile", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
-    ],
-    wargear: [
-      { id: "multiple-rocket-pod", name: "Multiple rocket pod", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "vendetta-gunship",
-    name: "Vendetta Gunship",
-    faction: "astra-militarum",
-    category: "transport",
-    points: 255,
-    defaultWargear: [
-      { id: "vendetta-twin-lascannon", name: "Vendetta twin lascannon", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
-    ],
-    wargear: [
-      { id: "vendetta-hellstrike-rack", name: "Vendetta hellstrike rack", image: "" },
-    ],
+    wargear: [],
     ledBy: [],
   },
 

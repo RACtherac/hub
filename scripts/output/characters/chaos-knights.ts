@@ -1,0 +1,278 @@
+import type { Character } from "../../../types/warhammer";
+
+export const chaosKnightsCharacters: Character[] = [
+
+  {
+    id: "chaos-cerastus-knight-acheron",
+    name: "Chaos Cerastus Knight Acheron",
+    faction: "chaos-knights",
+    image: "",
+    points: 420,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "acheron-flame-cannon", name: "Acheron flame cannon", image: "", profiles: [{ range: '18"', attacks: "D6+6", skill: "N/A", strength: "6", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "", profiles: [{ range: '36"', attacks: "6", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["HEAVY", "SUSTAINED HITS 1", "TWIN-LINKED"] }] },
+      { id: "reaper-chainfist-strike", name: "Reaper chainfist – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "18", ap: "-4", damage: "D6+4" }] },
+      { id: "reaper-chainfist-sweep", name: "Reaper chainfist – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "9", ap: "-3", damage: "3" }] },
+    ],
+    wargear: [],
+  },
+
+  {
+    id: "chaos-cerastus-knight-atrapos",
+    name: "Chaos Cerastus Knight Atrapos",
+    faction: "chaos-knights",
+    image: "",
+    points: 420,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "atrapos-lascutter-low-intensity", name: "Atrapos lascutter – low intensity", image: "", profiles: [{ range: '6"', attacks: "2", skill: "3+", strength: "12", ap: "-4", damage: "D6", keywords: ["PISTOL"] }] },
+      { id: "atrapos-lascutter-high-intensity", name: "Atrapos lascutter – high intensity", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-5", damage: "D6+2" }] },
+      { id: "graviton-singularity-cannon-contained", name: "Graviton singularity cannon – contained", image: "", profiles: [{ range: '36"', attacks: "D3+3", skill: "3+", strength: "12", ap: "-3", damage: "D6", keywords: ["BLAST", "HEAVY"] }] },
+      { id: "graviton-singularity-cannon-singularity", name: "Graviton singularity cannon – singularity", image: "", profiles: [{ range: '36"', attacks: "D6+6", skill: "3+", strength: "6", ap: "-2", damage: "2", keywords: ["BLAST", "HEAVY", "INDIRECT FIRE"] }] },
+    ],
+    wargear: [],
+  },
+
+  {
+    id: "chaos-cerastus-knight-castigator",
+    name: "Chaos Cerastus Knight Castigator",
+    faction: "chaos-knights",
+    image: "",
+    points: 445,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "castigator-bolt-cannon", name: "Castigator bolt cannon", image: "", profiles: [{ range: '36"', attacks: "16", skill: "3+", strength: "7", ap: "-1", damage: "2", keywords: ["HEAVY"] }] },
+      { id: "tempest-warblade-strike", name: "Tempest warblade – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "14", ap: "-4", damage: "D6+2" }] },
+      { id: "tempest-warblade-sweep", name: "Tempest warblade – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "2+", strength: "7", ap: "-3", damage: "2" }] },
+    ],
+    wargear: [],
+  },
+
+  {
+    id: "chaos-cerastus-knight-lancer",
+    name: "Chaos Cerastus Knight Lancer",
+    faction: "chaos-knights",
+    image: "",
+    points: 420,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "cerastus-shock-lance", name: "Cerastus shock lance", image: "", profiles: [{ range: '18"', attacks: "4", skill: "3+", strength: "8", ap: "-2", damage: "3", keywords: ["HEAVY"] }] },
+      { id: "cerastus-shock-lance-strike", name: "Cerastus shock lance – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-4", damage: "D6+2" }] },
+      { id: "cerastus-shock-lance-sweep", name: "Cerastus shock lance – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-3", damage: "2" }] },
+    ],
+    wargear: [],
+  },
+
+  {
+    id: "chaos-questoris-knight-magaera",
+    name: "Chaos Questoris Knight Magaera",
+    faction: "chaos-knights",
+    image: "",
+    points: 435,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "lightning-cannon", name: "Lightning cannon", image: "", profiles: [{ range: '36"', attacks: "D6+6", skill: "3+", strength: "8", ap: "-3", damage: "3", keywords: ["HEAVY"] }] },
+      { id: "phased-plasma-fusil", name: "Phased plasma-fusil", image: "", profiles: [{ range: '18"', attacks: "D6+3", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["BLAST", "HAZARDOUS", "HEAVY"] }] },
+      { id: "reaper-chainsword-strike", name: "Reaper chainsword – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
+      { id: "reaper-chainsword-sweep", name: "Reaper chainsword – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+    ],
+    wargear: [
+      { id: "twin-rad-cleanser", name: "Twin rad cleanser", image: "", profiles: [{ range: '18"', attacks: "D6+6", skill: "N/A", strength: "5", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT", "TWIN-LINKED"] }] },
+      { id: "hekaton-siege-claw-strike", name: "Hekaton siege claw – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
+      { id: "hekaton-siege-claw-sweep", name: "Hekaton siege claw – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+    ],
+  },
+
+  {
+    id: "chaos-questoris-knight-styrix",
+    name: "Chaos Questoris Knight Styrix",
+    faction: "chaos-knights",
+    image: "",
+    points: 430,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "graviton-crusher", name: "Graviton crusher", image: "", profiles: [{ range: '24"', attacks: "D3+3", skill: "3+", strength: "12", ap: "-3", damage: "D6", keywords: ["BLAST", "HEAVY"] }] },
+      { id: "volkite-chierovile", name: "Volkite chierovile", image: "", profiles: [{ range: '18"', attacks: "D6+3", skill: "3+", strength: "6", ap: "0", damage: "2", keywords: ["DEVASTATING WOUNDS", "HEAVY"] }] },
+      { id: "reaper-chainsword-strike", name: "Reaper chainsword – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
+      { id: "reaper-chainsword-sweep", name: "Reaper chainsword – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+    ],
+    wargear: [
+      { id: "twin-rad-cleanser", name: "Twin rad cleanser", image: "", profiles: [{ range: '18"', attacks: "D6+6", skill: "N/A", strength: "5", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT", "TWIN-LINKED"] }] },
+      { id: "hekaton-siege-claw-strike", name: "Hekaton siege claw – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
+      { id: "hekaton-siege-claw-sweep", name: "Hekaton siege claw – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+    ],
+  },
+
+  {
+    id: "cultist-firebrand",
+    name: "Cultist Firebrand",
+    faction: "chaos-knights",
+    image: "",
+    points: 45,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "balefire-pike", name: "Balefire pike", image: "", profiles: [{ range: '18"', attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
+    ],
+    wargear: [],
+  },
+
+  {
+    id: "knight-abominant",
+    name: "Knight Abominant",
+    faction: "chaos-knights",
+    image: "",
+    points: 365,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "6", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["HEAVY"] }] },
+      { id: "volkite-combustor", name: "Volkite combustor", image: "", profiles: [{ range: '18"', attacks: "D6+6", skill: "N/A", strength: "5", ap: "-1", damage: "2", keywords: ["DEVASTATING WOUNDS", "IGNORES COVER", "TORRENT"] }] },
+      { id: "balemace", name: "Balemace", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "12", ap: "-2", damage: "D6" }] },
+      { id: "electroscourge", name: "Electroscourge", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+    ],
+    wargear: [],
+  },
+
+  {
+    id: "knight-desecrator",
+    name: "Knight Desecrator",
+    faction: "chaos-knights",
+    image: "",
+    points: 400,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "desecrator-laser-destructor", name: "Desecrator laser destructor", image: "", profiles: [{ range: '48"', attacks: "D6", skill: "3+", strength: "16", ap: "-4", damage: "D6+2", keywords: ["HEAVY"] }] },
+      { id: "diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "6", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["HEAVY"] }] },
+      { id: "reaper-chainsword-strike", name: "Reaper chainsword – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
+      { id: "reaper-chainsword-sweep", name: "Reaper chainsword – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+    ],
+    wargear: [
+      { id: "warpstrike-claw-strike", name: "Warpstrike claw – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
+      { id: "warpstrike-claw-sweep", name: "Warpstrike claw – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+    ],
+  },
+
+  {
+    id: "knight-despoiler",
+    name: "Knight Despoiler",
+    faction: "chaos-knights",
+    image: "",
+    points: 400,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "daemonbreath-meltagun", name: "Daemonbreath meltagun", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 3"] }] },
+      { id: "reaper-chainsword-strike", name: "Reaper chainsword – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
+      { id: "reaper-chainsword-sweep", name: "Reaper chainsword – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+      { id: "titanic-feet", name: "Titanic feet", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "4+", strength: "8", ap: "-1", damage: "2" }] },
+      { id: "warpstrike-claw-strike", name: "Warpstrike claw – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
+      { id: "warpstrike-claw-sweep", name: "Warpstrike claw – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+    ],
+    wargear: [
+      { id: "daemonbreath-thermal-cannon", name: "Daemonbreath thermal cannon", image: "", profiles: [{ range: '24"', attacks: "D6+3", skill: "3+", strength: "14", ap: "-4", damage: "D6", keywords: ["BLAST", "HEAVY", "MELTA 4"] }] },
+      { id: "despoiler-battle-cannon", name: "Despoiler battle cannon", image: "", profiles: [{ range: '72"', attacks: "D6+3", skill: "3+", strength: "12", ap: "-3", damage: "D6", keywords: ["BLAST", "HEAVY"] }] },
+      { id: "despoiler-gatling-cannon", name: "Despoiler gatling cannon", image: "", profiles: [{ range: '48"', attacks: "18", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["HEAVY"] }] },
+      { id: "havoc-missile-pod", name: "Havoc missile pod", image: "", profiles: [{ range: '48"', attacks: "D6", skill: "3+", strength: "10", ap: "-2", damage: "D6", keywords: ["BLAST", "HEAVY"] }] },
+      { id: "heavy-darkflamer", name: "Heavy darkflamer", image: "", profiles: [{ range: '18"', attacks: "D6+6", skill: "N/A", strength: "9", ap: "-2", damage: "2", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "6", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["HEAVY"] }] },
+      { id: "ruinspear-rocket-pod", name: "Ruinspear rocket pod", image: "", profiles: [{ range: '48"', attacks: "3", skill: "3+", strength: "10", ap: "-4", damage: "D6+3", keywords: ["HEAVY"] }] },
+      { id: "hellstorm-autocannons", name: "Hellstorm autocannons", image: "", profiles: [{ range: '48"', attacks: "4", skill: "3+", strength: "9", ap: "-1", damage: "3", keywords: ["HEAVY"] }] },
+    ],
+  },
+
+  {
+    id: "knight-rampager",
+    name: "Knight Rampager",
+    faction: "chaos-knights",
+    image: "",
+    points: 380,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "6", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["HEAVY"] }] },
+      { id: "warpstrike-claw-strike", name: "Warpstrike claw – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
+      { id: "warpstrike-claw-sweep", name: "Warpstrike claw – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+      { id: "reaper-chainsword-strike", name: "Reaper chainsword – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
+      { id: "reaper-chainsword-sweep", name: "Reaper chainsword – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+    ],
+    wargear: [],
+  },
+
+  {
+    id: "knight-tyrant",
+    name: "Knight Tyrant",
+    faction: "chaos-knights",
+    image: "",
+    points: 480,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "brimstone-volcano-lance", name: "Brimstone volcano lance", image: "", profiles: [{ range: '60"', attacks: "D6", skill: "3+", strength: "18", ap: "-6", damage: "D6+6", keywords: ["HEAVY"] }] },
+      { id: "ectoplasma-decimator-standard", name: "Ectoplasma decimator – standard", image: "", profiles: [{ range: '36"', attacks: "D6+6", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["BLAST", "HEAVY"] }] },
+      { id: "ectoplasma-decimator-supercharge", name: "Ectoplasma decimator – supercharge", image: "", profiles: [{ range: '36"', attacks: "D6+6", skill: "3+", strength: "9", ap: "-4", damage: "3", keywords: ["BLAST", "HAZARDOUS", "HEAVY"] }] },
+      { id: "gheiststrike-missile-launcher", name: "Gheiststrike missile launcher", image: "", profiles: [{ range: '48"', attacks: "2", skill: "3+", strength: "14", ap: "-4", damage: "D6+4", keywords: ["HEAVY"] }] },
+      { id: "twin-daemonbreath-meltagun", name: "Twin daemonbreath meltagun", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 3", "TWIN-LINKED"] }] },
+      { id: "twin-desecrator-cannon", name: "Twin desecrator cannon", image: "", profiles: [{ range: '48"', attacks: "D6+3", skill: "3+", strength: "8", ap: "-2", damage: "D3", keywords: ["BLAST", "HEAVY", "TWIN-LINKED"] }] },
+      { id: "titanic-feet", name: "Titanic feet", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "4+", strength: "8", ap: "-1", damage: "2" }] },
+    ],
+    wargear: [
+      { id: "darkflame-cannon", name: "Darkflame cannon", image: "", profiles: [{ range: '18"', attacks: "D6+6", skill: "N/A", strength: "9", ap: "-2", damage: "2", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "warpshock-harpoon", name: "Warpshock harpoon", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "16", ap: "-4", damage: "D6+6", keywords: ["HEAVY"] }] },
+    ],
+  },
+
+  {
+    id: "renegade-enforcer",
+    name: "Renegade Enforcer",
+    faction: "chaos-knights",
+    image: "",
+    points: 65,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "enforcer-pistol", name: "Enforcer pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "enforcer-melee-weapon", name: "Enforcer melee weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+    ],
+    wargear: [
+      { id: "autogun", name: "Autogun", image: "", profiles: [{ range: '24"', attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
+      { id: "lasgun", name: "Lasgun", image: "", profiles: [{ range: '24"', attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
+      { id: "shotgun", name: "Shotgun", image: "", profiles: [{ range: '12"', attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["ASSAULT"] }] },
+      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+      { id: "power-weapon", name: "Power weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
+    ],
+  },
+
+  {
+    id: "rogue-psyker",
+    name: "Rogue Psyker",
+    faction: "chaos-knights",
+    image: "",
+    points: 60,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "laspistol", name: "Laspistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "psychic-strike-focused-witchfire", name: "Psychic Strike – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "D3", skill: "3+", strength: "6", ap: "-2", damage: "2", keywords: ["PSYCHIC"] }] },
+      { id: "psychic-strike-witchfire", name: "Psychic Strike – witchfire", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["BLAST", "PSYCHIC"] }] },
+      { id: "chaos-stave", name: "Chaos stave", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "D3" }] },
+    ],
+    wargear: [],
+  },
+
+  {
+    id: "war-dog-stalker",
+    name: "War Dog Stalker",
+    faction: "chaos-knights",
+    image: "",
+    points: 140,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "avenger-chaincannon", name: "Avenger chaincannon", image: "", profiles: [{ range: '36"', attacks: "12", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["HEAVY"] }] },
+      { id: "diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "6", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["HEAVY"] }] },
+      { id: "slaughterclaw", name: "Slaughterclaw", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-3", damage: "D6" }] },
+    ],
+    wargear: [
+      { id: "daemonbreath-spear", name: "Daemonbreath spear", image: "", profiles: [{ range: '24"', attacks: "D3+3", skill: "3+", strength: "9", ap: "-3", damage: "D6", keywords: ["HEAVY", "MELTA 3"] }] },
+      { id: "havoc-multi-launcher", name: "Havoc multi-launcher", image: "", profiles: [{ range: '36"', attacks: "D6+3", skill: "3+", strength: "6", ap: "0", damage: "1", keywords: ["BLAST", "HEAVY", "INDIRECT FIRE"] }] },
+      { id: "reaper-chaintalon-strike", name: "Reaper chaintalon – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-3", damage: "D6" }] },
+      { id: "reaper-chaintalon-sweep", name: "Reaper chaintalon – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "5", ap: "-2", damage: "2" }] },
+    ],
+  },
+
+];

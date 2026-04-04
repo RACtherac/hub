@@ -1,85 +1,78 @@
 import type { Unit } from "../../../types/warhammer";
 
-export const thousandSonsUnits: Unit[] = [
+export const worldEatersUnits: Unit[] = [
 
   {
-    id: "tzaangor-enlightened",
-    name: "Tzaangor Enlightened",
-    faction: "thousand-sons",
-    category: "mounted",
-    points: 50,
-    defaultWargear: [
-      { id: "divining-spear", name: "Divining spear", image: "" },
-    ],
-    wargear: [
-      { id: "autopistol", name: "Autopistol", image: "" },
-      { id: "fatecaster-greatbow", name: "Fatecaster greatbow", image: "" },
-      { id: "chainsword", name: "Chainsword", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "tzaangors",
-    name: "Tzaangors",
-    faction: "thousand-sons",
+    id: "jakhals",
+    name: "Jakhals",
+    faction: "world-eaters",
     category: "battleline",
     points: 65,
     defaultWargear: [
-      { id: "tzaangor-blades", name: "Tzaangor blades", image: "" },
-    ],
-    wargear: [
       { id: "autopistol", name: "Autopistol", image: "" },
-      { id: "chainsword", name: "Chainsword", image: "" },
+      { id: "jakhal-chainblades", name: "Jakhal chainblades", image: "" },
+    ],
+    wargear: [
+      { id: "dishonoured-chainblades", name: "Dishonoured chainblades", image: "" },
+      { id: "mauler-chainblade", name: "Mauler chainblade", image: "" },
+      { id: "skullsmasher", name: "Skullsmasher", image: "" },
     ],
     ledBy: [],
   },
 
   {
-    id: "rubric-marines",
-    name: "Rubric Marines",
-    faction: "thousand-sons",
-    category: "infantry",
-    points: 110,
+    id: "khorne-berzerkers",
+    name: "Khorne Berzerkers",
+    faction: "world-eaters",
+    category: "battleline",
+    points: 90,
     defaultWargear: [
-      { id: "inferno-bolt-pistol", name: "Inferno bolt pistol", image: "" },
-      { id: "warpsmite", name: "Warpsmite", image: "" },
-      { id: "force-weapon", name: "Force weapon", image: "" },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "berzerker-chainblade", name: "Berzerker chainblade", image: "" },
     ],
-    wargear: [
-      { id: "inferno-boltgun", name: "Inferno boltgun", image: "" },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
-      { id: "soulreaper-cannon", name: "Soulreaper cannon", image: "" },
-      { id: "warpflame-pistol", name: "Warpflame pistol", image: "" },
-    ],
-    ledBy: ["ahriman","ahriman-on-disc-of-tzeentch","exalted-sorcerer","exalted-sorcerer-on-disc-of-tzeentch","infernal-master","thousand-sons-sorcerer"],
+    wargear: [],
+    ledBy: ["kh-rn-the-betrayer","lord-invocatus","world-eaters-lord-on-juggernaut","world-eaters-master-of-executions"],
   },
 
   {
-    id: "scarab-occult-terminators",
-    name: "Scarab Occult Terminators",
-    faction: "thousand-sons",
+    id: "eightbound",
+    name: "Eightbound",
+    faction: "world-eaters",
     category: "infantry",
-    points: 180,
+    points: 140,
     defaultWargear: [
-      { id: "inferno-combi-bolter", name: "Inferno combi-bolter", image: "" },
-      { id: "warpsmite", name: "Warpsmite", image: "" },
-      { id: "force-weapon", name: "Force weapon", image: "" },
+      { id: "lacerators", name: "Lacerators", image: "" },
     ],
     wargear: [
-      { id: "heavy-warpflamer", name: "Heavy warpflamer", image: "" },
-      { id: "soulreaper-cannon", name: "Soulreaper cannon", image: "" },
+      { id: "eightbound-eviscerators", name: "Eightbound eviscerators", image: "" },
+      { id: "heavy-chainglaive", name: "Heavy chainglaive", image: "" },
     ],
-    ledBy: [],
+    ledBy: ["lord-invocatus","world-eaters-lord-on-juggernaut"],
   },
 
   {
-    id: "thousand-sons-chaos-spawn",
-    name: "Thousand Sons Chaos Spawn",
-    faction: "thousand-sons",
+    id: "exalted-eightbound",
+    name: "Exalted Eightbound",
+    faction: "world-eaters",
     category: "infantry",
-    points: 65,
+    points: 155,
+    defaultWargear: [
+      { id: "eightbound-chainfist", name: "Eightbound chainfist", image: "" },
+      { id: "eightbound-eviscerator", name: "Eightbound eviscerator", image: "" },
+      { id: "paired-eightbound-chainfists", name: "Paired Eightbound chainfists", image: "" },
+    ],
+    wargear: [
+      { id: "heavy-chainglaive", name: "Heavy chainglaive", image: "" },
+    ],
+    ledBy: ["lord-invocatus","world-eaters-lord-on-juggernaut"],
+  },
+
+  {
+    id: "world-eaters-chaos-spawn",
+    name: "World Eaters Chaos Spawn",
+    faction: "world-eaters",
+    category: "infantry",
+    points: 70,
     defaultWargear: [
       { id: "hideous-mutations", name: "Hideous mutations", image: "" },
     ],
@@ -88,28 +81,42 @@ export const thousandSonsUnits: Unit[] = [
   },
 
   {
-    id: "thousand-sons-cultists",
-    name: "Thousand Sons Cultists",
-    faction: "thousand-sons",
+    id: "world-eaters-terminator-squad",
+    name: "World Eaters Terminator Squad",
+    faction: "world-eaters",
     category: "infantry",
-    points: 55,
+    points: 180,
     defaultWargear: [
-      { id: "cultist-firearm", name: "Cultist firearm", image: "" },
-      { id: "brutal-assault-weapon", name: "Brutal assault weapon", image: "" },
+      { id: "combi-bolter", name: "Combi-bolter", image: "" },
+      { id: "accursed-weapon", name: "Accursed weapon", image: "" },
+      { id: "paired-accursed-weapons", name: "Paired accursed weapons", image: "" },
     ],
     wargear: [
-      { id: "flamer", name: "Flamer", image: "" },
-      { id: "grenade-launcher-frag", name: "Grenade launcher – frag", image: "" },
-      { id: "grenade-launcher-krak", name: "Grenade launcher – krak", image: "" },
-      { id: "heavy-stubber", name: "Heavy stubber", image: "" },
+      { id: "heavy-flamer", name: "Heavy flamer", image: "" },
+      { id: "reaper-autocannon", name: "Reaper autocannon", image: "" },
     ],
+    ledBy: [],
+  },
+
+  {
+    id: "blood-slaughterer",
+    name: "Blood Slaughterer",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 160,
+    defaultWargear: [
+      { id: "impaler-harpoon", name: "Impaler harpoon", image: "" },
+      { id: "slaughter-blade", name: "Slaughter blade", image: "" },
+      { id: "twin-slaughter-blade", name: "Twin slaughter blade", image: "" },
+    ],
+    wargear: [],
     ledBy: [],
   },
 
   {
     id: "cerberus",
     name: "Cerberus",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 285,
     defaultWargear: [
@@ -129,7 +136,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "deredeo-dreadnought",
     name: "Deredeo Dreadnought",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 170,
     defaultWargear: [
@@ -149,7 +156,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "falchion",
     name: "Falchion",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 515,
     defaultWargear: [
@@ -171,7 +178,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "fellblade",
     name: "Fellblade",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 535,
     defaultWargear: [
@@ -195,7 +202,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "fire-raptor-gunship",
     name: "Fire Raptor Gunship",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 290,
     defaultWargear: [
@@ -212,9 +219,26 @@ export const thousandSonsUnits: Unit[] = [
   },
 
   {
+    id: "greater-brass-scorpion",
+    name: "Greater Brass Scorpion",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 560,
+    defaultWargear: [
+      { id: "demolisher-cannon", name: "Demolisher cannon", image: "" },
+      { id: "hellmaw-flame-cannons", name: "Hellmaw flame cannons", image: "" },
+      { id: "scorpion-cannon", name: "Scorpion cannon", image: "" },
+      { id: "hellcrusher-claws-strike", name: "Hellcrusher claws – strike", image: "" },
+      { id: "hellcrusher-claws-sweep", name: "Hellcrusher claws – sweep", image: "" },
+    ],
+    wargear: [],
+    ledBy: [],
+  },
+
+  {
     id: "hell-blade",
     name: "Hell Blade",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 115,
     defaultWargear: [
@@ -230,7 +254,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "hell-talon",
     name: "Hell Talon",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 140,
     defaultWargear: [
@@ -245,9 +269,28 @@ export const thousandSonsUnits: Unit[] = [
   },
 
   {
+    id: "khorne-lord-of-skulls",
+    name: "Khorne Lord Of Skulls",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 450,
+    defaultWargear: [
+      { id: "gorestorm-cannon", name: "Gorestorm cannon", image: "" },
+      { id: "hades-gatling-cannon", name: "Hades gatling cannon", image: "" },
+      { id: "great-cleaver-of-khorne-strike", name: "Great cleaver of Khorne – strike", image: "" },
+      { id: "great-cleaver-of-khorne-sweep", name: "Great cleaver of Khorne – sweep", image: "" },
+    ],
+    wargear: [
+      { id: "daemongore-cannon", name: "Daemongore cannon", image: "" },
+      { id: "ichor-cannon", name: "Ichor cannon", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
     id: "kratos",
     name: "Kratos",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 265,
     defaultWargear: [
@@ -273,9 +316,24 @@ export const thousandSonsUnits: Unit[] = [
   },
 
   {
+    id: "kytan-ravager",
+    name: "Kytan Ravager",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 425,
+    defaultWargear: [
+      { id: "kytan-gatling-cannon", name: "Kytan gatling cannon", image: "" },
+      { id: "kytan-cleaver-strike", name: "Kytan cleaver – strike", image: "" },
+      { id: "kytan-cleaver-sweep", name: "Kytan cleaver – sweep", image: "" },
+    ],
+    wargear: [],
+    ledBy: [],
+  },
+
+  {
     id: "leviathan-dreadnought",
     name: "Leviathan Dreadnought",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 215,
     defaultWargear: [
@@ -296,7 +354,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "rapier-carrier",
     name: "Rapier Carrier",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 100,
     defaultWargear: [
@@ -316,7 +374,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "relic-contemptor-dreadnought",
     name: "Relic Contemptor Dreadnought",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 180,
     defaultWargear: [
@@ -344,7 +402,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "sicaran-battle-tank",
     name: "Sicaran Battle Tank",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 220,
     defaultWargear: [
@@ -361,7 +419,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "sicaran-punisher",
     name: "Sicaran Punisher",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 220,
     defaultWargear: [
@@ -378,7 +436,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "sicaran-venator",
     name: "Sicaran Venator",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 220,
     defaultWargear: [
@@ -393,160 +451,9 @@ export const thousandSonsUnits: Unit[] = [
   },
 
   {
-    id: "thousand-sons-defiler",
-    name: "Thousand Sons Defiler",
-    faction: "thousand-sons",
-    category: "vehicle",
-    points: 190,
-    defaultWargear: [
-      { id: "defiler-cannon", name: "Defiler cannon", image: "" },
-      { id: "reaper-autocannon", name: "Reaper autocannon", image: "" },
-      { id: "twin-heavy-flamer", name: "Twin heavy flamer", image: "" },
-      { id: "defiler-claws", name: "Defiler claws", image: "" },
-    ],
-    wargear: [
-      { id: "havoc-launcher", name: "Havoc launcher", image: "" },
-      { id: "twin-inferno-heavy-bolter", name: "Twin inferno heavy bolter", image: "" },
-      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
-      { id: "defiler-scourge", name: "Defiler scourge", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "thousand-sons-forgefiend",
-    name: "Thousand Sons Forgefiend",
-    faction: "thousand-sons",
-    category: "vehicle",
-    points: 145,
-    defaultWargear: [
-      { id: "hades-autocannon", name: "Hades autocannon", image: "" },
-      { id: "forgefiend-jaws", name: "Forgefiend jaws", image: "" },
-    ],
-    wargear: [
-      { id: "ectoplasma-cannon", name: "Ectoplasma cannon", image: "" },
-      { id: "forgefiend-claws", name: "Forgefiend claws", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "thousand-sons-helbrute",
-    name: "Thousand Sons Helbrute",
-    faction: "thousand-sons",
-    category: "vehicle",
-    points: 130,
-    defaultWargear: [
-      { id: "missile-launcher-frag", name: "Missile launcher – frag", image: "" },
-      { id: "missile-launcher-krak", name: "Missile launcher – krak", image: "" },
-      { id: "multi-melta", name: "Multi-melta", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
-    ],
-    wargear: [
-      { id: "heavy-flamer", name: "Heavy flamer", image: "" },
-      { id: "helbrute-plasma-cannon", name: "Helbrute plasma cannon", image: "" },
-      { id: "inferno-combi-bolter", name: "Inferno combi-bolter", image: "" },
-      { id: "twin-autocannon", name: "Twin autocannon", image: "" },
-      { id: "twin-inferno-heavy-bolter", name: "Twin inferno heavy bolter", image: "" },
-      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
-      { id: "helbrute-fist", name: "Helbrute fist", image: "" },
-      { id: "helbrute-hammer", name: "Helbrute hammer", image: "" },
-      { id: "power-scourge", name: "Power scourge", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "thousand-sons-heldrake",
-    name: "Thousand Sons Heldrake",
-    faction: "thousand-sons",
-    category: "vehicle",
-    points: 195,
-    defaultWargear: [
-      { id: "hades-autocannon", name: "Hades autocannon", image: "" },
-      { id: "heldrake-claws", name: "Heldrake claws", image: "" },
-    ],
-    wargear: [
-      { id: "baleflamer", name: "Baleflamer", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "thousand-sons-maulerfiend",
-    name: "Thousand Sons Maulerfiend",
-    faction: "thousand-sons",
-    category: "vehicle",
-    points: 140,
-    defaultWargear: [
-      { id: "lasher-tendrils", name: "Lasher tendrils", image: "" },
-      { id: "maulerfiend-fists", name: "Maulerfiend fists", image: "" },
-    ],
-    wargear: [
-      { id: "magma-cutter", name: "Magma cutter", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "thousand-sons-predator-annihilator",
-    name: "Thousand Sons Predator Annihilator",
-    faction: "thousand-sons",
-    category: "vehicle",
-    points: 135,
-    defaultWargear: [
-      { id: "lascannon", name: "Lascannon", image: "" },
-      { id: "predator-twin-lascannon", name: "Predator twin lascannon", image: "" },
-      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
-    ],
-    wargear: [
-      { id: "inferno-combi-bolter", name: "Inferno combi-bolter", image: "" },
-      { id: "inferno-combi-weapon", name: "Inferno combi-weapon", image: "" },
-      { id: "inferno-heavy-bolter", name: "Inferno heavy bolter", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "thousand-sons-predator-destructor",
-    name: "Thousand Sons Predator Destructor",
-    faction: "thousand-sons",
-    category: "vehicle",
-    points: 140,
-    defaultWargear: [
-      { id: "predator-autocannon", name: "Predator autocannon", image: "" },
-      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
-    ],
-    wargear: [
-      { id: "inferno-combi-bolter", name: "Inferno combi-bolter", image: "" },
-      { id: "inferno-combi-weapon", name: "Inferno combi-weapon", image: "" },
-      { id: "inferno-heavy-bolter", name: "Inferno heavy bolter", image: "" },
-      { id: "lascannon", name: "Lascannon", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "thousand-sons-vindicator",
-    name: "Thousand Sons Vindicator",
-    faction: "thousand-sons",
-    category: "vehicle",
-    points: 185,
-    defaultWargear: [
-      { id: "demolisher-cannon", name: "Demolisher cannon", image: "" },
-      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
-    ],
-    wargear: [
-      { id: "inferno-combi-bolter", name: "Inferno combi-bolter", image: "" },
-      { id: "inferno-combi-weapon", name: "Inferno combi-weapon", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
     id: "typhon",
     name: "Typhon",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 385,
     defaultWargear: [
@@ -566,7 +473,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "whirlwind-scorpius",
     name: "Whirlwind Scorpius",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 115,
     defaultWargear: [
@@ -581,9 +488,145 @@ export const thousandSonsUnits: Unit[] = [
   },
 
   {
+    id: "world-eaters-defiler",
+    name: "World Eaters Defiler",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 190,
+    defaultWargear: [
+      { id: "defiler-cannon", name: "Defiler cannon", image: "" },
+      { id: "reaper-autocannon", name: "Reaper autocannon", image: "" },
+      { id: "twin-heavy-flamer", name: "Twin heavy flamer", image: "" },
+      { id: "defiler-claws", name: "Defiler claws", image: "" },
+    ],
+    wargear: [
+      { id: "combi-bolter", name: "Combi-bolter", image: "" },
+      { id: "combi-weapon", name: "Combi-weapon", image: "" },
+      { id: "havoc-launcher", name: "Havoc launcher", image: "" },
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
+      { id: "defiler-scourge", name: "Defiler scourge", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "world-eaters-forgefiend",
+    name: "World Eaters Forgefiend",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 145,
+    defaultWargear: [
+      { id: "hades-autocannon", name: "Hades autocannon", image: "" },
+      { id: "forgefiend-jaws", name: "Forgefiend jaws", image: "" },
+    ],
+    wargear: [
+      { id: "ectoplasma-cannon", name: "Ectoplasma cannon", image: "" },
+      { id: "forgefiend-claws", name: "Forgefiend claws", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "world-eaters-helbrute",
+    name: "World Eaters Helbrute",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 130,
+    defaultWargear: [
+      { id: "missile-launcher-frag", name: "Missile launcher – frag", image: "" },
+      { id: "missile-launcher-krak", name: "Missile launcher – krak", image: "" },
+      { id: "multi-melta", name: "Multi-melta", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "combi-bolter", name: "Combi-bolter", image: "" },
+      { id: "heavy-flamer", name: "Heavy flamer", image: "" },
+      { id: "helbrute-plasma-cannon", name: "Helbrute plasma cannon", image: "" },
+      { id: "twin-autocannon", name: "Twin autocannon", image: "" },
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
+      { id: "helbrute-fist", name: "Helbrute fist", image: "" },
+      { id: "helbrute-hammer", name: "Helbrute hammer", image: "" },
+      { id: "power-scourge", name: "Power scourge", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "world-eaters-heldrake",
+    name: "World Eaters Heldrake",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 210,
+    defaultWargear: [
+      { id: "hades-autocannon", name: "Hades autocannon", image: "" },
+      { id: "heldrake-claws", name: "Heldrake claws", image: "" },
+    ],
+    wargear: [
+      { id: "baleflamer", name: "Baleflamer", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "world-eaters-maulerfiend",
+    name: "World Eaters Maulerfiend",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 140,
+    defaultWargear: [
+      { id: "lasher-tendrils", name: "Lasher tendrils", image: "" },
+      { id: "maulerfiend-fists", name: "Maulerfiend fists", image: "" },
+    ],
+    wargear: [
+      { id: "magma-cutter", name: "Magma cutter", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "world-eaters-predator-annihilator",
+    name: "World Eaters Predator Annihilator",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 135,
+    defaultWargear: [
+      { id: "lascannon", name: "Lascannon", image: "" },
+      { id: "predator-twin-lascannon", name: "Predator twin lascannon", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "combi-bolter", name: "Combi-bolter", image: "" },
+      { id: "combi-weapon", name: "Combi-weapon", image: "" },
+      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "world-eaters-predator-destructor",
+    name: "World Eaters Predator Destructor",
+    faction: "world-eaters",
+    category: "vehicle",
+    points: 140,
+    defaultWargear: [
+      { id: "predator-autocannon", name: "Predator autocannon", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "combi-bolter", name: "Combi-bolter", image: "" },
+      { id: "combi-weapon", name: "Combi-weapon", image: "" },
+      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
+      { id: "lascannon", name: "Lascannon", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
     id: "xiphon-interceptor",
     name: "Xiphon Interceptor",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "vehicle",
     points: 115,
     defaultWargear: [
@@ -596,26 +639,9 @@ export const thousandSonsUnits: Unit[] = [
   },
 
   {
-    id: "mutalith-vortex-beast",
-    name: "Mutalith Vortex Beast",
-    faction: "thousand-sons",
-    category: "monster",
-    points: 165,
-    defaultWargear: [
-      { id: "warp-vortex-blast", name: "Warp vortex – blast", image: "" },
-      { id: "warp-vortex-beam", name: "Warp vortex – beam", image: "" },
-      { id: "warp-vortex-torrent", name: "Warp vortex – torrent", image: "" },
-      { id: "betentacled-maw", name: "Betentacled maw", image: "" },
-      { id: "mutalith-claws", name: "Mutalith claws", image: "" },
-    ],
-    wargear: [],
-    ledBy: [],
-  },
-
-  {
     id: "chaos-thunderhawk",
     name: "Chaos Thunderhawk",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "transport",
     points: 840,
     defaultWargear: [
@@ -634,7 +660,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "land-raider-achilles",
     name: "Land Raider Achilles",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "transport",
     points: 285,
     defaultWargear: [
@@ -654,7 +680,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "land-raider-proteus",
     name: "Land Raider Proteus",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "transport",
     points: 250,
     defaultWargear: [
@@ -673,7 +699,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "mastodon",
     name: "Mastodon",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "transport",
     points: 610,
     defaultWargear: [
@@ -693,7 +719,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "sokar-pattern-stormbird",
     name: "Sokar Pattern Stormbird",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "transport",
     points: 1100,
     defaultWargear: [
@@ -709,7 +735,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "spartan",
     name: "Spartan",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "transport",
     points: 315,
     defaultWargear: [
@@ -730,7 +756,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "storm-eagle-gunship",
     name: "Storm Eagle Gunship",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "transport",
     points: 255,
     defaultWargear: [
@@ -750,7 +776,7 @@ export const thousandSonsUnits: Unit[] = [
   {
     id: "terrax-pattern-termite",
     name: "Terrax Pattern Termite",
-    faction: "thousand-sons",
+    faction: "world-eaters",
     category: "transport",
     points: 200,
     defaultWargear: [
@@ -766,35 +792,35 @@ export const thousandSonsUnits: Unit[] = [
   },
 
   {
-    id: "thousand-sons-land-raider",
-    name: "Thousand Sons Land Raider",
-    faction: "thousand-sons",
+    id: "world-eaters-land-raider",
+    name: "World Eaters Land Raider",
+    faction: "world-eaters",
     category: "transport",
     points: 240,
     defaultWargear: [
       { id: "soulshatter-lascannon", name: "Soulshatter lascannon", image: "" },
-      { id: "twin-inferno-heavy-bolter", name: "Twin inferno heavy bolter", image: "" },
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
       { id: "armoured-tracks", name: "Armoured tracks", image: "" },
     ],
     wargear: [
-      { id: "inferno-combi-bolter", name: "Inferno combi-bolter", image: "" },
-      { id: "inferno-combi-weapon", name: "Inferno combi-weapon", image: "" },
+      { id: "combi-bolter", name: "Combi-bolter", image: "" },
+      { id: "combi-weapon", name: "Combi-weapon", image: "" },
     ],
     ledBy: [],
   },
 
   {
-    id: "thousand-sons-rhino",
-    name: "Thousand Sons Rhino",
-    faction: "thousand-sons",
+    id: "world-eaters-rhino",
+    name: "World Eaters Rhino",
+    faction: "world-eaters",
     category: "transport",
     points: 75,
     defaultWargear: [
-      { id: "inferno-combi-bolter", name: "Inferno combi-bolter", image: "" },
+      { id: "combi-bolter", name: "Combi-bolter", image: "" },
       { id: "armoured-tracks", name: "Armoured tracks", image: "" },
     ],
     wargear: [
-      { id: "inferno-combi-weapon", name: "Inferno combi-weapon", image: "" },
+      { id: "combi-weapon", name: "Combi-weapon", image: "" },
     ],
     ledBy: [],
   },

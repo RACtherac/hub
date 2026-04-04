@@ -1,13 +1,12 @@
-import type { Character } from "../../../types/warhammer";
+import type { Unit } from "../../../types/warhammer";
 
 interface Props {
-  characters: Character[];
-  selectedCharacter?: string;
-  onChange: (char?: string) => void;
-  label?: string;
+  units: Unit[];
+  selectedUnit?: string;
+  onChange: (unitId?: string) => void;
 }
 
-export default function CharacterAttachment({ characters, selectedCharacter, onChange, label = "Attached Character" }: Props) {
+export default function UnitAttachment({ units, selectedUnit, onChange }: Props) {
   return (
     <div>
       <div style={{
@@ -18,16 +17,16 @@ export default function CharacterAttachment({ characters, selectedCharacter, onC
         color: "var(--text-dim)",
         marginBottom: "10px",
       }}>
-        {label}
+        Attached Unit
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
         <button
           onClick={() => onChange(undefined)}
           style={{
-            background: !selectedCharacter ? "var(--accent-dim)" : "none",
-            border: `1px solid ${!selectedCharacter ? "var(--accent)" : "var(--border-2)"}`,
-            color: !selectedCharacter ? "var(--accent)" : "var(--text-dim)",
+            background: !selectedUnit ? "var(--accent-dim)" : "none",
+            border: `1px solid ${!selectedUnit ? "var(--accent)" : "var(--border-2)"}`,
+            color: !selectedUnit ? "var(--accent)" : "var(--text-dim)",
             fontFamily: "var(--font-mono)",
             fontSize: "10px",
             letterSpacing: "0.08em",
@@ -39,12 +38,12 @@ export default function CharacterAttachment({ characters, selectedCharacter, onC
           None
         </button>
 
-        {characters.map((char) => {
-          const active = selectedCharacter === char.id;
+        {units.map((unit) => {
+          const active = selectedUnit === unit.id;
           return (
             <button
-              key={char.id}
-              onClick={() => onChange(active ? undefined : char.id)}
+              key={unit.id}
+              onClick={() => onChange(active ? undefined : unit.id)}
               style={{
                 background: active ? "var(--accent-dim)" : "none",
                 border: `1px solid ${active ? "var(--accent)" : "var(--border-2)"}`,
@@ -68,8 +67,8 @@ export default function CharacterAttachment({ characters, selectedCharacter, onC
                 flexShrink: 0,
                 transition: "background 0.15s",
               }} />
-              {char.name}
-              <span style={{ opacity: 0.6 }}>{char.points}pts</span>
+              {unit.name}
+              <span style={{ opacity: 0.6 }}>{unit.points}pts</span>
             </button>
           );
         })}
