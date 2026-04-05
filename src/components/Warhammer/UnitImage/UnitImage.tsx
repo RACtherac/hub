@@ -5,16 +5,18 @@ interface Props {
   modelCount: number;
   characters: Character[];
   attachedCharacter?: string;
+  attachedCharacter2?: string;
+  attachedUnit?: Unit;
 }
 
 export default function UnitImage({
   unit, modelCount,
-  characters, attachedCharacter,
+  characters, attachedCharacter, attachedCharacter2,
+  attachedUnit,
 }: Props) {
   const selectedCharacter = characters.find((c) => c.id === attachedCharacter);
-  const hasCharacter = !!selectedCharacter;
+  const selectedCharacter2 = characters.find((c) => c.id === attachedCharacter2);
 
-  const frameWidth = hasCharacter ? 340 : 280;
   const frameHeight = 260;
 
   const baseImage =
@@ -30,63 +32,166 @@ export default function UnitImage({
 
 
   return (
-    <div style={{
-      position: "relative",
-      width: frameWidth,
-      height: frameHeight,
-      background: "var(--surface-2)",
-      border: "1px solid var(--border-2)",
-      overflow: "hidden",
-      transition: "width 0.2s",
-      flexShrink: 0,
-    }}>
-      {/* Corner accents */}
-      <div style={{ position: "absolute", top: 0, left: 0, width: "12px", height: "12px", borderTop: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)", zIndex: 10 }} />
-      <div style={{ position: "absolute", top: 0, right: 0, width: "12px", height: "12px", borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)", zIndex: 10 }} />
-      <div style={{ position: "absolute", bottom: 0, left: 0, width: "12px", height: "12px", borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)", zIndex: 10 }} />
-      <div style={{ position: "absolute", bottom: 0, right: 0, width: "12px", height: "12px", borderBottom: "2px solid var(--accent)", borderRight: "2px solid var(--accent)", zIndex: 10 }} />
+    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+    <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
+      {/* Unit frame */}
+      <div style={{
+        position: "relative",
+        width: 280,
+        height: frameHeight,
+        background: "var(--surface-2)",
+        border: "1px solid var(--border-2)",
+        overflow: "hidden",
+        flexShrink: 0,
+      }}>
+        {/* Corner accents */}
+        <div style={{ position: "absolute", top: 0, left: 0, width: "12px", height: "12px", borderTop: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)", zIndex: 10 }} />
+        <div style={{ position: "absolute", top: 0, right: 0, width: "12px", height: "12px", borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)", zIndex: 10 }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, width: "12px", height: "12px", borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)", zIndex: 10 }} />
+        <div style={{ position: "absolute", bottom: 0, right: 0, width: "12px", height: "12px", borderBottom: "2px solid var(--accent)", borderRight: "2px solid var(--accent)", zIndex: 10 }} />
 
-      {/* No image placeholder */}
-      {!baseImage && (
+        {!baseImage && (
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--text-dim)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "10px",
+            letterSpacing: "0.1em",
+            opacity: 0.4,
+          }}>
+            NO IMAGE
+          </div>
+        )}
+
+        {baseImage && (
+          <img src={baseImage} style={{
+            position: "absolute",
+            width: "240px",
+            left: "16px",
+            bottom: "0",
+            zIndex: 3,
+            objectFit: "contain",
+          }} />
+        )}
+      </div>
+
+      {/* Character frame */}
+      {selectedCharacter && (
         <div style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "var(--text-dim)",
-          fontFamily: "var(--font-mono)",
-          fontSize: "10px",
-          letterSpacing: "0.1em",
-          opacity: 0.4,
+          position: "relative",
+          width: 120,
+          height: 160,
+          background: "var(--surface-2)",
+          border: "1px solid var(--border-2)",
+          overflow: "hidden",
+          flexShrink: 0,
         }}>
-          NO IMAGE
+          <div style={{ position: "absolute", top: 0, left: 0, width: "8px", height: "8px", borderTop: "1px solid var(--accent)", borderLeft: "1px solid var(--accent)", zIndex: 10 }} />
+          <div style={{ position: "absolute", top: 0, right: 0, width: "8px", height: "8px", borderTop: "1px solid var(--accent)", borderRight: "1px solid var(--accent)", zIndex: 10 }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: "8px", height: "8px", borderBottom: "1px solid var(--accent)", borderLeft: "1px solid var(--accent)", zIndex: 10 }} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: "8px", height: "8px", borderBottom: "1px solid var(--accent)", borderRight: "1px solid var(--accent)", zIndex: 10 }} />
+          <img src={selectedCharacter.image} style={{
+            position: "absolute",
+            width: "110px",
+            bottom: "0",
+            left: "5px",
+            zIndex: 4,
+            objectFit: "contain",
+          }} />
         </div>
       )}
 
-      {/* Unit image */}
-      {baseImage && (
-        <img src={baseImage} style={{
-          position: "absolute",
-          width: "240px",
-          left: "16px",
-          bottom: "0",
-          zIndex: 3,
-          objectFit: "contain",
-        }} />
+      {/* Second character frame */}
+      {selectedCharacter2 && (
+        <div style={{
+          position: "relative",
+          width: 120,
+          height: 160,
+          background: "var(--surface-2)",
+          border: "1px solid var(--border-2)",
+          overflow: "hidden",
+          flexShrink: 0,
+        }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: "8px", height: "8px", borderTop: "1px solid var(--accent)", borderLeft: "1px solid var(--accent)", zIndex: 10 }} />
+          <div style={{ position: "absolute", top: 0, right: 0, width: "8px", height: "8px", borderTop: "1px solid var(--accent)", borderRight: "1px solid var(--accent)", zIndex: 10 }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: "8px", height: "8px", borderBottom: "1px solid var(--accent)", borderLeft: "1px solid var(--accent)", zIndex: 10 }} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: "8px", height: "8px", borderBottom: "1px solid var(--accent)", borderRight: "1px solid var(--accent)", zIndex: 10 }} />
+          {selectedCharacter2.image ? (
+            <img src={selectedCharacter2.image} style={{
+              position: "absolute",
+              width: "110px",
+              bottom: "0",
+              left: "5px",
+              zIndex: 4,
+              objectFit: "contain",
+            }} />
+          ) : (
+            <div style={{
+              position: "absolute", inset: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "var(--text-dim)", fontFamily: "var(--font-mono)",
+              fontSize: "9px", letterSpacing: "0.08em", opacity: 0.4,
+            }}>NO IMAGE</div>
+          )}
+        </div>
       )}
 
-      {/* Character image */}
-      {selectedCharacter && (
-        <img src={selectedCharacter.image} style={{
-          position: "absolute",
-          width: "120px",
-          bottom: "0",
-          right: "8px",
-          zIndex: 4,
-          objectFit: "contain",
-        }} />
+      {/* Attached unit frame (e.g. Invader ATV) */}
+      {attachedUnit && (
+        <div style={{
+          position: "relative",
+          width: 120,
+          height: 160,
+          background: "var(--surface-2)",
+          border: "1px solid var(--border-2)",
+          overflow: "hidden",
+          flexShrink: 0,
+        }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: "8px", height: "8px", borderTop: "1px solid var(--accent)", borderLeft: "1px solid var(--accent)", zIndex: 10 }} />
+          <div style={{ position: "absolute", top: 0, right: 0, width: "8px", height: "8px", borderTop: "1px solid var(--accent)", borderRight: "1px solid var(--accent)", zIndex: 10 }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: "8px", height: "8px", borderBottom: "1px solid var(--accent)", borderLeft: "1px solid var(--accent)", zIndex: 10 }} />
+          <div style={{ position: "absolute", bottom: 0, right: 0, width: "8px", height: "8px", borderBottom: "1px solid var(--accent)", borderRight: "1px solid var(--accent)", zIndex: 10 }} />
+          {attachedUnit.image ? (
+            <img src={attachedUnit.image} style={{
+              position: "absolute",
+              width: "110px",
+              bottom: "0",
+              left: "5px",
+              zIndex: 4,
+              objectFit: "contain",
+            }} />
+          ) : (
+            <div style={{
+              position: "absolute", inset: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "var(--text-dim)", fontFamily: "var(--font-mono)",
+              fontSize: "9px", letterSpacing: "0.08em", opacity: 0.4,
+            }}>NO IMAGE</div>
+          )}
+        </div>
       )}
+    </div>
+    {unit.imageCredit && (
+      <div style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "4px 10px",
+        border: "1px solid var(--border-2)",
+        background: "var(--surface-2)",
+        fontFamily: "var(--font-mono)",
+        fontSize: "9px",
+        color: "white",
+        opacity: 0.85,
+        letterSpacing: "0.05em",
+        alignSelf: "flex-start",
+      }}>
+        {unit.imageCredit}
+      </div>
+    )}
     </div>
   );
 }

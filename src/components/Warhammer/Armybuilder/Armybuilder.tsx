@@ -10,8 +10,15 @@ interface ArmyUnit {
   unitId: string;
   modelCount: number;
   wargear: string[];
+  wargearCounts: Record<string, number>;
   attachedCharacter?: string;
   characterWargear: string[];
+  attachedCharacter2?: string;
+  characterWargear2: string[];
+  attachedUnit?: string;
+  attachedUnitWargear: string[];
+  checkedNotes: string[];
+  noteWeaponSelections: Record<string, string>;
   transportedUnits: string[];
 }
 
@@ -22,9 +29,9 @@ interface ArmyCharacter {
 }
 
 const SUPERFACTIONS: Record<SuperFaction, Faction[]> = {
-  imperium: ["space-marines", "astra-militarum", "adeptus-mechanicus"],
-  chaos:    ["chaos-space-marine", "death-guard", "thousand-sons"],
-  xenos:    ["tyranids", "necrons", "orks"],
+  imperium: ["space-marines", "astra-militarum", "adeptus-mechanicus", "adeptus-custodes", "adepta-sororitas", "grey-knights", "imperial-agents", "imperial-knights"],
+  chaos:    ["chaos-space-marine", "death-guard", "thousand-sons", "world-eaters", "chaos-daemons", "chaos-knights"],
+  xenos:    ["tyranids", "necrons", "orks", "tau-empire", "aeldari", "drukhari", "genestealer-cults", "leagues-of-votann"],
 };
 
 const SUPERFACTION_LABELS: Record<SuperFaction, string> = {
@@ -34,22 +41,36 @@ const SUPERFACTION_LABELS: Record<SuperFaction, string> = {
 };
 
 const FACTION_LABELS: Record<Faction, string> = {
-  "space-marines": "Space Marines",
-  "astra-militarum": "Astra Militarum",
+  "space-marines":      "Space Marines",
+  "astra-militarum":    "Astra Militarum",
   "adeptus-mechanicus": "Adeptus Mechanicus",
+  "adeptus-custodes":   "Adeptus Custodes",
+  "adepta-sororitas":   "Adepta Sororitas",
+  "grey-knights":       "Grey Knights",
+  "imperial-agents":    "Imperial Agents",
+  "imperial-knights":   "Imperial Knights",
   "chaos-space-marine": "Chaos Space Marines",
-  "death-guard": "Death Guard",
-  "thousand-sons": "Thousand Sons",
-  "tyranids": "Tyranids",
-  "necrons": "Necrons",
-  "orks": "Orks",
+  "death-guard":        "Death Guard",
+  "thousand-sons":      "Thousand Sons",
+  "world-eaters":       "World Eaters",
+  "chaos-daemons":      "Chaos Daemons",
+  "chaos-knights":      "Chaos Knights",
+  "tyranids":           "Tyranids",
+  "necrons":            "Necrons",
+  "orks":               "Orks",
+  "tau-empire":         "T'au Empire",
+  "aeldari":            "Aeldari",
+  "drukhari":           "Drukhari",
+  "genestealer-cults":  "Genestealer Cults",
+  "leagues-of-votann":  "Leagues of Votann",
 };
 
-const BASE_CATEGORIES: UnitCategory[] = ["battleline", "infantry", "vehicle", "transport"];
+const BASE_CATEGORIES: UnitCategory[] = ["battleline", "infantry", "mounted", "vehicle", "transport"];
 
 const CATEGORY_COLORS: Record<string, string> = {
   battleline: "#4a9eff",
   infantry:   "#7ec87e",
+  mounted:    "#c8a84a",
   vehicle:    "#e87c4a",
   transport:  "#a47ce8",
   monster:    "#e84a4a",
@@ -315,9 +336,10 @@ export default function ArmyBuilder() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const categories = selectedFaction === "tyranids"
+  const categories = (selectedFaction === "tyranids"
     ? BASE_CATEGORIES.map((c) => (c === "vehicle" ? "monster" : c))
-    : BASE_CATEGORIES;
+    : BASE_CATEGORIES
+  ).filter((c) => c !== "mounted" || units.some((u) => u.category === "mounted" && u.faction === selectedFaction));
 
   const getUnitsByCategory = (category: UnitCategory) =>
     units.filter((u) => u.category === category && u.faction === selectedFaction);
@@ -325,9 +347,11 @@ export default function ArmyBuilder() {
   const factionCharacters = characters.filter((c) => c.faction === selectedFaction);
 
   const addUnit = (unitId: string) => {
+    const unit = units.find((u) => u.id === unitId);
+    const defaultModelCount = unit?.modelCountOptions?.[0] ?? 5;
     setArmyUnits([
       ...armyUnits,
-      { id: Date.now(), unitId, modelCount: 5, wargear: [], characterWargear: [], transportedUnits: [] },
+      { id: Date.now(), unitId, modelCount: defaultModelCount, wargear: unit?.defaultSelectedWargear ?? [], wargearCounts: {}, characterWargear: [], characterWargear2: [], attachedUnit: undefined, attachedUnitWargear: [], checkedNotes: [], noteWeaponSelections: {}, transportedUnits: [] },
     ]);
     setAddingUnit(false);
     setOpenCategory(null);
@@ -350,10 +374,14 @@ export default function ArmyBuilder() {
   const calculateUnitPoints = (armyUnit: ArmyUnit) => {
     const unit = units.find((u) => u.id === armyUnit.unitId);
     if (!unit) return 0;
-    let total = unit.points;
+    let total = unit.pointsByModelCount?.[armyUnit.modelCount] ?? unit.points;
     armyUnit.wargear.forEach((w) => {
       const pts = unit.wargear.find((g) => g.id === w)?.points;
       if (pts) total += pts;
+    });
+    Object.entries(armyUnit.wargearCounts ?? {}).forEach(([id, count]) => {
+      const pts = unit.wargear.find((g) => g.id === id)?.points;
+      if (pts && count > 0) total += pts * count;
     });
     if (armyUnit.attachedCharacter) {
       const char = characters.find((c) => c.id === armyUnit.attachedCharacter);
@@ -361,6 +389,26 @@ export default function ArmyBuilder() {
         total += char.points;
         armyUnit.characterWargear.forEach((w) => {
           const pts = char.wargear?.find((g) => g.id === w)?.points;
+          if (pts) total += pts;
+        });
+      }
+    }
+    if (armyUnit.attachedCharacter2) {
+      const char2 = characters.find((c) => c.id === armyUnit.attachedCharacter2);
+      if (char2) {
+        total += char2.points;
+        armyUnit.characterWargear2.forEach((w) => {
+          const pts = char2.wargear?.find((g) => g.id === w)?.points;
+          if (pts) total += pts;
+        });
+      }
+    }
+    if (armyUnit.attachedUnit) {
+      const attached = units.find((u) => u.id === armyUnit.attachedUnit);
+      if (attached) {
+        total += attached.points;
+        armyUnit.attachedUnitWargear.forEach((w) => {
+          const pts = attached.wargear?.find((g) => g.id === w)?.points;
           if (pts) total += pts;
         });
       }
@@ -729,12 +777,27 @@ export default function ArmyBuilder() {
                     selectedWargear={armyUnit.wargear}
                     attachedCharacter={armyUnit.attachedCharacter}
                     characterWargear={armyUnit.characterWargear}
+                    attachedCharacter2={armyUnit.attachedCharacter2}
+                    characterWargear2={armyUnit.characterWargear2}
+                    attachedUnit={armyUnit.attachedUnit}
+                    attachedUnitWargear={armyUnit.attachedUnitWargear}
+                    checkedNotes={armyUnit.checkedNotes}
+                    noteWeaponSelections={armyUnit.noteWeaponSelections}
                     transportedUnits={armyUnit.transportedUnits}
+                    deployedUnits={armyUnits.filter((u) => u.id !== armyUnit.id).map((u) => units.find((x) => x.id === u.unitId)!).filter(Boolean)}
                     points={calculateUnitPoints(armyUnit)}
                     onModelCountChange={(count) => updateUnit(armyUnit.id, { modelCount: count })}
                     onWargearChange={(gear) => updateUnit(armyUnit.id, { wargear: gear })}
-                    onCharacterChange={(char) => updateUnit(armyUnit.id, { attachedCharacter: char, characterWargear: [] })}
+                    onCharacterChange={(char) => updateUnit(armyUnit.id, { attachedCharacter: char, characterWargear: [], attachedCharacter2: undefined, characterWargear2: [] })}
                     onCharacterWargearChange={(gear) => updateUnit(armyUnit.id, { characterWargear: gear })}
+                    onCharacter2Change={(char) => updateUnit(armyUnit.id, { attachedCharacter2: char, characterWargear2: [] })}
+                    onCharacterWargear2Change={(gear) => updateUnit(armyUnit.id, { characterWargear2: gear })}
+                    onAttachedUnitChange={(unitId) => updateUnit(armyUnit.id, { attachedUnit: unitId, attachedUnitWargear: [] })}
+                    onAttachedUnitWargearChange={(gear) => updateUnit(armyUnit.id, { attachedUnitWargear: gear })}
+                    wargearCounts={armyUnit.wargearCounts ?? {}}
+                    onWargearCountsChange={(counts) => updateUnit(armyUnit.id, { wargearCounts: counts })}
+                    onCheckedNotesChange={(notes) => updateUnit(armyUnit.id, { checkedNotes: notes })}
+                    onNoteWeaponSelect={(noteId, weaponId) => updateUnit(armyUnit.id, { noteWeaponSelections: { ...armyUnit.noteWeaponSelections, [noteId]: weaponId } })}
                     onTransportChange={(u) => updateUnit(armyUnit.id, { transportedUnits: u })}
                     onRemove={() => removeUnit(armyUnit.id)}
                   />

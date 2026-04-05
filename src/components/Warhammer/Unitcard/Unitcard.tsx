@@ -1,12 +1,15 @@
 import { useState } from "react";
-import type { Unit, Character } from "../../../types/warhammer";
+import type { Unit, Character, UnitNote } from "../../../types/warhammer";
 import UnitImage from "../UnitImage/UnitImage";
 import WargearSelector from "../WargearSelector/WargearSelector";
 import CharacterAttachment from "../CharacterAttachment/CharacterAttachment";
+import UnitAttachment from "../UnitAttachment/UnitAttachment";
+import StatsModal from "../StatsModal/StatsModal";
 
 const CATEGORY_COLORS: Record<string, string> = {
   battleline: "#4a9eff",
   infantry:   "#7ec87e",
+  mounted:    "#c8a84a",
   vehicle:    "#e87c4a",
   transport:  "#a47ce8",
   monster:    "#e84a4a",
@@ -20,12 +23,27 @@ interface Props {
   selectedWargear: string[];
   attachedCharacter?: string;
   characterWargear: string[];
+  attachedCharacter2?: string;
+  characterWargear2: string[];
+  attachedUnit?: string;
+  attachedUnitWargear: string[];
+  checkedNotes: string[];
+  noteWeaponSelections: Record<string, string>;
   transportedUnits: string[];
+  deployedUnits: Unit[];
   points: number;
+  wargearCounts: Record<string, number>;
   onModelCountChange: (count: number) => void;
   onWargearChange: (gear: string[]) => void;
+  onWargearCountsChange: (counts: Record<string, number>) => void;
   onCharacterChange: (char?: string) => void;
   onCharacterWargearChange: (gear: string[]) => void;
+  onCharacter2Change: (char?: string) => void;
+  onCharacterWargear2Change: (gear: string[]) => void;
+  onAttachedUnitChange: (unitId?: string) => void;
+  onAttachedUnitWargearChange: (gear: string[]) => void;
+  onCheckedNotesChange: (notes: string[]) => void;
+  onNoteWeaponSelect: (noteId: string, weaponId: string) => void;
   onTransportChange: (units: string[]) => void;
   onRemove: () => void;
 }
@@ -34,18 +52,92 @@ export default function UnitCard({
   unit, characters, allUnits,
   modelCount, selectedWargear,
   attachedCharacter, characterWargear,
-  transportedUnits, points,
+  attachedCharacter2, characterWargear2,
+  attachedUnit, attachedUnitWargear,
+  checkedNotes, noteWeaponSelections,
+  transportedUnits, deployedUnits, points,
+  wargearCounts, onWargearCountsChange,
   onModelCountChange, onWargearChange,
   onCharacterChange, onCharacterWargearChange,
+  onCharacter2Change, onCharacterWargear2Change,
+  onAttachedUnitChange, onAttachedUnitWargearChange,
+  onCheckedNotesChange, onNoteWeaponSelect,
   onTransportChange, onRemove,
 }: Props) {
   const [expanded, setExpanded] = useState(true);
+  const [noteImagesOpen, setNoteImagesOpen] = useState<string[]>([]);
+  const [statsOpen, setStatsOpen] = useState(false);
+  const [charStatsOpen, setCharStatsOpen] = useState<"char1" | "char2" | null>(null);
+
+  const getConsumedSlots = (wargearId: string, gear = selectedWargear) =>
+    unit.wargear.filter(w => w.consumesNoteWargear?.wargearId === wargearId && gear.includes(w.id)).length;
+
+  const handleWargearChange = (gear: string[]) => {
+    let newCounts = { ...wargearCounts };
+    let newNotes = [...checkedNotes];
+
+    // For each wargear item with consumesNoteWargear, recalculate effective max
+    const affectedWargearIds = new Set(
+      unit.wargear.filter(w => w.consumesNoteWargear).map(w => w.consumesNoteWargear!.wargearId)
+    );
+    for (const wargearId of affectedWargearIds) {
+      const wargearItem = unit.wargear.find(w => w.id === wargearId);
+      const baseMax = wargearItem?.maxCountByModelCount?.[modelCount] ?? 0;
+      const consumed = getConsumedSlots(wargearId, gear);
+      const effectiveMax = Math.max(0, baseMax - consumed);
+      if (newCounts[wargearId] > effectiveMax) newCounts[wargearId] = effectiveMax;
+      if (effectiveMax === 0) {
+        const noteId = unit.wargear.find(w => w.consumesNoteWargear?.wargearId === wargearId)?.consumesNoteWargear?.noteId;
+        if (noteId) newNotes = newNotes.filter(n => n !== noteId);
+      }
+    }
+
+    onWargearCountsChange(newCounts);
+    onCheckedNotesChange(newNotes);
+    onWargearChange(gear);
+  };
+
+  const buildCharacterGroups = (char: typeof selectedCharacter): string[][] => {
+    const wargear = char?.wargear ?? [];
+    const pistols = wargear.filter(w => w.profiles?.some(p => p.keywords?.includes("PISTOL"))).map(w => w.id);
+    const melee = wargear.filter(w => w.profiles?.some(p => p.range === "Melee")).map(w => w.id);
+    const auto: string[][] = [];
+    if (pistols.length > 1) auto.push(pistols);
+    if (melee.length > 1) auto.push(melee);
+    return [...auto, ...(char?.wargearGroups ?? [])];
+  };
+
+  const dedupWargearNames = (wargear: { id: string; name: string }[]) => {
+    const seen = new Set<string>();
+    return wargear.reduce<{ id: string; name: string }[]>((acc, w) => {
+      const base = w.name.replace(/ [–\-] (strike|sweep)$/i, '').trim();
+      if (!seen.has(base)) {
+        seen.add(base);
+        acc.push({ id: w.id, name: base });
+      }
+      return acc;
+    }, []);
+  };
+
+  const selectedCharacter = characters.find((c) => c.id === attachedCharacter);
+  const selectedCharacter2 = characters.find((c) => c.id === attachedCharacter2);
+  const selectedAttachedUnit = allUnits.find((u) => u.id === attachedUnit);
+
+  const hasStats =
+    [...unit.defaultWargear, ...unit.wargear].some((w) => w.profiles && w.profiles.length > 0) ||
+    !!unit.abilities?.length ||
+    !![...(selectedCharacter?.defaultWargear ?? []), ...(selectedCharacter?.wargear ?? [])].some((w) => w.profiles && w.profiles.length > 0) ||
+    !!selectedCharacter?.abilities?.length ||
+    !![...(selectedCharacter2?.defaultWargear ?? []), ...(selectedCharacter2?.wargear ?? [])].some((w) => w.profiles && w.profiles.length > 0) ||
+    !!selectedCharacter2?.abilities?.length ||
+    !![...(selectedAttachedUnit?.defaultWargear ?? []), ...(selectedAttachedUnit?.wargear ?? [])].some((w) => w.profiles && w.profiles.length > 0);
 
   const isVehicle = unit.category === "vehicle" || unit.category === "monster";
   const isTransport = unit.category === "transport";
 
-  const allowedCharacters = characters.filter((c) => c.canAttachTo.includes(unit.id));
-  const selectedCharacter = characters.find((c) => c.id === attachedCharacter);
+  const modelCountOptions = unit.modelCountOptions ?? [5, 10];
+  const allowedCharacters = characters.filter((c) => unit.ledBy?.includes(c.id));
+  const attachableUnits = allUnits.filter((u) => unit.attachableUnits?.includes(u.id));
   const categoryColor = CATEGORY_COLORS[unit.category] ?? "var(--accent)";
 
   return (
@@ -104,8 +196,38 @@ export default function UnitCard({
           {unit.category}
         </span>
 
+        {/* Stats button */}
+        {hasStats && (
+          <button
+            onClick={(e) => { e.stopPropagation(); setStatsOpen(true); }}
+            style={{
+              background: "none",
+              border: "1px solid var(--border-2)",
+              color: "var(--text-dim)",
+              fontFamily: "var(--font-mono)",
+              fontSize: "9px",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              padding: "2px 8px",
+              cursor: "pointer",
+              transition: "all 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--accent)";
+              e.currentTarget.style.borderColor = "var(--accent)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "var(--text-dim)";
+              e.currentTarget.style.borderColor = "var(--border-2)";
+            }}
+          >
+            Stats
+          </button>
+        )}
+
+
         {/* Model count badge (non-vehicle) */}
-        {!isVehicle && !isTransport && (
+        {!isVehicle && !isTransport && modelCountOptions.length > 1 && (
           <span style={{
             fontFamily: "var(--font-mono)",
             fontSize: "11px",
@@ -159,6 +281,85 @@ export default function UnitCard({
         </button>
       </div>
 
+      {/* STATS MODAL */}
+      {statsOpen && (
+        <StatsModal
+          unit={unit}
+          selectedWargear={selectedWargear}
+          wargearCounts={wargearCounts}
+          checkedNotes={checkedNotes}
+          noteWeaponSelections={noteWeaponSelections}
+          character={selectedCharacter}
+          characterWargear={characterWargear}
+          character2={selectedCharacter2}
+          characterWargear2={characterWargear2}
+          attachedUnit={selectedAttachedUnit}
+          attachedUnitWargear={attachedUnitWargear}
+          onClose={() => setStatsOpen(false)}
+        />
+      )}
+
+      {/* CHARACTER STATS MODAL */}
+      {charStatsOpen && (() => {
+        const char = charStatsOpen === "char1" ? selectedCharacter : selectedCharacter2;
+        const charWargear = charStatsOpen === "char1" ? characterWargear : characterWargear2;
+        if (!char) return null;
+        const allWeapons = [...(char.defaultWargear ?? []), ...(char.wargear ?? []).filter(w => charWargear.includes(w.id))].filter(w => w.profiles?.length);
+        return (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }} onClick={() => setCharStatsOpen(null)}>
+            <div style={{ background: "var(--surface)", border: "1px solid var(--border-2)", width: "100%", maxWidth: "860px", maxHeight: "85vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+              <div style={{ display: "flex", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid var(--border-2)", gap: "12px" }}>
+                <span style={{ fontFamily: "var(--font-display)", fontSize: "13px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", flex: 1 }}>
+                  {char.name} — Stats
+                </span>
+                <button onClick={() => setCharStatsOpen(null)} style={{ background: "none", border: "none", color: "var(--text-dim)", fontFamily: "var(--font-mono)", fontSize: "18px", cursor: "pointer", padding: 0, lineHeight: 1 }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#e84a4a")} onMouseLeave={e => (e.currentTarget.style.color = "var(--text-dim)")}>×</button>
+              </div>
+              <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "24px" }}>
+                {allWeapons.length > 0 && (
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr>
+                          {["Weapon","Range","A","BS/WS","S","AP","D","Keywords"].map((h, i) => (
+                            <th key={h} style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--text-dim)", padding: "6px 10px", textAlign: i === 0 || i === 7 ? "left" : "center", borderBottom: "1px solid var(--border-2)", whiteSpace: "nowrap" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {allWeapons.map(w => w.profiles!.map((p, i) => (
+                          <tr key={`${w.id}-${i}`}>
+                            <td style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text)", padding: "6px 10px", fontWeight: 600, borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                              {w.name}{p.profileName && <span style={{ color: "var(--text-dim)", fontWeight: 400, marginLeft: "6px" }}>[{p.profileName}]</span>}
+                            </td>
+                            {[p.range, p.attacks, p.skill, p.strength, p.ap, p.damage].map((v, j) => (
+                              <td key={j} style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text)", padding: "6px 10px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>{v}</td>
+                            ))}
+                            <td style={{ fontFamily: "var(--font-mono)", fontSize: "11px", padding: "6px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                              {p.keywords?.map(k => <span key={k} style={{ display: "inline-block", fontSize: "9px", letterSpacing: "0.08em", color: "var(--accent)", border: "1px solid var(--accent)", padding: "1px 5px", marginRight: "4px", opacity: 0.75 }}>{k}</span>)}
+                            </td>
+                          </tr>
+                        )))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                {char.abilities && char.abilities.length > 0 && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    {char.abilities.map(a => (
+                      <div key={a.name} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-2)", padding: "10px 14px" }}>
+                        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", color: "var(--accent)", marginBottom: "4px" }}>{a.name}</div>
+                        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-dim)", lineHeight: 1.6 }}>{a.description}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* CARD BODY */}
       {expanded && (
         <div style={{
@@ -175,17 +376,19 @@ export default function UnitCard({
               modelCount={modelCount}
               characters={characters}
               attachedCharacter={attachedCharacter}
+              attachedCharacter2={attachedCharacter2}
+              attachedUnit={selectedAttachedUnit}
             />
 
             {/* Model count toggle */}
-            {!isVehicle && !isTransport && (
+            {!isVehicle && !isTransport && modelCountOptions.length > 1 && (
               <div style={{
                 display: "flex",
                 marginTop: "8px",
                 border: "1px solid var(--border-2)",
                 overflow: "hidden",
               }}>
-                {[5, 10].map((n) => (
+                {modelCountOptions.map((n, i) => (
                   <button
                     key={n}
                     onClick={() => onModelCountChange(n)}
@@ -193,7 +396,7 @@ export default function UnitCard({
                       flex: 1,
                       background: modelCount === n ? "var(--accent-dim)" : "none",
                       border: "none",
-                      borderRight: n === 5 ? "1px solid var(--border-2)" : "none",
+                      borderRight: i < modelCountOptions.length - 1 ? "1px solid var(--border-2)" : "none",
                       color: modelCount === n ? "var(--accent)" : "var(--text-dim)",
                       fontFamily: "var(--font-mono)",
                       fontSize: "11px",
@@ -213,32 +416,438 @@ export default function UnitCard({
           {/* RIGHT: controls */}
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-            {/* Unit wargear */}
-            {unit.wargear.length > 0 && (
-              <WargearSelector
-                label="Wargear"
-                wargear={unit.wargear}
-                selected={selectedWargear}
-                onChange={onWargearChange}
-              />
+            {/* Default wargear (always equipped) */}
+            {unit.defaultWargear?.length > 0 && (
+              <div>
+                <div style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "10px",
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  color: "var(--text-dim)",
+                  marginBottom: "8px",
+                }}>
+                  Always Equipped
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                  {dedupWargearNames(unit.defaultWargear).map((w) => (
+                    <span key={w.id} style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "10px",
+                      letterSpacing: "0.06em",
+                      color: "var(--text)",
+                      border: "1px solid var(--border-2)",
+                      padding: "3px 8px",
+                      background: "rgba(255,255,255,0.03)",
+                    }}>
+                      {w.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
             )}
+
+            {/* Unit notes */}
+            {unit.notes && unit.notes.length > 0 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                {unit.notes.filter((note: UnitNote) => !note.showForModelCounts || note.showForModelCounts.includes(modelCount)).map((note: UnitNote) => {
+                  const noteText = note.textByModelCount?.[modelCount] ?? note.text;
+                  const isChecked = checkedNotes.includes(note.id);
+                  const imageOpen = noteImagesOpen.includes(note.id);
+                  const triggeredWargearItem = note.triggersWargear?.[0]
+                    ? unit.wargear.find(w => w.id === note.triggersWargear![0])
+                    : undefined;
+                  const baseMax = triggeredWargearItem?.maxCountByModelCount?.[modelCount] ?? 0;
+                  const consumed = triggeredWargearItem ? getConsumedSlots(triggeredWargearItem.id) : 0;
+                  const effectiveMax = Math.max(0, baseMax - consumed);
+                  const noteDisabled = note.triggersWargear ? effectiveMax === 0 : false;
+                  return (
+                    <div key={note.id}>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                        {note.checkbox && (
+                          <button
+                            onClick={() => !noteDisabled && onCheckedNotesChange(isChecked ? checkedNotes.filter((n) => n !== note.id) : [...checkedNotes, note.id])}
+                            style={{
+                              width: "14px",
+                              height: "14px",
+                              flexShrink: 0,
+                              marginTop: "1px",
+                              background: isChecked ? "var(--accent)" : "none",
+                              border: `1px solid ${noteDisabled ? "var(--border)" : isChecked ? "var(--accent)" : "var(--border-2)"}`,
+                              cursor: noteDisabled ? "not-allowed" : "pointer",
+                              opacity: noteDisabled ? 0.35 : 1,
+                              padding: 0,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              transition: "all 0.15s",
+                            }}
+                          >
+                            {isChecked && (
+                              <span style={{ color: "#000", fontSize: "9px", lineHeight: 1, fontWeight: 700 }}>✓</span>
+                            )}
+                          </button>
+                        )}
+                        <span style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "10px",
+                          letterSpacing: "0.06em",
+                          color: isChecked ? "var(--accent)" : "var(--text-dim)",
+                          lineHeight: 1.5,
+                          flex: 1,
+                          transition: "color 0.15s",
+                        }}>
+                          {noteText}
+                        </span>
+                        {isChecked && note.triggersWargear && note.triggersWargear.map((wid) => {
+                          const wargearItem = unit.wargear.find((w) => w.id === wid);
+                          if (!wargearItem?.countable) return null;
+                          const max = effectiveMax;
+                          const count = wargearCounts[wid] ?? 0;
+                          return (
+                            <div key={wid} style={{ display: "flex", alignItems: "center", border: "1px solid var(--accent)", background: "var(--accent-dim)", flexShrink: 0 }}>
+                              <button
+                                onClick={() => onWargearCountsChange({ ...wargearCounts, [wid]: Math.max(0, count - 1) })}
+                                disabled={count === 0}
+                                style={{ background: "none", border: "none", borderRight: "1px solid var(--accent)", color: count === 0 ? "var(--border-2)" : "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "13px", padding: "2px 7px", cursor: count === 0 ? "default" : "pointer", lineHeight: 1 }}
+                              >−</button>
+                              <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--accent)", padding: "0 6px", minWidth: "20px", textAlign: "center" }}>{count}</span>
+                              <button
+                                onClick={() => onWargearCountsChange({ ...wargearCounts, [wid]: Math.min(max, count + 1) })}
+                                disabled={count >= max}
+                                style={{ background: "none", border: "none", borderLeft: "1px solid var(--accent)", color: count >= max ? "var(--border-2)" : "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "13px", padding: "2px 7px", cursor: count >= max ? "default" : "pointer", lineHeight: 1 }}
+                              >+</button>
+                            </div>
+                          );
+                        })}
+                        {note.image && (
+                          <button
+                            onClick={() => setNoteImagesOpen(imageOpen ? noteImagesOpen.filter((n) => n !== note.id) : [...noteImagesOpen, note.id])}
+                            style={{
+                              flexShrink: 0,
+                              background: imageOpen ? "var(--accent-dim)" : "none",
+                              border: `1px solid ${imageOpen ? "var(--accent)" : "var(--border-2)"}`,
+                              color: imageOpen ? "var(--accent)" : "var(--text-dim)",
+                              fontFamily: "var(--font-mono)",
+                              fontSize: "9px",
+                              letterSpacing: "0.1em",
+                              textTransform: "uppercase",
+                              padding: "2px 8px",
+                              cursor: "pointer",
+                              transition: "all 0.15s",
+                            }}
+                          >
+                            {imageOpen ? "hide" : "image"}
+                          </button>
+                        )}
+                      </div>
+                      {note.image && imageOpen && (
+                        <div style={{
+                          marginTop: "8px",
+                          marginLeft: "22px",
+                          padding: "8px",
+                          background: "var(--surface-2)",
+                          border: "1px solid var(--border-2)",
+                          display: "inline-block",
+                        }}>
+                          <img
+                            src={note.image}
+                            alt={noteText}
+                            style={{ maxWidth: "120px", maxHeight: "120px", objectFit: "contain", display: "block" }}
+                          />
+                        </div>
+                      )}
+                      {note.weaponIds && note.weaponIds.length > 0 && isChecked && (
+                        <div style={{ marginTop: "6px", marginLeft: "22px" }}>
+                          <select
+                            value={noteWeaponSelections[note.id] ?? ""}
+                            onChange={(e) => onNoteWeaponSelect(note.id, e.target.value)}
+                            style={{
+                              background: "var(--surface-2)",
+                              border: "1px solid var(--accent)",
+                              color: "var(--accent)",
+                              fontFamily: "var(--font-mono)",
+                              fontSize: "10px",
+                              letterSpacing: "0.08em",
+                              padding: "4px 10px",
+                              cursor: "pointer",
+                              outline: "none",
+                            }}
+                          >
+                            <option value="" disabled style={{ background: "var(--surface)" }}>Select weapon…</option>
+                            {note.weaponIds.map((wid) => {
+                              const w = unit.wargear.find((x) => x.id === wid);
+                              return w ? (
+                                <option key={wid} value={wid} style={{ background: "var(--surface)" }}>{w.name}</option>
+                              ) : null;
+                            })}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Optional wargear swaps */}
+            {unit.wargear.length > 0 && (() => {
+              const noteWeaponIds = new Set([
+                ...(unit.notes ?? []).map((n) => n.weaponId).filter(Boolean),
+                ...(unit.notes ?? []).flatMap((n) => n.weaponIds ?? []),
+              ]);
+              const triggeredWargear = new Set(
+                (unit.notes ?? []).flatMap((n) => n.triggersWargear ?? [])
+              );
+              const selectableWargear = unit.wargear.filter((w) => !noteWeaponIds.has(w.id) && !triggeredWargear.has(w.id));
+              const unitWargear = selectableWargear.filter((w) => !w.sergeantOnly);
+              const sergeantWargear = selectableWargear.filter((w) => w.sergeantOnly);
+              return (
+                <>
+                  {unitWargear.length > 0 && (
+                    <WargearSelector
+                      label="Wargear Options"
+                      wargear={unitWargear}
+                      selected={selectedWargear}
+                      onChange={handleWargearChange}
+                      groups={unit.wargearGroups}
+                      counts={wargearCounts}
+                      onCountChange={(updates) => onWargearCountsChange({ ...wargearCounts, ...updates })}
+                      modelCount={modelCount}
+                      checkedNotes={checkedNotes}
+                    />
+                  )}
+                  {sergeantWargear.length > 0 && (
+                    unit.sergeantOptionGroups ? (
+                      <>
+                        {unit.sergeantOptionGroups.map((optGroup) => {
+                          const groupWargear = optGroup.ids.map((id) => sergeantWargear.find((w) => w.id === id)).filter(Boolean) as typeof sergeantWargear;
+                          if (groupWargear.length === 0) return null;
+                          return (
+                            <WargearSelector
+                              key={optGroup.label}
+                              label={`Sergeant — ${optGroup.label}`}
+                              wargear={groupWargear}
+                              selected={selectedWargear}
+                              onChange={handleWargearChange}
+                              groups={unit.wargearGroups}
+                            />
+                          );
+                        })}
+                      </>
+                    ) : (
+                      <WargearSelector
+                        label="Sergeant Wargear Options"
+                        wargear={sergeantWargear}
+                        selected={selectedWargear}
+                        onChange={handleWargearChange}
+                        groups={unit.wargearGroups}
+                      />
+                    )
+                  )}
+                </>
+              );
+            })()}
 
             {/* Character attachment */}
             {!isVehicle && !isTransport && allowedCharacters.length > 0 && (
-              <CharacterAttachment
-                characters={allowedCharacters}
-                selectedCharacter={attachedCharacter}
-                onChange={onCharacterChange}
+              <div>
+                <CharacterAttachment
+                  characters={allowedCharacters}
+                  selectedCharacter={attachedCharacter}
+                  onChange={onCharacterChange}
+                />
+                {selectedCharacter && (
+                  <button
+                    onClick={() => setCharStatsOpen("char1")}
+                    style={{
+                      marginTop: "6px",
+                      background: "none",
+                      border: "1px solid var(--border-2)",
+                      color: "var(--text-dim)",
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "9px",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      padding: "2px 8px",
+                      cursor: "pointer",
+                      transition: "all 0.15s",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--accent)"; e.currentTarget.style.borderColor = "var(--accent)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-dim)"; e.currentTarget.style.borderColor = "var(--border-2)"; }}
+                  >
+                    {selectedCharacter.name} — Stats
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Unit attachment (e.g. Invader ATV with Outriders) */}
+            {attachableUnits.length > 0 && (
+              <UnitAttachment
+                units={attachableUnits}
+                selectedUnit={attachedUnit}
+                onChange={onAttachedUnitChange}
               />
             )}
 
-            {/* Character wargear */}
+            {/* Attached unit always equipped */}
+            {selectedAttachedUnit && selectedAttachedUnit.defaultWargear.length > 0 && (
+              <div>
+                <div style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "10px",
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  color: "var(--text-dim)",
+                  marginBottom: "8px",
+                }}>
+                  {selectedAttachedUnit.name} — Always Equipped
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                  {dedupWargearNames(selectedAttachedUnit.defaultWargear).map((w) => (
+                    <span key={w.id} style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "10px",
+                      letterSpacing: "0.06em",
+                      color: "var(--text)",
+                      border: "1px solid var(--border-2)",
+                      padding: "3px 8px",
+                      background: "rgba(255,255,255,0.03)",
+                    }}>
+                      {w.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Attached unit wargear */}
+            {selectedAttachedUnit && selectedAttachedUnit.wargear.length > 0 && (
+              <WargearSelector
+                label={`${selectedAttachedUnit.name} — Wargear Options`}
+                wargear={selectedAttachedUnit.wargear}
+                selected={attachedUnitWargear}
+                onChange={onAttachedUnitWargearChange}
+                groups={selectedAttachedUnit.wargearGroups}
+              />
+            )}
+
+            {/* Character default wargear */}
+            {selectedCharacter?.defaultWargear && selectedCharacter.defaultWargear.length > 0 && (
+              <div>
+                <div style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "10px",
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  color: "var(--text-dim)",
+                  marginBottom: "8px",
+                }}>
+                  {selectedCharacter.name} — Always Equipped
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                  {dedupWargearNames(selectedCharacter.defaultWargear).map((w) => (
+                    <span key={w.id} style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "10px",
+                      letterSpacing: "0.06em",
+                      color: "var(--text)",
+                      border: "1px solid var(--border-2)",
+                      padding: "3px 8px",
+                      background: "rgba(255,255,255,0.03)",
+                    }}>
+                      {w.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Character optional wargear */}
             {selectedCharacter?.wargear && selectedCharacter.wargear.length > 0 && (
               <WargearSelector
-                label={`${selectedCharacter.name} — Wargear`}
+                label={`${selectedCharacter.name} — Wargear Options`}
                 wargear={selectedCharacter.wargear}
                 selected={characterWargear}
                 onChange={onCharacterWargearChange}
+                groups={buildCharacterGroups(selectedCharacter)}
+              />
+            )}
+
+            {/* Second character slot (only shown if first character allows it) */}
+            {selectedCharacter?.allowsSecondCharacter && (
+              <div>
+                <CharacterAttachment
+                  label="Second Character"
+                  characters={allowedCharacters.filter((c) => c.id !== attachedCharacter && (!selectedCharacter.secondCharacterOptions || selectedCharacter.secondCharacterOptions.includes(c.id)))}
+                  selectedCharacter={attachedCharacter2}
+                  onChange={onCharacter2Change}
+                />
+                {selectedCharacter2 && (
+                  <button
+                    onClick={() => setCharStatsOpen("char2")}
+                    style={{
+                      marginTop: "6px",
+                      background: "none",
+                      border: "1px solid var(--border-2)",
+                      color: "var(--text-dim)",
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "9px",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      padding: "2px 8px",
+                      cursor: "pointer",
+                      transition: "all 0.15s",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--accent)"; e.currentTarget.style.borderColor = "var(--accent)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-dim)"; e.currentTarget.style.borderColor = "var(--border-2)"; }}
+                  >
+                    {selectedCharacter2.name} — Stats
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Second character default wargear */}
+            {selectedCharacter2?.defaultWargear && selectedCharacter2.defaultWargear.length > 0 && (
+              <div>
+                <div style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "10px",
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  color: "var(--text-dim)",
+                  marginBottom: "8px",
+                }}>
+                  {selectedCharacter2.name} — Always Equipped
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                  {dedupWargearNames(selectedCharacter2.defaultWargear).map((w) => (
+                    <span key={w.id} style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "10px",
+                      letterSpacing: "0.06em",
+                      color: "var(--text)",
+                      border: "1px solid var(--border-2)",
+                      padding: "3px 8px",
+                      background: "rgba(255,255,255,0.03)",
+                    }}>
+                      {w.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Second character optional wargear */}
+            {selectedCharacter2?.wargear && selectedCharacter2.wargear.length > 0 && (
+              <WargearSelector
+                label={`${selectedCharacter2.name} — Wargear Options`}
+                wargear={selectedCharacter2.wargear}
+                selected={characterWargear2}
+                onChange={onCharacterWargear2Change}
+                groups={buildCharacterGroups(selectedCharacter2)}
               />
             )}
 
@@ -252,22 +861,30 @@ export default function UnitCard({
                   textTransform: "uppercase",
                   color: "var(--text-dim)",
                   marginBottom: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
                 }}>
                   Embarked Units
                   {unit.transportCapacity && (
-                    <span style={{ color: "var(--accent)", marginLeft: "8px" }}>
-                      cap. {unit.transportCapacity}
+                    <span style={{
+                      color: transportedUnits.length >= unit.transportCapacity ? "#e84a4a" : "var(--accent)",
+                    }}>
+                      {transportedUnits.length}/{unit.transportCapacity}
                     </span>
                   )}
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                  {allUnits
+                  {deployedUnits
                     .filter((u) => u.category !== "vehicle" && u.category !== "transport" && u.category !== "monster")
                     .map((u) => {
                       const active = transportedUnits.includes(u.id);
+                      const atCapacity = !!unit.transportCapacity && transportedUnits.length >= unit.transportCapacity;
+                      const disabled = !active && atCapacity;
                       return (
                         <button
                           key={u.id}
+                          disabled={disabled}
                           onClick={() => {
                             if (active) onTransportChange(transportedUnits.filter((x) => x !== u.id));
                             else onTransportChange([...transportedUnits, u.id]);
@@ -280,7 +897,8 @@ export default function UnitCard({
                             fontSize: "10px",
                             letterSpacing: "0.08em",
                             padding: "4px 10px",
-                            cursor: "pointer",
+                            cursor: disabled ? "not-allowed" : "pointer",
+                            opacity: disabled ? 0.35 : 1,
                             transition: "all 0.15s",
                           }}
                         >

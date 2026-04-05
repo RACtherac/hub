@@ -3,12 +3,76 @@ import type { Unit } from "../../../types/warhammer";
 export const spaceMarinesUnits: Unit[] = [
 
   {
+    id: "invader-atv",
+    name: "Invader ATV",
+    faction: "space-marines",
+    category: "mounted",
+    modelCountOptions: [1],
+    wargearGroups: [["onslaught-gatling-cannon", "multi-melta"]],
+    points: 60,
+    abilities: [
+      {
+        name: "Outrider Escort",
+        description: "Once per turn, in your opponent's Shooting phase, when another friendly ADEPTUS ASTARTES MOUNTED unit within 6\" of this model is selected as the target of an attack, one model from your army with this ability can use it. If it does, after that enemy unit has finished making its attacks, that model can shoot as if it were your Shooting phase, but when resolving those attacks it can only target that enemy unit (and only if it is an eligible target).",
+      },
+    ],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "twin-bolt-rifle", name: "Twin bolt rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["TWIN-LINKED"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+    ],
+    wargear: [
+      { id: "onslaught-gatling-cannon", name: "Onslaught gatling cannon", image: "", profiles: [{ range: '24"', attacks: "8", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "multi-melta", name: "Multi-melta", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2"] }] },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "outrider-squad",
+    name: "Outrider Squad",
+    faction: "space-marines",
+    category: "mounted",
+    modelCountOptions: [3, 6],
+    points: 80,
+    pointsByModelCount: { 3: 80, 6: 160 },
+    attachableUnits: ["invader-atv"],
+    abilities: [
+      {
+        name: "Thunderous Impact",
+        description: "Each time a model in this unit makes a melee attack, if this unit made a Charge move this turn, improve the Strength and Damage characteristics of that attack by 1.",
+      },
+    ],
+    defaultWargear: [
+      { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "twin-bolt-rifle", name: "Twin bolt rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["TWIN-LINKED"] }] },
+      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }] },
+    ],
+    wargear: [],
+    ledBy: ["chaplain-on-bike"],
+  },
+
+  {
     id: "assault-intercessor-squad",
     name: "Assault Intercessor Squad",
     faction: "space-marines",
     category: "battleline",
+    image5: "/Warhammerimages/SpaceMarine/assault-intercessor-powerfist.png",
+    image10: "/Warhammerimages/SpaceMarine/assault-intercessor10.png",
     points: 75,
-    wargear: [],
+    defaultWargear: [
+      { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "" },
+      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png" },
+    ],
+    wargear: [
+      { id: "hand-flamer", name: "Hand flamer", image: "" },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png" },
+
+      { id: "power-fist", name: "Power fist", image: "" },
+      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png" },
+      { id: "thunder-hammer", name: "Thunder hammer", image: "" },
+    ],
+    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","librarian","lieutenant","techmarine","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -17,7 +81,21 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "battleline",
     points: 110,
+    notes: [
+      {
+        id: "heavy-bolter-swap",
+        text: "For every 5 models in this unit, 1 Heavy Intercessor's heavy bolt rifle can be replaced with 1 heavy bolter.",
+        textByModelCount: { 10: "For every 10 models in this unit, 2 Heavy Intercessor's heavy bolt rifles can be replaced with 2 heavy bolters." },
+        checkbox: true,
+      },
+    ],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "heavy-bolt-rifle", name: "Heavy bolt rifle", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
     wargear: [],
+    ledBy: ["apothecary-biologis","captain-in-gravis-armour","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -25,8 +103,91 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Intercessor Squad",
     faction: "space-marines",
     category: "battleline",
+    image5: "/Warhammerimages/SpaceMarine/intercessor5.png",
+    image10: "/Warhammerimages/SpaceMarine/intercessor10.png",
     points: 80,
-    wargear: [],
+    notes: [
+      {
+        id: "grenade-launcher-swap",
+        text: "One out of five models' bolt rifle can be swapped for an Astartes grenade launcher",
+        textByModelCount: { 10: "2 out of 10 models' bolt rifle can be swapped for an Astartes grenade launcher" },
+        checkbox: true,
+        image: "/Warhammerimages/SpaceMarine/intercessor-grenade.png",
+        triggersWargear: ["astartes-grenade-launcher"],
+      },
+    ],
+    abilities: [
+      {
+        name: "And They Shall Know No Fear",
+        description: "Each time a Combat Attrition test is taken for this unit, ignore any or all modifiers.",
+      },
+    ],
+    defaultWargear: [
+      {
+        id: "bolt-pistol", name: "Bolt pistol", image: "",
+        profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }],
+      },
+      {
+        id: "bolt-rifle", name: "Bolt rifle", image: "",
+        profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["RAPID FIRE 1"] }],
+      },
+      {
+        id: "close-combat-weapon", name: "Close combat weapon", image: "",
+        profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }],
+      },
+    ],
+    wargearGroups: [
+      ["hand-flamer", "plasma-pistol", "bolt-rifle-wargear", "grenade-bolt-rifle"],
+      ["astartes-chainsword", "power-fist", "power-weapon", "thunder-hammer"],
+    ],
+    wargear: [
+      {
+        id: "astartes-grenade-launcher", name: "Astartes grenade launcher", image: "",
+        countable: true,
+        maxCountByModelCount: { 5: 1, 10: 2 },
+        profiles: [
+          { profileName: "Frag", range: '30"', attacks: "D3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] },
+          { profileName: "Krak", range: '30"', attacks: "1", skill: "3+", strength: "9", ap: "-2", damage: "D3" },
+        ],
+      },
+      {
+        id: "bolt-rifle-wargear", name: "Bolt rifle", image: "", sergeantOnly: true,
+        profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["RAPID FIRE 1"] }],
+      },
+      {
+        id: "grenade-bolt-rifle", name: "Grenade bolt rifle", image: "", sergeantOnly: true,
+        consumesNoteWargear: { noteId: "grenade-launcher-swap", wargearId: "astartes-grenade-launcher" },
+        profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["RAPID FIRE 1"] }],
+      },
+      {
+        id: "hand-flamer", name: "Hand flamer", image: "", sergeantOnly: true,
+        profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }],
+      },
+      {
+        id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png", sergeantOnly: true,
+        profiles: [
+          { profileName: "Standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+          { profileName: "Supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+        ],
+      },
+      {
+        id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png", sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }],
+      },
+      {
+        id: "power-fist", name: "Power fist", image: "", sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }],
+      },
+      {
+        id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png", sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-2", damage: "1" }],
+      },
+      {
+        id: "thunder-hammer", name: "Thunder hammer", image: "", sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }],
+      },
+    ],
+    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","librarian","lieutenant","techmarine","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -35,16 +196,31 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "battleline",
     points: 140,
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "boltgun", name: "Boltgun", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
     wargear: [],
+    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","librarian","lieutenant","techmarine","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
     id: "aggressor-squad",
     name: "Aggressor Squad",
     faction: "space-marines",
+    modelCountOptions: [3, 6],
     category: "infantry",
     points: 120,
-    wargear: [],
+    defaultWargear: [
+      { id: "flamestorm-gauntlets", name: "Flamestorm gauntlets", image: "" },
+      { id: "twin-power-fists", name: "Twin power fists", image: "" },
+    ],
+    wargear: [
+      { id: "auto-boltstorm-gauntlets", name: "Auto boltstorm gauntlets", image: "" },
+      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/intercessor-grenade.png" },
+    ],
+    ledBy: ["apothecary-biologis","captain-in-gravis-armour"],
   },
 
   {
@@ -53,16 +229,48 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 90,
-    wargear: [],
+    pointsByModelCount: { 5: 90, 10: 170 },
+    notes: [
+      {
+        id: "plasma-pistol-swap",
+        text: "One out of five models' heavy bolt pistol can be swapped for a plasma pistol",
+        textByModelCount: { 10: "2 out of 10 models' heavy bolt pistol can be swapped for a plasma pistol" },
+        checkbox: true,
+        image: "/Warhammerimages/SpaceMarine/plasma-pistol.png",
+      },
+    ],
+    defaultWargear: [
+      { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "" },
+      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png" },
+    ],
+    wargear: [
+      { id: "hand-flamer", name: "Hand flamer", image: "" },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png" },
+
+      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png" },
+      { id: "power-fist", name: "Power fist", image: "" },
+    ],
+    ledBy: ["captain-with-jump-pack","chaplain-with-jump-pack"],
   },
 
   {
     id: "bladeguard-veteran-squad",
     name: "Bladeguard Veteran Squad",
     faction: "space-marines",
+    modelCountOptions: [3, 6],
     category: "infantry",
     points: 80,
-    wargear: [],
+    defaultWargear: [
+      { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "" },
+      { id: "master-crafted-power-weapon", name: "Master-crafted power weapon", image: "" },
+    ],
+    wargear: [
+      { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "" },
+      { id: "neo-volkite-pistol", name: "Neo-volkite pistol", image: "" },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png" },
+    ],
+    wargearGroups: [["heavy-bolt-pistol", "neo-volkite-pistol", "plasma-pistol"]],
+    ledBy: ["bladeguard-ancient","captain","chaplain","judiciar","lieutenant"],
   },
 
   {
@@ -71,7 +279,15 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 150,
-    wargear: [],
+    defaultWargear: [
+      { id: "centurion-bolters", name: "Centurion bolters", image: "" },
+      { id: "twin-flamer", name: "Twin flamer", image: "" },
+      { id: "siege-drills", name: "Siege drills", image: "" },
+    ],
+    wargear: [
+      { id: "twin-meltagun", name: "Twin meltagun", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -80,7 +296,42 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 165,
+    defaultWargear: [
+      { id: "centurion-bolters", name: "Centurion bolters", image: "" },
+      { id: "grav-cannon", name: "Grav-cannon", image: "" },
+      { id: "centurion-fists", name: "Centurion fists", image: "" },
+    ],
+    wargear: [
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "company-heroes",
+    name: "Company Heroes",
+    faction: "space-marines",
+    category: "infantry",
+    points: 105,
+    modelCountOptions: [4],
+    notes: [
+      { id: "disclaimer", text: "⚠ You must attach one CAPTAIN or CHAPTER MASTER model to this unit. If this is not possible, this unit does not take part in the battle and counts as having been destroyed." },
+      { id: "ancient-loadout", text: "The Ancient is equipped with: bolt pistol; bolt rifle; close combat weapon." },
+      { id: "champion-loadout", text: "The Company Champion is equipped with: bolt pistol; master-crafted power weapon." },
+      { id: "veteran-1-loadout", text: "One Company Veteran is equipped with: bolt pistol; master-crafted heavy bolter; close combat weapon." },
+      { id: "veteran-2-loadout", text: "One Company Veteran is equipped with: bolt pistol; master-crafted bolt rifle; close combat weapon." },
+    ],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "bolt-rifle", name: "Bolt rifle", image: "" },
+      { id: "master-crafted-bolt-rifle", name: "Master-crafted bolt rifle", image: "" },
+      { id: "master-crafted-heavy-bolter", name: "Master-crafted heavy bolter", image: "" },
+      { id: "master-crafted-power-weapon", name: "Master-crafted power weapon", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
     wargear: [],
+    ledBy: ["captain","lieutenant"],
   },
 
   {
@@ -89,7 +340,17 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 200,
-    wargear: [],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "castellan-launcher", name: "Castellan launcher", image: "" },
+      { id: "superfrag-rocket-launcher", name: "Superfrag rocket launcher", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "superkrak-rocket-launcher", name: "Superkrak rocket launcher", image: "" },
+      { id: "vengor-launcher", name: "Vengor launcher", image: "" },
+    ],
+    ledBy: ["ancient","apothecary","librarian","techmarine"],
   },
 
   {
@@ -98,7 +359,31 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 120,
-    wargear: [],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "boltgun", name: "Boltgun", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "combi-weapon", name: "Combi-weapon", image: "" },
+      { id: "grav-cannon", name: "Grav-cannon", image: "" },
+      { id: "grav-pistol", name: "Grav-pistol", image: "" },
+      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
+      { id: "lascannon", name: "Lascannon", image: "" },
+      { id: "missile-launcher-frag", name: "Missile launcher – frag", image: "" },
+      { id: "missile-launcher-krak", name: "Missile launcher – krak", image: "" },
+      { id: "multi-melta", name: "Multi-melta", image: "" },
+      { id: "plasma-cannon-standard", name: "Plasma cannon – standard", image: "" },
+      { id: "plasma-cannon-supercharge", name: "Plasma cannon – supercharge", image: "" },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png" },
+
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png" },
+      { id: "power-fist", name: "Power fist", image: "" },
+      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png" },
+      { id: "thunder-hammer", name: "Thunder hammer", image: "" },
+    ],
+    ledBy: ["ancient","apothecary","librarian","techmarine"],
   },
 
   {
@@ -107,7 +392,16 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 85,
-    wargear: [],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "bolt-sniper-rifle", name: "Bolt sniper rifle", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "instigator-bolt-carbine", name: "Instigator bolt carbine", image: "" },
+      { id: "las-fusil", name: "Las fusil", image: "" },
+    ],
+    ledBy: ["captain-in-phobos-armour","librarian-in-phobos-armour"],
   },
 
   {
@@ -116,7 +410,15 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 100,
-    wargear: [],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "melta-rifle", name: "Melta rifle", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "multi-melta", name: "Multi-melta", image: "" },
+    ],
+    ledBy: ["apothecary-biologis","captain-in-gravis-armour"],
   },
 
   {
@@ -124,17 +426,42 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Hellblaster Squad",
     faction: "space-marines",
     category: "infantry",
-    points: 115,
-    wargear: [],
+    points: 110,
+    modelCountOptions: [5, 10],
+    pointsByModelCount: { 5: 110, 10: 220 },
+    abilities: [
+      {
+        name: "For the Chapter!",
+        description: "Each time a model in this unit is destroyed, roll one D6: on a 3+, do not remove it from play. The destroyed model can shoot after the attacking model's unit has finished making its attacks, and is then removed from play. When resolving these attacks, any Hazardous tests taken for that attack are automatically passed.\n\nDesigner's Note: This ability is triggered even when a model in this unit is destroyed as the result of failing a Hazardous test, meaning such a model may be able to shoot twice in the same phase.",
+      },
+    ],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "plasma-incinerator", name: "Plasma incinerator", image: "", profiles: [{ profileName: "standard", range: '24"', attacks: "2", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["ASSAULT", "HEAVY"] }, { profileName: "supercharge", range: '24"', attacks: "2", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["ASSAULT", "HAZARDOUS", "HEAVY"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+    ],
+    wargear: [
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] }] },
+    ],
+    ledBy: ["ancient","apothecary","captain","chaplain","librarian","lieutenant"],
   },
 
   {
     id: "inceptor-squad",
     name: "Inceptor Squad",
     faction: "space-marines",
+    modelCountOptions: [3, 6],
     category: "infantry",
     points: 120,
-    wargear: [],
+    defaultWargear: [
+      { id: "assault-bolters", name: "Assault bolters", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "plasma-exterminators-standard", name: "Plasma exterminators – standard", image: "" },
+      { id: "plasma-exterminators-supercharge", name: "Plasma exterminators – supercharge", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -143,7 +470,23 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 80,
-    wargear: [],
+    pointsByModelCount: { 5: 80, 10: 160 },
+    modelCountOptions: [5, 10],
+    abilities: [
+      {
+        name: "Multi-spectrum Array",
+        description: "In your Shooting phase, after this unit has shot, select one enemy unit that was hit by one or more attacks made by this unit this phase. Until the end of the phase, each time a friendly ADEPTUS ASTARTES unit makes an attack that targets that enemy unit, add 1 to the Hit roll.",
+      },
+    ],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "occulus-bolt-carbine", name: "Occulus bolt carbine", image: "" },
+      { id: "paired-combat-blades", name: "Paired combat blades", image: "" },
+    ],
+    wargear: [
+      { id: "haywire-mine", name: "Haywire mine", image: "", note: "Haywire Mine: Once per battle, at the start of any phase, you can select one enemy unit within 3\" of the bearer and roll one D6: on a 2+, that enemy unit suffers D3 mortal wounds, or 2D3 mortal wounds instead if it is a VEHICLE unit." },
+    ],
+    ledBy: ["captain-in-phobos-armour","librarian-in-phobos-armour","lieutenant-in-phobos-armour"],
   },
 
   {
@@ -152,7 +495,13 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 90,
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "pyreblaster", name: "Pyreblaster", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
     wargear: [],
+    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","librarian","lieutenant"],
   },
 
   {
@@ -161,16 +510,27 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 100,
-    wargear: [],
-  },
-
-  {
-    id: "invader-atv",
-    name: "Invader ATV",
-    faction: "space-marines",
-    category: "infantry",
-    points: 60,
-    wargear: [],
+    pointsByModelCount: { 5: 100, 10: 200 },
+    modelCountOptions: [5, 10],
+    abilities: [
+      {
+        name: "Omni-scramblers",
+        description: "Enemy units that are set up on the battlefield from Reserves cannot be set up within 12\" of this unit.",
+      },
+    ],
+    notes: [
+      { id: "infiltrator-wargear-warning", text: "⚠ Helix gauntlet and Infiltrator comms array cannot be taken on the same model." },
+    ],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "marksman-bolt-carbine", name: "Marksman bolt carbine", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["HEAVY"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+    ],
+    wargear: [
+      { id: "helix-gauntlet", name: "Helix gauntlet", image: "", note: "Helix Gauntlet: Models in the bearer's unit have the Feel No Pain 6+ ability." },
+      { id: "infiltrator-comms-array", name: "Infiltrator comms array", image: "", note: "Infiltrator Comms Array: Each time you target the bearer's unit with a Stratagem, roll one D6: on a 5+, you gain 1CP." },
+    ],
+    ledBy: ["captain-in-phobos-armour","librarian-in-phobos-armour","lieutenant-in-phobos-armour"],
   },
 
   {
@@ -179,7 +539,29 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 80,
-    wargear: [],
+    pointsByModelCount: { 5: 80, 10: 160 },
+    modelCountOptions: [5, 10],
+    abilities: [
+      {
+        name: "Fearsome Assault",
+        description: "At the start of the Fight phase, each enemy unit within Engagement Range of one or more units with this ability must take a Battle-shock test, subtracting 1 from that test.",
+      },
+      {
+        name: "Terror Troops (Aura)",
+        description: "While an enemy unit (excluding MONSTERS and VEHICLES) is within 3\" of one or more units with this ability, subtract 1 from the Objective Control characteristic of models in that enemy unit.",
+      },
+    ],
+    defaultWargear: [
+      { id: "special-issue-bolt-pistol", name: "Special issue bolt pistol", image: "" },
+      { id: "combat-knife", name: "Combat knife", image: "" },
+    ],
+    wargear: [
+      { id: "bolt-carbine-and-ccw", name: "Bolt carbine + close combat weapon", image: "", note: "All models in this unit can each have their combat knife replaced with 1 bolt carbine and 1 close combat weapon." },
+      { id: "reiver-grav-chute", name: "Reiver grav-chute", image: "", note: "Reiver Grav-chute: The bearer has the Deep Strike ability." },
+      { id: "grapnel-launcher", name: "Grapnel launcher", image: "", note: "Grapnel Launcher: Each time the bearer's unit makes a Normal, Advance, Fall Back or Charge move, ignore any vertical distance when determining the total distance the bearer can be moved during that move." },
+      { id: "sergeant-combat-knife", name: "Combat knife", image: "", sergeantOnly: true, note: "Can be equipped if the Reiver Sergeant is equipped with 1 bolt carbine." },
+    ],
+    ledBy: ["captain-in-phobos-armour","librarian-in-phobos-armour","lieutenant-in-phobos-armour","lieutenant-in-reiver-armour"],
   },
 
   {
@@ -188,7 +570,21 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 70,
-    wargear: [],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "boltgun", name: "Boltgun", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "astartes-shotgun", name: "Astartes shotgun", image: "" },
+      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
+      { id: "missile-launcher-frag", name: "Missile launcher – frag", image: "" },
+      { id: "missile-launcher-krak", name: "Missile launcher – krak", image: "" },
+      { id: "scout-sniper-rifle", name: "Scout sniper rifle", image: "" },
+      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png" },
+      { id: "combat-knife", name: "Combat knife", image: "" },
+    ],
+    ledBy: ["captain-in-phobos-armour"],
   },
 
   {
@@ -197,7 +593,43 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 100,
-    wargear: [],
+    modelCountOptions: [5, 10],
+    notes: [
+      {
+        id: "heavy-weapon-swap",
+        text: "1 in 5 models can have their Sternguard bolt rifle replaced by:",
+        textByModelCount: { 5: "1 in 5 models can have their Sternguard bolt rifle replaced by:", 10: "2 in 10 models — 1st model can have their Sternguard bolt rifle replaced by:" },
+        checkbox: true,
+        weaponIds: ["pyrecannon", "sternguard-heavy-bolter"],
+      },
+      {
+        id: "heavy-weapon-swap-2",
+        text: "2 in 10 models — 2nd model can have their Sternguard bolt rifle replaced by:",
+        checkbox: true,
+        weaponIds: ["pyrecannon", "sternguard-heavy-bolter"],
+        showForModelCounts: [10],
+      },
+    ],
+    defaultWargear: [
+      { id: "sternguard-bolt-pistol", name: "Sternguard bolt pistol", image: "" },
+      { id: "sternguard-bolt-rifle", name: "Sternguard bolt rifle", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "pyrecannon", name: "Pyrecannon", image: "" },
+      { id: "sternguard-heavy-bolter", name: "Sternguard heavy bolter", image: "" },
+      { id: "combi-weapon-count", name: "Combi-weapon", image: "", countable: true, maxCountByModelCount: { 5: 4, 10: 9 }, maxCountReducedByNotes: ["heavy-weapon-swap", "heavy-weapon-swap-2"] },
+      { id: "sternguard-bolt-rifle-count", name: "Sternguard bolt rifle", image: "", countable: true, maxCountByModelCount: { 5: 4, 10: 9 }, maxCountReducedByNotes: ["heavy-weapon-swap", "heavy-weapon-swap-2"], linkedCounterId: "combi-weapon-count" },
+      { id: "sgt-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png", sergeantOnly: true },
+      { id: "sgt-combi-weapon", name: "Combi-weapon", image: "", sergeantOnly: true },
+      { id: "sgt-power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png", sergeantOnly: true },
+      { id: "sgt-power-fist", name: "Power fist", image: "", sergeantOnly: true },
+      { id: "sgt-chainsword-and-bolt-rifle", name: "Astartes chainsword + Sternguard bolt rifle", image: "", sergeantOnly: true },
+      { id: "sgt-power-weapon-and-bolt-rifle", name: "Power weapon + Sternguard bolt rifle", image: "", sergeantOnly: true },
+      { id: "sgt-power-fist-and-bolt-rifle", name: "Power fist + Sternguard bolt rifle", image: "", sergeantOnly: true },
+    ],
+    wargearGroups: [["sgt-chainsword", "sgt-combi-weapon", "sgt-power-weapon", "sgt-power-fist", "sgt-chainsword-and-bolt-rifle", "sgt-power-weapon-and-bolt-rifle", "sgt-power-fist-and-bolt-rifle"]],
+    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","librarian","lieutenant"],
   },
 
   {
@@ -205,8 +637,15 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Suppressor Squad",
     faction: "space-marines",
     category: "infantry",
+    modelCountOptions: [3, 6],
     points: 75,
+    defaultWargear: [
+      { id: "accelerator-autocannon", name: "Accelerator autocannon", image: "" },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
     wargear: [],
+    ledBy: [],
   },
 
   {
@@ -215,7 +654,13 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 180,
-    wargear: [],
+    defaultWargear: [
+      { id: "thunder-hammer", name: "Thunder hammer", image: "" },
+    ],
+    wargear: [
+      { id: "twin-lightning-claws", name: "Twin lightning claws", image: "" },
+    ],
+    ledBy: ["ancient-in-terminator-armour","captain-in-terminator-armour","chaplain-in-terminator-armour","librarian-in-terminator-armour"],
   },
 
   {
@@ -224,7 +669,53 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 170,
-    wargear: [],
+    pointsByModelCount: { 5: 170, 10: 340 },
+    modelCountOptions: [5, 10],
+    abilities: [
+      {
+        name: "Teleport Homer",
+        description: "At the start of the battle, you can set up one Teleport Homer token for this unit anywhere on the battlefield that is not in your opponent's deployment zone. If you do, once per battle, you can target this unit with the Rapid Ingress Stratagem for 0CP, but when resolving that Stratagem, you must set this unit up within 3\" of that token and not within 9\" of any enemy models. That token is then removed.",
+      },
+      {
+        name: "Fury of the First",
+        description: "Each time a model in this unit makes an attack that targets your Oath of Moment target, add 1 to the Hit roll.",
+      },
+    ],
+    notes: [
+      {
+        id: "heavy-weapon-replacement-1",
+        text: "1 in 5 models can have their storm bolter replaced by:",
+        textByModelCount: { 5: "1 in 5 models can have their storm bolter replaced by:", 10: "2 in 10 models — 1st model can have their storm bolter replaced by:" },
+        checkbox: true,
+        weaponIds: ["assault-cannon", "heavy-flamer", "cyclone-missile-launcher-and-storm-bolter"],
+      },
+      {
+        id: "heavy-weapon-replacement-2",
+        text: "2 in 10 models — 2nd model can have their storm bolter replaced by:",
+        checkbox: true,
+        weaponIds: ["assault-cannon", "heavy-flamer", "cyclone-missile-launcher-and-storm-bolter"],
+        showForModelCounts: [10],
+      },
+    ],
+    defaultWargear: [
+      { id: "storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
+      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+    ],
+    wargear: [
+      { id: "assault-cannon", name: "Assault cannon", image: "", profiles: [{ range: '24"', attacks: "6", skill: "3+", strength: "6", ap: "0", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "heavy-flamer", name: "Heavy flamer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "cyclone-missile-launcher-and-storm-bolter", name: "Cyclone missile launcher", image: "", profiles: [
+        { profileName: "frag", range: '36"', attacks: "2D6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] },
+        { profileName: "krak", range: '36"', attacks: "2", skill: "3+", strength: "9", ap: "-2", damage: "D6" },
+      ]},
+      { id: "chainfist", name: "Chainfist", image: "", countable: true, maxCountByModelCount: { 5: 4, 10: 9 }, note: "Any number of models can each have their power fist replaced with 1 chainfist.", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["ANTI-VEHICLE 3+"] }] },
+      { id: "power-fist-count", name: "Power fist", image: "", countable: true, maxCountByModelCount: { 5: 4, 10: 9 }, linkedCounterId: "chainfist" },
+      { id: "sgt-power-fist", name: "Power fist", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+      { id: "sgt-chainfist", name: "Chainfist", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["ANTI-VEHICLE 3+"] }] },
+      { id: "sgt-power-weapon", name: "Power weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
+    ],
+    wargearGroups: [["sgt-power-fist", "sgt-chainfist", "sgt-power-weapon"]],
+    ledBy: ["ancient-in-terminator-armour","captain-in-terminator-armour","chaplain-in-terminator-armour","librarian-in-terminator-armour"],
   },
 
   {
@@ -233,7 +724,18 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 110,
-    wargear: [],
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
+      { id: "vanguard-veteran-weapon", name: "Vanguard Veteran weapon", image: "" },
+    ],
+    wargear: [
+      { id: "grav-pistol", name: "Grav-pistol", image: "" },
+      { id: "hand-flamer", name: "Hand flamer", image: "" },
+      { id: "inferno-pistol", name: "Inferno pistol", image: "" },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png" },
+
+    ],
+    ledBy: ["captain-with-jump-pack","chaplain-with-jump-pack"],
   },
 
   {
@@ -242,7 +744,20 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 525,
-    wargear: [],
+    defaultWargear: [
+      { id: "astraeus-las-ripper", name: "Astraeus las-ripper", image: "" },
+      { id: "ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "" },
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "twin-macro-accelerator-cannon", name: "Twin macro-accelerator cannon", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "plasma-eradicator-standard", name: "Plasma eradicator – standard", image: "" },
+      { id: "plasma-eradicator-supercharge", name: "Plasma eradicator – supercharge", image: "" },
+      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -250,8 +765,21 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Ballistus Dreadnought",
     faction: "space-marines",
     category: "vehicle",
-    points: 140,
+    points: 150,
+    defaultWargear: [
+      { id: "ballistus-missile-launcher", name: "Ballistus missile launcher", image: "", profiles: [{ profileName: "frag", range: '48"', attacks: "2D6", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST"] }, { profileName: "krak", range: '48"', attacks: "2", skill: "3+", strength: "10", ap: "-2", damage: "D6" }] },
+      { id: "ballistus-lascannon", name: "Ballistus lascannon", image: "", profiles: [{ range: '48"', attacks: "2", skill: "3+", strength: "12", ap: "-3", damage: "D6+1" }] },
+      { id: "twin-storm-bolter", name: "Twin storm bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2", "TWIN-LINKED"] }] },
+      { id: "armoured-feet", name: "Armoured feet", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "7", ap: "0", damage: "1" }] },
+    ],
     wargear: [],
+    abilities: [
+      {
+        name: "Ballistus Strike",
+        description: "Each time this model makes a ranged attack that targets a unit that is not Below Half-strength, you can re-roll the Hit roll.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
@@ -260,7 +788,40 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 160,
-    wargear: [],
+    abilities: [
+      {
+        name: "Brutalis Charge",
+        description: "Each time this model ends a Charge move, select one enemy unit within Engagement Range of it and roll one D6: on a 2-3, that enemy unit suffers D3 mortal wounds; on a 4-5, that enemy unit suffers 3 mortal wounds; on a 6, that enemy unit suffers D3+3 mortal wounds.",
+      },
+    ],
+    defaultWargear: [
+      { id: "twin-icarus-ironhail-heavy-stubber", name: "Twin Icarus ironhail heavy stubber", image: "", profiles: [
+        { range: '36"', attacks: "6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-FLY 2+", "HEAVY"] },
+      ]},
+    ],
+    wargear: [
+      { id: "brutalis-bolt-rifles", name: "Brutalis bolt rifles", image: "", profiles: [
+        { range: '24"', attacks: "4", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["RAPID FIRE 2"] },
+      ]},
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "", profiles: [
+        { range: '36"', attacks: "6", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["HEAVY", "SUSTAINED HITS 1"] },
+      ]},
+      { id: "twin-multi-melta", name: "Twin multi-melta", image: "", profiles: [
+        { range: '18"', attacks: "2", skill: "3+", strength: "9", ap: "-4", damage: "D6+2", keywords: ["MELTA 2", "TWIN-LINKED"] },
+      ]},
+      { id: "brutalis-fists", name: "Brutalis fists", image: "", linkedWargear: ["brutalis-bolt-rifles"], profiles: [
+        { range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-3", damage: "D6+1", keywords: ["TWIN-LINKED"] },
+      ]},
+      { id: "brutalis-talons", name: "Brutalis talons", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "6", skill: "3+", strength: "8", ap: "-2", damage: "2" },
+        { profileName: "sweep", range: "Melee", attacks: "12", skill: "3+", strength: "6", ap: "-1", damage: "1" },
+      ]},
+    ],
+    wargearGroups: [
+      ["brutalis-fists", "brutalis-talons"],
+      ["twin-heavy-bolter", "twin-multi-melta"],
+    ],
+    ledBy: [],
   },
 
   {
@@ -269,7 +830,20 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 135,
-    wargear: [],
+    defaultWargear: [
+      { id: "assault-cannon", name: "Assault cannon", image: "" },
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+      { id: "dreadnought-combat-weapon", name: "Dreadnought combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "heavy-flamer", name: "Heavy flamer", image: "" },
+      { id: "heavy-plasma-cannon-standard", name: "Heavy plasma cannon – standard", image: "" },
+      { id: "heavy-plasma-cannon-supercharge", name: "Heavy plasma cannon – supercharge", image: "" },
+      { id: "multi-melta", name: "Multi-melta", image: "" },
+      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -278,7 +852,14 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 75,
-    wargear: [],
+    defaultWargear: [
+      { id: "twin-firestrike-las-talon", name: "Twin Firestrike las-talon", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
+    wargear: [
+      { id: "twin-firestrike-autocannon", name: "Twin Firestrike autocannon", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -287,7 +868,17 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 160,
-    wargear: [],
+    defaultWargear: [
+      { id: "lancer-laser-destroyer", name: "Lancer laser destroyer", image: "" },
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/intercessor-grenade.png" },
+      { id: "icarus-rocket-pod", name: "Icarus rocket pod", image: "" },
+      { id: "ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -296,7 +887,16 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 160,
-    wargear: [],
+    defaultWargear: [
+      { id: "tempest-bolter", name: "Tempest bolter", image: "" },
+      { id: "twin-heavy-onslaught-gatling-cannon", name: "Twin heavy onslaught gatling cannon", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "icarus-rocket-pod", name: "Icarus rocket pod", image: "" },
+      { id: "ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -305,7 +905,16 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 160,
-    wargear: [],
+    defaultWargear: [
+      { id: "multi-melta", name: "Multi-melta", image: "" },
+      { id: "twin-las-talon", name: "Twin las-talon", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "icarus-rocket-pod", name: "Icarus rocket pod", image: "" },
+      { id: "ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -314,7 +923,15 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 175,
-    wargear: [],
+    defaultWargear: [
+      { id: "hammerfall-heavy-bolter-array", name: "Hammerfall heavy bolter array", image: "" },
+      { id: "hammerfall-missile-launcher-superfrag", name: "Hammerfall missile launcher – superfrag", image: "" },
+      { id: "hammerfall-missile-launcher-superkrak", name: "Hammerfall missile launcher – superkrak", image: "" },
+    ],
+    wargear: [
+      { id: "hammerfall-heavy-flamer-array", name: "Hammerfall heavy flamer array", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -323,7 +940,17 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 125,
-    wargear: [],
+    defaultWargear: [
+      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/intercessor-grenade.png" },
+      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
+      { id: "incendium-cannon", name: "Incendium cannon", image: "" },
+      { id: "twin-ironhail-heavy-stubber", name: "Twin ironhail heavy stubber", image: "" },
+      { id: "invictor-fist", name: "Invictor fist", image: "" },
+    ],
+    wargear: [
+      { id: "twin-ironhail-autocannon", name: "Twin ironhail autocannon", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -332,7 +959,15 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 135,
-    wargear: [],
+    defaultWargear: [
+      { id: "predator-twin-lascannon", name: "Predator twin lascannon", image: "" },
+      { id: "lascannon", name: "Lascannon", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -341,7 +976,15 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 140,
-    wargear: [],
+    defaultWargear: [
+      { id: "predator-autocannon", name: "Predator autocannon", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
+      { id: "lascannon", name: "Lascannon", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -349,8 +992,32 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Redemptor Dreadnought",
     faction: "space-marines",
     category: "vehicle",
-    points: 210,
-    wargear: [],
+    points: 205,
+    defaultWargear: [
+      { id: "redemptor-fist", name: "Redemptor fist", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "12", ap: "-2", damage: "3" }] },
+    ],
+    defaultSelectedWargear: ["heavy-onslaught-gatling-cannon", "heavy-flamer", "twin-fragstorm-grenade-launcher"],
+    wargear: [
+      { id: "heavy-onslaught-gatling-cannon", name: "Heavy onslaught gatling cannon", image: "", profiles: [{ range: '24"', attacks: "12", skill: "3+", strength: "6", ap: "0", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "macro-plasma-incinerator", name: "Macro plasma incinerator", image: "", profiles: [{ profileName: "standard", range: '36"', attacks: "D6+1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["BLAST"] }, { profileName: "supercharge", range: '36"', attacks: "D6+1", skill: "3+", strength: "9", ap: "-4", damage: "3", keywords: ["BLAST", "HAZARDOUS"] }] },
+      { id: "heavy-flamer", name: "Heavy flamer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "onslaught-gatling-cannon", name: "Onslaught gatling cannon", image: "", profiles: [{ range: '24"', attacks: "8", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "twin-fragstorm-grenade-launcher", name: "Twin fragstorm grenade launcher", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST", "TWIN-LINKED"] }] },
+      { id: "twin-storm-bolter", name: "Twin storm bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2", "TWIN-LINKED"] }] },
+      { id: "icarus-rocket-pod", name: "Icarus rocket pod", image: "", profiles: [{ range: '24"', attacks: "D3", skill: "3+", strength: "8", ap: "-1", damage: "2", keywords: ["ANTI-FLY 2+"] }] },
+    ],
+    wargearGroups: [
+      ["heavy-onslaught-gatling-cannon", "macro-plasma-incinerator"],
+      ["heavy-flamer", "onslaught-gatling-cannon"],
+      ["twin-fragstorm-grenade-launcher", "twin-storm-bolter"],
+    ],
+    abilities: [
+      {
+        name: "Duty Eternal",
+        description: "Each time an attack is allocated to this model, subtract 1 from the Damage characteristic of that attack.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
@@ -359,7 +1026,14 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 115,
+    defaultWargear: [
+      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/intercessor-grenade.png" },
+      { id: "onslaught-gatling-cannon", name: "Onslaught gatling cannon", image: "" },
+      { id: "twin-ironhail-heavy-stubber", name: "Twin ironhail heavy stubber", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
     wargear: [],
+    ledBy: [],
   },
 
   {
@@ -368,7 +1042,14 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 125,
+    defaultWargear: [
+      { id: "hammerstrike-missile-launcher", name: "Hammerstrike missile launcher", image: "" },
+      { id: "krakstorm-grenade-launcher", name: "Krakstorm grenade launcher", image: "" },
+      { id: "melta-destroyer", name: "Melta destroyer", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
     wargear: [],
+    ledBy: [],
   },
 
   {
@@ -377,7 +1058,14 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 150,
+    defaultWargear: [
+      { id: "stormfury-missiles", name: "Stormfury missiles", image: "" },
+      { id: "thunderstrike-las-talon", name: "Thunderstrike las-talon", image: "" },
+      { id: "twin-icarus-rocket-pod", name: "Twin Icarus rocket pod", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+    ],
     wargear: [],
+    ledBy: [],
   },
 
   {
@@ -386,7 +1074,18 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 155,
-    wargear: [],
+    defaultWargear: [
+      { id: "las-talon", name: "Las-talon", image: "" },
+      { id: "skyhammer-missile-launcher", name: "Skyhammer missile launcher", image: "" },
+      { id: "twin-assault-cannon", name: "Twin assault cannon", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "typhoon-missile-launcher-frag", name: "Typhoon missile launcher – frag", image: "" },
+      { id: "typhoon-missile-launcher-krak", name: "Typhoon missile launcher – krak", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -395,7 +1094,18 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 165,
-    wargear: [],
+    defaultWargear: [
+      { id: "skyhammer-missile-launcher", name: "Skyhammer missile launcher", image: "" },
+      { id: "twin-assault-cannon", name: "Twin assault cannon", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
+      { id: "typhoon-missile-launcher-frag", name: "Typhoon missile launcher – frag", image: "" },
+      { id: "typhoon-missile-launcher-krak", name: "Typhoon missile launcher – krak", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -404,7 +1114,15 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 185,
-    wargear: [],
+    defaultWargear: [
+      { id: "demolisher-cannon", name: "Demolisher cannon", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "hunter-killer-missile", name: "Hunter-killer missile", image: "" },
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -413,7 +1131,15 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 190,
-    wargear: [],
+    defaultWargear: [
+      { id: "whirlwind-vengeance-launcher", name: "Whirlwind vengeance launcher", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "hunter-killer-missile", name: "Hunter-killer missile", image: "" },
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -422,7 +1148,13 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 70,
-    wargear: [],
+    defaultWargear: [
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+    ],
+    wargear: [
+      { id: "deathwind-launcher", name: "Deathwind launcher", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -431,7 +1163,17 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 80,
-    wargear: [],
+    defaultWargear: [
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "bellicatus-missile-array-frag", name: "Bellicatus missile array – frag", image: "" },
+      { id: "bellicatus-missile-array-icarus", name: "Bellicatus missile array – Icarus", image: "" },
+      { id: "bellicatus-missile-array-krak", name: "Bellicatus missile array – krak", image: "" },
+      { id: "ironhail-skytalon-array", name: "Ironhail skytalon array", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -440,7 +1182,17 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 240,
-    wargear: [],
+    defaultWargear: [
+      { id: "godhammer-lascannon", name: "Godhammer lascannon", image: "" },
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "hunter-killer-missile", name: "Hunter-killer missile", image: "" },
+      { id: "multi-melta", name: "Multi-melta", image: "" },
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -449,7 +1201,17 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 220,
-    wargear: [],
+    defaultWargear: [
+      { id: "hurricane-bolter", name: "Hurricane bolter", image: "" },
+      { id: "twin-assault-cannon", name: "Twin assault cannon", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "hunter-killer-missile", name: "Hunter-killer missile", image: "" },
+      { id: "multi-melta", name: "Multi-melta", image: "" },
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -458,7 +1220,17 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 285,
-    wargear: [],
+    defaultWargear: [
+      { id: "flamestorm-cannon", name: "Flamestorm cannon", image: "" },
+      { id: "twin-assault-cannon", name: "Twin assault cannon", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "hunter-killer-missile", name: "Hunter-killer missile", image: "" },
+      { id: "multi-melta", name: "Multi-melta", image: "" },
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -467,7 +1239,16 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 95,
-    wargear: [],
+    defaultWargear: [
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "hunter-killer-missile", name: "Hunter-killer missile", image: "" },
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -476,7 +1257,18 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 180,
-    wargear: [],
+    defaultWargear: [
+      { id: "heavy-onslaught-gatling-cannon", name: "Heavy onslaught gatling cannon", image: "" },
+      { id: "hunter-slayer-missile", name: "Hunter-slayer missile", image: "" },
+      { id: "repulsor-defensive-array", name: "Repulsor defensive array", image: "" },
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "las-talon", name: "Las-talon", image: "" },
+      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -485,7 +1277,21 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 220,
-    wargear: [],
+    defaultWargear: [
+      { id: "heavy-onslaught-gatling-cannon", name: "Heavy onslaught gatling cannon", image: "" },
+      { id: "ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "" },
+      { id: "macro-plasma-incinerator-standard", name: "Macro plasma incinerator – standard", image: "" },
+      { id: "macro-plasma-incinerator-supercharge", name: "Macro plasma incinerator – supercharge", image: "" },
+      { id: "repulsor-executioner-defensive-array", name: "Repulsor Executioner defensive array", image: "" },
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "twin-icarus-ironhail-heavy-stubber", name: "Twin Icarus ironhail heavy stubber", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "heavy-laser-destroyer", name: "Heavy laser destroyer", image: "" },
+      { id: "icarus-rocket-pod", name: "Icarus rocket pod", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -493,8 +1299,16 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Rhino",
     faction: "space-marines",
     category: "transport",
+    image: "/Warhammerimages/SpaceMarine/Rhino.png",
     points: 75,
-    wargear: [],
+    defaultWargear: [
+      { id: "storm-bolter", name: "Storm bolter", image: "" },
+      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+    ],
+    wargear: [
+      { id: "hunter-killer-missile", name: "Hunter-killer missile", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -503,7 +1317,21 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 280,
-    wargear: [],
+    defaultWargear: [
+      { id: "stormstrike-missile-launcher", name: "Stormstrike missile launcher", image: "" },
+      { id: "twin-assault-cannon", name: "Twin assault cannon", image: "" },
+      { id: "typhoon-missile-launcher-frag", name: "Typhoon missile launcher – frag", image: "" },
+      { id: "typhoon-missile-launcher-krak", name: "Typhoon missile launcher – krak", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "twin-heavy-plasma-cannon-standard", name: "Twin heavy plasma cannon – standard", image: "" },
+      { id: "twin-heavy-plasma-cannon-supercharge", name: "Twin heavy plasma cannon – supercharge", image: "" },
+      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
+      { id: "twin-multi-melta", name: "Twin multi-melta", image: "" },
+    ],
+    ledBy: [],
   },
 
   {
@@ -512,7 +1340,17 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 840,
-    wargear: [],
+    defaultWargear: [
+      { id: "lascannon", name: "Lascannon", image: "" },
+      { id: "thunderhawk-heavy-cannon", name: "Thunderhawk heavy cannon", image: "" },
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
+      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    ],
+    wargear: [
+      { id: "hellstrike-missile-battery", name: "Hellstrike missile battery", image: "" },
+      { id: "turbo-laser-destructor", name: "Turbo-laser destructor", image: "" },
+    ],
+    ledBy: [],
   },
 
 ];

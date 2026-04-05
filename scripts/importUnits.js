@@ -21,12 +21,25 @@ const FACTION_MAP = {
   "space-marines":          "space-marines",
   "astra-militarum":        "astra-militarum",
   "adeptus-mechanicus":     "adeptus-mechanicus",
+  "adeptus-custodes":       "adeptus-custodes",
+  "adepta-sororitas":       "adepta-sororitas",
+  "grey-knights":           "grey-knights",
+  "imperial-agents":        "imperial-agents",
+  "imperial-knights":       "imperial-knights",
   "chaos-space-marines":    "chaos-space-marine",
   "death-guard":            "death-guard",
   "thousand-sons":          "thousand-sons",
+  "world-eaters":           "world-eaters",
+  "chaos-daemons":          "chaos-daemons",
+  "chaos-knights":          "chaos-knights",
   "tyranids":               "tyranids",
   "necrons":                "necrons",
   "orks":                   "orks",
+  "t-au-empire":            "tau-empire",
+  "aeldari":                "aeldari",
+  "drukhari":               "drukhari",
+  "genestealer-cults":      "genestealer-cults",
+  "leagues-of-votann":      "leagues-of-votann",
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -46,11 +59,18 @@ function cleanName(name) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function extractPoints(unitComposition) {
-  if (!Array.isArray(unitComposition)) return 0;
-  for (const entry of unitComposition) {
-    const trimmed = String(entry).trim();
-    if (/^\d+$/.test(trimmed)) return parseInt(trimmed, 10);
+function extractPoints(unitComposition, pointsArray) {
+  // Format 1: points as a standalone number in Unit Composition
+  if (Array.isArray(unitComposition)) {
+    for (const entry of unitComposition) {
+      const trimmed = String(entry).trim();
+      if (/^\d+$/.test(trimmed)) return parseInt(trimmed, 10);
+    }
+  }
+  // Format 2: separate Points array [{ Models: "3", Cost: "80" }, ...]
+  if (Array.isArray(pointsArray) && pointsArray.length > 0) {
+    const cost = parseInt(pointsArray[0].Cost ?? "0", 10);
+    if (cost > 0) return cost;
   }
   return 0;
 }
@@ -60,11 +80,68 @@ function extractCategory(keywords = []) {
   if (kw.includes("TRANSPORT"))  return "transport";
   if (kw.includes("VEHICLE"))    return "vehicle";
   if (kw.includes("MONSTER"))    return "monster";
+  if (kw.includes("MOUNTED"))    return "mounted";
   if (kw.includes("BATTLELINE")) return "battleline";
   return "infantry";
 }
 
+function normalizeWeaponName(name) {
+  return name.toLowerCase().replace(/\s*\[.*?\]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function parseDefaultNames(unitComposition = []) {
+  for (const line of unitComposition) {
+    const match = String(line).match(/equipped with:\s*(.+)/i);
+    if (match) {
+      return match[1].replace(/\.$/, "").split(";").map(s => normalizeWeaponName(s.trim())).filter(Boolean);
+    }
+  }
+  return [];
+}
+
+function parseOptionNames(wargearOptions = []) {
+  return wargearOptions
+    .map(s => String(s).match(/^\d+\s+(.+)/))
+    .filter(Boolean)
+    .map(m => normalizeWeaponName(m[1]));
+}
+
+function extractWargear(rangedWeapons = [], meleeWeapons = [], unitComposition = [], wargearOptions = []) {
+  const defaultNames = parseDefaultNames(unitComposition);
+  const optionNames = parseOptionNames(wargearOptions);
+  const hasStructuredOptions = optionNames.length > 0;
+
+  const seen = new Set();
+  const defaultWargear = [];
+  const optionalWargear = [];
+
+  for (const w of [...rangedWeapons, ...meleeWeapons]) {
+    const cleanName = w.Name.replace(/\s*\[.*?\]/g, "").trim();
+    const norm = normalizeWeaponName(cleanName);
+    const id = toId(cleanName);
+    if (seen.has(id)) continue;
+    seen.add(id);
+
+    const isDefault = defaultNames.some(d => norm.includes(d) || d.includes(norm));
+    const isOption = optionNames.some(o => norm.includes(o) || o.includes(norm));
+
+    if (isDefault) {
+      defaultWargear.push({ id, name: cleanName });
+    } else if (isOption || !hasStructuredOptions) {
+      optionalWargear.push({ id, name: cleanName });
+    }
+  }
+
+  return { defaultWargear, optionalWargear };
+}
+
+function wargearArrayStr(items) {
+  if (items.length === 0) return "[]";
+  return `[\n${items.map(w => `      { id: ${JSON.stringify(w.id)}, name: ${JSON.stringify(w.name)}, image: "" }`).join(",\n")},\n    ]`;
+}
+
 function unitToTs(unit) {
+  const ledByStr = JSON.stringify(unit.ledBy);
   const lines = [
     `  {`,
     `    id: ${JSON.stringify(unit.id)},`,
@@ -72,7 +149,9 @@ function unitToTs(unit) {
     `    faction: ${JSON.stringify(unit.faction)},`,
     `    category: ${JSON.stringify(unit.category)},`,
     `    points: ${unit.points},`,
-    `    wargear: [],`,
+    `    defaultWargear: ${wargearArrayStr(unit.defaultWargear)},`,
+    `    wargear: ${wargearArrayStr(unit.wargear)},`,
+    `    ledBy: ${ledByStr},`,
     `  },`,
   ];
   return lines.join("\n");
@@ -87,7 +166,8 @@ function characterToTs(char) {
     `    image: "",`,
     `    points: ${char.points},`,
     `    canAttachTo: [],`,
-    `    wargear: [],`,
+    `    defaultWargear: ${wargearArrayStr(char.defaultWargear)},`,
+    `    wargear: ${wargearArrayStr(char.wargear)},`,
     `  },`,
   ];
   return lines.join("\n");
@@ -122,7 +202,7 @@ for (const [srcKey, ourFaction] of Object.entries(FACTION_MAP)) {
   const chars = [];
 
   for (const [unitName, unitData] of Object.entries(factionData)) {
-    const points = extractPoints(unitData["Unit Composition"]);
+    const points = extractPoints(unitData["Unit Composition"], unitData["Points"]);
     if (points === 0) continue;
 
     const keywords = unitData["Keywords"] ?? [];
@@ -130,10 +210,19 @@ for (const [srcKey, ourFaction] of Object.entries(FACTION_MAP)) {
     const name = cleanName(unitName);
 
     if (isCharacter) {
-      chars.push({ id: toId(name), name, faction: ourFaction, points });
+      const { defaultWargear, optionalWargear } = extractWargear(
+        unitData["Ranged Weapons"], unitData["Melee Weapons"],
+        unitData["Unit Composition"], unitData["Wargear Options"]
+      );
+      chars.push({ id: toId(name), name, faction: ourFaction, points, defaultWargear, wargear: optionalWargear });
     } else {
       const category = extractCategory(keywords);
-      units.push({ id: toId(name), name, faction: ourFaction, category, points });
+      const { defaultWargear, optionalWargear } = extractWargear(
+        unitData["Ranged Weapons"], unitData["Melee Weapons"],
+        unitData["Unit Composition"], unitData["Wargear Options"]
+      );
+      const ledBy = (unitData["Led By"] ?? []).map(n => toId(n));
+      units.push({ id: toId(name), name, faction: ourFaction, category, points, defaultWargear, wargear: optionalWargear, ledBy });
     }
   }
 

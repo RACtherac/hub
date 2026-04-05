@@ -1,11 +1,11 @@
-import type { Faction, UnitCategory } from "../types/warhammer";
-
-// ── API response types (no image fields — images live in imageMap.ts) ──────
+import type { Faction, UnitCategory, WeaponProfile, UnitAbility } from "../types/warhammer";
 
 export interface ApiWargearOption {
   id: string;
   name: string;
+  image?: string;
   points?: number;
+  profiles?: WeaponProfile[];
 }
 
 export interface ApiUnit {
@@ -13,8 +13,16 @@ export interface ApiUnit {
   name: string;
   faction: Faction;
   category: UnitCategory;
+  image?: string;
+  image3?: string;
+  image5?: string;
+  image6?: string;
+  image10?: string;
   points: number;
+  abilities?: UnitAbility[];
+  defaultWargear: ApiWargearOption[];
   wargear: ApiWargearOption[];
+  ledBy: string[];
   transportCapacity?: number;
 }
 
@@ -22,8 +30,11 @@ export interface ApiCharacter {
   id: string;
   name: string;
   faction: Faction;
+  image?: string;
   points: number;
   canAttachTo: string[];
+  abilities?: UnitAbility[];
+  defaultWargear?: ApiWargearOption[];
   wargear?: ApiWargearOption[];
 }
 

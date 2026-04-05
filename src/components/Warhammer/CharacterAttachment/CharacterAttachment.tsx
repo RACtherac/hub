@@ -4,9 +4,10 @@ interface Props {
   characters: Character[];
   selectedCharacter?: string;
   onChange: (char?: string) => void;
+  label?: string;
 }
 
-export default function CharacterAttachment({ characters, selectedCharacter, onChange }: Props) {
+export default function CharacterAttachment({ characters, selectedCharacter, onChange, label = "Attached Character" }: Props) {
   return (
     <div>
       <div style={{
@@ -17,7 +18,7 @@ export default function CharacterAttachment({ characters, selectedCharacter, onC
         color: "var(--text-dim)",
         marginBottom: "10px",
       }}>
-        Attached Character
+        {label}
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
