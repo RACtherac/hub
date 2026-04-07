@@ -44,6 +44,23 @@
   text-transform: uppercase;
 }
 
+.portfolio-download-btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 0.45rem 0.9rem;
+  border-radius: 2px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.portfolio-download-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
 /* ── Hero ── */
 .portfolio-hero {
   display: grid;
@@ -140,7 +157,7 @@
 /* ── Content sections ── */
 .portfolio-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 .portfolio-section {
@@ -195,11 +212,205 @@
   border-color: var(--accent);
 }
 
-/* ── Project cards inside portfolio ── */
-.portfolio-projects-grid {
+/* ── Background list ── */
+.background-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.background-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.background-date {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.background-item p {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+/* ── References ── */
+.portfolio-references {
+  border-bottom: 1px solid var(--border);
+}
+
+.references-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.reference-card {
+  border: 1px solid var(--border-2);
+  border-radius: 2px;
+  padding: 1.25rem;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.reference-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f0ece4;
+}
+
+.reference-role {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.reference-contact {
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  transition: color 0.2s;
+}
+
+.reference-contact:hover {
+  color: var(--accent);
+}
+
+/* ── Languages & Other ── */
+.extras-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.extra-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border-2);
+  border-radius: 2px;
+}
+
+.extra-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.extra-value {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+/* ── Work Experience ── */
+.portfolio-experience {
   border-bottom: 1px solid var(--border);
+}
+
+.experience-section {
+  border-right: none !important;
+}
+
+.experience-card {
+  border: 1px solid var(--border-2);
+  border-radius: 2px;
+  padding: 1.5rem;
+  background: var(--surface);
+  margin-bottom: 1rem;
+}
+
+.experience-card:last-child {
+  margin-bottom: 0;
+}
+
+.experience-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.experience-company {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f0ece4;
+  margin-bottom: 0.25rem;
+}
+
+.experience-role {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.experience-date {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.experience-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.experience-bullets li {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--text-dim);
+  padding-left: 1.2rem;
+  position: relative;
+}
+
+.experience-bullets li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* ── Project cards inside portfolio ── */
+.portfolio-projects-section {
+  border-bottom: 1px solid var(--border);
+}
+
+.portfolio-projects-header {
+  padding: 2rem 2.5rem 0;
+}
+
+.portfolio-projects-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 .portfolio-project-card {
@@ -274,7 +485,8 @@
   .portfolio-hero { grid-template-columns: 1fr; }
   .portfolio-hero-left { border-right: none; border-bottom: 1px solid var(--border); }
   .portfolio-content { grid-template-columns: 1fr; }
-  .portfolio-projects-grid { grid-template-columns: 1fr; }
+  .references-grid { grid-template-columns: 1fr; }
+  .portfolio-projects-grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* ── Animations ── */

@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import "../components/styles/rotator.css";
 
-import project1 from "../assets/portfolio/portfoliointern.png";
-import project2 from "../assets/portfolio/project1.png";
-import project3 from "../assets/portfolio/project3.png";
+import cvImage1 from "../assets/portfolio/CvImage.png";
+import cvImage2 from "../assets/portfolio/CvImage2.png";
 
 const images: string[] = [
-  project1,
-  project2,
-  project3,
+  cvImage1,
+  cvImage2,
 ];
 
 export default function PhotoRotator() {
