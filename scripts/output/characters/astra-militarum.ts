@@ -71,44 +71,89 @@ export const astraMilitarumCharacters: Character[] = [
         name: "Grim Determination",
         description: "While this unit contains an OFFICER, you can target this unit with Stratagems even while it is Battle-shocked and Orders issued to this unit do not cease to affect this unit if it becomes Battle-shocked.",
       },
+      {
+        name: "Master Vox",
+        description: "Each time the OFFICER in the bearer's unit issues an Order, it can issue it to an eligible unit up to 24\" away.",
+      },
+      {
+        name: "Alchemyk Counteragents",
+        description: "The bearer's unit has the Feel No Pain 6+ ability against mortal wounds.",
+      },
+      {
+        name: "Regimental Standard",
+        description: "Add 1 to the Objective Control characteristic of models in the bearer's unit.",
+      },
+      {
+        name: "Servo-scribes",
+        description: "Once per battle, when issuing an Order, the Lord Commissar can issue one additional Order.\n\nDesigner's Note: Place a Servo-scribes token next to the unit, removing it when this ability has been used.",
+      },
     ],
     defaultWargear: [
-      // Lord Commissar
       { id: "laspistol", name: "Laspistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "power-weapon", name: "Power weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "4", ap: "-2", damage: "1" }] },
-      // Veterans
       { id: "chainsword", name: "Chainsword", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
       { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
       { id: "lasgun", name: "Lasgun", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
       { id: "boltgun", name: "Boltgun", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
-      // Wargear abilities
       { id: "alchemyk-counteragents", name: "Alchemyk counteragents", image: "", note: "The bearer's unit has the Feel No Pain 6+ ability against mortal wounds." },
       { id: "master-vox", name: "Master vox", image: "", note: "Each time the OFFICER in the bearer's unit issues an Order, it can issue it to an eligible unit up to 24\" away." },
       { id: "regimental-standard", name: "Regimental standard", image: "", note: "Add 1 to the Objective Control characteristic of models in the bearer's unit." },
       { id: "servo-scribes", name: "Servo-scribes", image: "", note: "Once per battle, when issuing an Order, the Lord Commissar can issue one additional Order." },
     ],
     wargear: [
-      // Lord Commissar options (sergeantOnly)
-      { id: "power-fist", name: "Power fist", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "-2", damage: "2" }] },
-      { id: "plasma-pistol-lord", name: "Plasma pistol", image: "", sergeantOnly: true, profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "4+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] }] },
-      // Boltgun replacements – 1 Veteran Guardsman (mutually exclusive)
       { id: "flamer", name: "Flamer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
-      { id: "grenade-launcher-frag", name: "Grenade launcher – frag", image: "", profiles: [{ range: '24"', attacks: "D3", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] }] },
-      { id: "grenade-launcher-krak", name: "Grenade launcher – krak", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "9", ap: "-2", damage: "D3" }] },
+      {
+        id: "grenade-launcher",
+        name: "Grenade launcher",
+        image: "",
+        profiles: [
+          { profileName: "Frag", range: '24"', attacks: "D3", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] },
+          { profileName: "Krak", range: '24"', attacks: "1", skill: "4+", strength: "9", ap: "-2", damage: "D3" },
+        ],
+      },
       { id: "meltagun", name: "Meltagun", image: "", profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2"] }] },
-      { id: "plasma-gun-standard", name: "Plasma gun – standard", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["RAPID FIRE 1"] }] },
-      { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "RAPID FIRE 1"] }] },
-      // Chainsword replacements – 1 Veteran Guardsman (mutually exclusive)
+      {
+        id: "plasma-gun",
+        name: "Plasma gun",
+        image: "",
+        profiles: [
+          { profileName: "Standard", range: '24"', attacks: "1", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["RAPID FIRE 1"] },
+          { profileName: "Supercharge", range: '24"', attacks: "1", skill: "4+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "RAPID FIRE 1"] },
+        ],
+      },
+      { id: "power-weapon-lord", name: "Power weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "4", ap: "-2", damage: "1" }] },
+      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "-2", damage: "2" }] },
+      {
+        id: "plasma-pistol-lord",
+        name: "Plasma pistol",
+        image: "",
+        profiles: [
+          { profileName: "Standard", range: '12"', attacks: "1", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+          { profileName: "Supercharge", range: '12"', attacks: "1", skill: "4+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+        ],
+      },
       { id: "trench-club", name: "Trench club", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "4", ap: "0", damage: "1" }] },
       { id: "power-weapon-vet", name: "Power weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "4", ap: "-2", damage: "1" }] },
-      // Laspistol replacements – 1 Veteran Guardsman not carrying alchemyk counteragents (mutually exclusive)
-      { id: "bolt-pistol", name: "Bolt pistol", image: "", note: "Can only be taken by a Veteran Guardsman not equipped with alchemyk counteragents.", profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", note: "Can only be taken by a Veteran Guardsman not equipped with alchemyk counteragents.", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "4+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] }] },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      {
+        id: "plasma-pistol",
+        name: "Plasma pistol",
+        image: "",
+        profiles: [
+          { profileName: "Standard", range: '12"', attacks: "1", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+          { profileName: "Supercharge", range: '12"', attacks: "1", skill: "4+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+        ],
+      },
     ],
     wargearGroups: [
-      ["flamer", "grenade-launcher-frag", "grenade-launcher-krak", "meltagun", "plasma-gun-standard", "plasma-gun-supercharge"],
+      ["flamer", "grenade-launcher", "meltagun", "plasma-gun"],
+      ["power-weapon-lord", "power-fist"],
       ["trench-club", "power-weapon-vet"],
       ["bolt-pistol", "plasma-pistol"],
+    ],
+    wargearSections: [
+      { label: "Veteran Guardsman — Special Weapon", ids: ["flamer", "grenade-launcher", "meltagun", "plasma-gun"] },
+      { label: "Lord Commissar", ids: ["power-weapon-lord", "power-fist", "plasma-pistol-lord"] },
+      { label: "Veteran Guardsman — Equipment", ids: ["trench-club", "power-weapon-vet", "bolt-pistol", "plasma-pistol"] },
     ],
   },
 
@@ -143,7 +188,7 @@ export const astraMilitarumCharacters: Character[] = [
     faction: "astra-militarum",
     image: "",
     points: 55,
-    canAttachTo: [],
+    canAttachTo: ["kasrkin"],
     defaultWargear: [
       { id: "laspistol", name: "Laspistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
       { id: "chainsword", name: "Chainsword", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
@@ -163,7 +208,7 @@ export const astraMilitarumCharacters: Character[] = [
     faction: "astra-militarum",
     image: "",
     points: 30,
-    canAttachTo: [],
+    canAttachTo: ["kasrkin"],
     defaultWargear: [
       { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
       { id: "chainsword", name: "Chainsword", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
@@ -263,7 +308,7 @@ export const astraMilitarumCharacters: Character[] = [
     faction: "astra-militarum",
     image: "",
     points: 150,
-    canAttachTo: [],
+    canAttachTo: ["kasrkin"],
     defaultWargear: [
       { id: "sol-s-righteous-gaze", name: "Sol's Righteous Gaze", image: "", profiles: [{ range: '18"', attacks: "3", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
       { id: "conquest", name: "Conquest", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
@@ -278,7 +323,7 @@ export const astraMilitarumCharacters: Character[] = [
     faction: "astra-militarum",
     image: "",
     points: 35,
-    canAttachTo: [],
+    canAttachTo: ["kasrkin"],
     defaultWargear: [
       { id: "zealot-s-vindictor", name: "Zealot's vindictor", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "4", ap: "0", damage: "1" }] },
     ],
@@ -326,7 +371,7 @@ export const astraMilitarumCharacters: Character[] = [
     faction: "astra-militarum",
     image: "",
     points: 60,
-    canAttachTo: [],
+    canAttachTo: ["kasrkin"],
     defaultWargear: [
       { id: "laspistol", name: "Laspistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
       { id: "psychic-maelstrom-witchfire", name: "Psychic Maelstrom – witchfire", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "9", ap: "-2", damage: "3", keywords: ["PSYCHIC"] }] },
@@ -421,7 +466,7 @@ export const astraMilitarumCharacters: Character[] = [
     faction: "astra-militarum",
     image: "",
     points: 45,
-    canAttachTo: [],
+    canAttachTo: ["kasrkin"],
     defaultWargear: [
       { id: "mechanicus-pistol", name: "Mechanicus pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
       { id: "enginseer-axe", name: "Enginseer axe", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "6", ap: "-2", damage: "1" }] },
@@ -436,7 +481,7 @@ export const astraMilitarumCharacters: Character[] = [
     faction: "astra-militarum",
     image: "",
     points: 65,
-    canAttachTo: [],
+    canAttachTo: ["kasrkin"],
     defaultWargear: [
       { id: "duty-and-vengeance", name: "Duty and Vengeance", image: "", profiles: [{ range: '12"', attacks: "3", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["PISTOL"] }] },
       { id: "power-weapon", name: "Power weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },

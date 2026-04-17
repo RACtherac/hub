@@ -19,6 +19,7 @@ interface ArmyUnit {
   attachedUnitWargear: string[];
   checkedNotes: string[];
   noteWeaponSelections: Record<string, string>;
+  noteCounts: Record<string, number>;
   transportedUnits: string[];
 }
 
@@ -319,11 +320,13 @@ export default function ArmyBuilder() {
 
   const [armyUnits, setArmyUnits] = useState<ArmyUnit[]>([]);
   const [armyCharacters, setArmyCharacters] = useState<ArmyCharacter[]>([]);
+  const [infoOpen, setInfoOpen] = useState(false);
   const [addingUnit, setAddingUnit] = useState(false);
   const [openCategory, setOpenCategory] = useState<UnitCategory | null>(null);
   const [characterMenuOpen, setCharacterMenuOpen] = useState(false);
   const [selectedFaction, setSelectedFaction] = useState<Faction>("space-marines");
   const [openSuperFaction, setOpenSuperFaction] = useState<SuperFaction | null>(null);
+  const [showStartScreen, setShowStartScreen] = useState(true);
   const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -351,7 +354,7 @@ export default function ArmyBuilder() {
     const defaultModelCount = unit?.modelCountOptions?.[0] ?? 5;
     setArmyUnits([
       ...armyUnits,
-      { id: Date.now(), unitId, modelCount: defaultModelCount, wargear: unit?.defaultSelectedWargear ?? [], wargearCounts: {}, characterWargear: [], characterWargear2: [], attachedUnit: undefined, attachedUnitWargear: [], checkedNotes: [], noteWeaponSelections: {}, transportedUnits: [] },
+      { id: Date.now(), unitId, modelCount: defaultModelCount, wargear: unit?.defaultSelectedWargear ?? [], wargearCounts: {}, characterWargear: [], characterWargear2: [], attachedUnit: undefined, attachedUnitWargear: [], checkedNotes: [], noteWeaponSelections: {}, noteCounts: {}, transportedUnits: [] },
     ]);
     setAddingUnit(false);
     setOpenCategory(null);
@@ -444,6 +447,169 @@ export default function ArmyBuilder() {
       <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "#c0392b", maxWidth: 400, textAlign: "center" }}>
         <div style={{ marginBottom: 8 }}>// DATA RETRIEVAL FAILURE</div>
         <div style={{ color: "var(--text-dim)" }}>{error}</div>
+      </div>
+    </div>
+  );
+
+  const SF_COLORS: Record<SuperFaction, string> = {
+    imperium: "#e8c547",
+    chaos:    "#cc4444",
+    xenos:    "#44aacc",
+  };
+
+  if (showStartScreen) return (
+    <div style={{
+      minHeight: "100vh",
+      background: "var(--bg)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      fontFamily: "var(--font-display)",
+      color: "var(--text)",
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      {/* Decorative background grid */}
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
+        backgroundImage: "linear-gradient(rgba(232,197,71,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(232,197,71,0.03) 1px, transparent 1px)",
+        backgroundSize: "60px 60px",
+      }} />
+      {/* Corner accents */}
+      <div style={{ position:"absolute", top:32, left:32, width:60, height:60, pointerEvents:"none", zIndex:0, borderTop:"1px solid var(--border-2)", borderLeft:"1px solid var(--border-2)" }} />
+      <div style={{ position:"absolute", top:32, right:32, width:60, height:60, pointerEvents:"none", zIndex:0, borderTop:"1px solid var(--border-2)", borderRight:"1px solid var(--border-2)" }} />
+      <div style={{ position:"absolute", bottom:32, left:32, width:60, height:60, pointerEvents:"none", zIndex:0, borderBottom:"1px solid var(--border-2)", borderLeft:"1px solid var(--border-2)" }} />
+      <div style={{ position:"absolute", bottom:32, right:32, width:60, height:60, pointerEvents:"none", zIndex:0, borderBottom:"1px solid var(--border-2)", borderRight:"1px solid var(--border-2)" }} />
+
+      <div style={{ zIndex: 1, width: "100%", maxWidth: "960px", padding: "40px 32px", textAlign: "center" }}>
+
+        {/* Top ornament */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px", marginBottom: "32px" }}>
+          <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, var(--border-2))" }} />
+          <div style={{ width: "10px", height: "10px", background: "var(--accent)", clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }} />
+          <div style={{ width: "6px", height: "6px", background: "var(--border-2)", clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }} />
+          <div style={{ width: "10px", height: "10px", background: "var(--accent)", clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }} />
+          <div style={{ flex: 1, height: "1px", background: "linear-gradient(to left, transparent, var(--border-2))" }} />
+        </div>
+
+        {/* Label */}
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.35em", color: "var(--text-dim)", textTransform: "uppercase", marginBottom: "12px" }}>
+          Warhammer 40,000
+        </div>
+
+        {/* Title */}
+        <h1 style={{ fontSize: "clamp(36px, 6vw, 60px)", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text)", lineHeight: 1, margin: "0 0 4px" }}>
+          Army Builder
+        </h1>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.2em", color: "var(--accent)", textTransform: "uppercase", marginBottom: "40px", opacity: 0.8 }}>
+          Muster your forces. Forge your warhost.
+        </div>
+
+        {/* Faction selector */}
+        <div style={{ marginBottom: "40px" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.25em", color: "var(--text-dim)", textTransform: "uppercase", marginBottom: "20px" }}>
+            // Select Allegiance
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", textAlign: "left" }}>
+            {(Object.keys(SUPERFACTIONS) as SuperFaction[]).map((sf) => {
+              const sfColor = SF_COLORS[sf];
+              const hasSel = SUPERFACTIONS[sf].includes(selectedFaction);
+              return (
+                <div key={sf} style={{
+                  border: `1px solid ${hasSel ? sfColor + "55" : "var(--border-2)"}`,
+                  background: hasSel ? sfColor + "08" : "var(--surface)",
+                  transition: "border-color 0.2s, background 0.2s",
+                }}>
+                  <div style={{
+                    padding: "10px 14px",
+                    borderBottom: `1px solid ${hasSel ? sfColor + "44" : "var(--border)"}`,
+                    background: "rgba(0,0,0,0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}>
+                    <div style={{ width: "6px", height: "6px", background: sfColor, clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)", flexShrink: 0 }} />
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.2em", color: sfColor, textTransform: "uppercase", fontWeight: 700 }}>
+                      {SUPERFACTION_LABELS[sf]}
+                    </span>
+                  </div>
+                  {SUPERFACTIONS[sf].map((faction) => {
+                    const active = selectedFaction === faction;
+                    return (
+                      <button
+                        key={faction}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          width: "100%",
+                          padding: "9px 14px",
+                          border: "none",
+                          borderBottom: "1px solid var(--border)",
+                          background: active ? sfColor + "22" : "none",
+                          color: active ? sfColor : "var(--text)",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "11px",
+                          letterSpacing: "0.07em",
+                          textAlign: "left",
+                          cursor: "pointer",
+                          transition: "background 0.1s, color 0.1s",
+                        }}
+                        onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; } }}
+                        onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = "none"; } }}
+                        onClick={() => setSelectedFaction(faction)}
+                      >
+                        <span style={{
+                          width: "5px", height: "5px", flexShrink: 0,
+                          background: active ? sfColor : "var(--border-2)",
+                          clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
+                          transition: "background 0.15s",
+                        }} />
+                        {FACTION_LABELS[faction]}
+                        {active && <span style={{ marginLeft: "auto", fontSize: "9px", opacity: 0.7 }}>◈</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Begin + selected faction */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "14px" }}>
+          <button
+            style={{
+              padding: "14px 56px",
+              background: "var(--accent)",
+              border: "none",
+              color: "#000",
+              fontFamily: "var(--font-mono)",
+              fontSize: "12px",
+              fontWeight: 700,
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              transition: "opacity 0.15s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+            onClick={() => setShowStartScreen(false)}
+          >
+            Begin Mustering
+          </button>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.15em", color: "var(--text-dim)" }}>
+            FACTION // <span style={{ color: "var(--accent)" }}>{FACTION_LABELS[selectedFaction].toUpperCase()}</span>
+          </div>
+        </div>
+
+        {/* Bottom ornament */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px", marginTop: "40px" }}>
+          <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, var(--border))" }} />
+          <div style={{ width: "4px", height: "4px", background: "var(--border-2)", clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }} />
+          <div style={{ flex: 1, height: "1px", background: "linear-gradient(to left, transparent, var(--border))" }} />
+        </div>
       </div>
     </div>
   );
@@ -541,6 +707,18 @@ export default function ArmyBuilder() {
             <div style={s.pointsLabel}>Army Strength</div>
             <div style={s.pointsValue}>{totalPoints} <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>pts</span></div>
           </div>
+          <button
+            style={{
+              ...s.backBtn,
+              border: "1px solid var(--border-2)",
+              borderRadius: "3px",
+              padding: "6px 14px",
+              fontSize: "11px",
+            }}
+            onClick={(e) => { e.stopPropagation(); setInfoOpen(true); }}
+          >
+            Info
+          </button>
           <button style={s.backBtn} onClick={() => navigate("/")}>← HUB</button>
         </div>
       </header>
@@ -783,6 +961,7 @@ export default function ArmyBuilder() {
                     attachedUnitWargear={armyUnit.attachedUnitWargear}
                     checkedNotes={armyUnit.checkedNotes}
                     noteWeaponSelections={armyUnit.noteWeaponSelections}
+                    noteCounts={armyUnit.noteCounts}
                     transportedUnits={armyUnit.transportedUnits}
                     deployedUnits={armyUnits.filter((u) => u.id !== armyUnit.id).map((u) => units.find((x) => x.id === u.unitId)!).filter(Boolean)}
                     points={calculateUnitPoints(armyUnit)}
@@ -798,6 +977,7 @@ export default function ArmyBuilder() {
                     onWargearCountsChange={(counts) => updateUnit(armyUnit.id, { wargearCounts: counts })}
                     onCheckedNotesChange={(notes) => updateUnit(armyUnit.id, { checkedNotes: notes })}
                     onNoteWeaponSelect={(noteId, weaponId) => updateUnit(armyUnit.id, { noteWeaponSelections: { ...armyUnit.noteWeaponSelections, [noteId]: weaponId } })}
+                    onNoteCountsChange={(counts) => updateUnit(armyUnit.id, { noteCounts: counts })}
                     onTransportChange={(u) => updateUnit(armyUnit.id, { transportedUnits: u })}
                     onRemove={() => removeUnit(armyUnit.id)}
                   />
@@ -808,6 +988,117 @@ export default function ArmyBuilder() {
         )}
 
       </main>
+
+      {/* INFO MODAL */}
+      {infoOpen && (
+        <div
+          style={{
+            position: "fixed", inset: 0, zIndex: 500,
+            background: "rgba(0,0,0,0.75)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "24px",
+          }}
+          onClick={() => setInfoOpen(false)}
+        >
+          <div
+            style={{
+              background: "var(--surface)",
+              border: "1px solid var(--border-2)",
+              borderTop: "2px solid var(--accent)",
+              maxWidth: "560px",
+              width: "100%",
+              padding: "32px",
+              boxShadow: "0 16px 64px rgba(0,0,0,0.8)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal header */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={s.sigil} />
+                <div>
+                  <div style={{ ...s.titleText, marginBottom: "2px" }}>Warhammer 40,000</div>
+                  <div style={s.titleMain}>Army Builder</div>
+                </div>
+              </div>
+              <button
+                style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer", fontSize: "18px", lineHeight: 1, padding: "4px 8px" }}
+                onClick={() => setInfoOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Sections */}
+            {[
+              {
+                label: "// about",
+                content: "A browser-based army builder for Warhammer 40,000 10th Edition. Select a faction, deploy units and characters, configure wargear, and track your total army points.",
+              },
+              {
+                label: "// data",
+                content: `Unit and character data is served from a local Express API. The database covers all 22 factions with ${952} units and ${404} characters, including points costs, wargear options, model count variants, and special rules.`,
+              },
+              {
+                label: "// how to use",
+                content: "1. Pick a faction from the Imperium, Chaos, or Xenos menus.\n2. Click + Add Unit and select a category to browse available units.\n3. Use the Characters dropdown to attach named characters.\n4. Expand any card to configure wargear, model count, and attachments.\n5. Army strength is tracked live in the top-right corner.",
+              },
+              {
+                label: "// tech stack",
+                content: "React · TypeScript · Express · Node.js",
+              },
+              {
+                label: "// IP & disclaimer",
+                content: "Respectful usage of IP. Everything that makes this hobby great — from models to lore — is thanks to Games Workshop. I make every effort to credit IP ownership and take no credit for any creation except the models I have painted myself. Any other models shown are credited to their respective owners.\n\nThis project is not aiming to replace anything GW offers. It is a fun personal project built for portfolio purposes and as a complement to what GW provides. For official model information and datasheets, please refer to Games Workshop's official channels.",
+              },
+            ].map(({ label, content }) => (
+              <div key={label} style={{ marginBottom: "20px" }}>
+                <div style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "9px",
+                  letterSpacing: "0.2em",
+                  color: "var(--accent)",
+                  textTransform: "uppercase",
+                  marginBottom: "8px",
+                }}>
+                  {label}
+                </div>
+                <div style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "12px",
+                  color: "var(--text-dim)",
+                  lineHeight: 1.7,
+                  whiteSpace: "pre-line",
+                }}>
+                  {content}
+                </div>
+              </div>
+            ))}
+
+            <button
+              style={{
+                marginTop: "8px",
+                background: "none",
+                border: "1px solid var(--border-2)",
+                color: "var(--text-dim)",
+                fontFamily: "var(--font-mono)",
+                fontSize: "11px",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                padding: "8px 20px",
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text)"; e.currentTarget.style.borderColor = "var(--text-dim)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-dim)"; e.currentTarget.style.borderColor = "var(--border-2)"; }}
+              onClick={() => setInfoOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

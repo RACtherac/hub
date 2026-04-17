@@ -10,9 +10,15 @@ export const tyranidsUnits: Unit[] = [
     modelCountOptions: [10, 20],
     points: 85,
     pointsByModelCount: { 10: 85, 20: 170 },
+    abilities: [
+      {
+        name: "Winged Swarm",
+        description: "In your Shooting phase, after this unit has shot, if it is not within Engagement Range of any enemy units, it can make a Normal move of up to 6\". If it does, until the end of the turn, this unit is not eligible to declare a charge.",
+      },
+    ],
     defaultWargear: [
-      { id: "fleshborer", name: "Fleshborer", image: "" },
-      { id: "blinding-venom", name: "Blinding venom", image: "" },
+      { id: "fleshborer", name: "Fleshborer", image: "", profiles: [{ range: '18"', attacks: "1", skill: "4+", strength: "5", ap: "0", damage: "1", keywords: ["ASSAULT"] }] },
+      { id: "blinding-venom", name: "Blinding venom", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
     ],
     wargear: [],
     ledBy: ["winged-tyranid-prime"],
@@ -27,7 +33,7 @@ export const tyranidsUnits: Unit[] = [
     points: 65,
     pointsByModelCount: { 10: 65, 20: 130 },
     defaultWargear: [
-      { id: "hormagaunt-talons", name: "Hormagaunt talons", image: "" },
+      { id: "hormagaunt-talons", name: "Hormagaunt talons", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "3", ap: "-1", damage: "1" }] },
     ],
     wargear: [],
     ledBy: ["tyranid-prime"],
@@ -327,13 +333,20 @@ export const tyranidsUnits: Unit[] = [
     name: "Tyrant Guard",
     faction: "tyranids",
     category: "infantry",
+    modelCountOptions: [3, 6],
     points: 80,
-    defaultWargear: [
-      { id: "scything-talons-and-rending-claws", name: "Scything talons and rending claws", image: "" },
+    pointsByModelCount: { 3: 80, 6: 160 },
+    abilities: [
+      {
+        name: "Guardian Organism",
+        description: "While a CHARACTER model is leading this unit, that CHARACTER has the Feel No Pain 5+ ability.",
+      },
     ],
+    defaultWargear: [],
     wargear: [
-      { id: "bone-cleaver-lash-whip-and-rending-claws", name: "Bone cleaver, lash whip and rending claws", image: "" },
-      { id: "crushing-claws-and-rending-claws", name: "Crushing claws and rending claws", image: "" },
+      { id: "scything-talons-and-rending-claws", name: "Scything talons and rending claws", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "5", ap: "-1", damage: "1" }] },
+      { id: "bone-cleaver-lash-whip-and-rending-claws", name: "Bone cleaver, lash whip and rending claws", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "2" }] },
+      { id: "crushing-claws-and-rending-claws", name: "Crushing claws and rending claws", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["TWIN-LINKED"] }] },
     ],
     ledBy: ["hive-tyrant","neurotyrant","the-swarmlord"],
   },

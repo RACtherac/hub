@@ -29,6 +29,7 @@ interface Props {
   attachedUnitWargear: string[];
   checkedNotes: string[];
   noteWeaponSelections: Record<string, string>;
+  noteCounts: Record<string, number>;
   transportedUnits: string[];
   deployedUnits: Unit[];
   points: number;
@@ -44,6 +45,7 @@ interface Props {
   onAttachedUnitWargearChange: (gear: string[]) => void;
   onCheckedNotesChange: (notes: string[]) => void;
   onNoteWeaponSelect: (noteId: string, weaponId: string) => void;
+  onNoteCountsChange: (counts: Record<string, number>) => void;
   onTransportChange: (units: string[]) => void;
   onRemove: () => void;
 }
@@ -54,14 +56,14 @@ export default function UnitCard({
   attachedCharacter, characterWargear,
   attachedCharacter2, characterWargear2,
   attachedUnit, attachedUnitWargear,
-  checkedNotes, noteWeaponSelections,
+  checkedNotes, noteWeaponSelections, noteCounts,
   transportedUnits, deployedUnits, points,
   wargearCounts, onWargearCountsChange,
   onModelCountChange, onWargearChange,
   onCharacterChange, onCharacterWargearChange,
   onCharacter2Change, onCharacterWargear2Change,
   onAttachedUnitChange, onAttachedUnitWargearChange,
-  onCheckedNotesChange, onNoteWeaponSelect,
+  onCheckedNotesChange, onNoteWeaponSelect, onNoteCountsChange,
   onTransportChange, onRemove,
 }: Props) {
   const [expanded, setExpanded] = useState(true);
@@ -98,13 +100,14 @@ export default function UnitCard({
   };
 
   const buildCharacterGroups = (char: typeof selectedCharacter): string[][] => {
+    if (char?.wargearGroups && char.wargearGroups.length > 0) return char.wargearGroups;
     const wargear = char?.wargear ?? [];
     const pistols = wargear.filter(w => w.profiles?.some(p => p.keywords?.includes("PISTOL"))).map(w => w.id);
     const melee = wargear.filter(w => w.profiles?.some(p => p.range === "Melee")).map(w => w.id);
     const auto: string[][] = [];
     if (pistols.length > 1) auto.push(pistols);
     if (melee.length > 1) auto.push(melee);
-    return [...auto, ...(char?.wargearGroups ?? [])];
+    return auto;
   };
 
   const dedupWargearNames = (wargear: { id: string; name: string }[]) => {
@@ -136,7 +139,9 @@ export default function UnitCard({
   const isTransport = unit.category === "transport";
 
   const modelCountOptions = unit.modelCountOptions ?? [5, 10];
-  const allowedCharacters = characters.filter((c) => unit.ledBy?.includes(c.id));
+  const allowedCharacters = characters
+    .filter((c) => unit.ledBy?.includes(c.id))
+    .filter((c, i, arr) => arr.findIndex((x) => x.id === c.id) === i);
   const attachableUnits = allUnits.filter((u) => unit.attachableUnits?.includes(u.id));
   const categoryColor = CATEGORY_COLORS[unit.category] ?? "var(--accent)";
 
@@ -430,7 +435,10 @@ export default function UnitCard({
                   Always Equipped
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                  {dedupWargearNames(unit.defaultWargear).map((w) => (
+                  {dedupWargearNames(unit.defaultWargear.filter((w) => {
+                    const replaced = (unit.notes ?? []).some((n) => n.replacesDefaultWargear === w.id && checkedNotes.includes(n.id));
+                    return !replaced;
+                  })).map((w) => (
                     <span key={w.id} style={{
                       fontFamily: "var(--font-mono)",
                       fontSize: "10px",
@@ -460,13 +468,34 @@ export default function UnitCard({
                   const baseMax = triggeredWargearItem?.maxCountByModelCount?.[modelCount] ?? 0;
                   const consumed = triggeredWargearItem ? getConsumedSlots(triggeredWargearItem.id) : 0;
                   const effectiveMax = Math.max(0, baseMax - consumed);
-                  const noteDisabled = note.triggersWargear ? effectiveMax === 0 : false;
+                  const groupLimit = note.noteGroup
+                    ? (unit.noteGroupLimitsByModelCount?.[note.noteGroup]?.[modelCount]
+                        ?? unit.noteGroupLimits?.[note.noteGroup]
+                        ?? Infinity)
+                    : Infinity;
+                  const groupTotal = note.noteGroup
+                    ? (unit.notes ?? [])
+                        .filter((n) => n.noteGroup === note.noteGroup && checkedNotes.includes(n.id))
+                        .reduce((sum, n) => sum + (noteCounts[n.id] ?? 1), 0)
+                    : 0;
+                  const groupAtMax = groupTotal >= groupLimit;
+                  const noteDisabled = (note.triggersWargear ? effectiveMax === 0 : false) || (groupAtMax && !checkedNotes.includes(note.id));
                   return (
                     <div key={note.id}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
                         {note.checkbox && (
                           <button
-                            onClick={() => !noteDisabled && onCheckedNotesChange(isChecked ? checkedNotes.filter((n) => n !== note.id) : [...checkedNotes, note.id])}
+                            onClick={() => {
+                              if (noteDisabled) return;
+                              if (isChecked) {
+                                onCheckedNotesChange(checkedNotes.filter((n) => n !== note.id));
+                              } else {
+                                const exclusive = note.exclusiveWith
+                                  ? checkedNotes.filter((n) => n !== note.exclusiveWith)
+                                  : [...checkedNotes];
+                                onCheckedNotesChange([...exclusive.filter((n) => n !== note.id), note.id]);
+                              }
+                            }}
                             style={{
                               width: "14px",
                               height: "14px",
@@ -499,6 +528,27 @@ export default function UnitCard({
                         }}>
                           {noteText}
                         </span>
+                        {isChecked && note.maxCountByModelCount && (() => {
+                          const max = note.maxCountByModelCount[modelCount] ?? 1;
+                          if (max <= 1) return null;
+                          const count = noteCounts[note.id] ?? 1;
+                          const plusDisabled = count >= max || groupAtMax;
+                          return (
+                            <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--accent)", background: "var(--accent-dim)", flexShrink: 0 }}>
+                              <button
+                                onClick={() => onNoteCountsChange({ ...noteCounts, [note.id]: Math.max(1, count - 1) })}
+                                disabled={count <= 1}
+                                style={{ background: "none", border: "none", borderRight: "1px solid var(--accent)", color: count <= 1 ? "var(--border-2)" : "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "13px", padding: "2px 7px", cursor: count <= 1 ? "default" : "pointer", lineHeight: 1 }}
+                              >−</button>
+                              <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--accent)", padding: "0 6px", minWidth: "24px", textAlign: "center" }}>{count}</span>
+                              <button
+                                onClick={() => onNoteCountsChange({ ...noteCounts, [note.id]: Math.min(max, count + 1) })}
+                                disabled={plusDisabled}
+                                style={{ background: "none", border: "none", borderLeft: "1px solid var(--accent)", color: plusDisabled ? "var(--border-2)" : "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "13px", padding: "2px 7px", cursor: plusDisabled ? "default" : "pointer", lineHeight: 1 }}
+                              >+</button>
+                            </div>
+                          );
+                        })()}
                         {isChecked && note.triggersWargear && note.triggersWargear.map((wid) => {
                           const wargearItem = unit.wargear.find((w) => w.id === wid);
                           if (!wargearItem?.countable) return null;
@@ -606,7 +656,7 @@ export default function UnitCard({
                 <>
                   {unitWargear.length > 0 && (
                     <WargearSelector
-                      label="Wargear Options"
+                      label={unit.wargearLabel ?? "Wargear Options"}
                       wargear={unitWargear}
                       selected={selectedWargear}
                       onChange={handleWargearChange}
@@ -626,7 +676,7 @@ export default function UnitCard({
                           return (
                             <WargearSelector
                               key={optGroup.label}
-                              label={`Sergeant — ${optGroup.label}`}
+                              label={optGroup.label}
                               wargear={groupWargear}
                               selected={selectedWargear}
                               onChange={handleWargearChange}
@@ -766,13 +816,34 @@ export default function UnitCard({
 
             {/* Character optional wargear */}
             {selectedCharacter?.wargear && selectedCharacter.wargear.length > 0 && (
-              <WargearSelector
-                label={`${selectedCharacter.name} — Wargear Options`}
-                wargear={selectedCharacter.wargear}
-                selected={characterWargear}
-                onChange={onCharacterWargearChange}
-                groups={buildCharacterGroups(selectedCharacter)}
-              />
+              selectedCharacter.wargearSections ? (
+                <>
+                  {selectedCharacter.wargearSections.map((section) => {
+                    const sectionWargear = section.ids
+                      .map(id => selectedCharacter.wargear!.find(w => w.id === id))
+                      .filter(Boolean) as NonNullable<typeof selectedCharacter.wargear>;
+                    if (sectionWargear.length === 0) return null;
+                    return (
+                      <WargearSelector
+                        key={section.label}
+                        label={section.label}
+                        wargear={sectionWargear}
+                        selected={characterWargear}
+                        onChange={onCharacterWargearChange}
+                        groups={buildCharacterGroups(selectedCharacter)}
+                      />
+                    );
+                  })}
+                </>
+              ) : (
+                <WargearSelector
+                  label={`${selectedCharacter.name} — Wargear Options`}
+                  wargear={selectedCharacter.wargear}
+                  selected={characterWargear}
+                  onChange={onCharacterWargearChange}
+                  groups={buildCharacterGroups(selectedCharacter)}
+                />
+              )
             )}
 
             {/* Second character slot (only shown if first character allows it) */}

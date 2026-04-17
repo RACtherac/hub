@@ -11,21 +11,35 @@ export const deathGuardUnits: Unit[] = [
     modelCountOptions: [5, 7, 10],
     pointsByModelCount: { 5: 95, 7: 130, 10: 190 },
     defaultWargear: [
-      { id: "plague-boltgun", name: "Plague boltgun", image: "" },
-      { id: "plague-knives", name: "Plague knives", image: "" },
+      { id: "plague-boltgun", name: "Plague boltgun", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS", "RAPID FIRE 1"] }] },
+      { id: "plague-knives", name: "Plague knives", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [
-      // Champion boltgun replacements (exclusive group)
-      { id: "champ-bolt-pistol", name: "Champion: Bolt pistol", image: "" },
-      { id: "champ-plasma-gun", name: "Champion: Plasma gun", image: "" },
-      { id: "champ-plasma-pistol", name: "Champion: Plasma pistol", image: "" },
-      // Champion plague knives replacements (exclusive group)
-      { id: "champ-bubotic-weapons", name: "Champion: Bubotic weapons", image: "" },
-      { id: "champ-power-fist", name: "Champion: Power fist", image: "" },
-      // Per-5 special weapon dropdown options (used by note, hidden from selector)
-      { id: "meltagun", name: "Meltagun", image: "" },
-      { id: "plague-belcher", name: "Plague belcher", image: "" },
-      { id: "plasma-gun", name: "Plasma gun", image: "" },
+      // Champion ranged options (wargear groups)
+      { id: "champ-bolt-pistol", name: "Champion: Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS", "PISTOL"] }] },
+      { id: "champ-plasma-gun", name: "Champion: Plasma gun", image: "", profiles: [
+        { profileName: "standard", range: '24"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["RAPID FIRE 1"] },
+        { profileName: "supercharge", range: '24"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "RAPID FIRE 1"] },
+      ]},
+      { id: "champ-plasma-pistol", name: "Champion: Plasma pistol", image: "", profiles: [
+        { profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+        { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+      ]},
+      // Champion melee options (wargear groups)
+      { id: "champ-bubotic-weapons", name: "Champion: Bubotic weapons", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1", keywords: ["LETHAL HITS"] }] },
+      { id: "champ-power-fist", name: "Champion: Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["LETHAL HITS"] }] },
+      // Hidden weapons (used by notes via weaponId/weaponIds — filtered from selector)
+      { id: "blight-launcher", name: "Blight launcher", image: "", profiles: [{ range: '24"', attacks: "D3", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["BLAST", "LETHAL HITS"] }] },
+      { id: "plague-spewer", name: "Plague spewer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["ANTI-INFANTRY 2+", "IGNORES COVER", "TORRENT"] }] },
+      { id: "meltagun", name: "Meltagun", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2"] }] },
+      { id: "plague-belcher", name: "Plague belcher", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 4+", "IGNORES COVER", "TORRENT"] }] },
+      { id: "plasma-gun", name: "Plasma gun", image: "", profiles: [
+        { profileName: "standard", range: '24"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["RAPID FIRE 1"] },
+        { profileName: "supercharge", range: '24"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "RAPID FIRE 1"] },
+      ]},
+      { id: "bubotic-weapons", name: "Bubotic weapons", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1", keywords: ["LETHAL HITS"] }] },
+      { id: "heavy-plague-weapon", name: "Heavy plague weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["LETHAL HITS"] }] },
+      { id: "icon-of-despair", name: "Icon of Despair", image: "", note: "Icon of Despair (Aura): While an enemy unit is within 6\" of the bearer, worsen the Leadership characteristic of models in that unit by 1." },
     ],
     wargearGroups: [
       ["champ-bolt-pistol", "champ-plasma-gun", "champ-plasma-pistol"],
@@ -37,12 +51,16 @@ export const deathGuardUnits: Unit[] = [
         text: "1 Plague Marine's boltgun can be replaced with 1 blight launcher.",
         textByModelCount: { 10: "2 Plague Marines' boltguns can each be replaced with 1 blight launcher." },
         checkbox: true,
+        weaponId: "blight-launcher",
+        maxCountByModelCount: { 5: 1, 7: 1, 10: 2 },
       },
       {
-        id: "plague-spewer",
+        id: "plague-spewer-note",
         text: "1 Plague Marine's boltgun can be replaced with 1 plague spewer.",
         textByModelCount: { 10: "2 Plague Marines' boltguns can each be replaced with 1 plague spewer." },
         checkbox: true,
+        weaponId: "plague-spewer",
+        maxCountByModelCount: { 5: 1, 7: 1, 10: 2 },
       },
       {
         id: "special-weapon",
@@ -50,26 +68,38 @@ export const deathGuardUnits: Unit[] = [
         textByModelCount: { 10: "2 Plague Marines' boltguns can each be replaced with a special weapon." },
         checkbox: true,
         weaponIds: ["meltagun", "plague-belcher", "plasma-gun"],
+        maxCountByModelCount: { 5: 1, 7: 1, 10: 2 },
       },
       {
         id: "bubotic-weapons-swap",
-        text: "Up to 2 Plague Marines can each have their boltgun replaced with 1 bubotic weapons.",
-        textByModelCount: { 10: "Up to 4 Plague Marines can each have their boltgun replaced with 1 bubotic weapons." },
+        text: "Up to 2 Plague Marines can each have their plague knives replaced with bubotic weapons.",
+        textByModelCount: { 10: "Up to 4 Plague Marines can each have their plague knives replaced with bubotic weapons." },
         checkbox: true,
+        weaponId: "bubotic-weapons",
+        maxCountByModelCount: { 5: 2, 7: 2, 10: 4 },
       },
       {
         id: "heavy-plague-weapon-swap",
-        text: "Up to 2 Plague Marines can each have their boltgun replaced with 1 heavy plague weapon.",
-        textByModelCount: { 10: "Up to 4 Plague Marines can each have their boltgun replaced with 1 heavy plague weapon." },
+        text: "Up to 2 Plague Marines can each have their plague knives replaced with a heavy plague weapon.",
+        textByModelCount: { 10: "Up to 4 Plague Marines can each have their plague knives replaced with a heavy plague weapon." },
         checkbox: true,
+        weaponId: "heavy-plague-weapon",
+        maxCountByModelCount: { 5: 2, 7: 2, 10: 4 },
       },
       {
         id: "icon-of-despair",
         text: "One Plague Marine equipped with a boltgun can be equipped with 1 icon of despair (boltgun cannot be replaced).",
         checkbox: true,
+        weaponId: "icon-of-despair",
       },
     ],
-    ledBy: ["biologus-putrifier","foul-blightspawn","death-guard-icon-bearer","lord-of-poxes","malignant-plaguecaster","noxious-blightbringer","plague-surgeon","tallyman"],
+    abilities: [
+      {
+        name: "Infused with the Blessings of Nurgle",
+        description: "In your Shooting phase, each time this unit is selected to shoot, after this unit has shot, select one enemy unit hit by one or more of those attacks. Until the start of your next turn, that enemy unit is Afflicted.",
+      },
+    ],
+    ledBy: ["biologus-putrifier", "foul-blightspawn", "death-guard-icon-bearer", "malignant-plaguecaster", "noxious-blightbringer", "plague-surgeon", "tallyman"],
   },
 
   {

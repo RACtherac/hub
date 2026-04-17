@@ -298,13 +298,34 @@ export default function CharacterCard({
                   {showWargear ? "Hide Wargear" : "Show Wargear"}
                 </button>
                 {showWargear && (
-                  <WargearSelector
-                    label="Wargear Options"
-                    wargear={character.wargear}
-                    selected={selectedWargear}
-                    onChange={onWargearChange}
-                    groups={character.wargearGroups}
-                  />
+                  character.wargearSections ? (
+                    <>
+                      {character.wargearSections.map((section) => {
+                        const sectionWargear = section.ids
+                          .map(id => character.wargear!.find(w => w.id === id))
+                          .filter(Boolean) as NonNullable<typeof character.wargear>;
+                        if (sectionWargear.length === 0) return null;
+                        return (
+                          <WargearSelector
+                            key={section.label}
+                            label={section.label}
+                            wargear={sectionWargear}
+                            selected={selectedWargear}
+                            onChange={onWargearChange}
+                            groups={character.wargearGroups}
+                          />
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <WargearSelector
+                      label="Wargear Options"
+                      wargear={character.wargear}
+                      selected={selectedWargear}
+                      onChange={onWargearChange}
+                      groups={character.wargearGroups}
+                    />
+                  )
                 )}
               </div>
             )}

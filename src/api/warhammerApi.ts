@@ -36,6 +36,8 @@ export interface ApiCharacter {
   abilities?: UnitAbility[];
   defaultWargear?: ApiWargearOption[];
   wargear?: ApiWargearOption[];
+  wargearGroups?: string[][];
+  wargearSections?: { label: string; ids: string[] }[];
 }
 
 // ── Config ────────────────────────────────────────────────────────────────

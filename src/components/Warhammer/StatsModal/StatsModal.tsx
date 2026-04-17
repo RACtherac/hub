@@ -111,6 +111,12 @@ export default function StatsModal({ unit, selectedWargear, wargearCounts, check
   );
   const noteWeapons = unit.wargear.filter((w) => noteWeaponIds.has(w.id));
 
+  const replacedDefaultIds = new Set(
+    (unit.notes ?? [])
+      .filter((n) => n.replacesDefaultWargear && checkedNotes.includes(n.id))
+      .map((n) => n.replacesDefaultWargear!)
+  );
+
   const hasAnyStats =
     unit.defaultWargear.length > 0 ||
     unit.wargear.length > 0 ||
@@ -211,8 +217,8 @@ export default function StatsModal({ unit, selectedWargear, wargearCounts, check
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Unit default weapons (always equipped) */}
-                    <WeaponRows weapons={unit.defaultWargear} />
+                    {/* Unit default weapons (always equipped, minus any replaced by checked notes) */}
+                    <WeaponRows weapons={unit.defaultWargear.filter((w) => !replacedDefaultIds.has(w.id))} />
                     {/* Unit selected optional weapons (toggled or countable with count > 0) */}
                     <WeaponRows weapons={unit.wargear.filter((w) => w.countable ? (wargearCounts[w.id] ?? 0) > 0 : selectedWargear.includes(w.id))} />
                     {/* Note-linked weapons (e.g. grenade launcher when checkbox is ticked) */}
@@ -284,7 +290,7 @@ export default function StatsModal({ unit, selectedWargear, wargearCounts, check
           )}
 
           {/* Unit abilities */}
-          {unit.abilities && unit.abilities.length > 0 && (
+          {unit.abilities && unit.abilities.filter((a) => !a.requiresNote || checkedNotes.includes(a.requiresNote)).length > 0 && (
             <div>
               <div style={{
                 fontFamily: "var(--font-mono)",
@@ -297,7 +303,7 @@ export default function StatsModal({ unit, selectedWargear, wargearCounts, check
                 Unit Abilities
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {unit.abilities.map((a) => (
+                {unit.abilities.filter((a) => !a.requiresNote || checkedNotes.includes(a.requiresNote)).map((a) => (
                   <div key={a.name} style={{
                     background: "rgba(255,255,255,0.02)",
                     border: "1px solid var(--border-2)",
@@ -327,11 +333,12 @@ export default function StatsModal({ unit, selectedWargear, wargearCounts, check
             </div>
           )}
 
-          {/* Unit wargear notes (for selected optional wargear) */}
+          {/* Unit wargear notes (for selected optional wargear and note-linked wargear) */}
           {(() => {
             const noteGear = [
               ...unit.defaultWargear.filter((w) => w.note),
               ...unit.wargear.filter((w) => selectedWargear.includes(w.id) && w.note),
+              ...unit.wargear.filter((w) => noteWeaponIds.has(w.id) && w.note),
             ];
             return noteGear.length > 0 ? (
               <div>

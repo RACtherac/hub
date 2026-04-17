@@ -148,13 +148,23 @@ export const deathGuardCharacters: Character[] = [
     name: "Foul Blightspawn",
     faction: "death-guard",
     image: "",
-    points: 60,
-    canAttachTo: [],
+    points: 75,
+    canAttachTo: ["plague-marines"],
     defaultWargear: [
-      { id: "plague-sprayer", name: "Plague sprayer", image: "", profiles: [{ range: '9"', attacks: "D6", skill: "N/A", strength: "6", ap: "-1", damage: "D3", keywords: ["IGNORES COVER", "LETHAL HITS", "TORRENT"] }] },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "plague-sprayer", name: "Plague sprayer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "7", ap: "-2", damage: "2", keywords: ["ANTI-INFANTRY 2+", "IGNORES COVER", "TORRENT"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Blinding Spray",
+        description: "In the Fight phase, you can select one model from your army with this ability to use this ability. If you do, until the end of the phase, that model's unit has the Fights First ability. Each model can only be selected for this ability once per battle.",
+      },
+      {
+        name: "Putrefying Stink",
+        description: "Enemy models cannot start or end an Advance move within 9\" of this model.",
+      },
+    ],
   },
 
   {
@@ -190,13 +200,14 @@ export const deathGuardCharacters: Character[] = [
     name: "Malignant Plaguecaster",
     faction: "death-guard",
     image: "",
-    points: 65,
-    canAttachTo: ["poxwalkers"],
+    points: 60,
+    canAttachTo: ["plague-marines", "poxwalkers"],
+    allowsSecondCharacter: true,
+    secondCharacterOptions: ["foul-blightspawn"],
     defaultWargear: [
       { id: "plague-bolt-pistol", name: "Plague bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL", "LETHAL HITS"] }] },
-      { id: "plague-wind-witchfire", name: "Plague Wind – witchfire", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["BLAST", "PSYCHIC"] }] },
-      { id: "plague-wind-focused-witchfire", name: "Plague Wind – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "5", ap: "-2", damage: "2", keywords: ["BLAST", "PSYCHIC"] }] },
-      { id: "corrupted-staff", name: "Corrupted staff", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["LETHAL HITS"] }] },
+      { id: "plague-wind", name: "Plague Wind", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "D3", keywords: ["PSYCHIC", "TORRENT"] }] },
+      { id: "corrupted-staff", name: "Corrupted staff", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["LETHAL HITS", "PSYCHIC"] }] },
     ],
     wargear: [],
   },

@@ -813,6 +813,86 @@
   background: var(--accent-dim);
 }
 
+/* ── Collections (detail view) ── */
+.pt-collections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+.pt-collection-section {}
+
+.pt-collection-name {
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.7;
+  margin-bottom: 0.4rem;
+}
+
+/* ── Collection blocks (editor) ── */
+.pt-collection-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.pt-collection-block-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pt-collection-name-input {
+  flex: 1;
+}
+
+.pt-remove-collection-btn {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--text-dim);
+  background: none;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.pt-remove-collection-btn:hover {
+  color: #e05a5a;
+  border-color: #e05a5a66;
+}
+
+.pt-add-collection-btn {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: none;
+  border: 1px dashed var(--border-2);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  margin-top: 0.2rem;
+}
+
+.pt-add-collection-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 /* ── Animations ── */
 @keyframes ptFadeUp {
   from { opacity: 0; transform: translateY(14px); }

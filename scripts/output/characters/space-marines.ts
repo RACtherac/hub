@@ -212,18 +212,75 @@ export const spaceMarinesCharacters: Character[] = [
     name: "Captain With Jump Pack",
     faction: "space-marines",
     image: "",
-    points: 85,
+    points: 75,
     canAttachTo: [],
-    defaultWargear: [
-      { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "astartes-chainsword", name: "Astartes chainsword", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+    abilities: [
+      {
+        name: "Angel's Wrath",
+        description: "While this model is leading a unit, each time that unit ends a Charge move, until the end of the turn, add 1 to the Strength characteristic of melee weapons equipped by models in that unit.",
+      },
+      {
+        name: "Rites of Battle",
+        description: "Once per battle round, one unit from your army with this ability can use it when its unit is targeted with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP.",
+      },
     ],
+    defaultWargear: [],
     wargear: [
-      { id: "hand-flamer", name: "Hand flamer", image: "", profiles: [{ range: '6"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }] },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
-      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
-      { id: "relic-weapon", name: "Relic weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "8", ap: "-3", damage: "2" }] },
-      { id: "thunder-hammer", name: "Thunder hammer", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
+      {
+        id: "heavy-bolt-pistol",
+        name: "Heavy bolt pistol",
+        image: "",
+        profiles: [{ range: '18"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }],
+      },
+      {
+        id: "hand-flamer",
+        name: "Hand flamer",
+        image: "",
+        profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }],
+      },
+      {
+        id: "plasma-pistol",
+        name: "Plasma pistol",
+        image: "",
+        profiles: [
+          { profileName: "Standard", range: '12"', attacks: "1", skill: "2+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+          { profileName: "Supercharge", range: '12"', attacks: "1", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+        ],
+      },
+      {
+        id: "astartes-chainsword",
+        name: "Astartes chainsword",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "7", skill: "2+", strength: "4", ap: "-1", damage: "1" }],
+      },
+      {
+        id: "power-fist",
+        name: "Power fist",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "8", ap: "-2", damage: "2" }],
+      },
+      {
+        id: "relic-weapon",
+        name: "Relic weapon",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-2", damage: "2" }],
+      },
+      {
+        id: "thunder-hammer",
+        name: "Thunder hammer",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }],
+      },
+      {
+        id: "relic-shield",
+        name: "Relic shield",
+        image: "",
+        note: "The bearer has a Wounds characteristic of 6.",
+      },
+    ],
+    wargearGroups: [
+      ["heavy-bolt-pistol", "hand-flamer", "plasma-pistol"],
+      ["astartes-chainsword", "power-fist", "relic-weapon", "thunder-hammer"],
     ],
   },
 
@@ -234,6 +291,16 @@ export const spaceMarinesCharacters: Character[] = [
     image: "",
     points: 60,
     canAttachTo: [],
+    abilities: [
+      {
+        name: "Litany of Hate",
+        description: "While this model is leading a unit, each time a model in that unit makes a melee attack, add 1 to the Wound roll.",
+      },
+      {
+        name: "Spiritual Leader",
+        description: "Once per battle, at the start of any phase, you can select one friendly ADEPTUS ASTARTES unit that is Battle-shocked and within 12\" of this model. That unit is no longer Battle-shocked.",
+      },
+    ],
     defaultWargear: [
       { id: "absolvor-bolt-pistol", name: "Absolvor bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["PISTOL"] }] },
       { id: "crozius-arcanum", name: "Crozius arcanum", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "6", ap: "-1", damage: "2" }] },
@@ -310,9 +377,19 @@ export const spaceMarinesCharacters: Character[] = [
     image: "",
     points: 70,
     canAttachTo: [],
+    abilities: [
+      {
+        name: "Tempormortis",
+        description: "While this model is leading a unit, that unit has the Fights First ability.",
+      },
+      {
+        name: "Silent Fury",
+        description: "Each time this model destroys an enemy CHARACTER model, until the end of the battle, add 1 to the Attacks characteristic of its executioner relic blade.",
+      },
+    ],
     defaultWargear: [
       { id: "absolvor-bolt-pistol", name: "Absolvor bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["PISTOL"] }] },
-      { id: "executioner-relic-blade", name: "Executioner relic blade", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "8", ap: "-3", damage: "3" }] },
+      { id: "executioner-relic-blade", name: "Executioner relic blade", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "8", ap: "-3", damage: "3", keywords: ["DEVASTATING WOUNDS", "PRECISION"] }] },
     ],
     wargear: [],
   },
@@ -324,11 +401,25 @@ export const spaceMarinesCharacters: Character[] = [
     image: "",
     points: 65,
     canAttachTo: [],
+    abilities: [
+      {
+        name: "Psychic Hood",
+        description: "While this model is leading a unit, models in that unit have the Feel No Pain 4+ ability against Psychic Attacks.",
+      },
+      {
+        name: "Mental Fortress (Psychic)",
+        description: "While this model is leading a unit, models in that unit have a 4+ invulnerable save.",
+      },
+    ],
     defaultWargear: [
       { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "smite-witchfire", name: "Smite – witchfire", image: "", profiles: [{ range: '18"', attacks: "D3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "smite-focused-witchfire", name: "Smite – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "D3+3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "force-weapon", name: "Force weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
+      {
+        id: "smite", name: "Smite", image: "", profiles: [
+          { profileName: "Witchfire", range: '24"', attacks: "D6", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] },
+          { profileName: "Focused witchfire", range: '24"', attacks: "D6", skill: "3+", strength: "6", ap: "-2", damage: "D3", keywords: ["DEVASTATING WOUNDS", "HAZARDOUS", "PSYCHIC"] },
+        ],
+      },
+      { id: "force-weapon", name: "Force weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
     ],
     wargear: [],
   },

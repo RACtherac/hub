@@ -38,6 +38,21 @@ const projects: Project[] = [
     description: "Pick a faction and fight either against the PC or a friend in a turn-based game.",
     branch: "tactics-game",
   },
+  {
+    name: "Password Strength Checker",
+    description: "Analyse a password's strength, entropy, and get improvement suggestions.",
+    branch: "password-strength",
+  },
+  {
+    name: "Rate Limiter Demo",
+    description: "Fire requests at a live API and watch the rate limiter block you at 5 per 10s.",
+    branch: "rate-limiter",
+  },
+  {
+    name: "The Log",
+    description: "A personal blog — project updates, education notes, and hobby dispatches.",
+    branch: "magazine",
+  },
 ];
 
 export default function Home() {

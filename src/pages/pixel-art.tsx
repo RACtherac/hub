@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles/pixel-art.css";
 
@@ -195,6 +195,17 @@ export default function PixelArt() {
     link.href = canvas.toDataURL("image/png");
     link.click();
   }
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+        e.preventDefault();
+        undo();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [undoStack]);
 
   const pixelCount = grid.filter(c => c !== "").length;
   const cellPx = gridSize === 8 ? 48 : gridSize === 16 ? 28 : 14;

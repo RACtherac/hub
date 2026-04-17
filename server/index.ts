@@ -1,5 +1,10 @@
 import express from "express";
 import cors from "cors";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ── Unit data ─────────────────────────────────────────────────────────────
 import { spaceMarinesUnits } from "../scripts/output/space-marines.js";
@@ -101,11 +106,120 @@ const allCharacters = [
   ...leaguesOfVotannCharacters,
 ];
 
+// ── Rate limiters ─────────────────────────────────────────────────────────
+
+const LIMIT = 5;
+const WINDOW_MS = 10_000;
+const EXPOSED = ["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Retry-After", "X-RateLimit-Algorithm"];
+
+type RL = express.RequestHandler;
+
+function setHeaders(res: express.Response, algo: string, limit: number, remaining: number, resetAt: number) {
+  res.setHeader("X-RateLimit-Algorithm", algo);
+  res.setHeader("X-RateLimit-Limit", limit);
+  res.setHeader("X-RateLimit-Remaining", Math.max(0, remaining));
+  res.setHeader("X-RateLimit-Reset", resetAt);
+}
+
+function block(res: express.Response, retryAfter: number) {
+  res.setHeader("Retry-After", retryAfter);
+  res.status(429).json({ error: "Too Many Requests", retryAfter });
+}
+
+// ── 1. Fixed Window ──────────────────────────────────────────────────────
+interface FixedEntry { count: number; windowStart: number }
+const fixedStore = new Map<string, FixedEntry>();
+
+const fixedWindow: RL = (req, res, next) => {
+  const ip = req.ip ?? "x";
+  const now = Date.now();
+  let e = fixedStore.get(ip);
+  if (!e || now - e.windowStart >= WINDOW_MS) {
+    e = { count: 0, windowStart: now };
+    fixedStore.set(ip, e);
+  }
+  e.count++;
+  const resetAt = Math.ceil((e.windowStart + WINDOW_MS) / 1000);
+  setHeaders(res, "fixed-window", LIMIT, LIMIT - e.count, resetAt);
+  if (e.count > LIMIT) return block(res, Math.ceil((e.windowStart + WINDOW_MS - now) / 1000));
+  next();
+};
+
+// ── 2. Sliding Window ────────────────────────────────────────────────────
+const slidingStore = new Map<string, number[]>();
+
+const slidingWindow: RL = (req, res, next) => {
+  const ip = req.ip ?? "x";
+  const now = Date.now();
+  const cutoff = now - WINDOW_MS;
+  const timestamps = (slidingStore.get(ip) ?? []).filter(t => t > cutoff);
+  timestamps.push(now);
+  slidingStore.set(ip, timestamps);
+  const count = timestamps.length;
+  const oldest = timestamps[0];
+  const resetAt = Math.ceil((oldest + WINDOW_MS) / 1000);
+  setHeaders(res, "sliding-window", LIMIT, LIMIT - count, resetAt);
+  if (count > LIMIT) return block(res, Math.ceil((oldest + WINDOW_MS - now) / 1000));
+  next();
+};
+
+// ── 3. Token Bucket ──────────────────────────────────────────────────────
+const REFILL_RATE = LIMIT / (WINDOW_MS / 1000); // tokens per second
+interface TokenEntry { tokens: number; lastRefill: number }
+const tokenStore = new Map<string, TokenEntry>();
+
+const tokenBucket: RL = (req, res, next) => {
+  const ip = req.ip ?? "x";
+  const now = Date.now();
+  let e = tokenStore.get(ip);
+  if (!e) { e = { tokens: LIMIT, lastRefill: now }; tokenStore.set(ip, e); }
+  const elapsed = (now - e.lastRefill) / 1000;
+  e.tokens = Math.min(LIMIT, e.tokens + elapsed * REFILL_RATE);
+  e.lastRefill = now;
+  const remaining = Math.floor(e.tokens);
+  const secsUntilOne = e.tokens < 1 ? Math.ceil((1 - e.tokens) / REFILL_RATE) : 0;
+  const resetAt = Math.ceil((now + secsUntilOne * 1000) / 1000);
+  setHeaders(res, "token-bucket", LIMIT, remaining, resetAt);
+  if (e.tokens < 1) return block(res, secsUntilOne);
+  e.tokens -= 1;
+  next();
+};
+
+// ── 4. Leaky Bucket ──────────────────────────────────────────────────────
+const LEAK_RATE_MS = WINDOW_MS / LIMIT; // ms per request allowed
+interface LeakyEntry { queue: number; lastLeak: number }
+const leakyStore = new Map<string, LeakyEntry>();
+
+const leakyBucket: RL = (req, res, next) => {
+  const ip = req.ip ?? "x";
+  const now = Date.now();
+  let e = leakyStore.get(ip);
+  if (!e) { e = { queue: 0, lastLeak: now }; leakyStore.set(ip, e); }
+  const elapsed = now - e.lastLeak;
+  const leaked = Math.floor(elapsed / LEAK_RATE_MS);
+  e.queue = Math.max(0, e.queue - leaked);
+  if (leaked > 0) e.lastLeak = now;
+  const remaining = LIMIT - e.queue;
+  const resetAt = Math.ceil((now + (e.queue * LEAK_RATE_MS)) / 1000);
+  setHeaders(res, "leaky-bucket", LIMIT, remaining - 1, resetAt);
+  if (e.queue >= LIMIT) {
+    const retryAfter = Math.ceil(LEAK_RATE_MS / 1000);
+    return block(res, retryAfter);
+  }
+  e.queue++;
+  next();
+};
+
 // ── Server ────────────────────────────────────────────────────────────────
 
 const app = express();
-app.use(cors());
+app.use(cors({ exposedHeaders: EXPOSED }));
 app.use(express.json());
+
+app.get("/api/ping/fixed",   fixedWindow,   (_req, res) => res.json({ message: "pong", algo: "fixed-window" }));
+app.get("/api/ping/sliding", slidingWindow, (_req, res) => res.json({ message: "pong", algo: "sliding-window" }));
+app.get("/api/ping/token",   tokenBucket,   (_req, res) => res.json({ message: "pong", algo: "token-bucket" }));
+app.get("/api/ping/leaky",   leakyBucket,   (_req, res) => res.json({ message: "pong", algo: "leaky-bucket" }));
 
 app.get("/", (_req, res) => {
   res.json({
@@ -134,6 +248,23 @@ app.get("/units/:faction", (req, res) => {
     return;
   }
   res.json(units);
+});
+
+app.get("/images", (_req, res) => {
+  const imagesRoot = path.join(__dirname, "../public/Warhammerimages");
+  const results: string[] = [];
+  function walk(dir: string) {
+    for (const entry of fs.readdirSync(dir)) {
+      const full = path.join(dir, entry);
+      if (fs.statSync(full).isDirectory()) {
+        walk(full);
+      } else if (/\.(png|jpg|jpeg|webp|gif)$/i.test(entry)) {
+        results.push("/Warhammerimages" + full.slice(imagesRoot.length).replace(/\\/g, "/"));
+      }
+    }
+  }
+  walk(imagesRoot);
+  res.json(results);
 });
 
 app.get("/characters/:faction", (req, res) => {

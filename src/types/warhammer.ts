@@ -45,6 +45,10 @@ export interface UnitNote {
   weaponIds?: string[];
   showForModelCounts?: number[];
   triggersWargear?: string[];
+  maxCountByModelCount?: Record<number, number>;
+  replacesDefaultWargear?: string;
+  exclusiveWith?: string;
+  noteGroup?: string;
 }
 
 export interface WeaponProfile {
@@ -61,6 +65,7 @@ export interface WeaponProfile {
 export interface UnitAbility {
   name: string;
   description: string;
+  requiresNote?: string;
 }
 
 export interface WargearOption {
@@ -98,9 +103,12 @@ export interface Unit {
 
   modelCountOptions?: number[];
   attachableUnits?: string[];
+  wargearLabel?: string;
   wargearGroups?: string[][];
   sergeantOptionGroups?: { label: string; ids: string[] }[];
   notes?: UnitNote[];
+  noteGroupLimits?: Record<string, number>;
+  noteGroupLimitsByModelCount?: Record<string, Record<number, number>>;
   abilities?: UnitAbility[];
 
   defaultWargear: WargearOption[];
@@ -129,6 +137,7 @@ export interface Character {
   abilities?: UnitAbility[];
 
   wargearGroups?: string[][];
+  wargearSections?: { label: string; ids: string[] }[];
   defaultWargear?: WargearOption[];
   wargear?: WargearOption[];
 }

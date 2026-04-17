@@ -10,12 +10,18 @@ interface PaintEntry {
   technique: string;
 }
 
+interface PaintCollection {
+  id: string;
+  name: string;
+  paints: PaintEntry[];
+}
+
 interface MiniatureRecord {
   id: string;
   name: string;
   faction: string;
   imageBase64: string;
-  paints: PaintEntry[];
+  collections: PaintCollection[];
   notes: string;
   createdAt: string;
 }
@@ -24,7 +30,17 @@ const STORAGE_KEY = "miniature-paint-records";
 
 function loadRecords(): MiniatureRecord[] {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    // Migrate old records that have flat `paints` instead of `collections`
+    return raw.map((r: any) => {
+      if (!r.collections && r.paints) {
+        return {
+          ...r,
+          collections: [{ id: crypto.randomUUID(), name: "Paint Recipe", paints: r.paints }],
+        };
+      }
+      return r;
+    });
   } catch {
     return [];
   }
@@ -36,6 +52,17 @@ function saveRecords(records: MiniatureRecord[]) {
 
 function newPaint(): PaintEntry {
   return { id: crypto.randomUUID(), brand: "", color: "", area: "", technique: "" };
+}
+
+function newCollection(): PaintCollection {
+  return { id: crypto.randomUUID(), name: "", paints: [newPaint()] };
+}
+
+function totalPaints(record: MiniatureRecord): number {
+  return record.collections.reduce(
+    (sum, c) => sum + c.paints.filter((p) => p.color).length,
+    0
+  );
 }
 
 // ── Gallery View ──────────────────────────────────────────────────────────────
@@ -58,7 +85,7 @@ function GalleryCard({
           </div>
         )}
         <div className="pt-card-paint-count">
-          {record.paints.filter((p) => p.color).length}
+          {totalPaints(record)}
           <span>paints</span>
         </div>
       </div>
@@ -91,7 +118,12 @@ function DetailView({
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const paints = record.paints.filter((p) => p.color || p.brand || p.area || p.technique);
+  const collections = record.collections
+    .map((c) => ({
+      ...c,
+      paints: c.paints.filter((p) => p.color || p.brand || p.area || p.technique),
+    }))
+    .filter((c) => c.paints.length > 0);
 
   return (
     <div className="pt-detail">
@@ -139,22 +171,31 @@ function DetailView({
             <div className="pt-recipe-line" />
           </div>
 
-          {paints.length === 0 ? (
+          {collections.length === 0 ? (
             <p className="pt-no-paints">No paints recorded.</p>
           ) : (
-            <ol className="pt-paint-list">
-              {paints.map((p, i) => (
-                <li key={p.id} className="pt-paint-row">
-                  <span className="pt-paint-num">{String(i + 1).padStart(2, "0")}</span>
-                  <div className="pt-paint-info">
-                    <span className="pt-paint-color">{p.color}</span>
-                    {p.brand && <span className="pt-paint-brand">{p.brand}</span>}
-                    {p.area && <span className="pt-paint-area">{p.area}</span>}
-                    {p.technique && <span className="pt-paint-technique">{p.technique}</span>}
-                  </div>
-                </li>
+            <div className="pt-collections">
+              {collections.map((col) => (
+                <div key={col.id} className="pt-collection-section">
+                  {col.name && (
+                    <p className="pt-collection-name">{col.name}</p>
+                  )}
+                  <ol className="pt-paint-list">
+                    {col.paints.map((p, i) => (
+                      <li key={p.id} className="pt-paint-row">
+                        <span className="pt-paint-num">{String(i + 1).padStart(2, "0")}</span>
+                        <div className="pt-paint-info">
+                          <span className="pt-paint-color">{p.color}</span>
+                          {p.brand && <span className="pt-paint-brand">{p.brand}</span>}
+                          {p.area && <span className="pt-paint-area">{p.area}</span>}
+                          {p.technique && <span className="pt-paint-technique">{p.technique}</span>}
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
               ))}
-            </ol>
+            </div>
           )}
         </div>
       </div>
@@ -176,8 +217,8 @@ function EditorForm({
   const [name, setName] = useState(initial?.name ?? "");
   const [faction, setFaction] = useState(initial?.faction ?? "");
   const [imageBase64, setImageBase64] = useState(initial?.imageBase64 ?? "");
-  const [paints, setPaints] = useState<PaintEntry[]>(
-    initial?.paints.length ? initial.paints : [newPaint()]
+  const [collections, setCollections] = useState<PaintCollection[]>(
+    initial?.collections?.length ? initial.collections : [newCollection()]
   );
   const [notes, setNotes] = useState(initial?.notes ?? "");
   const fileRef = useRef<HTMLInputElement>(null);
@@ -190,18 +231,58 @@ function EditorForm({
     reader.readAsDataURL(file);
   }
 
-  function updatePaint(id: string, field: keyof PaintEntry, value: string) {
-    setPaints((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
+  // ── Collection mutations ──
+  function addCollection() {
+    setCollections((prev) => [...prev, newCollection()]);
+  }
+
+  function removeCollection(id: string) {
+    setCollections((prev) => prev.filter((c) => c.id !== id));
+  }
+
+  function renameCollection(id: string, value: string) {
+    setCollections((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, name: value } : c))
     );
   }
 
-  function addPaint() {
-    setPaints((prev) => [...prev, newPaint()]);
+  // ── Paint mutations ──
+  function addPaint(collectionId: string) {
+    setCollections((prev) =>
+      prev.map((c) =>
+        c.id === collectionId ? { ...c, paints: [...c.paints, newPaint()] } : c
+      )
+    );
   }
 
-  function removePaint(id: string) {
-    setPaints((prev) => prev.filter((p) => p.id !== id));
+  function removePaint(collectionId: string, paintId: string) {
+    setCollections((prev) =>
+      prev.map((c) =>
+        c.id === collectionId
+          ? { ...c, paints: c.paints.filter((p) => p.id !== paintId) }
+          : c
+      )
+    );
+  }
+
+  function updatePaint(
+    collectionId: string,
+    paintId: string,
+    field: keyof PaintEntry,
+    value: string
+  ) {
+    setCollections((prev) =>
+      prev.map((c) =>
+        c.id === collectionId
+          ? {
+              ...c,
+              paints: c.paints.map((p) =>
+                p.id === paintId ? { ...p, [field]: value } : p
+              ),
+            }
+          : c
+      )
+    );
   }
 
   function handleSave() {
@@ -210,7 +291,7 @@ function EditorForm({
       name,
       faction,
       imageBase64,
-      paints,
+      collections,
       notes,
       createdAt: initial?.createdAt ?? new Date().toISOString(),
     };
@@ -299,48 +380,82 @@ function EditorForm({
             <div className="pt-recipe-line" />
           </div>
 
-          <div className="pt-paint-entries">
-            {paints.map((paint, i) => (
-              <div key={paint.id} className="pt-paint-entry">
-                <span className="pt-entry-num">{String(i + 1).padStart(2, "0")}</span>
+          {collections.map((col, colIndex) => (
+            <div key={col.id} className="pt-collection-block">
+              <div className="pt-collection-block-header">
                 <input
-                  className="pt-input pt-input-sm"
-                  placeholder="Color name"
-                  value={paint.color}
-                  onChange={(e) => updatePaint(paint.id, "color", e.target.value)}
+                  className="pt-input pt-collection-name-input"
+                  placeholder={`Collection ${colIndex + 1} name (e.g. Armor, Skin…)`}
+                  value={col.name}
+                  onChange={(e) => renameCollection(col.id, e.target.value)}
                 />
-                <input
-                  className="pt-input pt-input-sm"
-                  placeholder="Brand"
-                  value={paint.brand}
-                  onChange={(e) => updatePaint(paint.id, "brand", e.target.value)}
-                />
-                <input
-                  className="pt-input pt-input-sm"
-                  placeholder="Area used"
-                  value={paint.area}
-                  onChange={(e) => updatePaint(paint.id, "area", e.target.value)}
-                />
-                <input
-                  className="pt-input pt-input-sm"
-                  placeholder="Technique"
-                  value={paint.technique}
-                  onChange={(e) => updatePaint(paint.id, "technique", e.target.value)}
-                />
-                {paints.length > 1 && (
+                {collections.length > 1 && (
                   <button
-                    className="pt-remove-btn"
-                    onClick={() => removePaint(paint.id)}
+                    className="pt-remove-collection-btn"
+                    onClick={() => removeCollection(col.id)}
+                    title="Remove collection"
                   >
                     ×
                   </button>
                 )}
               </div>
-            ))}
-          </div>
 
-          <button className="pt-add-paint-btn" onClick={addPaint}>
-            + add paint
+              <div className="pt-paint-entries">
+                {col.paints.map((paint, i) => (
+                  <div key={paint.id} className="pt-paint-entry">
+                    <span className="pt-entry-num">{String(i + 1).padStart(2, "0")}</span>
+                    <input
+                      className="pt-input pt-input-sm"
+                      placeholder="Color name"
+                      value={paint.color}
+                      onChange={(e) =>
+                        updatePaint(col.id, paint.id, "color", e.target.value)
+                      }
+                    />
+                    <input
+                      className="pt-input pt-input-sm"
+                      placeholder="Brand"
+                      value={paint.brand}
+                      onChange={(e) =>
+                        updatePaint(col.id, paint.id, "brand", e.target.value)
+                      }
+                    />
+                    <input
+                      className="pt-input pt-input-sm"
+                      placeholder="Area used"
+                      value={paint.area}
+                      onChange={(e) =>
+                        updatePaint(col.id, paint.id, "area", e.target.value)
+                      }
+                    />
+                    <input
+                      className="pt-input pt-input-sm"
+                      placeholder="Technique"
+                      value={paint.technique}
+                      onChange={(e) =>
+                        updatePaint(col.id, paint.id, "technique", e.target.value)
+                      }
+                    />
+                    {col.paints.length > 1 && (
+                      <button
+                        className="pt-remove-btn"
+                        onClick={() => removePaint(col.id, paint.id)}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <button className="pt-add-paint-btn" onClick={() => addPaint(col.id)}>
+                + add paint
+              </button>
+            </div>
+          ))}
+
+          <button className="pt-add-collection-btn" onClick={addCollection}>
+            + add collection
           </button>
         </div>
       </div>
@@ -395,7 +510,9 @@ export default function PaintTracker() {
 
   const q = searchQuery.trim().toLowerCase();
   const filteredRecords = q
-    ? records.filter((r) => r.paints.some((p) => matchesPaint(p, q)))
+    ? records.filter((r) =>
+        r.collections.some((c) => c.paints.some((p) => matchesPaint(p, q)))
+      )
     : records;
 
   return (
