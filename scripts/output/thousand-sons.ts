@@ -26,6 +26,7 @@ export const thousandSonsUnits: Unit[] = [
     faction: "thousand-sons",
     category: "battleline",
     points: 65,
+    pointsByModelCount: { 10: 85, 20: 170 },
     defaultWargear: [
       { id: "tzaangor-blades", name: "Tzaangor blades", image: "" },
     ],
@@ -40,8 +41,9 @@ export const thousandSonsUnits: Unit[] = [
     id: "rubric-marines",
     name: "Rubric Marines",
     faction: "thousand-sons",
-    category: "infantry",
-    points: 110,
+    category: "battleline",
+    points: 100,
+    pointsByModelCount: { 5: 100, 10: 190 },
     defaultWargear: [
       { id: "inferno-bolt-pistol", name: "Inferno bolt pistol", image: "" },
       { id: "warpsmite", name: "Warpsmite", image: "" },

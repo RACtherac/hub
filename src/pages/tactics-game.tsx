@@ -193,7 +193,7 @@ function buildGameUnits(units: TacticsUnit[], army: Army, team: 0 | 1): GameUnit
   }));
 }
 
-// ── AI ─────────────────────────────────────────────────────────────────────────
+// ── PC ─────────────────────────────────────────────────────────────────────────
 
 function runAI(units: GameUnit[], walls: Set<string> = new Set()): { units: GameUnit[]; log: string[] } {
   let state = [...units];
@@ -333,7 +333,7 @@ function ModeSelect({ onSelect }: { onSelect: (m: GameMode) => void }) {
         <button className="wt-mode-card" onClick={() => onSelect("1vPC")}>
           <span className="wt-mode-icon">🤖</span>
           <span className="wt-mode-label">1 vs PC</span>
-          <span className="wt-mode-desc">Solo challenge against the AI</span>
+          <span className="wt-mode-desc">Solo challenge against the PC</span>
         </button>
         <button className="wt-mode-card" onClick={() => onSelect("1v1")}>
           <span className="wt-mode-icon">⚔️</span>
@@ -597,7 +597,6 @@ export default function TacticsGame() {
     setPhase("playing");
   }
 
-  // If AI wins the coin flip, auto-trigger their first turn once game starts
   useEffect(() => {
     if (!aiGoesFirstRef.current || phase !== "playing") return;
     aiGoesFirstRef.current = false;
@@ -896,7 +895,7 @@ export default function TacticsGame() {
         <span className="wt-topbar-title">Tactics</span>
         {phase === "playing" && (
           <span className="wt-turn-badge">
-            {aiRunning.current ? "AI thinking…" : `${teamLabel(currentTeam)}'s Turn`}
+            {aiRunning.current ? "PC thinking…" : `${teamLabel(currentTeam)}'s Turn`}
           </span>
         )}
       </div>
@@ -962,7 +961,7 @@ export default function TacticsGame() {
           <p className="wt-subtitle">
             {winner === 0
               ? gameMode === "1v1" ? "Player 1's forces stand victorious." : "Your forces have prevailed."
-              : gameMode === "1v1" ? "Player 2's army crushed all opposition." : "The AI has annihilated your forces."}
+              : gameMode === "1v1" ? "Player 2's army crushed all opposition." : "The PC has annihilated your forces."}
           </p>
           <button className="wt-deploy-btn" onClick={resetGame}>Play Again</button>
         </div>

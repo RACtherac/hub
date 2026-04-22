@@ -103,12 +103,11 @@ export default function Magazine() {
 
         {/* ── Feature article ── */}
         <article className="mg-feature">
-          <p className="mg-label">// Feature</p>
+          {/* <p className="mg-label">// Feature</p> */}
           <h2 className="mg-feature-title">
-            On the Pleasure of<br />
-            Making Things <em>Slowly</em>
+           
           </h2>
-          <p className="mg-byline">by the editor</p>
+          {/* <p className="mg-byline">by the editor</p> */}
 
           {/* CSS-only geometric art block */}
           <div className="mg-art">
@@ -122,20 +121,13 @@ export default function Magazine() {
           </div>
 
           <p className="mg-lead">
-            There is a particular kind of satisfaction that only comes from working
-            slowly. Not slowly out of difficulty, but slowly out of choice — the
-            deliberate reduction of pace to something that matches the rhythm of thought.
+            
           </p>
           <p className="mg-body">
-            We live in a culture that rewards speed. Shipping fast, iterating faster.
-            The metric of productivity has quietly become velocity. But there are things
-            that only reveal themselves when you sit with them: a painting that needs
-            another week of drying, a paragraph that needs another month of distance,
-            a miniature that needs seventeen layers of carefully thinned paint.
+           
           </p>
           <p className="mg-body">
-            This issue is a small argument for slowness. Not as a brand or an aesthetic,
-            but as a practical stance toward making things that matter.
+            
           </p>
         </article>
 
@@ -149,13 +141,7 @@ export default function Magazine() {
             topContent={
               <>
                 <p>
-                  This fourth issue arrives later than planned. I had written it
-                  twice before — each version too earnest, too careful. The third
-                  draft appeared in one afternoon while I was supposed to be doing
-                  something else entirely.
-                </p>
-                <p>
-                  I think that's the point. The work that matters tends to happen sideways.
+                 This page was as i imaged that is should be a blog area. Just notes for anyone who reads here about what I'm working on, what I'm thinking about, and what I'm learning. A place to share the things that are inspiring me, and maybe even some of the things that aren't.
                 </p>
               </>
             }
@@ -169,7 +155,7 @@ export default function Magazine() {
                 </p>
                 <div className="mg-sig">
                   <span>Sincerely,</span>
-                  <strong>O.</strong>
+                  <strong>O.H</strong>
                 </div>
               </>
             }
@@ -179,7 +165,7 @@ export default function Magazine() {
         <div className="mg-full-rule"><hr className="mg-rule" /></div>
 
         {/* ── Recommendations column ── */}
-        <article className="mg-column">
+        {/* <article className="mg-column">
           <p className="mg-label">// Recommended</p>
           <h3 className="mg-column-title">What I've been<br />listening to</h3>
           <ol className="mg-list">
@@ -205,12 +191,12 @@ export default function Magazine() {
               </div>
             </li>
           </ol>
-        </article>
+        </article> */}
 
         {/* ── Pull quote ── */}
         <blockquote className="mg-pullquote">
-          <p>"The work is the residue<br />of the attention."</p>
-          <cite>— paraphrased, origin uncertain</cite>
+          <p>"Who am I?"</p>
+          <cite>Hub updates, education, hobbes</cite>
         </blockquote>
 
         <div className="mg-full-rule"><hr className="mg-rule" /></div>
@@ -220,7 +206,7 @@ export default function Magazine() {
         <section className="mg-slot mg-slot--field">
           <p className="mg-label">// Hub Update</p>
           <Envelope
-            from="O., OH/Hub"
+            from="O.H, OH/Hub"
             subject="On finishing things"
             greeting="To anyone following along,"
             topContent={
@@ -228,7 +214,7 @@ export default function Magazine() {
                 <p>
                   OH/Hub is nearly done. Most features are built and in place.
                   The Warhammer army builder is the last real gap — everything
-                  works, it just needs unit images.
+                  works, it just needs unit images as well as filling in some units and armies that dont have stats or wargear options.
                 </p>
               </>
             }
@@ -331,18 +317,15 @@ export default function Magazine() {
             topContent={
               <>
                 <p>
-                  I've been painting a squad of Death Guard for three weeks.
-                  Every evening, one or two layers. The plague marines are
-                  starting to look genuinely diseased, which I mean as a compliment.
+                  I have been painting 9 death riders almost got all finished in 1 night but but it took more time later one for all the small cleaning.
                 </p>
               </>
             }
             bottomContent={
               <>
                 <p>
-                  I found that mixing a little Nurgle's Rot into the recesses makes
-                  them look like something you wouldn't want to touch. Exactly the
-                  effect I was after.
+                 Also for the million models i took 2 plauge marines and finished them quete quickly, 
+                 Its also to swap painting something else every now and then but its also so I get everything done so i have something finished for the tabletop. 
                 </p>
 
                 {/* CSS-drawn miniature illustration */}
@@ -359,12 +342,10 @@ export default function Magazine() {
                   <span className="mg-art-caption">a plague marine, wip</span>
                 </div>
 
-                <p>
-                  The work is slow but I don't think I'd want it any other way.
-                </p>
+             
                 <div className="mg-sig">
                   <span>Until next issue,</span>
-                  <strong>A.H.</strong>
+                  <strong>O.H.</strong>
                 </div>
               </>
             }
@@ -380,7 +361,11 @@ export default function Magazine() {
           </div>
           <div className="mg-note">
             <span className="mg-note-num">002</span>
-            <p>Thin your paints. Yes, more than that.</p>
+            <p>Painting 9 death riders in a row was not the most fun but it was a good exercise in patience, and ultimatly nice to see on the shelf.</p>
+          </div>
+          <div className="mg-note">
+            <span className="mg-note-num">003</span>
+            <p>Also tested new water with AoS, blood riders.</p>
           </div>
         </aside>
         </div>
