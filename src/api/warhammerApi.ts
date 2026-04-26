@@ -1,4 +1,5 @@
 import type { Faction, UnitCategory, WeaponProfile, UnitAbility } from "../types/warhammer";
+import { fetchWithTimeout } from "../lib/security";
 
 export interface ApiWargearOption {
   id: string;
@@ -47,13 +48,13 @@ const BASE_URL = import.meta.env.VITE_WARHAMMER_API_URL ?? "";
 // ── Fetch helpers ─────────────────────────────────────────────────────────
 
 export async function fetchUnits(): Promise<ApiUnit[]> {
-  const res = await fetch(`${BASE_URL}/units`);
+  const res = await fetchWithTimeout(`${BASE_URL}/units`);
   if (!res.ok) throw new Error(`Failed to fetch units: ${res.status}`);
   return res.json();
 }
 
 export async function fetchCharacters(): Promise<ApiCharacter[]> {
-  const res = await fetch(`${BASE_URL}/characters`);
+  const res = await fetchWithTimeout(`${BASE_URL}/characters`);
   if (!res.ok) throw new Error(`Failed to fetch characters: ${res.status}`);
   return res.json();
 }

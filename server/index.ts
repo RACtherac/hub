@@ -3,6 +3,7 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { securityHeaders, isAllowedOrigin, buildFactionGuard } from "./helpers.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -212,8 +213,14 @@ const leakyBucket: RL = (req, res, next) => {
 
 // ── Server ────────────────────────────────────────────────────────────────
 
+const factionGuard = buildFactionGuard(allUnits, allCharacters);
+
 const app = express();
-app.use(cors({ exposedHeaders: EXPOSED }));
+app.use(cors({
+  origin: (origin, cb) => cb(null, isAllowedOrigin(origin)),
+  exposedHeaders: EXPOSED,
+}));
+app.use(securityHeaders);
 app.use(express.json());
 
 app.get("/api/ping/fixed",   fixedWindow,   (_req, res) => res.json({ message: "pong", algo: "fixed-window" }));
@@ -241,13 +248,8 @@ app.get("/characters", (_req, res) => {
   res.json(allCharacters);
 });
 
-app.get("/units/:faction", (req, res) => {
-  const units = allUnits.filter((u) => u.faction === req.params.faction);
-  if (units.length === 0) {
-    res.status(404).json({ error: "Faction not found" });
-    return;
-  }
-  res.json(units);
+app.get("/units/:faction", factionGuard, (req, res) => {
+  res.json(allUnits.filter((u) => u.faction === req.params.faction));
 });
 
 app.get("/images", (_req, res) => {
@@ -267,13 +269,8 @@ app.get("/images", (_req, res) => {
   res.json(results);
 });
 
-app.get("/characters/:faction", (req, res) => {
-  const chars = allCharacters.filter((c) => c.faction === req.params.faction);
-  if (chars.length === 0) {
-    res.status(404).json({ error: "Faction not found" });
-    return;
-  }
-  res.json(chars);
+app.get("/characters/:faction", factionGuard, (req, res) => {
+  res.json(allCharacters.filter((c) => c.faction === req.params.faction));
 });
 
 const PORT = process.env.PORT ?? 3001;

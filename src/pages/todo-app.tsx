@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles/todo-app.css";
+import { sanitizeText } from "../lib/security";
 
 interface Todo {
   id: string;
@@ -37,7 +38,7 @@ export default function TodoApp() {
   }, [todos]);
 
   function addTodo() {
-    const text = input.trim();
+    const text = sanitizeText(input);
     if (!text) return;
     setTodos((prev) => [
       { id: crypto.randomUUID(), text, done: false, createdAt: new Date().toISOString() },
