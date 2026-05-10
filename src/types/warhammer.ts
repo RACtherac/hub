@@ -131,6 +131,8 @@ export interface Character {
   image: string;
 
   points: number;
+  pointsByModelCount?: Record<number, number>;
+  modelCountOptions?: number[];
 
   canAttachTo: string[];
 
