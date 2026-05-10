@@ -112,6 +112,7 @@ export default function Portfolio() {
             <ul className="experience-bullets">
               <li>Rewrote legacy MVC views to React, modernising the frontend across multiple internal sites</li>
               <li>Contributed to backend development, building and maintaining server-side functionality for the sites</li>
+              <li>Got to attend multiple courses on AI-tool usage</li>
             </ul>
           </div>
 
