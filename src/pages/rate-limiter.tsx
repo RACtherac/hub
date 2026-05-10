@@ -78,7 +78,7 @@ export default function RateLimiter() {
     if (firing) return;
     setFiring(true);
     try {
-      const res = await fetch(`http://localhost:3001/api/ping/${algo}`);
+      const res = await fetch(`/api/ping/${algo}`);
       const data = await res.json();
       const rem = Number(res.headers.get("X-RateLimit-Remaining") ?? LIMIT);
       const resetAt = Number(res.headers.get("X-RateLimit-Reset") ?? 0);
