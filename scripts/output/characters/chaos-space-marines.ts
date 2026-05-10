@@ -7,12 +7,35 @@ export const chaosSpaceMarinesCharacters: Character[] = [
     name: "Abaddon The Despoiler",
     faction: "chaos-space-marine",
     image: "",
-    points: 280,
-    canAttachTo: [],
+    points: 270,
+    canAttachTo: [ "chaos-terminator-squad", "chosen" ],
     defaultWargear: [
-      { id: "talon-of-horus", name: "Talon of Horus", image: "", profiles: [{ profileName: "shooting", range: '18"', attacks: "4", skill: "2+", strength: "5", ap: "-2", damage: "2" }, { profileName: "melee", range: "Melee", attacks: "6", skill: "2+", strength: "8", ap: "-3", damage: "3", keywords: ["ANTI-PSYKER 4+"] }] },
+      { id: "talon-of-horus", name: "Talon of Horus", image: "", profiles: [{ profileName: "shooting", range: '24"', attacks: "4", skill: "2+", strength: "5", ap: "-2", damage: "2", keywords: ["SUSTAINED HITS 1"] }, { profileName: "melee", range: "Melee", attacks: "8", skill: "2+", strength: "14", ap: "-4", damage: "3", keywords: ["DEVASTATING WOUNDS"] }] },
       { id: "drach-nyen", name: "Drach'nyen", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "10", ap: "-4", damage: "D6", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
+    abilities: [
+      {
+        name: "Dark Destiny",
+        description: "Each time this model's unit makes a Dark Pact and does not fail the resulting Leadership test, if the result of that test was 7+, you gain 1CP.",
+      },
+      {
+        name: "The Warmaster",
+        description: " In your Command phase, select one Warmaster ability (see left). Until the start of your next Command phase, this model has that ability."
+      },
+       {
+        name: "Paragon of Hatred (Aura)",
+        description: " While a friendly HERETIC ASTARTES unit is within 6 (excluding DAMNED units) of this model, each time a model in that unit makes an attack, you can re-roll the Hit roll."
+      },
+       {
+        name: "Mark of Chaos Ascendant (Aura)",
+        description: " While a friendly HERETIC ASTARTES INFANTRY or HERETIC ASTARTES MOUNTED unit (excluding DAMNED units) is within 6 of this model, models in that unit have a 4+ invulnerable save."
+      },
+       {
+        name: "Lord of the Traitor Legions (Aura)",
+        description: " While a friendly HERETIC ASTARTES unit (excluding DAMNED units) is within 6 of this model, you can re-roll Leadership and Battle-shock tests taken for that unit."
+      },
+    ],
+
     wargear: [],
   },
 

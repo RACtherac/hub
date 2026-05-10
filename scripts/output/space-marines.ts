@@ -10,6 +10,7 @@ export const spaceMarinesUnits: Unit[] = [
     modelCountOptions: [1],
     wargearGroups: [["onslaught-gatling-cannon", "multi-melta"]],
     points: 60,
+    imageCredit: "Oscar Hugosson",
     abilities: [
       {
         name: "Outrider Escort",
@@ -37,6 +38,7 @@ export const spaceMarinesUnits: Unit[] = [
     points: 80,
     pointsByModelCount: { 3: 80, 6: 160 },
     attachableUnits: ["invader-atv"],
+    imageCredit: "Oscar Hugosson",
     abilities: [
       {
         name: "Thunderous Impact",
@@ -59,6 +61,7 @@ export const spaceMarinesUnits: Unit[] = [
     category: "battleline",
     image5: "/Warhammerimages/SpaceMarine/Assault intersessor5.png",
     image10: "/Warhammerimages/SpaceMarine/Assault-intersessor10.png",
+    imageCredit: "Oscar Hugosson",
     points: 75,
     pointsByModelCount: { 5: 75, 10: 150 },
     abilities: [
