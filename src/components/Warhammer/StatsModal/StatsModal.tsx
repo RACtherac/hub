@@ -117,7 +117,7 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
   );
 
   const hasAnyStats =
-    unit.defaultWargear.length > 0 ||
+    (unit.defaultWargear?.length ?? 0) > 0 ||
     unit.wargear.length > 0 ||
     !!character ||
     !!character2;
@@ -217,7 +217,7 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
                   </thead>
                   <tbody>
                     {/* Unit default weapons (always equipped, minus any replaced by checked notes) */}
-                    <WeaponRows weapons={unit.defaultWargear.filter((w) => !replacedDefaultIds.has(w.id))} />
+                    <WeaponRows weapons={(unit.defaultWargear ?? []).filter((w) => !replacedDefaultIds.has(w.id))} />
                     {/* Unit selected optional weapons (toggled or countable with count > 0) */}
                     <WeaponRows weapons={unit.wargear.filter((w) => {
                       if (!w.countable) return selectedWargear.includes(w.id);
@@ -285,7 +285,7 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
                             {attachedUnit.name}
                           </td>
                         </tr>
-                        <WeaponRows weapons={attachedUnit.defaultWargear} />
+                        <WeaponRows weapons={attachedUnit.defaultWargear ?? []} />
                         <WeaponRows weapons={attachedUnit.wargear.filter((w) => attachedUnitWargear.includes(w.id))} />
                       </>
                     )}
@@ -342,7 +342,7 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
           {/* Unit wargear notes (for selected optional wargear and note-linked wargear) */}
           {(() => {
             const noteGear = [
-              ...unit.defaultWargear.filter((w) => w.note),
+              ...(unit.defaultWargear ?? []).filter((w) => w.note),
               ...unit.wargear.filter((w) => selectedWargear.includes(w.id) && w.note),
               ...unit.wargear.filter((w) => noteWeaponIds.has(w.id) && w.note),
             ];

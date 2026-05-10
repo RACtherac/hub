@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ARMIES } from "../data/tactics/armies";
 import type { Army, TacticsUnit, Ability } from "../data/tactics/armies";
@@ -536,7 +536,7 @@ export default function TacticsGame() {
   const [log, setLog]               = useState<string[]>([]);
   const [winner, setWinner]         = useState<0 | 1 | null>(null);
   const aiRunning = useRef(false);
-  const pendingLog = useRef<string[]>([]);
+
   const aiGoesFirstRef = useRef(false);
 
   function addLog(...msgs: string[]) {
@@ -579,7 +579,6 @@ export default function TacticsGame() {
   }
 
   function handleP2Units(selected: TacticsUnit[]) {
-    const p1Army = ARMIES.find(a => a.id === p1ArmyId)!;
     const p2Army = ARMIES.find(a => a.id === p2ArmyId)!;
     const team0 = units.filter(u => u.team === 0);
     const team1 = buildGameUnits(selected, p2Army, 1);
@@ -879,7 +878,7 @@ export default function TacticsGame() {
     );
   }
 
-  const heroMap: Partial<Record<Phase, { eyebrow: string; title: JSX.Element; sub: string }>> = {
+  const heroMap: Partial<Record<Phase, { eyebrow: string; title: React.JSX.Element; sub: string }>> = {
     "mode-select": { eyebrow: "// tactical battle",  title: <>Choose your <em>mode</em></>,   sub: "build your army · pick your soldiers · fight" },
     "p1-army":    { eyebrow: "// army selection",    title: <>Choose your <em>army</em></>,   sub: "Player 1 · hover to preview soldiers" },
     "p1-units":   { eyebrow: "// deploy",            title: <>Build your <em>warband</em></>, sub: `${p1Army?.name ?? ""} · select 4 soldiers` },

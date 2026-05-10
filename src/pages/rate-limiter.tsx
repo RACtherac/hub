@@ -89,7 +89,7 @@ export default function RateLimiter() {
 
       setLog(l => [{
         id: ++idRef.current,
-        status: res.status === 429 ? 429 : 200,
+        status: (res.status === 429 ? 429 : 200) as 200 | 429,
         timestamp: Date.now(),
         remaining: rem,
         retryAfter,
@@ -98,7 +98,7 @@ export default function RateLimiter() {
     } catch {
       setLog(l => [{
         id: ++idRef.current,
-        status: 429,
+        status: 429 as const,
         timestamp: Date.now(),
         remaining: null,
         retryAfter: null,

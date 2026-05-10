@@ -377,7 +377,7 @@ export default function ArmyBuilder() {
   const calculateUnitPoints = (armyUnit: ArmyUnit) => {
     const unit = units.find((u) => u.id === armyUnit.unitId && u.faction === selectedFaction);
     if (!unit) return 0;
-    let total = unit.pointsByModelCount?.[armyUnit.modelCount] ?? unit.points;
+    let total = unit.pointsByModelCount?.[armyUnit.modelCount] ?? unit.points ?? 0;
     armyUnit.wargear.forEach((w) => {
       const pts = unit.wargear.find((g) => g.id === w)?.points;
       if (pts) total += pts;
@@ -409,7 +409,7 @@ export default function ArmyBuilder() {
     if (armyUnit.attachedUnit) {
       const attached = units.find((u) => u.id === armyUnit.attachedUnit);
       if (attached) {
-        total += attached.points;
+        total += attached.points ?? 0;
         armyUnit.attachedUnitWargear.forEach((w) => {
           const pts = attached.wargear?.find((g) => g.id === w)?.points;
           if (pts) total += pts;

@@ -127,7 +127,7 @@ export default function UnitCard({
   const selectedAttachedUnit = allUnits.find((u) => u.id === attachedUnit);
 
   const hasStats =
-    [...unit.defaultWargear, ...unit.wargear].some((w) => w.profiles && w.profiles.length > 0) ||
+    [...(unit.defaultWargear ?? []), ...unit.wargear].some((w) => w.profiles && w.profiles.length > 0) ||
     !!unit.abilities?.length ||
     !![...(selectedCharacter?.defaultWargear ?? []), ...(selectedCharacter?.wargear ?? [])].some((w) => w.profiles && w.profiles.length > 0) ||
     !!selectedCharacter?.abilities?.length ||
@@ -423,7 +423,7 @@ export default function UnitCard({
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
             {/* Default wargear (always equipped) */}
-            {unit.defaultWargear?.length > 0 && (
+            {(unit.defaultWargear?.length ?? 0) > 0 && (
               <div>
                 <div style={{
                   fontFamily: "var(--font-mono)",
@@ -436,7 +436,7 @@ export default function UnitCard({
                   Always Equipped
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                  {dedupWargearNames(unit.defaultWargear.filter((w) => {
+                  {dedupWargearNames((unit.defaultWargear ?? []).filter((w) => {
                     const replaced = (unit.notes ?? []).some((n) => n.replacesDefaultWargear === w.id && checkedNotes.includes(n.id));
                     return !replaced;
                   })).map((w) => (
@@ -743,7 +743,7 @@ export default function UnitCard({
             )}
 
             {/* Attached unit always equipped */}
-            {selectedAttachedUnit && selectedAttachedUnit.defaultWargear.length > 0 && (
+            {selectedAttachedUnit && (selectedAttachedUnit.defaultWargear?.length ?? 0) > 0 && (
               <div>
                 <div style={{
                   fontFamily: "var(--font-mono)",
@@ -756,7 +756,7 @@ export default function UnitCard({
                   {selectedAttachedUnit.name} — Always Equipped
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                  {dedupWargearNames(selectedAttachedUnit.defaultWargear).map((w) => (
+                  {dedupWargearNames(selectedAttachedUnit.defaultWargear ?? []).map((w) => (
                     <span key={w.id} style={{
                       fontFamily: "var(--font-mono)",
                       fontSize: "10px",
