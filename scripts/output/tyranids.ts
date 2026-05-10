@@ -460,7 +460,7 @@ export const tyranidsUnits: Unit[] = [
 
   {
     id: "von-ryan-s-leapers",
-    name: "Von Ryan’s Leapers",
+    name: "Von Ryan's Leapers",
     faction: "tyranids",
     category: "infantry",
     modelCountOptions: [3, 6],
@@ -473,7 +473,7 @@ export const tyranidsUnits: Unit[] = [
       },
     ],
     defaultWargear: [
-      { id: "leaper-s-talons", name: "Leaper’s talons", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "5", ap: "-1", damage: "1" }] },
+      { id: "leaper-s-talons", name: "Leaper's talons", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "5", ap: "-1", damage: "1" }] },
     ],
     wargear: [],
     ledBy: [],

@@ -10,7 +10,7 @@ export const chaosDaemonsUnits: Unit[] = [
     points: 110,
     defaultWargear: [
       { id: "hellblade", name: "Hellblade", image: "" },
-      { id: "juggernaut-s-bladed-horn", name: "Juggernaut’s bladed horn", image: "" },
+      { id: "juggernaut-s-bladed-horn", name: "Juggernaut's bladed horn", image: "" },
     ],
     wargear: [],
     ledBy: [],
@@ -70,7 +70,7 @@ export const chaosDaemonsUnits: Unit[] = [
     category: "mounted",
     points: 110,
     defaultWargear: [
-      { id: "death-s-heads", name: "Death’s heads", image: "" },
+      { id: "death-s-heads", name: "Death's heads", image: "" },
       { id: "foul-mouthparts", name: "Foul mouthparts", image: "" },
       { id: "plaguesword", name: "Plaguesword", image: "" },
     ],
@@ -130,7 +130,7 @@ export const chaosDaemonsUnits: Unit[] = [
     points: 95,
     defaultWargear: [
       { id: "skull-cannon", name: "Skull cannon", image: "" },
-      { id: "attendants-hellblades", name: "Attendants’ hellblades", image: "" },
+      { id: "attendants-hellblades", name: "Attendants' hellblades", image: "" },
       { id: "biting-maw", name: "Biting maw", image: "" },
     ],
     wargear: [],

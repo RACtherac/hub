@@ -13,7 +13,7 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "laspistol", name: "Laspistol", image: "" },
       { id: "hunting-lance-frag-tip", name: "Hunting lance – frag tip", image: "" },
       { id: "hunting-lance-melta-tip", name: "Hunting lance – melta tip", image: "" },
-      { id: "steed-s-hooves", name: "Steed’s hooves", image: "" },
+      { id: "steed-s-hooves", name: "Steed's hooves", image: "" },
     ],
     wargear: [
       { id: "goad-lance", name: "Goad lance", image: "" },
@@ -396,9 +396,9 @@ export const astraMilitarumUnits: Unit[] = [
     category: "infantry",
     points: 110,
     defaultWargear: [
-      { id: "sergeant-s-pistol", name: "Sergeant’s pistol", image: "" },
+      { id: "sergeant-s-pistol", name: "Sergeant's pistol", image: "" },
       { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
-      { id: "sergeant-s-close-combat-weapon", name: "Sergeant’s close combat weapon", image: "" },
+      { id: "sergeant-s-close-combat-weapon", name: "Sergeant's close combat weapon", image: "" },
     ],
     wargear: [
       { id: "flamer", name: "Flamer", image: "" },
@@ -470,16 +470,16 @@ export const astraMilitarumUnits: Unit[] = [
     points: 110,
     defaultWargear: [
       { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "gaunt-s-chainsword", name: "Gaunt’s chainsword", image: "" },
+      { id: "gaunt-s-chainsword", name: "Gaunt's chainsword", image: "" },
     ],
     wargear: [
-      { id: "bragg-s-autocannon", name: "Bragg’s autocannon", image: "" },
-      { id: "corbec-s-hot-shot-lascarbine", name: "Corbec’s hot-shot lascarbine", image: "" },
-      { id: "larkin-s-long-las", name: "Larkin’s long-las", image: "" },
+      { id: "bragg-s-autocannon", name: "Bragg's autocannon", image: "" },
+      { id: "corbec-s-hot-shot-lascarbine", name: "Corbec's hot-shot lascarbine", image: "" },
+      { id: "larkin-s-long-las", name: "Larkin's long-las", image: "" },
       { id: "lascarbine", name: "Lascarbine", image: "" },
-      { id: "rawne-s-lascarbine", name: "Rawne’s lascarbine", image: "" },
+      { id: "rawne-s-lascarbine", name: "Rawne's lascarbine", image: "" },
       { id: "straight-silver-knife", name: "Straight silver knife", image: "" },
-      { id: "mkoll-s-straight-silver-knife", name: "Mkoll’s straight silver knife", image: "" },
+      { id: "mkoll-s-straight-silver-knife", name: "Mkoll's straight silver knife", image: "" },
     ],
     ledBy: [],
   },
@@ -858,7 +858,7 @@ export const astraMilitarumUnits: Unit[] = [
     category: "infantry",
     points: 35,
     defaultWargear: [
-      { id: "servitor-s-servo-arm", name: "Servitor’s servo-arm", image: "" },
+      { id: "servitor-s-servo-arm", name: "Servitor's servo-arm", image: "" },
     ],
     wargear: [
       { id: "heavy-bolter", name: "Heavy bolter", image: "" },
@@ -889,8 +889,8 @@ export const astraMilitarumUnits: Unit[] = [
     category: "infantry",
     points: 45,
     defaultWargear: [
-      { id: "quartermaster-s-pistol", name: "Quartermaster’s pistol", image: "" },
-      { id: "quartermaster-s-close-combat-weapon", name: "Quartermaster’s close combat weapon", image: "" },
+      { id: "quartermaster-s-pistol", name: "Quartermaster's pistol", image: "" },
+      { id: "quartermaster-s-close-combat-weapon", name: "Quartermaster's close combat weapon", image: "" },
     ],
     wargear: [
       { id: "medical-scalpels", name: "Medical scalpels", image: "" },
@@ -939,7 +939,7 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
     ],
     wargear: [
-      { id: "astropath-s-stave", name: "Astropath’s stave", image: "" },
+      { id: "astropath-s-stave", name: "Astropath's stave", image: "" },
     ],
     ledBy: [],
   },

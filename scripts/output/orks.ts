@@ -197,12 +197,12 @@ export const orksUnits: Unit[] = [
     category: "infantry",
     points: 235,
     defaultWargear: [
-      { id: "mork-s-roar", name: "Mork’s Roar", image: "" },
-      { id: "gork-s-klaw-strike", name: "Gork’s Klaw - strike", image: "" },
-      { id: "gork-s-klaw-sweep", name: "Gork’s Klaw - sweep", image: "" },
+      { id: "mork-s-roar", name: "Mork's Roar", image: "" },
+      { id: "gork-s-klaw-strike", name: "Gork's Klaw - strike", image: "" },
+      { id: "gork-s-klaw-sweep", name: "Gork's Klaw - sweep", image: "" },
     ],
     wargear: [
-      { id: "makari-s-stabba", name: "Makari’s stabba", image: "" },
+      { id: "makari-s-stabba", name: "Makari's stabba", image: "" },
     ],
     ledBy: [],
   },
@@ -438,7 +438,7 @@ export const orksUnits: Unit[] = [
     defaultWargear: [
       { id: "kopta-rokkits", name: "Kopta rokkits", image: "" },
       { id: "slugga", name: "Slugga", image: "" },
-      { id: "spinnin-blades", name: "Spinnin’ blades", image: "" },
+      { id: "spinnin-blades", name: "Spinnin' blades", image: "" },
     ],
     wargear: [
       { id: "kustom-mega-blasta", name: "Kustom mega-blasta", image: "" },
@@ -455,7 +455,7 @@ export const orksUnits: Unit[] = [
     defaultWargear: [
       { id: "slugga", name: "Slugga", image: "" },
       { id: "twin-big-shoota", name: "Twin big shoota", image: "" },
-      { id: "spinnin-blades", name: "Spinnin’ blades", image: "" },
+      { id: "spinnin-blades", name: "Spinnin' blades", image: "" },
     ],
     wargear: [
       { id: "kustom-mega-blasta", name: "Kustom mega-blasta", image: "" },
@@ -709,8 +709,8 @@ export const orksUnits: Unit[] = [
       { id: "killkannon", name: "Killkannon", image: "" },
       { id: "lobba", name: "Lobba", image: "" },
       { id: "zzap-gun", name: "Zzap gun", image: "" },
-      { id: "grabbin-klaw", name: "Grabbin’ klaw", image: "" },
-      { id: "wreckin-ball", name: "Wreckin’ ball", image: "" },
+      { id: "grabbin-klaw", name: "Grabbin' klaw", image: "" },
+      { id: "wreckin-ball", name: "Wreckin' ball", image: "" },
     ],
     ledBy: [],
   },
@@ -833,7 +833,7 @@ export const orksUnits: Unit[] = [
     category: "transport",
     points: 135,
     defaultWargear: [
-      { id: "eavy-lobba", name: "’Eavy lobba", image: "" },
+      { id: "eavy-lobba", name: "'Eavy lobba", image: "" },
       { id: "stikka-kannon", name: "Stikka kannon", image: "" },
       { id: "butcha-boyz", name: "Butcha boyz", image: "" },
       { id: "savage-horns-and-hooves", name: "Savage horns and hooves", image: "" },
@@ -886,7 +886,7 @@ export const orksUnits: Unit[] = [
     category: "transport",
     points: 155,
     defaultWargear: [
-      { id: "eavy-lobba", name: "’Eavy lobba", image: "" },
+      { id: "eavy-lobba", name: "'Eavy lobba", image: "" },
       { id: "stikka-kannon", name: "Stikka kannon", image: "" },
       { id: "wurrtower", name: "Wurrtower", image: "" },
       { id: "butcha-boyz", name: "Butcha boyz", image: "" },
@@ -940,8 +940,8 @@ export const orksUnits: Unit[] = [
     category: "transport",
     points: 150,
     defaultWargear: [
-      { id: "gorin-horns-strike", name: "Gorin’ horns – strike", image: "" },
-      { id: "gorin-horns-sweep", name: "Gorin’ horns – sweep", image: "" },
+      { id: "gorin-horns-strike", name: "Gorin' horns – strike", image: "" },
+      { id: "gorin-horns-sweep", name: "Gorin' horns – sweep", image: "" },
     ],
     wargear: [
       { id: "kannon-frag", name: "Kannon – frag", image: "" },
@@ -981,7 +981,7 @@ export const orksUnits: Unit[] = [
       { id: "spiked-wheels", name: "Spiked wheels", image: "" },
     ],
     wargear: [
-      { id: "wreckin-ball", name: "Wreckin’ ball", image: "" },
+      { id: "wreckin-ball", name: "Wreckin' ball", image: "" },
     ],
     ledBy: [],
   },

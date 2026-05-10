@@ -202,12 +202,12 @@ export const adeptusMechanicusUnits: Unit[] = [
     category: "infantry",
     points: 50,
     defaultWargear: [
-      { id: "servitor-s-servo-arm", name: "Servitor’s servo-arm", image: "" },
+      { id: "servitor-s-servo-arm", name: "Servitor's servo-arm", image: "" },
     ],
     wargear: [
       { id: "heavy-bolter", name: "Heavy bolter", image: "" },
       { id: "multi-melta", name: "Multi-melta", image: "" },
-      { id: "servitor-s-tools", name: "Servitor’s tools", image: "" },
+      { id: "servitor-s-tools", name: "Servitor's tools", image: "" },
     ],
     ledBy: [],
   },

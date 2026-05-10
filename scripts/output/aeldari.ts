@@ -361,12 +361,12 @@ export const aeldariUnits: Unit[] = [
     points: 110,
     defaultWargear: [
       { id: "dragon-fusion-gun", name: "Dragon fusion gun", image: "" },
-      { id: "exarch-s-dragon-fusion-gun", name: "Exarch’s Dragon fusion gun", image: "" },
+      { id: "exarch-s-dragon-fusion-gun", name: "Exarch's Dragon fusion gun", image: "" },
       { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
     ],
     wargear: [
       { id: "dragon-fusion-pistol", name: "Dragon fusion pistol", image: "" },
-      { id: "dragon-s-breath-flamer", name: "Dragon’s breath flamer", image: "" },
+      { id: "dragon-s-breath-flamer", name: "Dragon's breath flamer", image: "" },
       { id: "firepike", name: "Firepike", image: "" },
       { id: "dragon-axe", name: "Dragon axe", image: "" },
     ],
@@ -444,7 +444,7 @@ export const aeldariUnits: Unit[] = [
     defaultWargear: [
       { id: "shuriken-pistol", name: "Shuriken pistol", image: "" },
       { id: "scorpion-chainsword", name: "Scorpion chainsword", image: "" },
-      { id: "scorpion-s-claw", name: "Scorpion’s claw", image: "" },
+      { id: "scorpion-s-claw", name: "Scorpion's claw", image: "" },
     ],
     wargear: [
       { id: "chainsabres", name: "Chainsabres", image: "" },
@@ -460,11 +460,11 @@ export const aeldariUnits: Unit[] = [
     category: "infantry",
     points: 85,
     defaultWargear: [
-      { id: "hawk-s-talon", name: "Hawk’s talon", image: "" },
+      { id: "hawk-s-talon", name: "Hawk's talon", image: "" },
       { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
     ],
     wargear: [
-      { id: "exarch-s-lasblaster", name: "Exarch’s lasblaster", image: "" },
+      { id: "exarch-s-lasblaster", name: "Exarch's lasblaster", image: "" },
       { id: "lasblaster", name: "Lasblaster", image: "" },
       { id: "scatter-laser", name: "Scatter laser", image: "" },
       { id: "sunpistol", name: "Sunpistol", image: "" },
@@ -482,15 +482,15 @@ export const aeldariUnits: Unit[] = [
     modelCountOptions: [5, 6, 11, 12],
     pointsByModelCount: { 5: 85, 6: 100, 11: 190, 12: 205 },
     defaultWargear: [
-      { id: "troupe-shuriken-pistol", name: "Shuriken pistol", image: "", profiles: [{ range: ‘12"’, attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "PISTOL"] }] },
-      { id: "troupe-harlequins-blade", name: "Harlequin’s blade", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "3", ap: "-1", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "troupe-shuriken-pistol", name: "Shuriken pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "PISTOL"] }] },
+      { id: "troupe-harlequins-blade", name: "Harlequin's blade", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "3", ap: "-1", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
     wargear: [
-      { id: "troupe-harlequins-special-weapon", name: "Harlequin’s special weapon", image: "", countable: true, maxCountByModelCount: { 5: 5, 6: 6, 11: 11, 12: 12 }, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "troupe-harlequins-special-weapon", name: "Harlequin's special weapon", image: "", countable: true, maxCountByModelCount: { 5: 5, 6: 6, 11: 11, 12: 12 }, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
       { id: "troupe-power-sword", name: "Power sword", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "-2", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
-      { id: "troupe-neuro-disruptor", name: "Neuro disruptor", image: "", countable: true, maxCountByModelCount: { 5: 2, 6: 2, 11: 4, 12: 4 }, profiles: [{ range: ‘12"’, attacks: "1", skill: "3+", strength: "4", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 2+", "ASSAULT", "PISTOL"] }] },
-      { id: "troupe-fusion-pistol", name: "Fusion pistol", image: "", countable: true, maxCountByModelCount: { 5: 2, 6: 2, 11: 4, 12: 4 }, profiles: [{ range: ‘6"’, attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D6", keywords: ["ASSAULT", "MELTA 2", "PISTOL"] }] },
-      { id: "troupe-flip-belt", name: "Flip Belt", image: "", note: "Flip Belt: Each time the bearer’s unit makes a Normal, Advance, Fall Back or Charge move, ignore any vertical distance when determining the total distance the bearer can be moved during that move." },
+      { id: "troupe-neuro-disruptor", name: "Neuro disruptor", image: "", countable: true, maxCountByModelCount: { 5: 2, 6: 2, 11: 4, 12: 4 }, profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 2+", "ASSAULT", "PISTOL"] }] },
+      { id: "troupe-fusion-pistol", name: "Fusion pistol", image: "", countable: true, maxCountByModelCount: { 5: 2, 6: 2, 11: 4, 12: 4 }, profiles: [{ range: '6"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D6", keywords: ["ASSAULT", "MELTA 2", "PISTOL"] }] },
+      { id: "troupe-flip-belt", name: "Flip Belt", image: "", note: "Flip Belt: Each time the bearer's unit makes a Normal, Advance, Fall Back or Charge move, ignore any vertical distance when determining the total distance the bearer can be moved during that move." },
     ],
     wargearGroups: [
       ["troupe-harlequins-blade", "troupe-harlequins-special-weapon"],
@@ -498,7 +498,7 @@ export const aeldariUnits: Unit[] = [
     abilities: [
       {
         name: "Dance of Death",
-        description: "At the start of the Fight phase, select one of the following abilities for this unit to gain until the end of the phase:\n\nHero’s Prowess: Each time a model in this unit makes an attack, re-roll a Hit roll of 1.\nVillain’s Doom: Each time a model in this unit makes an attack, add 1 to the Wound roll.\nTrickster’s Grace: Each time an attack targets this unit, subtract 1 from the Hit roll.",
+        description: "At the start of the Fight phase, select one of the following abilities for this unit to gain until the end of the phase:\n\nHero's Prowess: Each time a model in this unit makes an attack, re-roll a Hit roll of 1.\nVillain's Doom: Each time a model in this unit makes an attack, add 1 to the Wound roll.\nTrickster's Grace: Each time an attack targets this unit, subtract 1 from the Hit roll.",
       },
     ],
     ledBy: ["shadowseer","troupe-master"],
@@ -544,7 +544,7 @@ export const aeldariUnits: Unit[] = [
     points: 95,
     defaultWargear: [
       { id: "death-spinner", name: "Death spinner", image: "" },
-      { id: "exarch-s-death-spinner", name: "Exarch’s death spinner", image: "" },
+      { id: "exarch-s-death-spinner", name: "Exarch's death spinner", image: "" },
       { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
     ],
     wargear: [

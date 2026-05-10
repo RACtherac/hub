@@ -214,7 +214,7 @@ export const tAuEmpireUnits: Unit[] = [
     wargear: [
       { id: "neutron-grenade-launcher", name: "Neutron grenade launcher", image: "" },
       { id: "neutron-rail-rifle", name: "Neutron rail rifle", image: "" },
-      { id: "t-au-flamer", name: "T’au flamer", image: "" },
+      { id: "t-au-flamer", name: "T'au flamer", image: "" },
     ],
     ledBy: [],
   },
@@ -294,7 +294,7 @@ export const tAuEmpireUnits: Unit[] = [
       { id: "fusion-blaster", name: "Fusion blaster", image: "" },
       { id: "missile-pod", name: "Missile pod", image: "" },
       { id: "plasma-rifle", name: "Plasma rifle", image: "" },
-      { id: "t-au-flamer", name: "T’au flamer", image: "" },
+      { id: "t-au-flamer", name: "T'au flamer", image: "" },
     ],
     ledBy: [],
   },
@@ -322,7 +322,7 @@ export const tAuEmpireUnits: Unit[] = [
     points: 110,
     defaultWargear: [
       { id: "burst-cannon", name: "Burst cannon", image: "" },
-      { id: "t-au-flamer", name: "T’au flamer", image: "" },
+      { id: "t-au-flamer", name: "T'au flamer", image: "" },
       { id: "battlesuit-fists", name: "Battlesuit fists", image: "" },
     ],
     wargear: [],
@@ -368,7 +368,7 @@ export const tAuEmpireUnits: Unit[] = [
     points: 160,
     defaultWargear: [
       { id: "fusion-collider", name: "Fusion collider", image: "" },
-      { id: "twin-t-au-flamer", name: "Twin T’au flamer", image: "" },
+      { id: "twin-t-au-flamer", name: "Twin T'au flamer", image: "" },
       { id: "ghostkeel-fists", name: "Ghostkeel fists", image: "" },
     ],
     wargear: [
@@ -523,7 +523,7 @@ export const tAuEmpireUnits: Unit[] = [
       { id: "destroyer-missiles", name: "Destroyer missiles", image: "" },
       { id: "pulse-driver-cannon", name: "Pulse driver cannon", image: "" },
       { id: "twin-smart-missile-system", name: "Twin smart missile system", image: "" },
-      { id: "twin-t-au-flamer", name: "Twin T’au flamer", image: "" },
+      { id: "twin-t-au-flamer", name: "Twin T'au flamer", image: "" },
       { id: "thunderous-footfalls", name: "Thunderous footfalls", image: "" },
     ],
     wargear: [

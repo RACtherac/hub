@@ -463,12 +463,12 @@ export const drukhariUnits: Unit[] = [
     points: 85,
     defaultWargear: [
       { id: "shuriken-pistol", name: "Shuriken pistol", image: "" },
-      { id: "harlequin-s-blade", name: "Harlequin’s blade", image: "" },
+      { id: "harlequin-s-blade", name: "Harlequin's blade", image: "" },
     ],
     wargear: [
       { id: "fusion-pistol", name: "Fusion pistol", image: "" },
       { id: "neuro-disruptor", name: "Neuro disruptor", image: "" },
-      { id: "harlequin-s-special-weapon", name: "Harlequin’s special weapon", image: "" },
+      { id: "harlequin-s-special-weapon", name: "Harlequin's special weapon", image: "" },
       { id: "power-sword", name: "Power sword", image: "" },
     ],
     ledBy: [],

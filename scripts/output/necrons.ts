@@ -280,7 +280,7 @@ export const necronsUnits: Unit[] = [
     points: 75,
     defaultWargear: [
       { id: "atomiser-beam", name: "Atomiser beam", image: "" },
-      { id: "reanimator-s-claws", name: "Reanimator’s claws", image: "" },
+      { id: "reanimator-s-claws", name: "Reanimator's claws", image: "" },
     ],
     wargear: [],
     ledBy: [],
@@ -469,7 +469,7 @@ export const necronsUnits: Unit[] = [
     wargear: [
       { id: "antimatter-meteor", name: "Antimatter Meteor", image: "" },
       { id: "cosmic-fire", name: "Cosmic Fire", image: "" },
-      { id: "time-s-arrow", name: "Time’s Arrow", image: "" },
+      { id: "time-s-arrow", name: "Time's Arrow", image: "" },
     ],
     ledBy: [],
   },
@@ -497,7 +497,7 @@ export const necronsUnits: Unit[] = [
     defaultWargear: [
       { id: "heat-ray-dispersed", name: "Heat ray – dispersed", image: "" },
       { id: "heat-ray-focused", name: "Heat ray – focused", image: "" },
-      { id: "stalker-s-forelimbs", name: "Stalker’s forelimbs", image: "" },
+      { id: "stalker-s-forelimbs", name: "Stalker's forelimbs", image: "" },
     ],
     wargear: [
       { id: "particle-shredder", name: "Particle shredder", image: "" },

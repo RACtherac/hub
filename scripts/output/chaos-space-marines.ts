@@ -263,7 +263,7 @@ export const chaosSpaceMarinesUnits: Unit[] = [
       { id: "rod-of-torment", name: "Rod of Torment", image: "" },
     ],
     wargear: [
-      { id: "surgeon-acolyte-s-tools", name: "Surgeon Acolyte’s tools", image: "" },
+      { id: "surgeon-acolyte-s-tools", name: "Surgeon Acolyte's tools", image: "" },
     ],
     ledBy: [],
   },
