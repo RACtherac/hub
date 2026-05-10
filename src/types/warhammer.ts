@@ -100,7 +100,7 @@ export interface Unit {
   image?: string;
   imageCredit?: string;
 
-  points: number;
+  points?: number;
   pointsByModelCount?: Record<number, number>;
 
   modelCountOptions?: number[];
@@ -113,10 +113,10 @@ export interface Unit {
   noteGroupLimitsByModelCount?: Record<string, Record<number, number>>;
   abilities?: UnitAbility[];
 
-  defaultWargear: WargearOption[];
+  defaultWargear?: WargearOption[];
   wargear: WargearOption[];
   defaultSelectedWargear?: string[];
-  ledBy: string[];
+  ledBy?: string[];
 
   transportCapacity?: number;
   transportSlots?: number;
