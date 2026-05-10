@@ -1,4 +1,4 @@
-import type { Unit } from "../../../types/warhammer";
+import type { Unit } from "../../src/types/warhammer";
 
 export const deathGuardUnits: Unit[] = [
 
@@ -857,13 +857,26 @@ export const deathGuardUnits: Unit[] = [
     name: "Death Guard Rhino",
     faction: "death-guard",
     category: "transport",
-    points: 75,
+    points: 85,
+    transportCapacity: 12,
     defaultWargear: [
-      { id: "plague-combi-bolter", name: "Plague combi-bolter", image: "" },
-      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+      { id: "dg-rhino-combi-bolter", name: "Combi-bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS", "RAPID FIRE 2"] }] },
+      { id: "dg-rhino-armoured-tracks", name: "Armoured tracks", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "combi-weapon", name: "Combi-weapon", image: "" },
+      { id: "dg-rhino-combi-weapon", name: "Combi-weapon", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 4+", "DEVASTATING WOUNDS", "RAPID FIRE 1"] }] },
+      { id: "dg-rhino-extra-combi-bolter", name: "Combi-bolter (additional)", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS", "RAPID FIRE 2"] }] },
+      { id: "dg-rhino-havoc-launcher", name: "Havoc launcher", image: "", profiles: [{ range: '48"', attacks: "D6", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST"] }] },
+    ],
+    wargearGroups: [
+      ["dg-rhino-combi-bolter", "dg-rhino-combi-weapon"],
+      ["dg-rhino-extra-combi-bolter", "dg-rhino-havoc-launcher"],
+    ],
+    abilities: [
+      {
+        name: "Fire Support",
+        description: "In your Shooting phase, after this model has shot, select one enemy unit hit by one or more of those attacks. Until the end of the phase, each time a friendly model that disembarked from this TRANSPORT this turn makes an attack that targets that enemy unit, you can re-roll the Wound roll.",
+      },
     ],
     ledBy: [],
   },

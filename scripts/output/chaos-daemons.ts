@@ -1,4 +1,4 @@
-import type { Unit } from "../../../types/warhammer";
+import type { Unit } from "../../src/types/warhammer";
 
 export const chaosDaemonsUnits: Unit[] = [
 
@@ -236,11 +236,19 @@ export const chaosDaemonsUnits: Unit[] = [
     name: "Nurglings",
     faction: "chaos-daemons",
     category: "battleline",
-    points: 35,
+    points: 40,
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 40, 6: 70 },
     defaultWargear: [
       { id: "diseased-claws-and-teeth", name: "Diseased claws and teeth", image: "" },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Mischief Makers",
+        description: "Each time an enemy unit (excluding TITANIC units) within Engagement Range of one or more units with this ability is selected to fight, until the end of the phase, each time a model in that enemy unit makes a melee attack, subtract 1 from the Hit roll.",
+      },
+    ],
     ledBy: [],
   },
 

@@ -1,4 +1,4 @@
-import type { Character } from "../../../types/warhammer";
+import type { Character } from "../../../src/types/warhammer";
 
 export const deathGuardCharacters: Character[] = [
 
@@ -172,13 +172,23 @@ export const deathGuardCharacters: Character[] = [
     name: "Lord Of Contagion",
     faction: "death-guard",
     image: "",
-    points: 80,
+    points: 120,
     canAttachTo: [],
     defaultWargear: [
-      { id: "plagueblade-strike", name: "Plagueblade – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-2", damage: "3", keywords: ["LETHAL HITS"] }] },
-      { id: "plagueblade-sweep", name: "Plagueblade – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] }] },
+      { id: "manreaper-strike", name: "Manreaper – strike", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "9", ap: "-2", damage: "3", keywords: ["LETHAL HITS"] }] },
+      { id: "manreaper-sweep", name: "Manreaper – sweep", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "2+", strength: "6", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Vector of Disease",
+        description: "While this model is leading a unit, melee weapons equipped by models in that unit have the [SUSTAINED HITS 1] and [LANCE] abilities.",
+      },
+      {
+        name: "Unholy Resilience",
+        description: "The first time a model with this ability is destroyed in a battle round, roll one D6 at the end of the phase. On a 2+, set that model back up on the battlefield, as close as possible to where it was destroyed and not within Engagement Range of any enemy units, with 3 wounds remaining. Each model can only be set up in this way once per battle.",
+      },
+    ],
   },
 
   {
@@ -186,13 +196,23 @@ export const deathGuardCharacters: Character[] = [
     name: "Lord Of Virulence",
     faction: "death-guard",
     image: "",
-    points: 80,
-    canAttachTo: [],
+    points: 100,
+    canAttachTo: ["blightlord-terminators", "deathshroud-terminators"],
     defaultWargear: [
-      { id: "twin-plague-spewer", name: "Twin plague spewer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "LETHAL HITS", "TORRENT", "TWIN-LINKED"] }] },
-      { id: "heavy-plague-fist", name: "Heavy plague fist", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "10", ap: "-2", damage: "3", keywords: ["LETHAL HITS"] }] },
+      { id: "twin-plague-spewer", name: "Twin plague spewer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["ANTI-INFANTRY 2+", "IGNORES COVER", "TORRENT", "TWIN-LINKED"] }] },
+      { id: "lord-virulence-power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "8", ap: "-2", damage: "2", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Virulent Aura",
+        description: "While this model is leading a unit, each time a model in that unit makes a ranged attack, you can re-roll the Wound roll.",
+      },
+      {
+        name: "Blight Bombardment",
+        description: "At the start of your Shooting phase, select one enemy unit within 30\" of and visible to this model. Until the end of the phase, each time a friendly DEATH GUARD model makes a ranged attack that targets that unit, re-roll a Hit roll of 1 (if that attack is made with a Blast weapon, you can re-roll the Hit roll instead).",
+      },
+    ],
   },
 
   {
@@ -205,11 +225,22 @@ export const deathGuardCharacters: Character[] = [
     allowsSecondCharacter: true,
     secondCharacterOptions: ["foul-blightspawn"],
     defaultWargear: [
-      { id: "plague-bolt-pistol", name: "Plague bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL", "LETHAL HITS"] }] },
-      { id: "plague-wind", name: "Plague Wind", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "D3", keywords: ["PSYCHIC", "TORRENT"] }] },
+      { id: "plaguecaster-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS", "PISTOL"] }] },
+      { id: "plague-wind-witchfire", name: "Plague Wind – witchfire", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "D3", keywords: ["PSYCHIC", "TORRENT"] }] },
+      { id: "plague-wind-focused-witchfire", name: "Plague Wind – focused witchfire", image: "", profiles: [{ range: '12"', attacks: "D6+3", skill: "N/A", strength: "6", ap: "-2", damage: "D3", keywords: ["HAZARDOUS", "PSYCHIC", "TORRENT"] }] },
       { id: "corrupted-staff", name: "Corrupted staff", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["LETHAL HITS", "PSYCHIC"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Gift of Contagion (Psychic)",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack that targets a unit that is Afflicted, that attack has the [SUSTAINED HITS 1] ability.",
+      },
+      {
+        name: "Pestilent Fallout (Psychic)",
+        description: "In your Shooting phase, after this model has shot, select one enemy INFANTRY unit hit by one or more of those attacks made with its Plague Wind. Until the end of your opponent's next turn, that unit is enfeebled. While a unit is enfeebled, subtract 2\" from the Move characteristic of models in that unit.",
+      },
+    ],
   },
 
   {

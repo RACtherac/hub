@@ -18,20 +18,26 @@ export default function WargearSelector({ label = "Wargear", wargear, selected, 
 
   const getLinked = (id: string) => wargear.find((w) => w.id === id)?.linkedWargear ?? [];
 
+  const wargearGroupMap: Record<string, string[]> = {};
+  wargear.forEach((w) => {
+    if (w.wargearGroup) {
+      if (!wargearGroupMap[w.wargearGroup]) wargearGroupMap[w.wargearGroup] = [];
+      wargearGroupMap[w.wargearGroup].push(w.id);
+    }
+  });
+  const allGroups = [...(groups ?? []), ...Object.values(wargearGroupMap)];
+
   const toggle = (id: string) => {
     if (selected.includes(id)) {
-      // Deselect this item and its linked items
       const toRemove = new Set([id, ...getLinked(id)]);
       onChange(selected.filter((g) => !toRemove.has(g)));
     } else {
-      // Deselect all exclusive group members (across all groups containing this item) and their linked items
-      const matchingGroups = groups?.filter((g) => g.includes(id)) ?? [];
+      const matchingGroups = allGroups.filter((g) => g.includes(id));
       const allGroupMembers = matchingGroups.flatMap((g) => g);
       const groupDeselected = allGroupMembers.filter((g) => selected.includes(g));
       const linkedFromGroup = groupDeselected.flatMap((g) => getLinked(g));
       const toRemove = new Set([...allGroupMembers, ...linkedFromGroup]);
       const filtered = selected.filter((g) => !toRemove.has(g));
-      // Add this item and its linked items
       const toAdd = [id, ...getLinked(id)];
       onChange([...filtered, ...toAdd.filter((a) => !filtered.includes(a))]);
     }
@@ -142,7 +148,8 @@ export default function WargearSelector({ label = "Wargear", wargear, selected, 
               ? (gear.maxCountByModelCount[modelCount] ?? 0)
               : 99;
             const noteReduction = (gear.maxCountReducedByNotes ?? []).filter(id => checkedNotes.includes(id)).length;
-            const max = Math.max(0, baseMax - noteReduction);
+            const wargearReduction = (gear.maxCountReducedByWargear ?? []).reduce((sum, id) => sum + (counts[id] ?? 0), 0);
+            const max = Math.max(0, baseMax - noteReduction - wargearReduction);
 
             // Linked counter: this item's display count is derived from its linked partner
             const isLinked = !!gear.linkedCounterId;
@@ -161,10 +168,16 @@ export default function WargearSelector({ label = "Wargear", wargear, selected, 
             };
             const handleIncrement = () => {
               if (isLinked) {
-                // Increasing this (e.g. power fist) decreases the linked (chainfist)
                 onCountChange?.({ [gear.linkedCounterId!]: Math.max(0, primaryCount - 1) });
               } else {
-                onCountChange?.({ [gear.id]: Math.min(max, count + 1) });
+                const updates: Record<string, number> = { [gear.id]: Math.min(max, count + 1) };
+                if (count === 0) {
+                  const matchingGroups = allGroups.filter((g) => g.includes(gear.id));
+                  matchingGroups.flatMap((g) => g).forEach((memberId) => {
+                    if (memberId !== gear.id) updates[memberId] = 0;
+                  });
+                }
+                onCountChange?.(updates);
               }
             };
 

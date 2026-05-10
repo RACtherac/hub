@@ -1,4 +1,4 @@
-import type { Unit } from "../../../types/warhammer";
+import type { Unit } from "../../src/types/warhammer";
 
 export const drukhariUnits: Unit[] = [
 
@@ -105,20 +105,40 @@ export const drukhariUnits: Unit[] = [
     name: "Kabalite Warriors",
     faction: "drukhari",
     category: "battleline",
-    points: 100,
+    points: 115,
+    modelCountOptions: [10],
+    pointsByModelCount: { 10: 115 },
     defaultWargear: [
-      { id: "splinter-rifle", name: "Splinter rifle", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "kw-splinter-rifle", name: "Splinter rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT"] }] },
+      { id: "kw-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "blast-pistol", name: "Blast pistol", image: "" },
-      { id: "blaster", name: "Blaster", image: "" },
-      { id: "dark-lance", name: "Dark lance", image: "" },
-      { id: "shredder", name: "Shredder", image: "" },
-      { id: "splinter-cannon", name: "Splinter cannon", image: "" },
-      { id: "splinter-pistol", name: "Splinter pistol", image: "" },
+      { id: "kw-blast-pistol", name: "Blast pistol", image: "", sergeantOnly: true, profiles: [{ range: '6"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "D3", keywords: ["PISTOL"] }] },
+      { id: "kw-splinter-pistol", name: "Splinter pistol", image: "", sergeantOnly: true, profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "PISTOL"] }] },
+      { id: "kw-power-weapon", name: "Power weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 3+"] }] },
+      { id: "kw-blaster", name: "Blaster", image: "", countable: true, maxCountByModelCount: { 10: 10 }, profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D6+1", keywords: ["ASSAULT"] }] },
+      { id: "kw-dark-lance", name: "Dark lance", image: "", countable: true, maxCountByModelCount: { 10: 10 }, profiles: [{ range: '36"', attacks: "1", skill: "4+", strength: "12", ap: "-3", damage: "D6+2", keywords: ["HEAVY"] }] },
+      { id: "kw-shredder", name: "Shredder", image: "", countable: true, maxCountByModelCount: { 10: 10 }, profiles: [{ range: '18"', attacks: "D6", skill: "N/A", strength: "6", ap: "0", damage: "1", keywords: ["ASSAULT", "TORRENT"] }] },
+      { id: "kw-splinter-cannon", name: "Splinter cannon", image: "", countable: true, maxCountByModelCount: { 10: 10 }, profiles: [{ range: '36"', attacks: "3", skill: "4+", strength: "3", ap: "-1", damage: "2", keywords: ["ANTI-INFANTRY 3+", "HEAVY", "SUSTAINED HITS 1"] }] },
+      { id: "kw-kabalite-icon", name: "Kabalite Icon", image: "", note: "Kabalite Icon: While the bearer's unit is not Battle-shocked, add 1 to the bearer's Objective Control characteristic." },
+      { id: "kw-phantasm-grenade-launcher", name: "Phantasm grenade launcher", image: "", note: "Phantasm Grenade Launcher: The bearer's unit has the SMOKE and GRENADES keywords." },
     ],
-    ledBy: [],
+    wargearGroups: [
+      ["kw-splinter-rifle", "kw-blast-pistol", "kw-splinter-pistol"],
+      ["kw-close-combat-weapon", "kw-power-weapon"],
+      ["kw-kabalite-icon", "kw-phantasm-grenade-launcher"],
+    ],
+    abilities: [
+      {
+        name: "Sadistic Raiders (Pain)",
+        description: "In your Shooting phase or the Fight phase, when you select this unit to shoot or fight, you can spend 1 Pain token to Empower this unit. While Empowered, each time a model in this unit makes an attack, re-roll a Wound roll of 1. If the target is within range of an objective marker, you can re-roll the Wound roll instead.",
+      },
+      {
+        name: "Cruel Enforcers",
+        description: "At the end of your Command phase, if this unit is within range of an objective marker you control, that objective marker remains under your control until your opponent's Level of Control over that objective marker is greater than yours at the end of a phase.",
+      },
+    ],
+    ledBy: ["archon"],
   },
 
   {
@@ -269,6 +289,56 @@ export const drukhariUnits: Unit[] = [
   },
 
   {
+    id: "hand-of-the-archon",
+    name: "Hand Of The Archon",
+    faction: "drukhari",
+    category: "infantry",
+    points: 125,
+    modelCountOptions: [10],
+    pointsByModelCount: { 10: 125 },
+    defaultWargear: [
+      { id: "hota-splinter-rifle", name: "Splinter rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT"] }] },
+      { id: "hota-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
+    ],
+    wargear: [
+      { id: "hota-blast-pistol", name: "Blast pistol", image: "", sergeantOnly: true, profiles: [{ range: '6"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "D3", keywords: ["PISTOL"] }] },
+      { id: "hota-splinter-pistol-sgt", name: "Splinter pistol", image: "", sergeantOnly: true, profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "PISTOL"] }] },
+      { id: "hota-power-weapon", name: "Power weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 3+"] }] },
+      { id: "hota-kabalite-icon", name: "Kabalite Icon", image: "", sergeantOnly: true, note: "Kabalite Icon: While the bearer's unit is not Battle-shocked, add 1 to the bearer's Objective Control characteristic." },
+      { id: "hota-phantasm-grenade-launcher", name: "Phantasm grenade launcher", image: "", sergeantOnly: true, note: "Phantasm Grenade Launcher: The bearer's unit has the SMOKE keyword." },
+      { id: "hota-blaster", name: "Blaster", image: "", countable: true, maxCountByModelCount: { 10: 1 }, profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D6+1", keywords: ["ASSAULT"] }] },
+      { id: "hota-shredder", name: "Shredder", image: "", countable: true, maxCountByModelCount: { 10: 1 }, profiles: [{ range: '18"', attacks: "D6", skill: "N/A", strength: "6", ap: "0", damage: "1", keywords: ["ASSAULT", "TORRENT"] }] },
+      { id: "hota-dark-lance", name: "Dark lance", image: "", countable: true, maxCountByModelCount: { 10: 1 }, profiles: [{ range: '36"', attacks: "1", skill: "4+", strength: "12", ap: "-3", damage: "D6+2", keywords: ["HEAVY"] }] },
+      { id: "hota-splinter-cannon", name: "Splinter cannon", image: "", countable: true, maxCountByModelCount: { 10: 1 }, profiles: [{ range: '36"', attacks: "3", skill: "4+", strength: "3", ap: "-1", damage: "2", keywords: ["ANTI-INFANTRY 3+", "HEAVY", "SUSTAINED HITS 1"] }] },
+      { id: "hota-stinger-pistol", name: "Stinger pistol", image: "", countable: true, maxCountByModelCount: { 10: 1 }, profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 2+", "PISTOL"] }] },
+      { id: "hota-shardcarbine", name: "Shardcarbine", image: "", countable: true, maxCountByModelCount: { 10: 1 }, profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT"] }] },
+      { id: "hota-pain-sculptors", name: "Pain sculptors", image: "", countable: true, maxCountByModelCount: { 10: 1 }, profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ANTI-INFANTRY 4+", "TWIN-LINKED"] }] },
+      { id: "hota-splinter-pistol-and-razorflail", name: "Splinter pistol & Razorflail", image: "", countable: true, maxCountByModelCount: { 10: 1 }, profiles: [
+        { profileName: "Splinter pistol", range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "PISTOL"] },
+        { profileName: "Razorflail", range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-2", damage: "1" },
+      ]},
+      { id: "hota-stimm-needler", name: "Stimm-needler", image: "", countable: true, maxCountByModelCount: { 10: 1 }, note: "Stimm-needler: Once per turn, the first time a saving throw is failed for a model in the bearer's unit, change the Damage characteristic of that attack to 0. This model's splinter rifle cannot be replaced." },
+    ],
+    wargearGroups: [
+      ["hota-blast-pistol", "hota-splinter-pistol-sgt"],
+      ["hota-kabalite-icon", "hota-phantasm-grenade-launcher"],
+      ["hota-blaster", "hota-shredder"],
+      ["hota-dark-lance", "hota-splinter-cannon"],
+    ],
+    abilities: [
+      {
+        name: "Assassins' Poisons (Pain)",
+        description: "In your Shooting phase or the Fight phase, when you select this unit to shoot or fight, you can spend 1 Pain token to Empower this unit. While Empowered, weapons equipped by models in this unit (excluding blast pistols, blasters and dark lances) have the [LETHAL HITS] and [PRECISION] abilities.",
+      },
+      {
+        name: "Archon's Will",
+        description: "At the start of the first battle round, select one objective marker on the battlefield. Until the end of the battle, while this unit is within range of that objective marker, unless this unit is Battle-shocked, models in this unit have a 5+ invulnerable save and an Objective Control characteristic of 3.",
+      },
+    ],
+    ledBy: ["archon"],
+  },
+
+  {
     id: "grotesques",
     name: "Grotesques",
     faction: "drukhari",
@@ -288,13 +358,35 @@ export const drukhariUnits: Unit[] = [
     name: "Incubi",
     faction: "drukhari",
     category: "infantry",
-    points: 85,
+    points: 90,
+    modelCountOptions: [5, 10],
+    pointsByModelCount: { 5: 90, 10: 180 },
     defaultWargear: [
-      { id: "demiklaives-single-blade", name: "Demiklaives – single blade", image: "" },
-      { id: "demiklaives-dual-blades", name: "Demiklaives – dual blades", image: "" },
-      { id: "klaive", name: "Klaive", image: "" },
+      { id: "incubi-klaive", name: "Klaive", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-2", damage: "2" }] },
     ],
-    wargear: [],
+    wargear: [
+      { id: "incubi-demiklaives", name: "Demiklaives", image: "", countable: true, maxCountByModelCount: { 5: 5, 10: 10 }, profiles: [
+        { profileName: "single blade", range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "2" },
+        { profileName: "dual blades", range: "Melee", attacks: "6", skill: "3+", strength: "4", ap: "-2", damage: "1", keywords: ["TWIN-LINKED"] },
+      ]},
+    ],
+    notes: [
+      {
+        id: "incubi-shrine",
+        text: "Incubi Shrine Token: Once per battle for each Incubi Shrine token this unit has, you can change the result of one Hit roll or one Wound roll made for a Klaivex or Incubi model in this unit to an unmodified 6.\n\nDesigner's Note: Place an Incubi Shrine token next to the unit for each Incubi Shrine token it has, removing one each time this ability is used.",
+        checkbox: true,
+      },
+    ],
+    abilities: [
+      {
+        name: "Decapitating Strikes (Pain)",
+        description: "In the Fight phase, when you select this unit to fight, you can spend 1 Pain token to Empower this unit. While Empowered, each time a model in this unit makes a melee attack that targets an INFANTRY unit, that attack has the [DEVASTATING WOUNDS] ability.",
+      },
+      {
+        name: "Tormentors",
+        description: "At the start of the Fight phase, each enemy unit within Engagement Range of one or more units with this ability must take a Battle-shock test. Each time a model in this unit makes a melee attack that targets a Battle-shocked unit, add 1 to the Hit roll.",
+      },
+    ],
     ledBy: ["archon","drazhar"],
   },
 
@@ -303,12 +395,24 @@ export const drukhariUnits: Unit[] = [
     name: "Mandrakes",
     faction: "drukhari",
     category: "infantry",
-    points: 70,
+    points: 75,
+    modelCountOptions: [5, 10],
+    pointsByModelCount: { 5: 75, 10: 150 },
     defaultWargear: [
-      { id: "baleblast", name: "Baleblast", image: "" },
-      { id: "glimmersteel-blade", name: "Glimmersteel blade", image: "" },
+      { id: "mandrakes-baleblast", name: "Baleblast", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["ASSAULT", "DEVASTATING WOUNDS", "IGNORES COVER"] }] },
+      { id: "mandrakes-glimmersteel-blade", name: "Glimmersteel blade", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Fade Away (Pain)",
+        description: "At the end of your opponent's Fight phase, if this unit is not within Engagement Range of one or more enemy units, you can spend 1 Pain token to Empower this unit. Each time you do, remove this unit from the battlefield and place it into Strategic Reserves.",
+      },
+      {
+        name: "Shade Weavers",
+        description: "This unit cannot be targeted by ranged attacks unless the attacking model is within 18\".",
+      },
+    ],
     ledBy: [],
   },
 
@@ -318,19 +422,35 @@ export const drukhariUnits: Unit[] = [
     faction: "drukhari",
     category: "infantry",
     points: 130,
+    modelCountOptions: [5],
+    pointsByModelCount: { 5: 130 },
     defaultWargear: [
-      { id: "shardcarbine", name: "Shardcarbine", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "scourge-shardcarbine", name: "Shardcarbine", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT"] }] },
+      { id: "scourge-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "blast-pistol", name: "Blast pistol", image: "" },
-      { id: "blaster", name: "Blaster", image: "" },
-      { id: "dark-lance", name: "Dark lance", image: "" },
-      { id: "drukhari-haywire-blaster", name: "Drukhari haywire blaster", image: "" },
-      { id: "heat-lance", name: "Heat lance", image: "" },
-      { id: "shredder", name: "Shredder", image: "" },
-      { id: "splinter-cannon", name: "Splinter cannon", image: "" },
-      { id: "splinter-pistol", name: "Splinter pistol", image: "" },
+      { id: "scourge-blast-pistol", name: "Blast pistol", image: "", sergeantOnly: true, profiles: [{ range: '6"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "D3", keywords: ["PISTOL"] }] },
+      { id: "scourge-splinter-pistol", name: "Splinter pistol", image: "", sergeantOnly: true, profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "PISTOL"] }] },
+      { id: "scourge-power-weapon", name: "Power weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 3+"] }] },
+      { id: "scourge-blaster", name: "Blaster", image: "", countable: true, maxCountByModelCount: { 5: 5 }, profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D6+1", keywords: ["ASSAULT"] }] },
+      { id: "scourge-dark-lance", name: "Dark lance", image: "", countable: true, maxCountByModelCount: { 5: 5 }, profiles: [{ range: '36"', attacks: "1", skill: "4+", strength: "12", ap: "-3", damage: "D6+2", keywords: ["HEAVY"] }] },
+      { id: "scourge-haywire-blaster", name: "Haywire blaster", image: "", countable: true, maxCountByModelCount: { 5: 5 }, profiles: [{ range: '24"', attacks: "2", skill: "4+", strength: "3", ap: "-1", damage: "3", keywords: ["ANTI-VEHICLE 4+", "DEVASTATING WOUNDS", "HEAVY"] }] },
+      { id: "scourge-heat-lance", name: "Heat lance", image: "", countable: true, maxCountByModelCount: { 5: 5 }, profiles: [{ range: '18"', attacks: "1", skill: "4+", strength: "14", ap: "-4", damage: "D6", keywords: ["ASSAULT", "HEAVY", "MELTA 3"] }] },
+      { id: "scourge-shredder", name: "Shredder", image: "", countable: true, maxCountByModelCount: { 5: 5 }, profiles: [{ range: '18"', attacks: "D6", skill: "N/A", strength: "6", ap: "0", damage: "1", keywords: ["ASSAULT", "TORRENT"] }] },
+      { id: "scourge-splinter-cannon", name: "Splinter cannon", image: "", profiles: [{ range: '36"', attacks: "3", skill: "4+", strength: "3", ap: "-1", damage: "2", keywords: ["ANTI-INFANTRY 3+", "HEAVY", "SUSTAINED HITS 1"] }] },
+    ],
+    wargearGroups: [
+      ["scourge-blast-pistol", "scourge-splinter-pistol"],
+    ],
+    abilities: [
+      {
+        name: "Winged Strike (Pain)",
+        description: "In your Shooting phase, when you select this unit to shoot, you can spend 1 Pain token to Empower this unit. While Empowered, each time a model in this unit makes a ranged attack, you can re-roll the Hit roll.",
+      },
+      {
+        name: "Airborne Evasion",
+        description: "In your Shooting phase, after this unit has shot, if it is not within Engagement Range of one or more enemy units, it can make a Normal move of up to 6\". If it does, until the end of the turn, this unit is not eligible to declare a charge.",
+      },
     ],
     ledBy: [],
   },
@@ -360,12 +480,32 @@ export const drukhariUnits: Unit[] = [
     faction: "drukhari",
     category: "vehicle",
     points: 110,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 110 },
     defaultWargear: [
-      { id: "dark-lance", name: "Dark lance", image: "" },
-      { id: "bladevanes", name: "Bladevanes", image: "" },
+      { id: "ravager-bladevanes", name: "Bladevanes", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "-1", damage: "1" }] },
     ],
     wargear: [
-      { id: "disintegrator-cannon", name: "Disintegrator cannon", image: "" },
+      { id: "ravager-dark-lance", name: "Dark lance", image: "", profiles: [{ range: '36"', attacks: "1", skill: "3+", strength: "12", ap: "-3", damage: "D6+2" }] },
+      { id: "ravager-disintegrator-cannon", name: "Disintegrator cannon", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "6", ap: "-3", damage: "2" }] },
+    ],
+    wargearGroups: [
+      ["ravager-dark-lance", "ravager-disintegrator-cannon"],
+    ],
+    defaultSelectedWargear: ["ravager-dark-lance"],
+    abilities: [
+      {
+        name: "Agonising Suppression (Pain)",
+        description: "In your Shooting phase, when you select this model to shoot, you can spend 1 Pain token to Empower this model. While Empowered, after this model has shot, select one enemy unit hit by one or more of those attacks. Until the start of your next turn, that enemy unit is suppressed. While a unit is suppressed, each time a model in that unit makes an attack, subtract 1 from the Hit roll.",
+      },
+      {
+        name: "Eradicate the Foe",
+        description: "Each time this model makes an attack that targets an enemy unit that is at its Starting Strength, you can re-roll the Hit roll.",
+      },
+      {
+        name: "Damaged: 1-4 Wounds Remaining",
+        description: "While this model has 1-4 wounds remaining, each time it makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
     ledBy: [],
   },
@@ -501,13 +641,46 @@ export const drukhariUnits: Unit[] = [
     name: "Raider",
     faction: "drukhari",
     category: "transport",
-    points: 80,
+    points: 85,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 85 },
+    transportCapacity: 11,
     defaultWargear: [
-      { id: "dark-lance", name: "Dark lance", image: "" },
-      { id: "bladevanes", name: "Bladevanes", image: "" },
+      { id: "raider-bladevanes-and-chainsnares", name: "Bladevanes and chainsnares", image: "", profiles: [{ range: "Melee", attacks: "D3+3", skill: "4+", strength: "6", ap: "-1", damage: "1" }] },
     ],
     wargear: [
-      { id: "disintegrator-cannon", name: "Disintegrator cannon", image: "" },
+      { id: "raider-dark-lance", name: "Dark lance", image: "", profiles: [{ range: '36"', attacks: "1", skill: "3+", strength: "12", ap: "-3", damage: "D6+2" }] },
+      { id: "raider-disintegrator-cannon", name: "Disintegrator cannon", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "6", ap: "-3", damage: "2" }] },
+    ],
+    wargearGroups: [
+      ["raider-dark-lance", "raider-disintegrator-cannon"],
+    ],
+    defaultSelectedWargear: ["raider-dark-lance"],
+    abilities: [
+      {
+        name: "Splinter Racks (Pain)",
+        description: "In your Shooting phase, when you select this model to shoot, you can spend 1 Pain token to Empower this model. While Empowered, if one or more units are embarked within this model, each time this model makes an attack with a ranged weapon that has the [ANTI] ability, you can re-roll the Hit roll.",
+      },
+      {
+        name: "Vanguard of the Dark City",
+        description: "At the start of your Command phase, select one of the abilities in the Vanguard of the Dark City section for this model. Until the start of your next Command phase, this model has that ability.",
+      },
+      {
+        name: "Masters of the Shadowed Sky",
+        description: "At the end of your Command phase, if this model is within range of an objective marker you control, and if one or more KABALITE WARRIORS units are embarked within it, that objective marker remains under your control until your opponent's Level of Control over that objective marker is greater than yours at the end of a phase.",
+      },
+      {
+        name: "Speed of the Kill",
+        description: "Each time a WYCHES unit disembarks from this model (excluding Emergency Disembarkations), models in that WYCHES unit must be set up wholly within 6\" of this model.",
+      },
+      {
+        name: "Visions of Butchery",
+        description: "While one or more WRACKS units are embarked within this model, for each WRACKS model embarked within this model, add 1 to the Attacks characteristic of this model's bladevanes and chainsnares.",
+      },
+      {
+        name: "Aethersails",
+        description: "While one or more DRUKHARI units are embarked within this model, you can re-roll Advance and Charge rolls made for this model.",
+      },
     ],
     ledBy: [],
   },

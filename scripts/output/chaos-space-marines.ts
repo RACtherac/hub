@@ -1,4 +1,4 @@
-import type { Unit } from "../../../types/warhammer";
+import type { Unit } from "../../src/types/warhammer";
 
 export const chaosSpaceMarinesUnits: Unit[] = [
 

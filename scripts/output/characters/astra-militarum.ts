@@ -1,4 +1,4 @@
-import type { Character } from "../../../types/warhammer";
+import type { Character } from "../../../src/types/warhammer";
 
 export const astraMilitarumCharacters: Character[] = [
 
@@ -281,7 +281,7 @@ export const astraMilitarumCharacters: Character[] = [
     id: "lord-marshal-dreir",
     name: "Lord Marshal Dreir",
     faction: "astra-militarum",
-    image: "",
+    image: "/Warhammerimages/Astra militarium/Lord marshall drier.png",
     points: 100,
     canAttachTo: ["death-riders"],
     abilities: [
@@ -454,10 +454,20 @@ export const astraMilitarumCharacters: Character[] = [
     points: 55,
     canAttachTo: [],
     defaultWargear: [
-      { id: "ripper-pistol", name: "Ripper pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["PISTOL"] }] },
-      { id: "envenomed-blade", name: "Envenomed blade", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "-2", damage: "1", keywords: ["LETHAL HITS"] }] },
+      { id: "ripper-pistol", name: "Ripper pistol", image: "", profiles: [{ range: '12"', attacks: "3", skill: "2+", strength: "5", ap: "-1", damage: "2", keywords: ["ANTI-INFANTRY 2+", "PISTOL", "PRECISION"] }] },
+      { id: "envenomed-blade", name: "Envenomed blade", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-1", damage: "2", keywords: ["ANTI-INFANTRY 2+", "PRECISION"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "One-man Army",
+        description: "Once per turn, in your opponent's Shooting phase, when an enemy unit makes a ranged attack that targets a friendly REGIMENT unit within 3\" of this model, after that enemy unit has shot, this model can shoot as if it were your Shooting phase, but it must target only that enemy unit when doing so, and can only do so if that enemy unit is an eligible target.",
+      },
+      {
+        name: "Like Fighting a Shadow",
+        description: "In your Shooting phase, after this model has shot, if it is not within Engagement Range of one or more enemy units, it can make a Normal move. If it does, until the end of the turn, this model is not eligible to declare a charge.",
+      },
+    ],
   },
 
   {
@@ -483,10 +493,20 @@ export const astraMilitarumCharacters: Character[] = [
     points: 65,
     canAttachTo: ["kasrkin"],
     defaultWargear: [
-      { id: "duty-and-vengeance", name: "Duty and Vengeance", image: "", profiles: [{ range: '12"', attacks: "3", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["PISTOL"] }] },
-      { id: "power-weapon", name: "Power weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "duty-and-vengeance", name: "Duty and Vengeance", image: "", profiles: [{ range: '12"', attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "power-weapon", name: "Power weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-2", damage: "1" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Lord Castellan",
+        description: "While this model is leading a unit, that unit can be affected by up to two different Orders at the same time.",
+      },
+      {
+        name: "Tactical Genius",
+        description: "Once per battle round, one friendly REGIMENT unit within 12\" of this model can be targeted with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP.",
+      },
+    ],
   },
 
 ];

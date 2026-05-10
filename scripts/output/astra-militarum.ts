@@ -1,4 +1,4 @@
-import type { Unit } from "../../../types/warhammer";
+import type { Unit } from "../../src/types/warhammer";
 
 export const astraMilitarumUnits: Unit[] = [
 
@@ -30,6 +30,8 @@ export const astraMilitarumUnits: Unit[] = [
     points: 60,
     modelCountOptions: [5, 10],
     pointsByModelCount: { 5: 60, 10: 120 },
+    image5: "/Warhammerimages/Astra militarium/death riders5.png",
+    image10: "/Warhammerimages/Astra militarium/Death riders10.png",
     abilities: [
       {
         name: "Screening Line",
@@ -722,14 +724,97 @@ export const astraMilitarumUnits: Unit[] = [
     name: "Krieg Combat Engineers",
     faction: "astra-militarum",
     category: "infantry",
-    points: 70,
-    defaultWargear: [
-      { id: "autopistol", name: "Autopistol", image: "" },
-      { id: "trench-club", name: "Trench club", image: "" },
-    ],
+    modelCountOptions: [5, 10],
+    points: 60,
+    pointsByModelCount: { 5: 60, 10: 90 },
+    defaultWargear: [],
     wargear: [
-      { id: "flamer", name: "Flamer", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      {
+        id: "eng-autopistol",
+        name: "Autopistol",
+        image: "",
+        countable: true,
+        maxCountByModelCount: { 5: 5, 10: 10 },
+        profiles: [
+          { range: '12"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] },
+          { profileName: "Trench club", range: "Melee", attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1" },
+        ],
+      },
+      {
+        id: "eng-combat-shotgun",
+        name: "Combat shotgun",
+        image: "",
+        countable: true,
+        maxCountByModelCount: { 5: 5, 10: 10 },
+        profiles: [
+          { range: '12"', attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["ASSAULT"] },
+          { profileName: "Close combat weapon", range: "Melee", attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1" },
+        ],
+      },
+      {
+        id: "eng-flamer",
+        name: "Flamer",
+        image: "",
+        profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }],
+      },
+      {
+        id: "eng-remote-mine",
+        name: "Remote Mine",
+        image: "",
+        note: "Once per battle, at the start of your Shooting phase, you can select one enemy unit within 9\" of and visible to the bearer and roll one D6: on a 3+, that enemy unit suffers D3 mortal wounds, or 2D3 mortal wounds instead if it is a VEHICLE or FORTIFICATIONS unit. Designer's Note: Place a Remote Mine token next to the unit, removing it once this ability has been used.",
+      },
+      {
+        id: "eng-sgt-bolt-pistol",
+        name: "Bolt pistol",
+        image: "",
+        sergeantOnly: true,
+        profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }],
+      },
+      {
+        id: "eng-sgt-hand-flamer",
+        name: "Hand flamer",
+        image: "",
+        sergeantOnly: true,
+        profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }],
+      },
+      {
+        id: "eng-sgt-plasma-pistol",
+        name: "Plasma pistol",
+        image: "",
+        sergeantOnly: true,
+        profiles: [
+          { profileName: "Standard", range: '12"', attacks: "1", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+          { profileName: "Supercharge", range: '12"', attacks: "1", skill: "4+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+        ],
+      },
+      {
+        id: "eng-sgt-chainsword",
+        name: "Chainsword",
+        image: "",
+        sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "3", ap: "0", damage: "1" }],
+      },
+      {
+        id: "eng-sgt-power-weapon",
+        name: "Power weapon",
+        image: "",
+        sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "4", ap: "-2", damage: "1" }],
+      },
+    ],
+    wargearGroups: [
+      ["eng-sgt-bolt-pistol", "eng-sgt-hand-flamer", "eng-sgt-plasma-pistol"],
+      ["eng-sgt-chainsword", "eng-sgt-power-weapon"],
+    ],
+    sergeantOptionGroups: [
+      { label: "Watchmaster Ranged", ids: ["eng-sgt-bolt-pistol", "eng-sgt-hand-flamer", "eng-sgt-plasma-pistol"] },
+      { label: "Watchmaster Melee", ids: ["eng-sgt-chainsword", "eng-sgt-power-weapon"] },
+    ],
+    abilities: [
+      {
+        name: "Grenadiers",
+        description: "Once per turn, you can target this unit with the Grenade Stratagem for 0CP.",
+      },
     ],
     ledBy: ["commissar","krieg-command-squad","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer"],
   },
@@ -1663,6 +1748,7 @@ export const astraMilitarumUnits: Unit[] = [
     name: "Rogal Dorn Battle Tank",
     faction: "astra-militarum",
     category: "vehicle",
+    image: "/Warhammerimages/Astra militarium/Rogal dorn battle tank.png",
     points: 260,
     defaultWargear: [
       {

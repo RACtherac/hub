@@ -120,6 +120,7 @@ export const deathGuardUnits: Unit[] = [
     category: "infantry",
     points: 155,
     wargear: [],
+    ledBy: ["death-guard-chaos-lord-in-terminator-armour", "death-guard-sorcerer-in-terminator-armour", "lord-of-contagion", "lord-of-virulence", "typhus"],
   },
 
   {
@@ -201,6 +202,7 @@ export const deathGuardUnits: Unit[] = [
     category: "infantry",
     points: 110,
     wargear: [],
+    ledBy: ["death-guard-chaos-lord-in-terminator-armour", "death-guard-sorcerer-in-terminator-armour", "lord-of-contagion", "lord-of-virulence", "typhus"],
   },
 
   {

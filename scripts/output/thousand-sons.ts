@@ -1,4 +1,4 @@
-import type { Unit } from "../../../types/warhammer";
+import type { Unit } from "../../src/types/warhammer";
 
 export const thousandSonsUnits: Unit[] = [
 
@@ -44,16 +44,92 @@ export const thousandSonsUnits: Unit[] = [
     category: "battleline",
     points: 100,
     pointsByModelCount: { 5: 100, 10: 190 },
+    notes: [
+      {
+        id: "icon-of-flame",
+        text: "Icon of Flame",
+        checkbox: true,
+      },
+    ],
     defaultWargear: [
-      { id: "inferno-bolt-pistol", name: "Inferno bolt pistol", image: "" },
-      { id: "warpsmite", name: "Warpsmite", image: "" },
-      { id: "force-weapon", name: "Force weapon", image: "" },
+      {
+        id: "inferno-bolt-pistol",
+        name: "Inferno bolt pistol",
+        image: "",
+        profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }],
+      },
+      {
+        id: "warpsmite",
+        name: "Malefic Curse",
+        image: "",
+        profiles: [{ range: '24"', attacks: "3", skill: "3+", strength: "4", ap: "-3", damage: "1", keywords: ["ANTI-INFANTRY 4+", "DEVASTATING WOUNDS", "PSYCHIC"] }],
+      },
+      {
+        id: "force-weapon",
+        name: "Force weapon",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }],
+      },
+      {
+        id: "close-combat-weapon",
+        name: "Close combat weapon",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1" }],
+      },
     ],
     wargear: [
-      { id: "inferno-boltgun", name: "Inferno boltgun", image: "" },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
-      { id: "soulreaper-cannon", name: "Soulreaper cannon", image: "" },
-      { id: "warpflame-pistol", name: "Warpflame pistol", image: "" },
+      {
+        id: "inferno-boltgun",
+        name: "Inferno boltgun",
+        image: "",
+        countable: true,
+        maxCountByModelCount: { 5: 4, 10: 9 },
+        maxCountReducedByWargear: ["soulreaper-cannon"],
+        profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-2", damage: "1" }],
+      },
+      {
+        id: "warpflamer",
+        name: "Warpflamer",
+        image: "",
+        countable: true,
+        maxCountByModelCount: { 5: 4, 10: 9 },
+        linkedCounterId: "inferno-boltgun",
+        profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }],
+      },
+      {
+        id: "soulreaper-cannon",
+        name: "Soulreaper cannon",
+        image: "",
+        countable: true,
+        maxCountByModelCount: { 5: 1, 10: 2 },
+        profiles: [{ range: '24"', attacks: "6", skill: "3+", strength: "6", ap: "-2", damage: "1", keywords: ["DEVASTATING WOUNDS"] }],
+      },
+      {
+        id: "sgt-inferno-bolt-pistol",
+        name: "Inferno bolt pistol",
+        image: "",
+        sergeantOnly: true,
+        profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }],
+      },
+      {
+        id: "sgt-warpflame-pistol",
+        name: "Warpflame pistol",
+        image: "",
+        sergeantOnly: true,
+        profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "3", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }],
+      },
+    ],
+    wargearGroups: [["sgt-inferno-bolt-pistol", "sgt-warpflame-pistol"]],
+    abilities: [
+      {
+        name: "Bringers of Change",
+        description: "Each time a model in this unit makes a ranged attack, re-roll a Wound roll of 1. If that attack targets a unit within range of an objective marker you do not control, you can re-roll the Wound roll instead.",
+      },
+      {
+        name: "Icon of Flame",
+        description: "Ranged weapons equipped by models in this unit (excluding CHARACTERS) have the [IGNORES COVER] ability.",
+        requiresNote: "icon-of-flame",
+      },
     ],
     ledBy: ["ahriman","ahriman-on-disc-of-tzeentch","exalted-sorcerer","exalted-sorcerer-on-disc-of-tzeentch","infernal-master","thousand-sons-sorcerer"],
   },

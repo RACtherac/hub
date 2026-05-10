@@ -81,7 +81,9 @@ export interface WargearOption {
   countable?: boolean;
   maxCountByModelCount?: Record<number, number>;
   maxCountReducedByNotes?: string[];
+  maxCountReducedByWargear?: string[];
   linkedCounterId?: string;
+  wargearGroup?: string;
 }
 
 export interface Unit {
@@ -117,6 +119,7 @@ export interface Unit {
   ledBy: string[];
 
   transportCapacity?: number;
+  transportSlots?: number;
 }
 
 export interface Character {

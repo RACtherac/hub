@@ -1,4 +1,4 @@
-import type { Unit } from "../../../types/warhammer";
+import type { Unit } from "../../src/types/warhammer";
 
 export const adeptaSororitasUnits: Unit[] = [
 
@@ -333,15 +333,29 @@ export const adeptaSororitasUnits: Unit[] = [
     name: "Immolator",
     faction: "adepta-sororitas",
     category: "transport",
-    points: 125,
+    points: 115,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 115 },
     defaultWargear: [
-      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
-      { id: "immolation-flamers", name: "Immolation flamers", image: "" },
-      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
-      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+      { id: "immo-heavy-bolter", name: "Heavy bolter", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["SUSTAINED HITS 1"] }] },
+      { id: "immo-armoured-tracks", name: "Armoured tracks", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "twin-multi-melta", name: "Twin multi-melta", image: "" },
+      { id: "immo-immolation-flamers", name: "Immolation flamers", image: "", profiles: [{ range: '18"', attacks: "2D6", skill: "N/A", strength: "6", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "immo-twin-heavy-bolter", name: "Twin heavy bolter", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["SUSTAINED HITS 2", "TWIN-LINKED"] }] },
+      { id: "immo-twin-multi-melta", name: "Twin multi-melta", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2", "TWIN-LINKED"] }] },
+      { id: "immo-hunter-killer-missile", name: "Hunter-killer missile", image: "", profiles: [{ range: '48"', attacks: "1", skill: "2+", strength: "14", ap: "-3", damage: "D6", keywords: ["ONE SHOT"] }] },
+    ],
+    wargearGroups: [
+      ["immo-immolation-flamers", "immo-twin-heavy-bolter", "immo-twin-multi-melta"],
+    ],
+    defaultSelectedWargear: ["immo-immolation-flamers"],
+    transportCapacity: 6,
+    abilities: [
+      {
+        name: "Purge and Cleanse",
+        description: "In your Shooting phase, after this model has shot, select one enemy unit hit by one or more of those attacks. Until the end of the phase, that enemy unit cannot have the Benefit of Cover.",
+      },
     ],
     ledBy: [],
   },

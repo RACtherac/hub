@@ -43,7 +43,7 @@ export const tyranidsCharacters: Character[] = [
     image: "/Warhammerimages/Tyranids/old-one-eye.png",
     points: 95,
     faction: "tyranids",
-    canAttachTo: ["carnifex"],
+    canAttachTo: ["carnifexes"],
     wargear: [
       { id: "one-eye-claws", name: "Crushing Claws", image: "", points: 0 },
     ],

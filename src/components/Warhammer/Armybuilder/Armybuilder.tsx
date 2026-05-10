@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useWarhammerData } from "../../../hooks/useWarhammerData";
 import UnitCard from "../Unitcard/Unitcard";
 import CharacterCard from "../CharacterCard/CharacterCard";
-import type { UnitCategory, Faction, SuperFaction } from "../../../types/warhammer";
+import type { UnitCategory, Faction, SuperFaction, Unit } from "../../../types/warhammer";
 
 interface ArmyUnit {
   id: number;
@@ -350,7 +350,7 @@ export default function ArmyBuilder() {
   const factionCharacters = characters.filter((c) => c.faction === selectedFaction);
 
   const addUnit = (unitId: string) => {
-    const unit = units.find((u) => u.id === unitId);
+    const unit = units.find((u) => u.id === unitId && u.faction === selectedFaction);
     const defaultModelCount = unit?.modelCountOptions?.[0] ?? 5;
     setArmyUnits([
       ...armyUnits,
@@ -375,7 +375,7 @@ export default function ArmyBuilder() {
     setArmyCharacters(armyCharacters.map((c) => (c.id === id ? { ...c, ...updated } : c)));
 
   const calculateUnitPoints = (armyUnit: ArmyUnit) => {
-    const unit = units.find((u) => u.id === armyUnit.unitId);
+    const unit = units.find((u) => u.id === armyUnit.unitId && u.faction === selectedFaction);
     if (!unit) return 0;
     let total = unit.pointsByModelCount?.[armyUnit.modelCount] ?? unit.points;
     armyUnit.wargear.forEach((w) => {
@@ -942,7 +942,7 @@ export default function ArmyBuilder() {
                   <div style={{ marginTop: "8px", opacity: 0.6 }}>Press + ADD UNIT to begin mustering your forces</div>
                 </div>
               ) : armyUnits.map((armyUnit) => {
-                const selectedUnit = units.find((u) => u.id === armyUnit.unitId);
+                const selectedUnit = units.find((u) => u.id === armyUnit.unitId && u.faction === selectedFaction);
                 if (!selectedUnit) return null;
 
                 return (
@@ -963,7 +963,7 @@ export default function ArmyBuilder() {
                     noteWeaponSelections={armyUnit.noteWeaponSelections}
                     noteCounts={armyUnit.noteCounts}
                     transportedUnits={armyUnit.transportedUnits}
-                    deployedUnits={armyUnits.filter((u) => u.id !== armyUnit.id).map((u) => units.find((x) => x.id === u.unitId)!).filter(Boolean)}
+                    deployedUnits={armyUnits.filter((u) => u.id !== armyUnit.id).reduce<{ unit: Unit; modelCount: number; attachedCharacterCount: number }[]>((acc, u) => { const found = units.find((x) => x.id === u.unitId); if (found) acc.push({ unit: found, modelCount: u.modelCount, attachedCharacterCount: (u.attachedCharacter ? 1 : 0) + (u.attachedCharacter2 ? 1 : 0) }); return acc; }, [])}
                     points={calculateUnitPoints(armyUnit)}
                     onModelCountChange={(count) => updateUnit(armyUnit.id, { modelCount: count })}
                     onWargearChange={(gear) => updateUnit(armyUnit.id, { wargear: gear })}

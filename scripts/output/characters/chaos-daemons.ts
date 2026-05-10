@@ -1,4 +1,4 @@
-import type { Character } from "../../../types/warhammer";
+import type { Character } from "../../../src/types/warhammer";
 
 export const chaosDaemonsCharacters: Character[] = [
 
@@ -360,16 +360,38 @@ export const chaosDaemonsCharacters: Character[] = [
     faction: "chaos-daemons",
     image: "",
     points: 250,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 250 },
     canAttachTo: [],
     defaultWargear: [
-      { id: "plague-flail", name: "Plague flail", image: "", profiles: [{ range: "Melee", attacks: "D6+3", skill: "3+", strength: "10", ap: "-2", damage: "3" }] },
-      { id: "putrid-vomit", name: "Putrid vomit", image: "", profiles: [{ range: '9"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
-      { id: "bilesword-strike", name: "Bilesword – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "12", ap: "-3", damage: "D6+1" }] },
-      { id: "bilesword-sweep", name: "Bilesword – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "6", ap: "-1", damage: "2" }] },
+      { id: "guo-putrid-vomit", name: "Putrid vomit", image: "", profiles: [{ range: '12"', attacks: "D6+3", skill: "N/A", strength: "5", ap: "-2", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
     ],
     wargear: [
-      { id: "bileblade", name: "Bileblade", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "6", ap: "-1", damage: "D3" }] },
-      { id: "doomsday-bell", name: "Doomsday bell", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-1", damage: "2" }] },
+      { id: "guo-plague-flail", name: "Plague flail", image: "", wargearGroup: "guo-ranged-slot", profiles: [{ range: '6"', attacks: "D6+1", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "guo-bileblade", name: "Bileblade", image: "", wargearGroup: "guo-ranged-slot", profiles: [{ range: "Melee", attacks: "3", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["EXTRA ATTACKS", "LETHAL HITS"] }] },
+      { id: "guo-bilesword", name: "Bilesword", image: "", wargearGroup: "guo-melee-slot", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "6", skill: "2+", strength: "10", ap: "-2", damage: "D6+1", keywords: ["LETHAL HITS"] },
+        { profileName: "sweep", range: "Melee", attacks: "12", skill: "2+", strength: "7", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] },
+      ]},
+      { id: "guo-doomsday-bell", name: "Doomsday bell", image: "", wargearGroup: "guo-melee-slot", note: "Reverberating Summons: Each time a model is destroyed by this weapon, you can select one friendly PLAGUEBEARERS unit within 12\" of the bearer and return 1 destroyed Plaguebearer model to that unit.", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "7", ap: "-1", damage: "2", keywords: ["LETHAL HITS"] }] },
+    ],
+    abilities: [
+      {
+        name: "Greater Daemon of Nurgle (Aura)",
+        description: "While a friendly NURGLE LEGIONES DAEMONICA unit is within 6\" of this model, that unit is within your army's Shadow of Chaos.",
+      },
+      {
+        name: "Daemon Lord of Nurgle (Aura)",
+        description: "While a friendly NURGLE LEGIONES DAEMONICA unit is within 6\" of this model, add 1 to the Toughness characteristic of models in that unit.",
+      },
+      {
+        name: "Nurgle's Rot (Psychic)",
+        description: "At the end of your Movement phase, you can select one enemy unit within 12\" of this model. Until the start of your next Movement phase, subtract 1 from the Toughness characteristic of models in that unit.",
+      },
+      {
+        name: "Damaged: 1-7 Wounds Remaining",
+        description: "While this model has 1-7 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
   },
 
@@ -421,14 +443,34 @@ export const chaosDaemonsCharacters: Character[] = [
     name: "Kairos Fateweaver",
     faction: "chaos-daemons",
     image: "",
-    points: 270,
+    points: 295,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 295 },
     canAttachTo: [],
     defaultWargear: [
-      { id: "infernal-gateway-witchfire", name: "Infernal Gateway – witchfire", image: "", profiles: [{ range: '18"', attacks: "D6+3", skill: "3+", strength: "8", ap: "-2", damage: "D3", keywords: ["BLAST", "PSYCHIC"] }] },
-      { id: "infernal-gateway-focused-witchfire", name: "Infernal Gateway – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "D6+3", skill: "3+", strength: "10", ap: "-3", damage: "D6", keywords: ["BLAST", "PSYCHIC"] }] },
-      { id: "staff-of-tomorrow", name: "Staff of Tomorrow", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "8", ap: "-2", damage: "D3", keywords: ["PSYCHIC"] }] },
+      { id: "infernal-gateway-witchfire", name: "Infernal Gateway – witchfire", image: "", profiles: [{ range: '24"', attacks: "D6+3", skill: "2+", strength: "9", ap: "-2", damage: "D3", keywords: ["BLAST", "INDIRECT FIRE", "PSYCHIC"] }] },
+      { id: "infernal-gateway-focused-witchfire", name: "Infernal Gateway – focused witchfire", image: "", profiles: [{ range: '24"', attacks: "D3+6", skill: "2+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST", "HAZARDOUS", "INDIRECT FIRE", "PSYCHIC"] }] },
+      { id: "staff-of-tomorrow", name: "Staff of Tomorrow", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "8", ap: "-2", damage: "2D3", keywords: ["PSYCHIC"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Greater Daemon of Tzeentch (Aura)",
+        description: "While a friendly TZEENTCH LEGIONES DAEMONICA unit is within 6\" of this model, that unit is within your army's Shadow of Chaos.",
+      },
+      {
+        name: "One Head Looks Forward",
+        description: "At the end of your Command phase, if this model is on the battlefield, take a Leadership test for this model; if that test is passed, you gain 1CP.",
+      },
+      {
+        name: "One Head Looks Back (Aura)",
+        description: "Each time your opponent targets a unit from their army with a Stratagem, if that unit is within 12\" of this model, increase the cost of that use of that Stratagem by 1CP (this is not cumulative with any other rules that would increase the CP cost of that Stratagem).",
+      },
+      {
+        name: "Damaged: 1-7 Wounds Remaining",
+        description: "While this model has 1-7 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {
@@ -449,17 +491,38 @@ export const chaosDaemonsCharacters: Character[] = [
     name: "Keeper Of Secrets",
     faction: "chaos-daemons",
     image: "",
-    points: 290,
+    points: 240,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 240 },
     canAttachTo: [],
     defaultWargear: [
-      { id: "phantasmagoria-witchfire", name: "Phantasmagoria – witchfire", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "phantasmagoria-focused-witchfire", name: "Phantasmagoria – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "snapping-claws", name: "Snapping claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-2", damage: "D3" }] },
-      { id: "witstealer-sword", name: "Witstealer sword", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+      { id: "kos-phantasmagoria-witchfire", name: "Phantasmagoria – witchfire", image: "", profiles: [{ range: '18"', attacks: "6", skill: "2+", strength: "6", ap: "-2", damage: "1", keywords: ["DEVASTATING WOUNDS", "PSYCHIC"] }] },
+      { id: "kos-phantasmagoria-focused-witchfire", name: "Phantasmagoria – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "9", skill: "2+", strength: "6", ap: "-2", damage: "1", keywords: ["DEVASTATING WOUNDS", "HAZARDOUS", "PSYCHIC"] }] },
+      { id: "kos-snapping-claws", name: "Snapping claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "6", ap: "-2", damage: "3", keywords: ["DEVASTATING WOUNDS", "EXTRA ATTACKS"] }] },
+      { id: "kos-witstealer-sword", name: "Witstealer sword", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "8", ap: "-2", damage: "3" }] },
     ],
     wargear: [
-      { id: "living-whip", name: "Living whip", image: "", profiles: [{ range: '6"', attacks: "3", skill: "3+", strength: "6", ap: "-1", damage: "2" }] },
-      { id: "ritual-knife", name: "Ritual knife", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "5", ap: "-1", damage: "1" }] },
+      { id: "kos-living-whip", name: "Living whip", image: "", wargearGroup: "kos-optional-slot", profiles: [{ range: '12"', attacks: "6", skill: "2+", strength: "6", ap: "-1", damage: "2", keywords: ["ASSAULT"] }] },
+      { id: "kos-ritual-knife", name: "Ritual knife", image: "", wargearGroup: "kos-optional-slot", profiles: [{ range: "Melee", attacks: "3", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "kos-shining-aegis", name: "Shining aegis", image: "", wargearGroup: "kos-optional-slot", note: "Shining Aegis: The bearer has a Save characteristic of 3+." },
+    ],
+    abilities: [
+      {
+        name: "Greater Daemon of Slaanesh (Aura)",
+        description: "While a friendly SLAANESH LEGIONES DAEMONICA unit is within 6\" of this model, that unit is within your army's Shadow of Chaos.",
+      },
+      {
+        name: "Daemon Lord of Slaanesh (Aura)",
+        description: "While a friendly SLAANESH LEGIONES DAEMONICA unit is within 6\" of this model, improve the Armour Penetration of melee weapons in that unit by 1.",
+      },
+      {
+        name: "Mesmerising Form",
+        description: "Each time an attack targets this model, subtract 1 from the Hit roll.",
+      },
+      {
+        name: "Damaged: 1-6 Wounds Remaining",
+        description: "While this model has 1-6 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
   },
 
@@ -468,16 +531,36 @@ export const chaosDaemonsCharacters: Character[] = [
     name: "Lord Of Change",
     faction: "chaos-daemons",
     image: "",
-    points: 260,
+    points: 285,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 285 },
     canAttachTo: [],
     defaultWargear: [
-      { id: "bolt-of-change-witchfire", name: "Bolt of Change – witchfire", image: "", profiles: [{ range: '24"', attacks: "D6", skill: "3+", strength: "8", ap: "-2", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "bolt-of-change-focused-witchfire", name: "Bolt of Change – focused witchfire", image: "", profiles: [{ range: '24"', attacks: "D6", skill: "3+", strength: "10", ap: "-3", damage: "D6", keywords: ["PSYCHIC"] }] },
-      { id: "staff-of-tzeentch", name: "Staff of Tzeentch", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "8", ap: "-2", damage: "D3", keywords: ["PSYCHIC"] }] },
+      { id: "loc-bolt-of-change-witchfire", name: "Bolt of Change – witchfire", image: "", profiles: [{ range: '18"', attacks: "9", skill: "2+", strength: "9", ap: "-1", damage: "1", keywords: ["PSYCHIC"] }] },
+      { id: "loc-bolt-of-change-focused-witchfire", name: "Bolt of Change – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "9", skill: "2+", strength: "9", ap: "-2", damage: "3", keywords: ["HAZARDOUS", "PSYCHIC"] }] },
+      { id: "loc-staff-of-tzeentch", name: "Staff of Tzeentch", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "6", ap: "-1", damage: "3", keywords: ["PSYCHIC"] }] },
     ],
     wargear: [
-      { id: "rod-of-sorcery", name: "Rod of sorcery", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["PSYCHIC"] }] },
-      { id: "baleful-sword", name: "Baleful sword", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "10", ap: "-3", damage: "3" }] },
+      { id: "loc-rod-of-sorcery", name: "Rod of sorcery", image: "", wargearGroup: "loc-weapon-slot", profiles: [{ range: '18"', attacks: "6", skill: "2+", strength: "8", ap: "-1", damage: "2", keywords: ["PSYCHIC"] }] },
+      { id: "loc-baleful-sword", name: "Baleful sword", image: "", wargearGroup: "loc-weapon-slot", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "7", ap: "-2", damage: "3", keywords: ["EXTRA ATTACKS"] }] },
+    ],
+    abilities: [
+      {
+        name: "Greater Daemon of Tzeentch (Aura)",
+        description: "While a friendly TZEENTCH LEGIONES DAEMONICA unit is within 6\" of this model, that unit is within your army's Shadow of Chaos.",
+      },
+      {
+        name: "Daemon Lord of Tzeentch (Aura)",
+        description: "While a friendly TZEENTCH LEGIONES DAEMONICA unit is within 6\" of this model, each time a model in that unit makes a ranged attack, add 1 to the Strength characteristic of that attack.",
+      },
+      {
+        name: "Master of Magicks (Psychic)",
+        description: "In your Shooting phase, select one of the following abilities: [IGNORES COVER]; [LETHAL HITS]; [SUSTAINED HITS D3]. Until the end of the phase, this model's Bolt of Change has that ability.",
+      },
+      {
+        name: "Damaged: 1-7 Wounds Remaining",
+        description: "While this model has 1-7 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
   },
 
@@ -565,14 +648,30 @@ export const chaosDaemonsCharacters: Character[] = [
     name: "Rotigus",
     faction: "chaos-daemons",
     image: "",
-    points: 250,
+    points: 265,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 265 },
     canAttachTo: [],
     defaultWargear: [
-      { id: "streams-of-brackish-filth", name: "Streams of brackish filth", image: "", profiles: [{ range: '12"', attacks: "D6+3", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
-      { id: "gnarlrod-strike", name: "Gnarlrod – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "12", ap: "-3", damage: "D6+1" }] },
-      { id: "gnarlrod-sweep", name: "Gnarlrod – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "6", ap: "-1", damage: "2" }] },
+      { id: "streams-of-brackish-filth", name: "Streams of brackish filth", image: "", profiles: [{ range: '12"', attacks: "2D6", skill: "N/A", strength: "8", ap: "-2", damage: "1", keywords: ["DEVASTATING WOUNDS", "IGNORES COVER", "TORRENT"] }] },
+      { id: "gnarlrod-strike", name: "Gnarlrod – strike", image: "", profiles: [{ range: "Melee", attacks: "7", skill: "2+", strength: "10", ap: "-3", damage: "3", keywords: ["LETHAL HITS", "PSYCHIC"] }] },
+      { id: "gnarlrod-sweep", name: "Gnarlrod – sweep", image: "", profiles: [{ range: "Melee", attacks: "14", skill: "2+", strength: "8", ap: "-1", damage: "1", keywords: ["LETHAL HITS", "PSYCHIC"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Virulent Blessing (Psychic)",
+        description: "At the start of the Fight phase, you can select one enemy unit within 24\" and visible to this model. Until the end of the phase, each time an attack made by a PLAGUE LEGIONS model is allocated to a model in that unit, add 1 to the Damage characteristic of that attack.",
+      },
+      {
+        name: "Deluge of Nurgle (Aura)",
+        description: "While an enemy unit is within 6\" of this model, subtract 2 from the Move characteristic and subtract 1 from the Objective Control characteristic of models in that unit.",
+      },
+      {
+        name: "Damaged: 1-7 Wounds Remaining",
+        description: "While this model has 1-7 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {
@@ -595,16 +694,36 @@ export const chaosDaemonsCharacters: Character[] = [
     name: "Shalaxi Helbane",
     faction: "chaos-daemons",
     image: "",
-    points: 380,
+    points: 340,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 340 },
     canAttachTo: [],
     defaultWargear: [
-      { id: "lash-of-slaanesh", name: "Lash of Slaanesh", image: "", profiles: [{ range: '6"', attacks: "4", skill: "3+", strength: "6", ap: "-1", damage: "2" }] },
-      { id: "pavane-of-slaanesh-witchfire", name: "Pavane of Slaanesh – witchfire", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "pavane-of-slaanesh-focused-witchfire", name: "Pavane of Slaanesh – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "6", ap: "-2", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "snapping-claws", name: "Snapping claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-2", damage: "D3" }] },
-      { id: "soulpiercer", name: "Soulpiercer", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "10", ap: "-4", damage: "D6" }] },
+      { id: "lash-of-slaanesh", name: "Lash of Slaanesh", image: "", profiles: [{ range: '12"', attacks: "6", skill: "2+", strength: "6", ap: "-1", damage: "2", keywords: ["ASSAULT"] }] },
+      { id: "pavane-of-slaanesh-witchfire", name: "Pavane of Slaanesh – witchfire", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "2+", strength: "9", ap: "-1", damage: "D3", keywords: ["DEVASTATING WOUNDS", "PSYCHIC"] }] },
+      { id: "pavane-of-slaanesh-focused-witchfire", name: "Pavane of Slaanesh – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "2+", strength: "9", ap: "-2", damage: "D3", keywords: ["DEVASTATING WOUNDS", "HAZARDOUS", "PSYCHIC", "SUSTAINED HITS 3"] }] },
+      { id: "snapping-claws", name: "Snapping claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "6", ap: "-2", damage: "3", keywords: ["DEVASTATING WOUNDS", "EXTRA ATTACKS"] }] },
+      { id: "soulpiercer", name: "Soulpiercer", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "12", ap: "-3", damage: "D6+2", keywords: ["PRECISION"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Greater Daemon of Slaanesh (Aura)",
+        description: "While a friendly SLAANESH LEGIONES DAEMONICA unit is within 6\" of this model, that unit is within your army's Shadow of Chaos.",
+      },
+      {
+        name: "No Prey Can Evade",
+        description: "You can re-roll Advance and Charge rolls made for this model.",
+      },
+      {
+        name: "Monarch of the Hunt",
+        description: "At the start of the first battle round, select one enemy unit to be this model's quarry. Each time this model makes a melee attack that targets its quarry, you can re-roll the Hit roll and you can re-roll the Wound roll. Each time this model's quarry is destroyed, select one new enemy unit to be this model's quarry.",
+      },
+      {
+        name: "Damaged: 1-7 Wounds Remaining",
+        description: "While this model has 1-7 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {
@@ -657,9 +776,19 @@ export const chaosDaemonsCharacters: Character[] = [
     points: 55,
     canAttachTo: [],
     defaultWargear: [
-      { id: "marotter", name: "Marotter", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "-1", damage: "D3" }] },
+      { id: "marotter", name: "Marotter", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Jolly Gutpipes",
+        description: "While this model is leading a unit, add 1 to the Move characteristic of models in that unit and you can re-roll Advance rolls made for that unit.",
+      },
+      {
+        name: "Disease of Mirth (Aura)",
+        description: "At the start of the Fight phase, every enemy unit (excluding MONSTERS and VEHICLES) within 6\" of this model must take a Battle-shock test.",
+      },
+    ],
   },
 
   {

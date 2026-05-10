@@ -56,7 +56,7 @@ export const astraMilitarumCharacters: Character[] = [
     id: "lord-marshal-dreir",
     name: "Lord Marshal Dreir",
     faction: "astra-militarum",
-    image: "",
+    image: "/Warhammerimages/Astra militarium/Lord marshall drier.png",
     points: 100,
     canAttachTo: [],
     wargear: [],

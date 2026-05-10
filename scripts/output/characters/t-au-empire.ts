@@ -1,4 +1,4 @@
-import type { Character } from "../../../types/warhammer";
+import type { Character } from "../../../src/types/warhammer";
 
 export const tAuEmpireCharacters: Character[] = [
 
@@ -177,13 +177,26 @@ export const tAuEmpireCharacters: Character[] = [
     points: 80,
     canAttachTo: [],
     defaultWargear: [
-      { id: "kroot-long-gun", name: "Kroot long gun", image: "", profiles: [{ range: '36"', attacks: "2", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["HEAVY"] }] },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "5+", strength: "3", ap: "0", damage: "1" }] },
-      { id: "kalamandra-s-bite", name: "Kalamandra's bite", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "6", ap: "-2", damage: "2" }] },
+      { id: "kls-kroot-long-gun", name: "Kroot long gun", image: "", profiles: [{ range: '36"', attacks: "1", skill: "3+", strength: "6", ap: "-2", damage: "3", keywords: ["HEAVY", "PRECISION"] }] },
+      { id: "kls-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "kls-hunting-javelin", name: "Hunting javelin", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["LANCE"] }] },
+      { id: "kls-kalamandras-bite", name: "Kalamandra's bite", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "5", ap: "-1", damage: "1", keywords: ["EXTRA ATTACKS"] }] },
     ],
     wargear: [
-      { id: "blast-javelin", name: "Blast javelin", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["PISTOL"] }] },
-      { id: "hunting-javelin", name: "Hunting javelin", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "kls-blast-javelin", name: "Blast javelin", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "4+", strength: "10", ap: "-2", damage: "2", keywords: ["ASSAULT", "BLAST"] }] },
+    ],
+    wargearGroups: [
+      ["kls-kroot-long-gun", "kls-blast-javelin"],
+    ],
+    abilities: [
+      {
+        name: "Advanced Scouting",
+        description: "Each time this model makes a ranged attack that hits an enemy unit, until the end of the turn, each time another KROOT model from your army makes an attack that targets that enemy unit, you can re-roll the Hit roll.",
+      },
+      {
+        name: "Fire and Fade",
+        description: "In your Shooting phase, after this model has shot, if it is not within Engagement Range of one or more enemy units, it can make a Normal move of up to 6\". If it does, until the end of the turn, this model is not eligible to declare a charge.",
+      },
     ],
   },
 

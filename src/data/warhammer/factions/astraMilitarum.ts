@@ -91,6 +91,8 @@ export const astraMilitarumUnits: Unit[] = [
     faction: "astra-militarum",
     category: "infantry",
     points: 70,
+    image5: "/Warhammerimages/Astra militarium/death riders5.png",
+    image10: "/Warhammerimages/Astra militarium/Death riders10.png",
     wargear: [],
   },
 
@@ -693,6 +695,7 @@ export const astraMilitarumUnits: Unit[] = [
     name: "Rogal Dorn Battle Tank",
     faction: "astra-militarum",
     category: "vehicle",
+    image: "/Warhammerimages/Astra militarium/Rogal dorn battle tank.png",
     points: 260,
     defaultWargear: [
       {

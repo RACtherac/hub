@@ -1,4 +1,4 @@
-import type { Character } from "../../../types/warhammer";
+import type { Character } from "../../../src/types/warhammer";
 
 export const tyranidsCharacters: Character[] = [
 
@@ -33,9 +33,19 @@ export const tyranidsCharacters: Character[] = [
     points: 80,
     canAttachTo: [],
     defaultWargear: [
-      { id: "lictor-claws-and-talons", name: "Lictor claws and talons", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "6", ap: "-2", damage: "2", keywords: ["SUSTAINED HITS 2"] }] },
+      { id: "lictor-claws-and-talons", name: "Lictor claws and talons", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "7", ap: "-2", damage: "2", keywords: ["PRECISION"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Feeder Tendrils",
+        description: "Each time this model destroys an enemy CHARACTER model, you gain 1CP.",
+      },
+      {
+        name: "Fear of the Unseen (Aura)",
+        description: "While an enemy unit is within 6\" of this model, worsen the Leadership characteristic of models in that unit by 1. In addition, in the Battle-shock step of your opponent's Command phase, if such an enemy unit is below its Starting Strength, it must take a Battle-shock test.",
+      },
+    ],
   },
 
   {
@@ -88,7 +98,7 @@ export const tyranidsCharacters: Character[] = [
     faction: "tyranids",
     image: "/Warhammerimages/Tyranids/old-one-eye.png",
     points: 150,
-    canAttachTo: [],
+    canAttachTo: ["carnifexes"],
     defaultWargear: [
       { id: "old-one-eye-s-claws-and-talons-strike", name: "Old One Eye's claws and talons – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "10", ap: "-3", damage: "D6+1" }] },
       { id: "old-one-eye-s-claws-and-talons-sweep", name: "Old One Eye's claws and talons – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "6", ap: "-2", damage: "2" }] },
@@ -103,9 +113,19 @@ export const tyranidsCharacters: Character[] = [
     image: "",
     points: 80,
     canAttachTo: [],
+    abilities: [
+      {
+        name: "Parasitic Infection",
+        description: "Each time an INFANTRY model is destroyed by an attack made with this model's barbed ovipositor, after this model has finished making its attacks, you can add one new Ripper Swarms unit to your army consisting of D3 models and set it up within 3\" of this model. If you do, that RIPPER SWARMS unit can be set up within Engagement Range of the destroyed model's unit (but not within Engagement Range of any other enemy units).",
+      },
+      {
+        name: "It Itches!",
+        description: "At the start of the Fight phase, select one enemy unit within Engagement Range of this model. That enemy unit must take a Battle-shock test.",
+      },
+    ],
     defaultWargear: [
-      { id: "barbed-ovipositor", name: "Barbed ovipositor", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
-      { id: "clawed-limbs", name: "Clawed limbs", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "barbed-ovipositor", name: "Barbed ovipositor", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "2+", strength: "3", ap: "-2", damage: "3", keywords: ["ANTI-INFANTRY 3+", "EXTRA ATTACKS"] }] },
+      { id: "clawed-limbs", name: "Clawed limbs", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-1", damage: "1" }] },
     ],
     wargear: [],
   },
@@ -181,6 +201,16 @@ export const tyranidsCharacters: Character[] = [
     image: "",
     points: 85,
     canAttachTo: [],
+    abilities: [
+      {
+        name: "Alpha Warrior",
+        description: "While this model is leading a unit, weapons equipped by models in that unit have the [SUSTAINED HITS 1] ability.",
+      },
+      {
+        name: "Death Blow",
+        description: "If this model is destroyed by a melee attack, if it has not fought this phase, roll one D6: on a 4+, do not remove it from play. The destroyed model can fight after the attacking model's unit has finished making its attacks, and is then removed from play.",
+      },
+    ],
     defaultWargear: [
       { id: "prime-talons", name: "Prime talons", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "5", ap: "-2", damage: "2" }] },
     ],

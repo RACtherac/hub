@@ -31,7 +31,7 @@ interface Props {
   noteWeaponSelections: Record<string, string>;
   noteCounts: Record<string, number>;
   transportedUnits: string[];
-  deployedUnits: Unit[];
+  deployedUnits: { unit: Unit; modelCount: number; attachedCharacterCount: number }[];
   points: number;
   wargearCounts: Record<string, number>;
   onModelCountChange: (count: number) => void;
@@ -136,7 +136,7 @@ export default function UnitCard({
     !![...(selectedAttachedUnit?.defaultWargear ?? []), ...(selectedAttachedUnit?.wargear ?? [])].some((w) => w.profiles && w.profiles.length > 0);
 
   const isVehicle = unit.category === "vehicle" || unit.category === "monster";
-  const isTransport = unit.category === "transport";
+  const isTransport = unit.category === "transport" || (!!unit.transportCapacity && unit.category === "vehicle");
 
   const modelCountOptions = unit.modelCountOptions ?? [5, 10];
   const allowedCharacters = characters
@@ -290,6 +290,7 @@ export default function UnitCard({
       {statsOpen && (
         <StatsModal
           unit={unit}
+          modelCount={modelCount}
           selectedWargear={selectedWargear}
           wargearCounts={wargearCounts}
           checkedNotes={checkedNotes}
@@ -937,28 +938,37 @@ export default function UnitCard({
                   gap: "8px",
                 }}>
                   Embarked Units
-                  {unit.transportCapacity && (
-                    <span style={{
-                      color: transportedUnits.length >= unit.transportCapacity ? "#e84a4a" : "var(--accent)",
-                    }}>
-                      {transportedUnits.length}/{unit.transportCapacity}
-                    </span>
-                  )}
+                  {unit.transportCapacity && (() => {
+                    const usedSlots = transportedUnits.reduce((sum, id) => {
+                      const du = deployedUnits.find((d) => d.unit.id === id);
+                      return sum + (du ? du.modelCount * (du.unit.transportSlots ?? 1) + du.attachedCharacterCount : 0);
+                    }, 0);
+                    return (
+                      <span style={{ color: usedSlots >= unit.transportCapacity ? "#e84a4a" : "var(--accent)" }}>
+                        {usedSlots}/{unit.transportCapacity}
+                      </span>
+                    );
+                  })()}
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
                   {deployedUnits
-                    .filter((u) => u.category !== "vehicle" && u.category !== "transport" && u.category !== "monster")
-                    .map((u) => {
-                      const active = transportedUnits.includes(u.id);
-                      const atCapacity = !!unit.transportCapacity && transportedUnits.length >= unit.transportCapacity;
+                    .filter((d) => d.unit.category !== "vehicle" && d.unit.category !== "transport" && d.unit.category !== "monster")
+                    .map((d) => {
+                      const slotCost = d.modelCount * (d.unit.transportSlots ?? 1) + d.attachedCharacterCount;
+                      const active = transportedUnits.includes(d.unit.id);
+                      const usedSlots = transportedUnits.reduce((sum, id) => {
+                        const du = deployedUnits.find((x) => x.unit.id === id);
+                        return sum + (du ? du.modelCount * (du.unit.transportSlots ?? 1) + du.attachedCharacterCount : 0);
+                      }, 0);
+                      const atCapacity = !!unit.transportCapacity && usedSlots + (active ? 0 : slotCost) > unit.transportCapacity;
                       const disabled = !active && atCapacity;
                       return (
                         <button
-                          key={u.id}
+                          key={d.unit.id}
                           disabled={disabled}
                           onClick={() => {
-                            if (active) onTransportChange(transportedUnits.filter((x) => x !== u.id));
-                            else onTransportChange([...transportedUnits, u.id]);
+                            if (active) onTransportChange(transportedUnits.filter((x) => x !== d.unit.id));
+                            else onTransportChange([...transportedUnits, d.unit.id]);
                           }}
                           style={{
                             background: active ? "var(--accent-dim)" : "none",
@@ -973,7 +983,7 @@ export default function UnitCard({
                             transition: "all 0.15s",
                           }}
                         >
-                          {u.name}
+                          {d.unit.name} <span style={{ opacity: 0.6 }}>·{slotCost}</span>
                         </button>
                       );
                     })}

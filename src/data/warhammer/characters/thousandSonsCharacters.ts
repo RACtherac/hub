@@ -67,9 +67,37 @@ export const thousandSonsCharacters: Character[] = [
     name: "Magnus The Red",
     faction: "thousand-sons",
     image: "",
-    points: 465,
+    points: 435,
     canAttachTo: [],
+    defaultWargear: [
+      { id: "gaze-of-magnus", name: "Gaze of Magnus", image: "", profiles: [{ range: '24"', attacks: "3D3", skill: "2+", strength: "11", ap: "-2", damage: "3", keywords: ["DEVASTATING WOUNDS", "PSYCHIC"] }] },
+      { id: "tzeentch-s-firestorm", name: "Tzeentch's Firestorm", image: "", profiles: [{ range: '24"', attacks: "D6+3", skill: "2+", strength: "6", ap: "-1", damage: "2", keywords: ["BLAST", "IGNORES COVER", "PSYCHIC"] }] },
+      { id: "blade-of-magnus-strike", name: "Blade of Magnus – strike", image: "", profiles: [{ range: "Melee", attacks: "7", skill: "2+", strength: "16", ap: "-3", damage: "3", keywords: ["DEVASTATING WOUNDS", "PSYCHIC"] }] },
+      { id: "blade-of-magnus-sweep", name: "Blade of Magnus – sweep", image: "", profiles: [{ range: "Melee", attacks: "14", skill: "2+", strength: "8", ap: "-1", damage: "2", keywords: ["PSYCHIC"] }] },
+    ],
     wargear: [],
+    abilities: [
+      {
+        name: "Unearthly Power",
+        description: "At the start of the battle round, select one Crimson King ability. Until the start of the next battle round, this model has that ability.",
+      },
+      {
+        name: "Crimson King — Impossible Form (Psychic)",
+        description: "Each time an attack is made against this PSYKER (excluding Psychic Attacks), subtract 1 from the Damage characteristic of that attack.",
+      },
+      {
+        name: "Crimson King — Treason of Tzeentch (Psychic)",
+        description: "At the start of your opponent's Shooting phase, select one enemy unit within 24\" of this PSYKER. Until the end of the phase, ranged weapons equipped by models in that unit have the [HAZARDOUS] ability.",
+      },
+      {
+        name: "Crimson King — Time Flux (Aura, Psychic)",
+        description: "While a friendly THOUSAND SONS unit is within 6\" of this PSYKER, add 2\" to the Move characteristic of models in that unit.",
+      },
+      {
+        name: "Lord of the Planet of the Sorcerers (Psychic)",
+        description: "This model can attempt up to two Rituals per turn instead of one, and each time this model attempts a Ritual, add 2 to the Psychic test result.",
+      },
+    ],
   },
 
   {

@@ -1,4 +1,4 @@
-import type { Unit } from "../../../types/warhammer";
+import type { Unit } from "../../src/types/warhammer";
 
 export const spaceMarinesUnits: Unit[] = [
 
@@ -46,10 +46,10 @@ export const spaceMarinesUnits: Unit[] = [
     defaultWargear: [
       { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
       { id: "twin-bolt-rifle", name: "Twin bolt rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["TWIN-LINKED"] }] },
-      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }] },
+      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }] },
     ],
     wargear: [],
-    ledBy: ["chaplain-on-bike"],
+    ledBy: ["chaplain-on-bike","suboden-khan"],
   },
 
   {
@@ -57,8 +57,8 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Assault Intercessor Squad",
     faction: "space-marines",
     category: "battleline",
-    image5: "/Warhammerimages/SpaceMarine/assault-intercessor-powerfist.png",
-    image10: "/Warhammerimages/SpaceMarine/assault-intercessor10.png",
+    image5: "/Warhammerimages/SpaceMarine/Assault intersessor5.png",
+    image10: "/Warhammerimages/SpaceMarine/Assault-intersessor10.png",
     points: 75,
     pointsByModelCount: { 5: 75, 10: 150 },
     abilities: [
@@ -73,7 +73,7 @@ export const spaceMarinesUnits: Unit[] = [
         profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }],
       },
       {
-        id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png",
+        id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png",
         profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }],
       },
     ],
@@ -87,7 +87,7 @@ export const spaceMarinesUnits: Unit[] = [
         profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }],
       },
       {
-        id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png", sergeantOnly: true,
+        id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", sergeantOnly: true,
         profiles: [
           { profileName: "Standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
           { profileName: "Supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
@@ -98,7 +98,7 @@ export const spaceMarinesUnits: Unit[] = [
         profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }],
       },
       {
-        id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png", sergeantOnly: true,
+        id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", sergeantOnly: true,
         profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }],
       },
       {
@@ -106,7 +106,7 @@ export const spaceMarinesUnits: Unit[] = [
         profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }],
       },
     ],
-    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","librarian","lieutenant","techmarine","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","korsarro-khan","librarian","lieutenant","techmarine","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -147,7 +147,7 @@ export const spaceMarinesUnits: Unit[] = [
         text: "One out of five models' bolt rifle can be swapped for an Astartes grenade launcher",
         textByModelCount: { 10: "2 out of 10 models' bolt rifle can be swapped for an Astartes grenade launcher" },
         checkbox: true,
-        image: "/Warhammerimages/SpaceMarine/intercessor-grenade.png",
+        image: "/Warhammerimages/SpaceMarine/Intercessor-granade.png",
         triggersWargear: ["astartes-grenade-launcher"],
       },
     ],
@@ -206,14 +206,14 @@ export const spaceMarinesUnits: Unit[] = [
         profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }],
       },
       {
-        id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png", sergeantOnly: true,
+        id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", sergeantOnly: true,
         profiles: [
           { profileName: "Standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
           { profileName: "Supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
         ],
       },
       {
-        id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png", sergeantOnly: true,
+        id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png", sergeantOnly: true,
         profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }],
       },
       {
@@ -221,7 +221,7 @@ export const spaceMarinesUnits: Unit[] = [
         profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }],
       },
       {
-        id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png", sergeantOnly: true,
+        id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", sergeantOnly: true,
         profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-2", damage: "1" }],
       },
       {
@@ -229,7 +229,7 @@ export const spaceMarinesUnits: Unit[] = [
         profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }],
       },
     ],
-    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","librarian","lieutenant","techmarine","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","korsarro-khan","librarian","lieutenant","techmarine","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -244,7 +244,7 @@ export const spaceMarinesUnits: Unit[] = [
       { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
     ],
     wargear: [],
-    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","librarian","lieutenant","techmarine","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","korsarro-khan","librarian","lieutenant","techmarine","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -281,7 +281,7 @@ export const spaceMarinesUnits: Unit[] = [
         profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["TWIN-LINKED"] }],
       },
       {
-        id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/intercessor-grenade.png",
+        id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/Intercessor-granade.png",
         profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] }],
       },
     ],
@@ -307,7 +307,7 @@ export const spaceMarinesUnits: Unit[] = [
         text: "One out of five models' heavy bolt pistol can be swapped for a plasma pistol",
         textByModelCount: { 10: "2 out of 10 models' heavy bolt pistol can be swapped for a plasma pistol" },
         checkbox: true,
-        image: "/Warhammerimages/SpaceMarine/plasma-pistol.png",
+        image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png",
       },
     ],
     defaultWargear: [
@@ -316,7 +316,7 @@ export const spaceMarinesUnits: Unit[] = [
         profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }],
       },
       {
-        id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png",
+        id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png",
         profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }],
       },
     ],
@@ -330,14 +330,14 @@ export const spaceMarinesUnits: Unit[] = [
         profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }],
       },
       {
-        id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png", sergeantOnly: true,
+        id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", sergeantOnly: true,
         profiles: [
           { profileName: "Standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
           { profileName: "Supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
         ],
       },
       {
-        id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png", sergeantOnly: true,
+        id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", sergeantOnly: true,
         profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }],
       },
       {
@@ -369,13 +369,13 @@ export const spaceMarinesUnits: Unit[] = [
     wargear: [
       { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
       { id: "neo-volkite-pistol", name: "Neo-volkite pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "5", ap: "0", damage: "2", keywords: ["DEVASTATING WOUNDS", "PISTOL"] }] },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png", profiles: [
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", profiles: [
         { profileName: "Standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
         { profileName: "Supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
       ]},
     ],
     wargearGroups: [["heavy-bolt-pistol", "neo-volkite-pistol", "plasma-pistol"]],
-    ledBy: ["bladeguard-ancient","captain","chaplain","judiciar","lieutenant"],
+    ledBy: ["bladeguard-ancient","captain","chaplain","judiciar","korsarro-khan","lieutenant"],
   },
 
   {
@@ -418,6 +418,7 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Company Heroes",
     faction: "space-marines",
     category: "infantry",
+    image: "/Warhammerimages/SpaceMarine/Company Heros.png",
     points: 105,
     modelCountOptions: [4],
     notes: [
@@ -459,7 +460,7 @@ export const spaceMarinesUnits: Unit[] = [
       { id: "superkrak-rocket-launcher", name: "Superkrak rocket launcher", image: "" },
       { id: "vengor-launcher", name: "Vengor launcher", image: "" },
     ],
-    ledBy: ["ancient","apothecary","librarian","techmarine"],
+    ledBy: ["ancient","apothecary","korsarro-khan","librarian","techmarine"],
   },
 
   {
@@ -484,12 +485,12 @@ export const spaceMarinesUnits: Unit[] = [
       { id: "multi-melta", name: "Multi-melta", image: "" },
       { id: "plasma-cannon-standard", name: "Plasma cannon – standard", image: "" },
       { id: "plasma-cannon-supercharge", name: "Plasma cannon – supercharge", image: "" },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png" },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png" },
 
       { id: "storm-bolter", name: "Storm bolter", image: "" },
-      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png" },
+      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png" },
       { id: "power-fist", name: "Power fist", image: "" },
-      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png" },
+      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png" },
       { id: "thunder-hammer", name: "Thunder hammer", image: "" },
     ],
     ledBy: ["ancient","apothecary","librarian","techmarine"],
@@ -566,7 +567,7 @@ export const spaceMarinesUnits: Unit[] = [
       { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] }] },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] }] },
     ],
     ledBy: ["ancient","apothecary","captain","chaplain","librarian","lieutenant"],
   },
@@ -752,7 +753,7 @@ export const spaceMarinesUnits: Unit[] = [
       { id: "missile-launcher-frag", name: "Missile launcher – frag", image: "" },
       { id: "missile-launcher-krak", name: "Missile launcher – krak", image: "" },
       { id: "scout-sniper-rifle", name: "Scout sniper rifle", image: "" },
-      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png" },
+      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png" },
       { id: "combat-knife", name: "Combat knife", image: "" },
     ],
     ledBy: ["captain-in-phobos-armour"],
@@ -791,16 +792,16 @@ export const spaceMarinesUnits: Unit[] = [
       { id: "sternguard-heavy-bolter", name: "Sternguard heavy bolter", image: "" },
       { id: "combi-weapon-count", name: "Combi-weapon", image: "", countable: true, maxCountByModelCount: { 5: 4, 10: 9 }, maxCountReducedByNotes: ["heavy-weapon-swap", "heavy-weapon-swap-2"] },
       { id: "sternguard-bolt-rifle-count", name: "Sternguard bolt rifle", image: "", countable: true, maxCountByModelCount: { 5: 4, 10: 9 }, maxCountReducedByNotes: ["heavy-weapon-swap", "heavy-weapon-swap-2"], linkedCounterId: "combi-weapon-count" },
-      { id: "sgt-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/chainsword.png", sergeantOnly: true },
+      { id: "sgt-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png", sergeantOnly: true },
       { id: "sgt-combi-weapon", name: "Combi-weapon", image: "", sergeantOnly: true },
-      { id: "sgt-power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png", sergeantOnly: true },
+      { id: "sgt-power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", sergeantOnly: true },
       { id: "sgt-power-fist", name: "Power fist", image: "", sergeantOnly: true },
       { id: "sgt-chainsword-and-bolt-rifle", name: "Astartes chainsword + Sternguard bolt rifle", image: "", sergeantOnly: true },
       { id: "sgt-power-weapon-and-bolt-rifle", name: "Power weapon + Sternguard bolt rifle", image: "", sergeantOnly: true },
       { id: "sgt-power-fist-and-bolt-rifle", name: "Power fist + Sternguard bolt rifle", image: "", sergeantOnly: true },
     ],
     wargearGroups: [["sgt-chainsword", "sgt-combi-weapon", "sgt-power-weapon", "sgt-power-fist", "sgt-chainsword-and-bolt-rifle", "sgt-power-weapon-and-bolt-rifle", "sgt-power-fist-and-bolt-rifle"]],
-    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","librarian","lieutenant"],
+    ledBy: ["ancient","apothecary","captain","chaplain","judiciar","korsarro-khan","librarian","lieutenant"],
   },
 
   {
@@ -840,6 +841,7 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 180,
+    transportSlots: 2,
     defaultWargear: [
       { id: "thunder-hammer", name: "Thunder hammer", image: "" },
     ],
@@ -855,6 +857,7 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 170,
+    transportSlots: 2,
     pointsByModelCount: { 5: 170, 10: 340 },
     modelCountOptions: [5, 10],
     abilities: [
@@ -918,7 +921,7 @@ export const spaceMarinesUnits: Unit[] = [
       { id: "grav-pistol", name: "Grav-pistol", image: "" },
       { id: "hand-flamer", name: "Hand flamer", image: "" },
       { id: "inferno-pistol", name: "Inferno pistol", image: "" },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png" },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png" },
 
     ],
     ledBy: ["captain-with-jump-pack","chaplain-with-jump-pack"],
@@ -1060,7 +1063,7 @@ export const spaceMarinesUnits: Unit[] = [
       { id: "armoured-hull", name: "Armoured hull", image: "" },
     ],
     wargear: [
-      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/intercessor-grenade.png" },
+      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/Intercessor-granade.png" },
       { id: "icarus-rocket-pod", name: "Icarus rocket pod", image: "" },
       { id: "ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "" },
     ],
@@ -1127,7 +1130,7 @@ export const spaceMarinesUnits: Unit[] = [
     category: "vehicle",
     points: 125,
     defaultWargear: [
-      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/intercessor-grenade.png" },
+      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/Intercessor-granade.png" },
       { id: "heavy-bolter", name: "Heavy bolter", image: "" },
       { id: "incendium-cannon", name: "Incendium cannon", image: "" },
       { id: "twin-ironhail-heavy-stubber", name: "Twin ironhail heavy stubber", image: "" },
@@ -1213,7 +1216,7 @@ export const spaceMarinesUnits: Unit[] = [
     category: "vehicle",
     points: 115,
     defaultWargear: [
-      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/intercessor-grenade.png" },
+      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/Intercessor-granade.png" },
       { id: "onslaught-gatling-cannon", name: "Onslaught gatling cannon", image: "" },
       { id: "twin-ironhail-heavy-stubber", name: "Twin ironhail heavy stubber", image: "" },
       { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
@@ -1349,15 +1352,37 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 80,
+    transportCapacity: 7,
     defaultWargear: [
-      { id: "storm-bolter", name: "Storm bolter", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
+      { id: "impulsor-ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] }] },
+      { id: "impulsor-armoured-hull", name: "Armoured hull", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "bellicatus-missile-array-frag", name: "Bellicatus missile array – frag", image: "" },
-      { id: "bellicatus-missile-array-icarus", name: "Bellicatus missile array – Icarus", image: "" },
-      { id: "bellicatus-missile-array-krak", name: "Bellicatus missile array – krak", image: "" },
-      { id: "ironhail-skytalon-array", name: "Ironhail skytalon array", image: "" },
+      { id: "impulsor-storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
+      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] }] },
+      { id: "bellicatus-missile-array", name: "Bellicatus missile array", image: "", profiles: [
+        { profileName: "Frag", range: '48"', attacks: "D6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] },
+        { profileName: "Icarus", range: '48"', attacks: "D3", skill: "3+", strength: "8", ap: "-1", damage: "2", keywords: ["ANTI-FLY 2+"] },
+        { profileName: "Krak", range: '48"', attacks: "1", skill: "3+", strength: "8", ap: "-2", damage: "D6" },
+      ] },
+      { id: "ironhail-skytalon-array", name: "Ironhail skytalon array", image: "", profiles: [{ range: '36"', attacks: "8", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-FLY 4+", "SUSTAINED HITS 1"] }] },
+      { id: "orbital-comms-array", name: "Orbital comms array", image: "", note: "Orbital Comms Array (Aura): While a friendly ADEPTUS ASTARTES unit is within 6\" of the bearer, each time you target that unit with a Stratagem, roll one D6: on a 5+, you gain 1CP." },
+      { id: "shield-dome", name: "Shield dome", image: "", note: "Shield Dome: The bearer has a 5+ invulnerable save." },
+    ],
+    notes: [
+      { id: "impulsor-storm-bolter-note", text: "Storm bolter", checkbox: true, weaponId: "impulsor-storm-bolter", exclusiveWith: "fragstorm-grenade-launcher-note" },
+      { id: "fragstorm-grenade-launcher-note", text: "Fragstorm grenade launcher", checkbox: true, weaponId: "fragstorm-grenade-launcher", exclusiveWith: "impulsor-storm-bolter-note" },
+      { id: "bellicatus-missile-array-note", text: "Bellicatus missile array", checkbox: true, weaponId: "bellicatus-missile-array", noteGroup: "turret-option" },
+      { id: "ironhail-skytalon-array-note", text: "Ironhail skytalon array", checkbox: true, weaponId: "ironhail-skytalon-array", noteGroup: "turret-option" },
+      { id: "orbital-comms-array-note", text: "Orbital comms array", checkbox: true, weaponId: "orbital-comms-array", noteGroup: "turret-option" },
+      { id: "shield-dome-note", text: "Shield dome", checkbox: true, weaponId: "shield-dome", noteGroup: "turret-option" },
+    ],
+    noteGroupLimits: { "turret-option": 1 },
+    abilities: [
+      {
+        name: "Assault Vehicle",
+        description: "Units can disembark from this TRANSPORT after it has Advanced. Units that do so count as having made a Normal move, and cannot declare a charge that turn.",
+      },
     ],
     ledBy: [],
   },
@@ -1461,21 +1486,34 @@ export const spaceMarinesUnits: Unit[] = [
     id: "repulsor-executioner",
     name: "Repulsor Executioner",
     faction: "space-marines",
-    category: "transport",
-    points: 220,
+    category: "vehicle",
+    points: 230,
+    transportCapacity: 7,
     defaultWargear: [
-      { id: "heavy-onslaught-gatling-cannon", name: "Heavy onslaught gatling cannon", image: "" },
-      { id: "ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "" },
-      { id: "macro-plasma-incinerator-standard", name: "Macro plasma incinerator – standard", image: "" },
-      { id: "macro-plasma-incinerator-supercharge", name: "Macro plasma incinerator – supercharge", image: "" },
-      { id: "repulsor-executioner-defensive-array", name: "Repulsor Executioner defensive array", image: "" },
-      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
-      { id: "twin-icarus-ironhail-heavy-stubber", name: "Twin Icarus ironhail heavy stubber", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
+      { id: "heavy-onslaught-gatling-cannon", name: "Heavy onslaught gatling cannon", image: "", profiles: [{ range: '24"', attacks: "12", skill: "3+", strength: "6", ap: "0", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "repulsor-executioner-defensive-array", name: "Repulsor Executioner defensive array", image: "", profiles: [{ range: '24"', attacks: "10", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["SUSTAINED HITS 1", "TWIN-LINKED"] }] },
+      { id: "twin-icarus-ironhail-heavy-stubber", name: "Twin Icarus ironhail heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-FLY 4+", "RAPID FIRE 3", "TWIN-LINKED"] }] },
+      { id: "armoured-hull", name: "Armoured hull", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "4+", strength: "8", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "heavy-laser-destroyer", name: "Heavy laser destroyer", image: "" },
-      { id: "icarus-rocket-pod", name: "Icarus rocket pod", image: "" },
+      { id: "heavy-laser-destroyer", name: "Heavy laser destroyer", image: "", profiles: [{ range: '72"', attacks: "2", skill: "3+", strength: "16", ap: "-4", damage: "D6+4", keywords: ["HEAVY"] }] },
+      { id: "macro-plasma-incinerator", name: "Macro plasma incinerator", image: "", profiles: [
+        { profileName: "Standard", range: '36"', attacks: "D6+1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["BLAST"] },
+        { profileName: "Supercharge", range: '36"', attacks: "D6+1", skill: "3+", strength: "9", ap: "-4", damage: "3", keywords: ["BLAST", "HAZARDOUS"] },
+      ] },
+      { id: "ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] }] },
+      { id: "icarus-rocket-pod", name: "Icarus rocket pod", image: "", profiles: [{ range: '24"', attacks: "D3", skill: "3+", strength: "8", ap: "-1", damage: "2", keywords: ["ANTI-FLY 2+"] }] },
+    ],
+    notes: [
+      { id: "heavy-laser-destroyer-note", text: "Heavy laser destroyer", checkbox: true, weaponId: "heavy-laser-destroyer", exclusiveWith: "macro-plasma-incinerator-note", image: "/Warhammerimages/SpaceMarine/heavy-laser-destroyer.png" },
+      { id: "macro-plasma-incinerator-note", text: "Macro plasma incinerator", checkbox: true, weaponId: "macro-plasma-incinerator", exclusiveWith: "heavy-laser-destroyer-note", image: "/Warhammerimages/SpaceMarine/macro-plasma-incinerator.png" },
+      { id: "ironhail-heavy-stubber-note", text: "Ironhail heavy stubber", checkbox: true, weaponId: "ironhail-heavy-stubber", image: "/Warhammerimages/SpaceMarine/ironhail-heavy-stubber.png" },
+      { id: "icarus-rocket-pod-note", text: "Icarus rocket pod", checkbox: true, weaponId: "icarus-rocket-pod", image: "/Warhammerimages/SpaceMarine/icarus-rocket-pod.png" },
+    ],
+    abilities: [
+      { name: "Executioner", description: "Each time this model makes an attack that targets a unit that is Below Half-strength, add 1 to the Hit roll." },
+      { name: "DAMAGED: 1-5 WOUNDS REMAINING", description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll." },
     ],
     ledBy: [],
   },

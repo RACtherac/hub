@@ -99,6 +99,7 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Bladeguard Ancient",
     faction: "space-marines",
     category: "infantry",
+    image: "/Warhammerimages/SpaceMarine/BladeGuard Ancient.png",
     points: 45,
     wargear: [],
   },
@@ -424,6 +425,7 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 180,
+    transportSlots: 2,
     wargear: [],
   },
 
@@ -433,6 +435,7 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 170,
+    transportSlots: 2,
     wargear: [],
   },
 
@@ -692,9 +695,128 @@ export const spaceMarinesUnits: Unit[] = [
     id: "repulsor-executioner",
     name: "Repulsor Executioner",
     faction: "space-marines",
-    category: "transport",
-    points: 220,
-    wargear: [],
+    category: "vehicle",
+    points: 230,
+    transportCapacity: 7,
+    defaultWargear: [
+      {
+        id: "heavy-onslaught-gatling-cannon",
+        name: "Heavy onslaught gatling cannon",
+        image: "",
+        profiles: [
+          { range: "24\"", attacks: "12", skill: "3+", strength: "6", ap: "0", damage: "1", keywords: ["DEVASTATING WOUNDS"] },
+        ],
+      },
+      {
+        id: "repulsor-executioner-defensive-array",
+        name: "Repulsor Executioner defensive array",
+        image: "",
+        profiles: [
+          { range: "24\"", attacks: "10", skill: "3+", strength: "4", ap: "0", damage: "1" },
+        ],
+      },
+      {
+        id: "twin-heavy-bolter",
+        name: "Twin heavy bolter",
+        image: "",
+        profiles: [
+          { range: "36\"", attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["SUSTAINED HITS 1", "TWIN-LINKED"] },
+        ],
+      },
+      {
+        id: "twin-icarus-ironhail-heavy-stubber",
+        name: "Twin Icarus ironhail heavy stubber",
+        image: "",
+        profiles: [
+          { range: "36\"", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-FLY 4+", "RAPID FIRE 3", "TWIN-LINKED"] },
+        ],
+      },
+      {
+        id: "armoured-hull",
+        name: "Armoured hull",
+        image: "",
+        profiles: [
+          { range: "Melee", attacks: "6", skill: "4+", strength: "8", ap: "0", damage: "1" },
+        ],
+      },
+    ],
+    wargear: [
+      {
+        id: "heavy-laser-destroyer",
+        name: "Heavy laser destroyer",
+        image: "",
+        profiles: [
+          { range: "72\"", attacks: "2", skill: "3+", strength: "16", ap: "-4", damage: "D6+4", keywords: ["HEAVY"] },
+        ],
+      },
+      {
+        id: "macro-plasma-incinerator",
+        name: "Macro plasma incinerator",
+        image: "",
+        profiles: [
+          { profileName: "Standard", range: "36\"", attacks: "D6+1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["BLAST"] },
+          { profileName: "Supercharge", range: "36\"", attacks: "D6+1", skill: "3+", strength: "9", ap: "-4", damage: "3", keywords: ["BLAST", "HAZARDOUS"] },
+        ],
+      },
+      {
+        id: "ironhail-heavy-stubber",
+        name: "Ironhail heavy stubber",
+        image: "",
+        profiles: [
+          { range: "36\"", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] },
+        ],
+      },
+      {
+        id: "icarus-rocket-pod",
+        name: "Icarus rocket pod",
+        image: "",
+        profiles: [
+          { range: "24\"", attacks: "D3", skill: "3+", strength: "8", ap: "-1", damage: "2", keywords: ["ANTI-FLY 2+"] },
+        ],
+      },
+    ],
+    notes: [
+      {
+        id: "heavy-laser-destroyer-note",
+        text: "Heavy laser destroyer",
+        checkbox: true,
+        weaponId: "heavy-laser-destroyer",
+        exclusiveWith: "macro-plasma-incinerator-note",
+        image: "/Warhammerimages/SpaceMarine/heavy-laser-destroyer.png",
+      },
+      {
+        id: "macro-plasma-incinerator-note",
+        text: "Macro plasma incinerator",
+        checkbox: true,
+        weaponId: "macro-plasma-incinerator",
+        exclusiveWith: "heavy-laser-destroyer-note",
+        image: "/Warhammerimages/SpaceMarine/macro-plasma-incinerator.png",
+      },
+      {
+        id: "ironhail-heavy-stubber-note",
+        text: "Ironhail heavy stubber",
+        checkbox: true,
+        weaponId: "ironhail-heavy-stubber",
+        image: "/Warhammerimages/SpaceMarine/ironhail-heavy-stubber.png",
+      },
+      {
+        id: "icarus-rocket-pod-note",
+        text: "Icarus rocket pod",
+        checkbox: true,
+        weaponId: "icarus-rocket-pod",
+        image: "/Warhammerimages/SpaceMarine/icarus-rocket-pod.png",
+      },
+    ],
+    abilities: [
+      {
+        name: "Executioner",
+        description: "Each time this model makes an attack that targets a unit that is Below Half-strength, add 1 to the Hit roll.",
+      },
+      {
+        name: "DAMAGED: 1-5 WOUNDS REMAINING",
+        description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {

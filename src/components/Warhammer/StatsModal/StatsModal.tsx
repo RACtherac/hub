@@ -2,6 +2,7 @@ import type { Unit, Character, WargearOption } from "../../../types/warhammer";
 
 interface Props {
   unit: Unit;
+  modelCount: number;
   selectedWargear: string[];
   wargearCounts: Record<string, number>;
   checkedNotes: string[];
@@ -43,8 +44,6 @@ const TD_NAME_STYLE: React.CSSProperties = {
   fontWeight: 600,
 };
 
-const DASH_STYLE: React.CSSProperties = { ...TD_STYLE, color: "var(--text-dim)", opacity: 0.4 };
-
 function WeaponRows({ weapons, selected }: { weapons: WargearOption[]; selected?: string[] }) {
   const visible = (selected
     ? weapons.filter((w) => selected.includes(w.id))
@@ -56,7 +55,7 @@ function WeaponRows({ weapons, selected }: { weapons: WargearOption[]; selected?
   return (
     <>
       {visible.map((w) => {
-        return w.profiles.map((p, i) => (
+        return w.profiles!.map((p, i) => (
           <tr key={`${w.id}-${i}`}>
             <td style={TD_NAME_STYLE}>
               {w.name}
@@ -96,7 +95,7 @@ function WeaponRows({ weapons, selected }: { weapons: WargearOption[]; selected?
   );
 }
 
-export default function StatsModal({ unit, selectedWargear, wargearCounts, checkedNotes, noteWeaponSelections, character, characterWargear, character2, characterWargear2, attachedUnit, attachedUnitWargear, onClose }: Props) {
+export default function StatsModal({ unit, modelCount, selectedWargear, wargearCounts, checkedNotes, noteWeaponSelections, character, characterWargear, character2, characterWargear2, attachedUnit, attachedUnitWargear, onClose }: Props) {
   // Weapons from checked notes (single weaponId or selected from weaponIds dropdown)
   const noteWeaponIds = new Set(
     (unit.notes ?? [])
@@ -220,7 +219,14 @@ export default function StatsModal({ unit, selectedWargear, wargearCounts, check
                     {/* Unit default weapons (always equipped, minus any replaced by checked notes) */}
                     <WeaponRows weapons={unit.defaultWargear.filter((w) => !replacedDefaultIds.has(w.id))} />
                     {/* Unit selected optional weapons (toggled or countable with count > 0) */}
-                    <WeaponRows weapons={unit.wargear.filter((w) => w.countable ? (wargearCounts[w.id] ?? 0) > 0 : selectedWargear.includes(w.id))} />
+                    <WeaponRows weapons={unit.wargear.filter((w) => {
+                      if (!w.countable) return selectedWargear.includes(w.id);
+                      if (w.linkedCounterId) {
+                        const baseMax = w.maxCountByModelCount?.[modelCount] ?? 0;
+                        return (baseMax - (wargearCounts[w.linkedCounterId] ?? 0)) > 0;
+                      }
+                      return (wargearCounts[w.id] ?? 0) > 0;
+                    })} />
                     {/* Note-linked weapons (e.g. grenade launcher when checkbox is ticked) */}
                     <WeaponRows weapons={noteWeapons} />
                     {/* Character weapons */}

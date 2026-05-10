@@ -1,4 +1,4 @@
-import type { Character } from "../../../types/warhammer";
+import type { Character } from "../../../src/types/warhammer";
 
 export const drukhariCharacters: Character[] = [
 
@@ -7,14 +7,38 @@ export const drukhariCharacters: Character[] = [
     name: "Archon",
     faction: "drukhari",
     image: "",
-    points: 85,
-    canAttachTo: [],
+    points: 80,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 80 },
+    canAttachTo: ["hand-of-the-archon", "incubi", "kabalite-warriors"],
     defaultWargear: [
-      { id: "splinter-pistol", name: "Splinter pistol", image: "", profiles: [{ range: '12"', attacks: "2", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["PISTOL", "RAPID FIRE 1"] }] },
-      { id: "huskblade", name: "Huskblade", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "-2", damage: "2" }] },
+      { id: "archon-splinter-pistol", name: "Splinter pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "PISTOL"] }] },
+      { id: "archon-huskblade", name: "Huskblade", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "3", ap: "-2", damage: "3", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
     wargear: [
-      { id: "blast-pistol", name: "Blast pistol", image: "", profiles: [{ range: '6"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D3", keywords: ["MELTA 2", "PISTOL"] }] },
+      { id: "archon-blast-pistol", name: "Blast pistol", image: "", wargearGroup: "archon-ranged", profiles: [{ range: '6"', attacks: "1", skill: "2+", strength: "8", ap: "-3", damage: "D3", keywords: ["PISTOL"] }] },
+      { id: "archon-soul-trap", name: "Soul trap", image: "", wargearGroup: "archon-ranged", note: "Soul Trap: Add 1 to the Attacks and Strength characteristics of the bearer's melee weapons. The first time the bearer makes a melee attack that destroys an enemy model, after all the bearer's attacks have been resolved, until the end of the battle, add an additional 1 to the Attacks and Strength characteristics of the bearer's melee weapons." },
+      { id: "archon-agoniser", name: "Agoniser", image: "", wargearGroup: "archon-melee", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 3+"] }] },
+      { id: "archon-master-crafted-power-weapon", name: "Master-crafted power weapon", image: "", wargearGroup: "archon-melee", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "-2", damage: "2" }] },
+      { id: "archon-shadowfield", name: "Shadowfield", image: "", note: "Shadowfield: You cannot re-roll invulnerable saving throws made for the bearer. The first time an invulnerable saving throw made for the bearer is failed, until the end of the battle, the bearer has no invulnerable save." },
+    ],
+    wargearGroups: [
+      ["archon-splinter-pistol", "archon-blast-pistol", "archon-soul-trap"],
+      ["archon-huskblade", "archon-agoniser", "archon-master-crafted-power-weapon"],
+    ],
+    abilities: [
+      {
+        name: "Hatred Eternal (Pain)",
+        description: "In your Shooting phase or the Fight phase, when you select this model's unit to shoot or fight, you can spend 1 Pain token to Empower that unit. While that unit is Empowered, each time a model in that unit makes an attack, you can re-roll the Hit roll.",
+      },
+      {
+        name: "Overlord",
+        description: "Once per battle, at the start of any phase, you can select one friendly DRUKHARI unit that is Battle-shocked and within 12\" of this model. That unit is no longer Battle-shocked.",
+      },
+      {
+        name: "Devious Mastermind",
+        description: "Once per battle round, one model from your army with this ability can use it when its unit is targeted with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP.",
+      },
     ],
   },
 
@@ -38,12 +62,28 @@ export const drukhariCharacters: Character[] = [
     faction: "drukhari",
     image: "",
     points: 85,
-    canAttachTo: [],
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 85 },
+    canAttachTo: ["incubi"],
     defaultWargear: [
-      { id: "the-executioner-s-demiklaives-single-blade", name: "The Executioner's demiklaives – single blade", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-3", damage: "2" }] },
-      { id: "the-executioner-s-demiklaives-dual-blades", name: "The Executioner's demiklaives – dual blades", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "2+", strength: "4", ap: "-2", damage: "1" }] },
+      { id: "executioners-demiklaives-single-blade", name: "Executioner's demiklaives – single blade", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "6", ap: "-2", damage: "3", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "executioners-demiklaives-dual-blades", name: "Executioner's demiklaives – dual blades", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "2+", strength: "5", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Master of Blades (Pain)",
+        description: "In the Fight phase, when you select this model's unit to fight, you can spend 1 Pain token to Empower that unit. While that unit is Empowered, each time a model in that unit makes a melee attack, add 1 to the Wound roll.",
+      },
+      {
+        name: "Onslaught",
+        description: "While this model is leading a unit, each time a model in that unit makes a Pile-in or Consolidation move, it can move up to 6\" instead of up to 3\".",
+      },
+      {
+        name: "Silent Executioner",
+        description: "Each time this model makes an attack that targets a unit that is below its Starting Strength, you can re-roll the Hit roll. If that target is Below Half-strength, you can re-roll the Wound roll as well.",
+      },
+    ],
   },
 
   {

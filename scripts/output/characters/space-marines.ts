@@ -1,4 +1,4 @@
-import type { Character } from "../../../types/warhammer";
+import type { Character } from "../../../src/types/warhammer";
 
 export const spaceMarinesCharacters: Character[] = [
 
@@ -17,7 +17,7 @@ export const spaceMarinesCharacters: Character[] = [
     ],
     wargear: [
       { id: "bolt-rifle", name: "Bolt rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "HEAVY"] }] },
-      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "1" }] },
     ],
     wargearGroups: [
       ["bolt-rifle", "power-weapon"],
@@ -48,7 +48,7 @@ export const spaceMarinesCharacters: Character[] = [
     wargear: [
       { id: "chainfist", name: "Chainfist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["ANTI-VEHICLE 4+"] }] },
       { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
-      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/power-sword.png", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
       { id: "thunder-hammer", name: "Thunder hammer", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
       { id: "twin-lightning-claws", name: "Twin lightning claws", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "5", ap: "-2", damage: "1", keywords: ["TWIN-LINKED"] }] },
     ],
@@ -99,7 +99,7 @@ export const spaceMarinesCharacters: Character[] = [
     id: "bladeguard-ancient",
     name: "Bladeguard Ancient",
     faction: "space-marines",
-    image: "",
+    image: "/Warhammerimages/SpaceMarine/BladeGuard Ancient.png",
     points: 45,
     canAttachTo: [],
     allowsSecondCharacter: true,
@@ -148,9 +148,9 @@ export const spaceMarinesCharacters: Character[] = [
     wargear: [
       { id: "master-crafted-boltgun", name: "Master-crafted boltgun", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "4", ap: "0", damage: "2", keywords: ["RAPID FIRE 1"] }] },
       { id: "neo-volkite-pistol", name: "Neo-volkite pistol", image: "", profiles: [{ range: '12"', attacks: "2", skill: "2+", strength: "5", ap: "0", damage: "2", keywords: ["PISTOL"] }] },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/plasma-pistol.png", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
       { id: "master-crafted-power-weapon", name: "Master-crafted power weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
-      { id: "power-fist", name: "Power fist", image: "/Warhammerimages/SpaceMarine/assault-intercessor-powerfist.png", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
       { id: "relic-shield", name: "Relic Shield", image: "", note: "The bearer has a Wounds characteristic of 6." },
     ],
   },
@@ -538,6 +538,60 @@ export const spaceMarinesCharacters: Character[] = [
       { id: "servo-arm", name: "Servo-arm", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "8", ap: "-2", damage: "3" }] },
     ],
     wargear: [],
+  },
+
+  {
+    id: "suboden-khan",
+    name: "Suboden Khan",
+    faction: "space-marines",
+    image: "",
+    points: 115,
+    canAttachTo: ["outrider-squad"],
+    defaultWargear: [
+      { id: "suboden-heavy-bolt-pistol", name: "Heavy bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "onslaught-gatling-cannon", name: "Onslaught gatling cannon", image: "", profiles: [{ range: '24"', attacks: "8", skill: "2+", strength: "5", ap: "0", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "stormtooth-lance", name: "Stormtooth lance", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["ANTI-MONSTER 4+", "ANTI-VEHICLE 4+"] }] },
+      { id: "suboden-power-sword", name: "Power sword", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "2+", strength: "5", ap: "-2", damage: "1" }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Spear of Chogoris",
+        description: "This model's unit is eligible to shoot and declare a charge in a turn in which it Advanced or Fell Back. If that unit is already eligible to shoot and declare a charge in a turn in which it Advanced, add 1 to Advance and Charge rolls made for that unit instead.",
+      },
+      {
+        name: "Skilled Riders",
+        description: "Each time a model in this model's unit makes a Normal, Advance, Fall Back or Charge move, it can move horizontally through terrain features.",
+      },
+    ],
+  },
+
+  {
+    id: "korsarro-khan",
+    name: "Kor'sarro Khan",
+    faction: "space-marines",
+    image: "",
+    points: 60,
+    canAttachTo: ["assault-intercessor-squad", "bladeguard-veteran-squad", "company-heroes", "intercessor-squad", "sternguard-veteran-squad", "tactical-squad"],
+    defaultWargear: [
+      { id: "korsarro-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "moonfang", name: "Moonfang", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS", "PRECISION"] }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Inspiring Commander",
+        description: "If you include this model in your army, until the end of the battle, non-CHARACTER models in OUTRIDER SQUAD units from your army have an Objective Control characteristic of 3 while they are not Battle-shocked.",
+      },
+      {
+        name: "For the Khan!",
+        description: "While this model is leading a unit, ranged weapons equipped by models in that unit have the [ASSAULT] ability and melee weapons equipped by models in that unit have the [LANCE] ability.",
+      },
+      {
+        name: "Trophy Taker",
+        description: "Each time this model destroys an enemy CHARACTER model, you gain 1CP.",
+      },
+    ],
   },
 
 ];

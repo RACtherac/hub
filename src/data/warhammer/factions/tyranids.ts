@@ -64,7 +64,25 @@ export const tyranidsUnits: Unit[] = [
     faction: "tyranids",
     category: "infantry",
     points: 80,
+    defaultWargear: [
+      {
+        id: "lictor-claws-and-talons",
+        name: "Lictor claws and talons",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "7", ap: "-2", damage: "2", keywords: ["PRECISION"] }],
+      },
+    ],
     wargear: [],
+    abilities: [
+      {
+        name: "Feeder Tendrils",
+        description: "Each time this model destroys an enemy CHARACTER model, you gain 1CP.",
+      },
+      {
+        name: "Fear of the Unseen (Aura)",
+        description: "While an enemy unit is within 6\" of this model, worsen the Leadership characteristic of models in that unit by 1. In addition, in the Battle-shock step of your opponent's Command phase, if such an enemy unit is below its Starting Strength, it must take a Battle-shock test.",
+      },
+    ],
   },
 
   {
@@ -113,12 +131,51 @@ export const tyranidsUnits: Unit[] = [
   },
 
   {
+    id: "neurogaunts",
+    name: "Neurogaunts",
+    faction: "tyranids",
+    category: "infantry",
+    modelCountOptions: [11, 22],
+    pointsByModelCount: { 11: 45, 22: 90 },
+    defaultWargear: [
+      { id: "neurogaunts-chitinous-claws-and-teeth", name: "Chitinous claws and teeth", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Neurocytes",
+        description: "While this unit is within Synapse Range of a friendly TYRANIDS unit (excluding NEUROGAUNT units), it has the SYNAPSE keyword.",
+      },
+    ],
+    ledBy: [],
+  },
+
+  {
     id: "neurolictor",
     name: "Neurolictor",
     faction: "tyranids",
     category: "infantry",
-    points: 80,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 70 },
+    defaultWargear: [
+      { id: "neurolictor-piercing-claws-and-talons", name: "Piercing claws and talons", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "6", ap: "-2", damage: "1", keywords: ["PRECISION"] }] },
+    ],
     wargear: [],
+    abilities: [
+      {
+        name: "Feeder Tendrils",
+        description: "Each time this model destroys an enemy CHARACTER model, you gain 1CP.",
+      },
+      {
+        name: "Neural Disruption",
+        description: "In your Command phase, select one enemy unit within 12\" of this model. That unit must take a Battle-shock test.",
+      },
+      {
+        name: "Psychological Saboteur (Aura)",
+        description: "While an enemy unit is within 12\" of this model, if that unit is Battle-shocked: Each time a model in that unit makes an attack, subtract 1 from the Hit roll. Each time a friendly TYRANIDS model makes an attack that targets that unit, add 1 to the Wound roll.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
@@ -144,8 +201,19 @@ export const tyranidsUnits: Unit[] = [
     name: "Raveners",
     faction: "tyranids",
     category: "infantry",
-    points: 75,
+    modelCountOptions: [5],
+    pointsByModelCount: { 5: 125 },
+    defaultWargear: [
+      { id: "ravener-claws-and-talons", name: "Ravener claws and talons", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-2", damage: "2", keywords: ["TWIN-LINKED"] }] },
+    ],
     wargear: [],
+    abilities: [
+      {
+        name: "Death From Below",
+        description: "At the end of your opponent's turn, if this unit is not within Engagement Range of one or more enemy units, you can remove it from the battlefield and place it into Strategic Reserves.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
@@ -153,8 +221,20 @@ export const tyranidsUnits: Unit[] = [
     name: "Ripper Swarms",
     faction: "tyranids",
     category: "infantry",
-    points: 25,
+    modelCountOptions: [1, 2, 3],
+    pointsByModelCount: { 1: 25, 2: 40, 3: 50 },
+    defaultWargear: [
+      { id: "ripper-spinemaws", name: "Spinemaws", image: "", profiles: [{ range: '6"', attacks: "4", skill: "5+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "ripper-chitinous-claws-and-teeth", name: "Chitinous claws and teeth", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "5+", strength: "2", ap: "0", damage: "1", keywords: ["SUSTAINED HITS 1"] }] },
+    ],
     wargear: [],
+    abilities: [
+      {
+        name: "Chitinous Horrors (Aura)",
+        description: "While an enemy unit is within Engagement Range of this unit, halve the Objective Control characteristic of models in that enemy unit.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
@@ -171,8 +251,20 @@ export const tyranidsUnits: Unit[] = [
     name: "Spore Mines",
     faction: "tyranids",
     category: "infantry",
-    points: 55,
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 55, 6: 110 },
     wargear: [],
+    abilities: [
+      {
+        name: "Bio-minefield",
+        description: "Enemy units cannot start or end an Advance move within 6\" of this unit.",
+      },
+      {
+        name: "Floating Death",
+        description: "Each time this unit or an enemy unit ends a move, for each model in this unit that is within 3\" of one or more enemy units, select one of those enemy units. That model in this unit is destroyed, then roll one D6: on a 2-5, that enemy unit suffers 1 mortal wound; on a 6, that enemy unit suffers D3 mortal wounds.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
@@ -180,8 +272,19 @@ export const tyranidsUnits: Unit[] = [
     name: "Tyranid Warriors With Melee Bio Weapons",
     faction: "tyranids",
     category: "infantry",
-    points: 75,
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 75, 6: 150 },
+    defaultWargear: [
+      { id: "tyranid-warrior-claws-and-talons", name: "Tyranid Warrior claws and talons", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "5", ap: "-2", damage: "1", keywords: ["TWIN-LINKED"] }] },
+    ],
     wargear: [],
+    abilities: [
+      {
+        name: "Adaptive Instincts",
+        description: "At the start of the Fight phase, select one of the following:\n• Aggression Imperative: Until the end of the phase, each time a model in this unit makes an attack, re-roll a Hit roll of 1.\n• Bioregeneration: Until the end of the phase, each time a saving throw is made for a model in this unit, re-roll a saving throw of 1.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
@@ -189,8 +292,25 @@ export const tyranidsUnits: Unit[] = [
     name: "Tyranid Warriors With Ranged Bio Weapons",
     faction: "tyranids",
     category: "infantry",
-    points: 65,
-    wargear: [],
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 65, 6: 130 },
+    defaultWargear: [
+      { id: "tw-ranged-devourer", name: "Devourer", image: "", profiles: [{ range: '18"', attacks: "5", skill: "4+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "tw-ranged-warrior-claws-and-talons", name: "Tyranid Warrior claws and talons", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "5", ap: "-1", damage: "1" }] },
+    ],
+    wargear: [
+      { id: "tw-ranged-deathspitter", name: "Deathspitter", image: "", countable: true, maxCountByModelCount: { 3: 3, 6: 6 }, profiles: [{ range: '24"', attacks: "3", skill: "4+", strength: "5", ap: "-1", damage: "1" }] },
+      { id: "tw-ranged-spinefists", name: "Spinefists", image: "", countable: true, maxCountByModelCount: { 3: 3, 6: 6 }, profiles: [{ range: '12"', attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["ASSAULT", "PISTOL", "TWIN-LINKED"] }] },
+      { id: "tw-ranged-barbed-strangler", name: "Barbed strangler", image: "", countable: true, maxCountByModelCount: { 3: 1, 6: 2 }, profiles: [{ range: '36"', attacks: "D6+1", skill: "4+", strength: "6", ap: "-1", damage: "1", keywords: ["BLAST"] }] },
+      { id: "tw-ranged-venom-cannon", name: "Venom cannon", image: "", countable: true, maxCountByModelCount: { 3: 1, 6: 2 }, profiles: [{ range: '36"', attacks: "D3", skill: "4+", strength: "9", ap: "-2", damage: "2", keywords: ["BLAST"] }] },
+    ],
+    abilities: [
+      {
+        name: "Adaptable Predators",
+        description: "This unit is eligible to shoot and declare a charge in a turn in which it Fell Back.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
@@ -234,8 +354,23 @@ export const tyranidsUnits: Unit[] = [
     name: "Zoanthropes",
     faction: "tyranids",
     category: "infantry",
-    points: 100,
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 100, 6: 200 },
+    defaultWargear: [
+      { id: "zoanthrope-chitinous-claws-and-teeth", name: "Chitinous claws and teeth", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
+    ],
     wargear: [],
+    abilities: [
+      {
+        name: "Spirit Leech (Aura, Psychic)",
+        description: "While an enemy unit is within 6\" of this unit, if this unit contains a Neurothrope, each time that enemy unit fails a Battle-shock test, it suffers D3 mortal wounds and one model in this unit regains up to D3 lost wounds.",
+      },
+      {
+        name: "Warp Field (Aura, Psychic)",
+        description: "While a friendly TYRANIDS unit is within 6\" of this unit, models in that unit have a 6+ invulnerable save.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
@@ -252,8 +387,33 @@ export const tyranidsUnits: Unit[] = [
     name: "Carnifexes",
     faction: "tyranids",
     category: "monster",
-    points: 115,
-    wargear: [],
+    image: "/Warhammerimages/Tyranids/carnifex.png",
+    modelCountOptions: [1, 2],
+    pointsByModelCount: { 1: 90, 2: 180 },
+    defaultWargear: [
+      { id: "carnifex-extra-scything-talons", name: "Carnifex extra scything talons", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "9", ap: "-2", damage: "3", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "carnifex-scything-talons", name: "Carnifex scything talons", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "4+", strength: "9", ap: "-2", damage: "3" }] },
+      { id: "carnifex-chitinous-claws-and-teeth", name: "Chitinous claws and teeth", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
+    ],
+    wargear: [
+      { id: "carnifex-deathspitters", name: "Deathspitters with slimer maggots", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, wargearGroup: "carnifex-extra-slot", profiles: [{ range: '24"', attacks: "6", skill: "4+", strength: "7", ap: "-2", damage: "1" }] },
+      { id: "carnifex-devourers", name: "Devourers with brainleech worms", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, wargearGroup: "carnifex-extra-slot", profiles: [{ range: '18"', attacks: "12", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
+      { id: "carnifex-heavy-venom-cannon", name: "Heavy venom cannon", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, wargearGroup: "carnifex-extra-slot", profiles: [{ range: '36"', attacks: "D3", skill: "4+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST"] }] },
+      { id: "carnifex-stranglethorn-cannon", name: "Stranglethorn cannon", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, wargearGroup: "carnifex-extra-slot", profiles: [{ range: '36"', attacks: "D6+1", skill: "4+", strength: "7", ap: "-1", damage: "2", keywords: ["BLAST"] }] },
+      { id: "carnifex-crushing-claws", name: "Carnifex crushing claws", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, wargearGroup: "carnifex-extra-slot", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "12", ap: "-3", damage: "D6+1" }] },
+      { id: "carnifex-deathspitters-scything", name: "Deathspitters with slimer maggots", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, wargearGroup: "carnifex-scything-slot", profiles: [{ range: '24"', attacks: "6", skill: "4+", strength: "7", ap: "-2", damage: "1" }] },
+      { id: "carnifex-devourers-scything", name: "Devourers with brainleech worms", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, wargearGroup: "carnifex-scything-slot", profiles: [{ range: '18"', attacks: "12", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
+      { id: "carnifex-crushing-claws-scything", name: "Carnifex crushing claws", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, wargearGroup: "carnifex-scything-slot", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "12", ap: "-3", damage: "D6+1" }] },
+      { id: "carnifex-bio-plasma", name: "Bio-plasma", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, profiles: [{ range: '12"', attacks: "D3", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["ASSAULT", "BLAST"] }] },
+      { id: "carnifex-spine-banks", name: "Spine banks", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, profiles: [{ range: '6"', attacks: "5", skill: "4+", strength: "5", ap: "0", damage: "1", keywords: ["ASSAULT"] }] },
+    ],
+    abilities: [
+      {
+        name: "Blistering Assault",
+        description: "Each time an enemy unit is selected to shoot, after that unit has shot, if any models from this unit lost one or more wounds as a result of those attacks, this unit can make a Blistering Assault move. If it does, roll one D6, adding 2 to the result: each model in this unit can be moved a distance in inches up to the result, but this unit must finish that move as close as possible to the closest enemy unit. When doing so, those models can be moved within Engagement Range of that enemy unit. Each unit can only make one Blistering Assault move per phase.",
+      },
+    ],
+    ledBy: ["old-one-eye"],
   },
 
   {
@@ -369,8 +529,24 @@ export const tyranidsUnits: Unit[] = [
     name: "Psychophage",
     faction: "tyranids",
     category: "monster",
-    points: 95,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 110 },
+    defaultWargear: [
+      { id: "psychoclastic-torrent", name: "Psychoclastic torrent", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "6", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "talons-and-betentacled-maw", name: "Talons and betentacled maw", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "6", ap: "-2", damage: "2", keywords: ["ANTI-PSYKER 4+", "DEVASTATING WOUNDS"] }] },
+    ],
     wargear: [],
+    abilities: [
+      {
+        name: "Bio-stimulus",
+        description: "In your Shooting phase, after this model has shot, select one enemy unit hit by one or more of those attacks. Until the end of the turn, each time a friendly TYRANIDS unit makes a melee attack that targets that enemy unit, improve the Armour Penetration characteristic of that attack by 1. The same enemy unit can only be affected by this ability once per turn.",
+      },
+      {
+        name: "Feeding Frenzy",
+        description: "Each time this model makes a melee attack that targets a unit that is below its Starting Strength, add 1 to the Hit roll. If that target is also Below Half-strength, add 1 to the Wound roll as well.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
