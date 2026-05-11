@@ -169,6 +169,31 @@
   transform: translateY(-1px);
 }
 
+.pt-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.pt-io-btn {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: none;
+  border: 1px solid var(--border-2);
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.pt-io-btn:hover {
+  color: var(--text);
+  border-color: var(--text-dim);
+}
+
 /* ── Empty state ── */
 .pt-empty {
   flex: 1;

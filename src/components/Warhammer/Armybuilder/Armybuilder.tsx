@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWarhammerData } from "../../../hooks/useWarhammerData";
 import UnitCard from "../Unitcard/Unitcard";
@@ -27,6 +27,31 @@ interface ArmyCharacter {
   id: number;
   characterId: string;
   wargear: string[];
+}
+
+interface ArmySave {
+  id: string;
+  faction: Faction;
+  name: string;
+  armyUnits: ArmyUnit[];
+  armyCharacters: ArmyCharacter[];
+  savedAt: string;
+  totalPoints: number;
+}
+
+const SAVES_KEY = "army-builder-saves";
+
+function readAllSaves(): ArmySave[] {
+  try { return JSON.parse(localStorage.getItem(SAVES_KEY) || "[]"); }
+  catch { return []; }
+}
+
+function writeSaves(saves: ArmySave[]) {
+  localStorage.setItem(SAVES_KEY, JSON.stringify(saves));
+}
+
+function getSavesForFaction(faction: Faction): ArmySave[] {
+  return readAllSaves().filter((s) => s.faction === faction);
 }
 
 const SUPERFACTIONS: Record<SuperFaction, Faction[]> = {
@@ -328,6 +353,11 @@ export default function ArmyBuilder() {
   const [openSuperFaction, setOpenSuperFaction] = useState<SuperFaction | null>(null);
   const [showStartScreen, setShowStartScreen] = useState(true);
   const navRef = useRef<HTMLDivElement>(null);
+  const importFileRef = useRef<HTMLInputElement>(null);
+  const [saveFlash, setSaveFlash] = useState(false);
+  const [saveTick, setSaveTick] = useState(0);
+  const [armyName, setArmyName] = useState("Untitled Army");
+  const factionSaves = useMemo(() => getSavesForFaction(selectedFaction), [selectedFaction, saveTick]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -433,6 +463,67 @@ export default function ArmyBuilder() {
   const totalPoints =
     armyUnits.reduce((sum, u) => sum + calculateUnitPoints(u), 0) +
     armyCharacters.reduce((sum, c) => sum + calculateCharacterPoints(c), 0);
+
+  function saveArmy() {
+    const all = readAllSaves();
+    const existingIdx = all.findIndex((s) => s.faction === selectedFaction && s.name === armyName);
+    const save: ArmySave = {
+      id: existingIdx >= 0 ? all[existingIdx].id : crypto.randomUUID(),
+      faction: selectedFaction,
+      name: armyName,
+      armyUnits,
+      armyCharacters,
+      savedAt: new Date().toISOString(),
+      totalPoints,
+    };
+    if (existingIdx >= 0) { all[existingIdx] = save; } else { all.push(save); }
+    writeSaves(all);
+    setSaveFlash(true);
+    setSaveTick((t) => t + 1);
+    setTimeout(() => setSaveFlash(false), 1500);
+  }
+
+  function deleteSave(id: string) {
+    writeSaves(readAllSaves().filter((s) => s.id !== id));
+    setSaveTick((t) => t + 1);
+  }
+
+  function exportArmy() {
+    const data = {
+      faction: selectedFaction,
+      factionLabel: FACTION_LABELS[selectedFaction],
+      name: armyName,
+      totalPoints,
+      exportedAt: new Date().toISOString(),
+      armyUnits,
+      armyCharacters,
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${FACTION_LABELS[selectedFaction].replace(/[\s']+/g, "-").toLowerCase()}-army.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importArmy(file: File) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        if (!data.armyUnits || !data.armyCharacters) { alert("Invalid army file."); return; }
+        if (data.faction) setSelectedFaction(data.faction);
+        setArmyUnits(data.armyUnits);
+        setArmyCharacters(data.armyCharacters);
+        setArmyName(data.name ?? data.factionLabel ?? "Imported Army");
+        setShowStartScreen(false);
+      } catch {
+        alert("Could not read army file.");
+      }
+    };
+    reader.readAsText(file);
+  }
 
   if (loading) return (
     <div style={{ ...s.page, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -577,8 +668,49 @@ export default function ArmyBuilder() {
           </div>
         </div>
 
-        {/* Begin + selected faction */}
+        {/* Begin + saved armies */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "14px" }}>
+          {factionSaves.length > 0 && (
+            <div style={{ width: "100%", maxWidth: "480px", marginBottom: "4px" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.2em", color: "var(--accent)", textTransform: "uppercase", marginBottom: "10px", textAlign: "left" }}>
+                // Saved Armies
+              </div>
+              {factionSaves.map((save) => (
+                <div key={save.id} style={{
+                  border: "1px solid var(--border-2)",
+                  background: "rgba(232,197,71,0.03)",
+                  padding: "10px 16px",
+                  marginBottom: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                }}>
+                  <div style={{ flex: 1, textAlign: "left" }}>
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text)", marginBottom: "2px" }}>{save.name}</div>
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-dim)" }}>
+                      {save.totalPoints} pts · {new Date(save.savedAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                  <button
+                    style={{ padding: "6px 16px", background: "none", border: "1px solid var(--accent)", color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer", transition: "all 0.15s", whiteSpace: "nowrap" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "var(--accent-dim)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "none"; }}
+                    onClick={() => { setArmyUnits(save.armyUnits); setArmyCharacters(save.armyCharacters); setArmyName(save.name); setShowStartScreen(false); }}
+                  >
+                    Resume →
+                  </button>
+                  <button
+                    style={{ padding: "6px 10px", background: "none", border: "1px solid var(--border-2)", color: "var(--text-dim)", fontFamily: "var(--font-mono)", fontSize: "11px", cursor: "pointer", transition: "all 0.15s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#c04040"; e.currentTarget.style.color = "#c04040"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border-2)"; e.currentTarget.style.color = "var(--text-dim)"; }}
+                    onClick={() => deleteSave(save.id)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           <button
             style={{
               padding: "14px 56px",
@@ -595,9 +727,9 @@ export default function ArmyBuilder() {
             }}
             onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
-            onClick={() => setShowStartScreen(false)}
+            onClick={() => { setArmyName("Untitled Army"); setShowStartScreen(false); }}
           >
-            Begin Mustering
+            New Army
           </button>
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.15em", color: "var(--text-dim)" }}>
             FACTION // <span style={{ color: "var(--accent)" }}>{FACTION_LABELS[selectedFaction].toUpperCase()}</span>
@@ -703,10 +835,75 @@ export default function ArmyBuilder() {
         </nav>
 
         <div style={s.pointsDisplay}>
+          <input
+            value={armyName}
+            onChange={(e) => setArmyName(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "none",
+              border: "1px solid transparent",
+              borderBottom: "1px solid var(--border-2)",
+              color: "var(--text)",
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              letterSpacing: "0.08em",
+              padding: "4px 6px",
+              width: "160px",
+              outline: "none",
+              transition: "border-color 0.15s",
+            }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.borderBottomColor = "var(--accent)"; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = "transparent"; e.currentTarget.style.borderBottomColor = "var(--border-2)"; }}
+          />
           <div>
             <div style={s.pointsLabel}>Army Strength</div>
             <div style={s.pointsValue}>{totalPoints} <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>pts</span></div>
           </div>
+          <button
+            style={{
+              ...s.backBtn,
+              border: `1px solid ${saveFlash ? "var(--accent)" : "var(--border-2)"}`,
+              borderRadius: "3px",
+              padding: "6px 14px",
+              fontSize: "11px",
+              color: saveFlash ? "var(--accent)" : "var(--text-dim)",
+              transition: "all 0.2s",
+            }}
+            onClick={(e) => { e.stopPropagation(); saveArmy(); }}
+          >
+            {saveFlash ? "SAVED ✓" : "Save"}
+          </button>
+          <button
+            style={{
+              ...s.backBtn,
+              border: "1px solid var(--border-2)",
+              borderRadius: "3px",
+              padding: "6px 14px",
+              fontSize: "11px",
+            }}
+            onClick={(e) => { e.stopPropagation(); exportArmy(); }}
+          >
+            Export
+          </button>
+          <input
+            ref={importFileRef}
+            type="file"
+            accept=".json"
+            style={{ display: "none" }}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) importArmy(f); e.target.value = ""; }}
+          />
+          <button
+            style={{
+              ...s.backBtn,
+              border: "1px solid var(--border-2)",
+              borderRadius: "3px",
+              padding: "6px 14px",
+              fontSize: "11px",
+            }}
+            onClick={(e) => { e.stopPropagation(); importFileRef.current?.click(); }}
+          >
+            Import
+          </button>
           <button
             style={{
               ...s.backBtn,
