@@ -118,6 +118,16 @@ function DetailView({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  function exportRecord() {
+    const data = { version: 1, exportedAt: new Date().toISOString(), records: [record] };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${(record.name || "miniature").replace(/\s+/g, "-").toLowerCase()}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
   const collections = record.collections
     .map((c) => ({
       ...c,
@@ -134,6 +144,9 @@ function DetailView({
         <div className="pt-detail-actions">
           <button className="pt-edit-btn" onClick={onEdit}>
             edit
+          </button>
+          <button className="pt-io-btn" onClick={exportRecord}>
+            export ↓
           </button>
           <button className="pt-delete-btn" onClick={onDelete}>
             delete
@@ -483,6 +496,37 @@ export default function PaintTracker() {
   const [records, setRecords] = useState<MiniatureRecord[]>(loadRecords);
   const [view, setView] = useState<View>({ type: "gallery" });
   const [searchQuery, setSearchQuery] = useState("");
+  const importRef = useRef<HTMLInputElement>(null);
+
+  function exportAllRecords() {
+    const data = { version: 1, exportedAt: new Date().toISOString(), records };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `paint-tracker-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importRecords(file: File) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        const incoming: MiniatureRecord[] = data.records ?? data;
+        if (!Array.isArray(incoming)) { alert("Invalid backup file."); return; }
+        setRecords((prev) => {
+          const existingIds = new Set(prev.map((r) => r.id));
+          const newOnes = incoming.filter((r) => !existingIds.has(r.id));
+          return [...prev, ...newOnes];
+        });
+      } catch {
+        alert("Could not read backup file.");
+      }
+    };
+    reader.readAsText(file);
+  }
 
   useEffect(() => {
     saveRecords(records);
@@ -550,12 +594,23 @@ export default function PaintTracker() {
                 <button className="pt-search-clear" onClick={() => setSearchQuery("")}>×</button>
               )}
             </div>
-            <button
-              className="pt-new-btn"
-              onClick={() => setView({ type: "editor", id: null })}
-            >
-              + New Miniature
-            </button>
+            <div className="pt-actions-right">
+              <button className="pt-io-btn" onClick={exportAllRecords}>Export ↓</button>
+              <input
+                ref={importRef}
+                type="file"
+                accept=".json"
+                style={{ display: "none" }}
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) importRecords(f); e.target.value = ""; }}
+              />
+              <button className="pt-io-btn" onClick={() => importRef.current?.click()}>Import ↑</button>
+              <button
+                className="pt-new-btn"
+                onClick={() => setView({ type: "editor", id: null })}
+              >
+                + New Miniature
+              </button>
+            </div>
           </div>
 
           {records.length === 0 ? (
