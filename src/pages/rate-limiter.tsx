@@ -117,7 +117,7 @@ export default function RateLimiter() {
     <div className="rl-page">
       <div className="rl-topbar">
         <button className="rl-topbar-back" onClick={() => navigate("/")}>
-          OH<span>/</span>Hub
+          ← OH<span>/</span>Hub
         </button>
         <span className="rl-topbar-title">Rate Limiter Demo</span>
       </div>

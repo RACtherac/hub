@@ -77,7 +77,7 @@ export default function Magazine() {
       {/* Top bar */}
       <div className="mg-topbar">
         <button className="mg-topbar-back" onClick={() => navigate("/")}>
-          OH<span>/</span>Hub
+          ← OH<span>/</span>Hub
         </button>
         <span className="mg-topbar-label">The Log · No. 4</span>
       </div>

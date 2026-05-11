@@ -76,7 +76,7 @@ export default function TodoApp() {
       {/* Top bar */}
       <div className="td-topbar">
         <button className="td-topbar-back" onClick={() => navigate("/")}>
-          OH<span>/</span>Hub
+          ← OH<span>/</span>Hub
         </button>
         <span className="td-topbar-title">Todo App</span>
       </div>

@@ -189,7 +189,7 @@ export default function PokemonTCGTool() {
     <div className="pkm-page">
       <div className="pkm-topbar">
         <button className="pkm-topbar-back" onClick={() => navigate("/")}>
-          OH<span>/</span>Hub
+          ← OH<span>/</span>Hub
         </button>
         <span className="pkm-topbar-title">Pokémon TCG Tool</span>
         {phase === "game" && (

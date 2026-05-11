@@ -214,7 +214,7 @@ export default function PixelArt() {
     <div className="px-page" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       <div className="px-topbar">
         <button className="px-topbar-back" onClick={() => navigate("/")}>
-          OH<span>/</span>Hub
+          ← OH<span>/</span>Hub
         </button>
         <span className="px-topbar-title">Pixel Art Editor</span>
       </div>

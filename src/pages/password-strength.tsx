@@ -89,7 +89,7 @@ export default function PasswordStrength() {
     <div className="pw-page">
       <div className="pw-topbar">
         <button className="pw-topbar-back" onClick={() => navigate("/")}>
-          OH<span>/</span>Hub
+          ← OH<span>/</span>Hub
         </button>
         <span className="pw-topbar-title">Password Strength Checker</span>
       </div>

@@ -890,7 +890,7 @@ export default function TacticsGame() {
   return (
     <div className="wt-page">
       <div className="wt-topbar">
-        <button className="wt-topbar-back" onClick={() => navigate("/")}>OH<span>/</span>Hub</button>
+        <button className="wt-topbar-back" onClick={() => navigate("/")}>← OH<span>/</span>Hub</button>
         <span className="wt-topbar-title">Tactics</span>
         {phase === "playing" && (
           <span className="wt-turn-badge">

@@ -520,7 +520,7 @@ export default function PaintTracker() {
       {/* Top bar */}
       <div className="pt-topbar">
         <button className="pt-topbar-back" onClick={() => navigate("/")}>
-          OH<span>/</span>Hub
+          ← OH<span>/</span>Hub
         </button>
         <span className="pt-topbar-title">Paint Tracker</span>
       </div>
