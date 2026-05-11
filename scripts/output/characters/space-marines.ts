@@ -572,6 +572,8 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 60,
+    allowsSecondCharacter: true,
+    secondCharacterOptions: ["bladeguard-ancient", "lieutenant"],
     canAttachTo: ["assault-intercessor-squad", "bladeguard-veteran-squad", "company-heroes", "intercessor-squad", "sternguard-veteran-squad", "tactical-squad"],
     defaultWargear: [
       { id: "korsarro-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },

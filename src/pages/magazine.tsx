@@ -212,9 +212,7 @@ export default function Magazine() {
             topContent={
               <>
                 <p>
-                  OH/Hub is nearly done. Most features are built and in place.
-                  The Warhammer army builder is the last real gap — everything
-                  works, it just needs unit images as well as filling in some units and armies that dont have stats or wargear options.
+                  The web is upp and running and hosted.
                 </p>
               </>
             }
@@ -317,17 +315,12 @@ export default function Magazine() {
             topContent={
               <>
                 <p>
-                  I have been painting 9 death riders almost got all finished in 1 night but but it took more time later one for all the small cleaning.
+                  The millon models have ended i pledged 25 painted 30 not that i dident have time just dident have enough models.
                 </p>
               </>
             }
             bottomContent={
               <>
-                <p>
-                 Also for the million models i took 2 plauge marines and finished them quete quickly, 
-                 Its also to swap painting something else every now and then but its also so I get everything done so i have something finished for the tabletop. 
-                </p>
-
                 {/* CSS-drawn miniature illustration */}
                 <div className="mg-letter-art">
                   <div className="mg-mini-fig">

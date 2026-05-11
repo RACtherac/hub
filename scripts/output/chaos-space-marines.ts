@@ -43,10 +43,6 @@ export const chaosSpaceMarinesUnits: Unit[] = [
     ],
     abilities: [
       {
-        name: "Dark Pacts",
-        description: "FACTION ABILITY: Before selecting targets for an attack, a model in this unit can make a Dark Pact. If it does, until the end of the phase, improve the Strength, AP and Damage characteristics of that model's melee weapons by 1. Then take a Leadership test for this unit. If that test is failed, that model suffers 1 mortal wound.",
-      },
-      {
         name: "For the Dark Gods",
         description: "At the end of your Command phase, if this unit is within range of an objective marker you control, that objective marker remains under your control, even if you have no models within range of it, until your opponent controls it at the start or end of any turn.",
       },

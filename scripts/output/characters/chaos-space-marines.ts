@@ -34,6 +34,10 @@ export const chaosSpaceMarinesCharacters: Character[] = [
         name: "Lord of the Traitor Legions (Aura)",
         description: " While a friendly HERETIC ASTARTES unit (excluding DAMNED units) is within 6 of this model, you can re-roll Leadership and Battle-shock tests taken for that unit."
       },
+      {
+        name: "SUPREME COMMANDER",
+        description: "If this model is in your army, it must be your Warlord."
+      },
     ],
 
     wargear: [],
@@ -252,10 +256,20 @@ export const chaosSpaceMarinesCharacters: Character[] = [
     faction: "chaos-space-marine",
     image: "",
     points: 90,
-    canAttachTo: [],
+    canAttachTo: ["raptor-squad"],
     defaultWargear: [
-      { id: "helspear", name: "Helspear", image: "", profiles: [{ profileName: "shooting", range: '18"', attacks: "2", skill: "2+", strength: "9", ap: "-3", damage: "3" }, { profileName: "melee", range: "Melee", attacks: "5", skill: "2+", strength: "9", ap: "-3", damage: "3" }] },
-      { id: "herald-s-talon", name: "Herald's Talon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "5", ap: "-2", damage: "1", keywords: ["SUSTAINED HITS 1"] }] },
+      { id: "helspear", name: "Helspear", image: "", profiles: [{ profileName: "shooting", range: '12"', attacks: "1", skill: "2+", strength: "8", ap: "-3", damage: "3",keywords: ["ASSAULT", "SUSTAINED HITS D3"] }, { profileName: "melee", range: "Melee", attacks: "1", skill: "2+", strength: "8", ap: "-3", damage: "3",keywords: ["EXTRA ATTACKS","LANCE","SUSTAINED HITS D3"] }] },
+      { id: "herald-s-talon", name: "Herald's Talon", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-2", damage: "2", keywords: ["PRECISION"] }] },
+    ],
+    abilities: [
+      {
+        name: "Head Taker",
+        description: "While this model is leading a unit, each time this model's unit ends a Charge move, select one enemy unit within Engagement Range of this model's unit and roll one D6 for each model in this models unit that is within Engagement Range of that enemy unit: for each 4+, that enemy unit suffers 1 mortal wound."
+      },
+      {
+        name: "Herald of the Apocalypse (Aura) ",
+        description: "While an enemy unit is within 6 of this model, in the Battle-shock step of your opponents Command phase, if that enemy unit is below its Starting Strength, it must take a Battle-shock test. This ability cannot cause a unit to take two Battle-shock tests in the same phase."
+      }
     ],
     wargear: [],
   },
