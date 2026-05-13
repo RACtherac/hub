@@ -7,29 +7,24 @@ export const thousandSonsCharacters: Character[] = [
     name: "Ahriman",
     faction: "thousand-sons",
     image: "",
-    points: 140,
-    canAttachTo: ["rubric-marines"],
+    points: 100,
+    canAttachTo: ["rubric-marines", "tzaangor-enlightened"],
     defaultWargear: [
-      { id: "inferno-bolt-pistol", name: "Inferno bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-2", damage: "1", keywords: ["PISTOL", "PSYCHIC"] }] },
-      { id: "psychic-stalk", name: "Psychic Stalk", image: "", profiles: [{ range: '18"', attacks: "D3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "black-staff-of-ahriman", name: "Black Staff of Ahriman", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "8", ap: "-2", damage: "D3", keywords: ["PSYCHIC"] }] },
+      { id: "ahriman-inferno-bolt-pistol", name: "Inferno bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "ahriman-transmogrifying-blast", name: "Transmogrifying Blast", image: "", profiles: [{ range: '18"', attacks: "D6+1", skill: "2+", strength: "6", ap: "-1", damage: "D3", keywords: ["BLAST", "PSYCHIC"] }] },
+      { id: "ahriman-black-staff", name: "Black Staff of Ahriman", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "7", ap: "-1", damage: "3", keywords: ["PSYCHIC"] }] },
     ],
     wargear: [],
-  },
-
-  {
-    id: "ahriman-on-disc-of-tzeentch",
-    name: "Ahriman On Disc Of Tzeentch",
-    faction: "thousand-sons",
-    image: "",
-    points: 150,
-    canAttachTo: [],
-    defaultWargear: [
-      { id: "inferno-bolt-pistol", name: "Inferno bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-2", damage: "1", keywords: ["PISTOL", "PSYCHIC"] }] },
-      { id: "psychic-stalk", name: "Psychic Stalk", image: "", profiles: [{ range: '18"', attacks: "D3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "black-staff-of-ahriman", name: "Black Staff of Ahriman", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "8", ap: "-2", damage: "D3", keywords: ["PSYCHIC"] }] },
+    abilities: [
+      {
+        name: "Scryer of Fates (Psychic)",
+        description: "If your army includes this model, after both players have deployed their armies, you can select up to three THOUSAND SONS units from your army and redeploy them. When doing so, you can set those units up in Strategic Reserves if you wish, regardless of how many units are already in Strategic Reserves.",
+      },
+      {
+        name: "Arch-Sorcerer of Tzeentch (Psychic)",
+        description: "Each time this model attempts a Ritual, add 1 to the Psychic test result.",
+      },
     ],
-    wargear: [],
   },
 
   {
@@ -149,6 +144,35 @@ export const thousandSonsCharacters: Character[] = [
     name: "Thousand Sons Daemon Prince",
     faction: "thousand-sons",
     image: "",
+    points: 180,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "tsdp-infernal-cannon", name: "Infernal cannon", image: "", profiles: [{ range: '24"', attacks: "D6", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["BLAST"] }] },
+      { id: "tsdp-hellforged-weapons-strike", name: "Hellforged weapons – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-3", damage: "D6+1" }] },
+      { id: "tsdp-hellforged-weapons-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Servile Pawns",
+        description: "While this model is within 3\" of one or more friendly THOUSAND SONS INFANTRY units, this model has the Lone Operative ability.",
+      },
+      {
+        name: "Spirit Snare",
+        description: "Each time a friendly THOUSAND SONS PSYKER model with the Cabal of Sorcerers ability is destroyed while within 9\" of one or more models with this ability, select one of those models with this ability: until the end of the battle, each time the selected model attempts a Ritual, add 1 to the Psychic test result (to a maximum of +2).",
+      },
+      {
+        name: "Glamour of Tzeentch (Aura, Psychic)",
+        description: "While a friendly THOUSAND SONS INFANTRY unit is within 6\" of this model, models in that unit have the Stealth ability.",
+      },
+    ],
+  },
+
+  {
+    id: "thousand-sons-daemon-prince-with-wings",
+    name: "Thousand Sons Daemon Prince With Wings",
+    faction: "thousand-sons",
+    image: "",
     points: 170,
     canAttachTo: [],
     defaultWargear: [
@@ -157,21 +181,16 @@ export const thousandSonsCharacters: Character[] = [
       { id: "hellforged-weapons-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
     ],
     wargear: [],
-  },
-
-  {
-    id: "thousand-sons-daemon-prince-with-wings",
-    name: "Thousand Sons Daemon Prince With Wings",
-    faction: "thousand-sons",
-    image: "",
-    points: 180,
-    canAttachTo: [],
-    defaultWargear: [
-      { id: "infernal-cannon", name: "Infernal cannon", image: "", profiles: [{ range: '24"', attacks: "D6", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["BLAST"] }] },
-      { id: "hellforged-weapons-strike", name: "Hellforged weapons – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-3", damage: "D6+1" }] },
-      { id: "hellforged-weapons-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+    abilities: [
+      {
+        name: "Hunter of Souls",
+        description: "Each time this model makes an attack that targets a CHARACTER unit, re-roll a Hit roll of 1 and re-roll a Wound roll of 1 (if that attack targets a PSYKER CHARACTER unit, you can re-roll the Hit roll and you can re-roll the Wound roll instead). Each time this model destroys a CHARACTER unit, this model regains up to D3 lost wounds (if that CHARACTER unit was a PSYKER unit, this model regains up to 3 lost wounds instead).",
+      },
+      {
+        name: "Aetherstride (Psychic)",
+        description: "In your Movement phase, when this model is set up on the battlefield using the Deep Strike ability, it can perform an aetherstride. If it does: it can be set up anywhere on the battlefield that is more than 6\" horizontally away from all enemy units; until the end of the turn, its Dark Blessing has the [SUSTAINED HITS D3] ability; until the end of the turn, it is not eligible to declare a charge.",
+      },
     ],
-    wargear: [],
   },
 
   {

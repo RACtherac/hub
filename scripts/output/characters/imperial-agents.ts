@@ -120,14 +120,28 @@ export const imperialAgentsCharacters: Character[] = [
     name: "Inquisitor Draxus",
     faction: "imperial-agents",
     image: "",
-    points: 75,
-    canAttachTo: [],
+    points: 110,
+    canAttachTo: ["exaction-squad", "imperial-navy-breachers", "inquisitorial-agents", "subductor-squad", "vigilant-squad"],
     defaultWargear: [
-      { id: "dirgesinger", name: "Dirgesinger", image: "", profiles: [{ range: '18"', attacks: "4", skill: "2+", strength: "4", ap: "-2", damage: "1", keywords: ["ANTI-PSYKER 4+"] }] },
-      { id: "psychic-tempest", name: "Psychic Tempest", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+      { id: "dirgesinger", name: "Dirgesinger", image: "", profiles: [{ range: '18"', attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "2", keywords: ["ANTI-INFANTRY 4+", "ASSAULT", "DEVASTATING WOUNDS"] }] },
+      { id: "psychic-tempest", name: "Psychic Tempest", image: "", profiles: [{ range: '18"', attacks: "6", skill: "3+", strength: "6", ap: "0", damage: "2", keywords: ["PSYCHIC", "SUSTAINED HITS 2"] }] },
+      { id: "draxus-power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "6", ap: "-2", damage: "2" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Authority of the Inquisition",
+        description: "While this model is leading a unit, it can embark within any TRANSPORT that its Bodyguard unit can embark within.",
+      },
+      {
+        name: "Xenos Hunter",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack that targets an enemy unit that does not have the IMPERIUM or CHAOS keywords, add 1 to the Hit roll.",
+      },
+      {
+        name: "Psychic Veil (Psychic)",
+        description: "In your Command phase, this PSYKER can use this ability. If it does, roll one D6: on a 1, this PSYKER's unit suffers D3 mortal wounds; on a 2+, until the start of your next Command phase, this PSYKER's unit can only be selected as the target of a ranged attack if the attacking model is within 18\".",
+      },
+    ],
   },
 
   {
@@ -151,13 +165,26 @@ export const imperialAgentsCharacters: Character[] = [
     faction: "imperial-agents",
     image: "",
     points: 65,
-    canAttachTo: [],
+    canAttachTo: ["exaction-squad", "imperial-navy-breachers", "inquisitorial-agents", "sanctifiers", "sisters-of-battle-squad", "subductor-squad", "vigilant-squad"],
     defaultWargear: [
-      { id: "castigation", name: "Castigation", image: "", profiles: [{ range: '24"', attacks: "4", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["ANTI-PSYKER 4+"] }] },
-      { id: "condemnor-stake", name: "Condemnor stake", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["ANTI-PSYKER 4+"] }] },
+      { id: "castigation", name: "Castigation", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "8", ap: "-2", damage: "3", keywords: ["ANTI-CHARACTER 4+", "DEVASTATING WOUNDS", "PRECISION", "PSYCHIC"] }] },
+      { id: "condemnor-stake", name: "Condemnor stake", image: "", profiles: [{ range: '24"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-PSYKER 2+", "DEVASTATING WOUNDS", "PRECISION", "RAPID FIRE 1"] }] },
+      { id: "greyfax-master-crafted-power-sword", name: "Master-crafted power sword", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-2", damage: "2" }] },
     ],
-    wargear: [
-      { id: "master-crafted-power-sword", name: "Master-crafted power sword", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
+    wargear: [],
+    abilities: [
+      {
+        name: "Authority of the Inquisition",
+        description: "While this model is leading a unit, it can embark within any TRANSPORT that its Bodyguard unit can embark within.",
+      },
+      {
+        name: "Psyoculum",
+        description: "While this model is leading a unit, ranged weapons equipped by models in that unit have the [ANTI-PSYKER 4+] ability.",
+      },
+      {
+        name: "No Mercy",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack that targets a unit that is Below Half-strength, add 1 to the Hit roll.",
+      },
     ],
   },
 
@@ -246,12 +273,22 @@ export const imperialAgentsCharacters: Character[] = [
     faction: "imperial-agents",
     image: "",
     points: 60,
-    canAttachTo: [],
+    canAttachTo: ["imperial-navy-breachers", "voidsmen-at-arms"],
     defaultWargear: [
-      { id: "laspistol", name: "Laspistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "force-orb-cane", name: "Force-orb cane", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
+      { id: "nav-laspistol", name: "Laspistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "nav-force-orb-cane", name: "Force-orb cane", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Gaze into the Empyrean (Psychic)",
+        description: "Enemy units that are set up on the battlefield as Reinforcements cannot be set up within 12\" of this model.",
+      },
+      {
+        name: "Third Eye (Psychic)",
+        description: "At the start of your Shooting phase, select one enemy unit within 12\" of and visible to this model. That unit must take a Battle-shock test, subtracting 2 from the result if it is an INFANTRY unit. If the test is failed, that enemy unit suffers 3 mortal wounds.",
+      },
+    ],
   },
 
   {
@@ -332,6 +369,32 @@ export const imperialAgentsCharacters: Character[] = [
       { id: "vigil-spear", name: "Vigil spear", image: "", profiles: [{ profileName: "ranged", range: '24"', attacks: "2", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["RAPID FIRE 1"] }, { profileName: "melee", range: "Melee", attacks: "5", skill: "2+", strength: "7", ap: "-2", damage: "2" }] },
     ],
     wargear: [],
+  },
+
+  {
+    id: "inquisitor-kroyle",
+    name: "Inquisitor Kroyle",
+    faction: "imperial-agents",
+    image: "",
+    points: 100,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "jindarii-tox-cycler", name: "Jindarii tox-cycler", image: "", profiles: [{ range: '36"', attacks: "1", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["ANTI-MONSTER 2+", "HEAVY", "PRECISION"] }] },
+      { id: "kroyle-stubcarbine", name: "Stubcarbine", image: "", profiles: [{ range: '12"', attacks: "2", skill: "2+", strength: "5", ap: "-2", damage: "2", keywords: ["PISTOL"] }] },
+      { id: "kroyle-butcher-blade", name: "Butcher blade", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "-2", damage: "1" }] },
+      { id: "kroyle-garralisk-claws", name: "Garralisk's claws and teeth", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "5", ap: "-1", damage: "1", keywords: ["EXTRA ATTACKS"] }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "On My Signal, Fire!",
+        description: "After this unit has shot, you can select one enemy unit hit by those attacks. Until the end of the phase, each time an AGENTS OF THE IMPERIUM or IMPERIUM INFANTRY BATTLELINE model from your army makes an attack that targets that enemy unit, you can re-roll the Hit roll.",
+      },
+      {
+        name: "Tox-cycler",
+        description: "In your Shooting phase, after this unit has shot, if this model scored a hit with its Jindarii tox-cycler, until the end of the battle, add 2 to the Strength and Damage characteristics of that weapon (to a maximum Damage characteristic of 6).",
+      },
+    ],
   },
 
 ];

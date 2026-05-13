@@ -84,10 +84,24 @@ export const tyranidsCharacters: Character[] = [
     faction: "tyranids",
     image: "",
     points: 105,
-    canAttachTo: [],
+    canAttachTo: ["neurogaunts", "tyrant-guard", "zoanthropes"],
+    abilities: [
+      {
+        name: "Node Lash (Psychic)",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack, add 1 to the Hit roll. If the target is Battle-shocked, add 1 to the Wound roll as well.",
+      },
+      {
+        name: "Psychic Terror (Psychic)",
+        description: "If one or more models from your army with this ability are on the battlefield when you unleash the Shadow in the Warp, subtract 1 from the Battle-shock test each enemy unit on the battlefield must take as a result.",
+      },
+      {
+        name: "Neuroloids",
+        description: "In your Command phase, you can select up to two friendly TYRANIDS units within 18\" of this model's unit. Until the start of your next Command phase, the selected units are always considered to be within Synapse Range of your army.",
+      },
+    ],
     defaultWargear: [
-      { id: "psychic-scream", name: "Psychic scream", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
-      { id: "neurotyrant-claws-and-lashes", name: "Neurotyrant claws and lashes", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "5", ap: "-1", damage: "1" }] },
+      { id: "psychic-scream", name: "Psychic scream", image: "", profiles: [{ range: '18"', attacks: "2D6", skill: "N/A", strength: "5", ap: "-1", damage: "2", keywords: ["IGNORES COVER", "PSYCHIC", "TORRENT"] }] },
+      { id: "neurotyrant-claws-and-lashes", name: "Neurotyrant claws and lashes", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
     ],
     wargear: [],
   },

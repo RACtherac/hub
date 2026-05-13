@@ -867,6 +867,19 @@
   background: var(--surface);
 }
 
+.pt-collection-block--drop-target {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.pt-paint-entry[draggable="true"] {
+  cursor: grab;
+}
+.pt-paint-entry[draggable="true"]:active {
+  cursor: grabbing;
+  opacity: 0.5;
+}
+
 .pt-collection-block-header {
   display: flex;
   align-items: center;

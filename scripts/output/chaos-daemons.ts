@@ -69,13 +69,24 @@ export const chaosDaemonsUnits: Unit[] = [
     faction: "chaos-daemons",
     category: "mounted",
     points: 110,
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 110, 6: 220 },
     defaultWargear: [
-      { id: "death-s-heads", name: "Death's heads", image: "" },
-      { id: "foul-mouthparts", name: "Foul mouthparts", image: "" },
-      { id: "plaguesword", name: "Plaguesword", image: "" },
+      { id: "pd-deaths-heads", name: "Death's heads", image: "", profiles: [{ range: '12"', attacks: "D3", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST", "LETHAL HITS"] }] },
+      { id: "pd-foul-mouthparts", name: "Foul mouthparts", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "5", ap: "-1", damage: "2", keywords: ["EXTRA ATTACKS", "LETHAL HITS"] }] },
+      { id: "pd-plaguesword", name: "Plaguesword", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
-    wargear: [],
+    wargear: [
+      { id: "pd-daemonic-icon", name: "Daemonic Icon", image: "", note: "Models in the bearer's unit have a Leadership characteristic of 6+." },
+      { id: "pd-instrument-of-chaos", name: "Instrument of Chaos", image: "", note: "Add 1 to Charge rolls made for the bearer's unit." },
+    ],
     ledBy: [],
+    abilities: [
+      {
+        name: "Death's Heads",
+        description: "In your Shooting phase, after this unit has shot, select one enemy unit hit by one or more of those attacks. Until the end of the turn, each time a friendly NURGLE LEGIONES DAEMONICA unit makes an attack that targets that unit, you can re-roll the Wound roll.",
+      },
+    ],
   },
 
   {
@@ -194,11 +205,22 @@ export const chaosDaemonsUnits: Unit[] = [
     faction: "chaos-daemons",
     category: "battleline",
     points: 100,
+    modelCountOptions: [10],
+    pointsByModelCount: { 10: 100 },
     defaultWargear: [
-      { id: "slashing-claws", name: "Slashing claws", image: "" },
+      { id: "daemonettes-slashing-claws", name: "Slashing claws", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
-    wargear: [],
+    wargear: [
+      { id: "daemonettes-daemonic-icon", name: "Daemonic Icon", image: "", note: "Models in the bearer's unit have a Leadership characteristic of 6+." },
+      { id: "daemonettes-instrument-of-chaos", name: "Instrument of Chaos", image: "", note: "Add 1 to Charge rolls made for the bearer's unit." },
+    ],
     ledBy: ["contorted-epitome","infernal-enrapturess","syll-esske","tranceweaver"],
+    abilities: [
+      {
+        name: "Horrifying Beauty",
+        description: "At the start of the Fight phase, each enemy unit within Engagement Range of one or more units from your army with this ability must take a Battle-shock test, subtracting 1 from the result if that enemy unit is Below Half-strength.",
+      },
+    ],
   },
 
   {
@@ -240,7 +262,7 @@ export const chaosDaemonsUnits: Unit[] = [
     modelCountOptions: [3, 6],
     pointsByModelCount: { 3: 40, 6: 70 },
     defaultWargear: [
-      { id: "diseased-claws-and-teeth", name: "Diseased claws and teeth", image: "" },
+      { id: "diseased-claws-and-teeth", name: "Diseased claws and teeth", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "5+", strength: "2", ap: "0", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
     abilities: [
@@ -257,11 +279,35 @@ export const chaosDaemonsUnits: Unit[] = [
     name: "Plaguebearers",
     faction: "chaos-daemons",
     category: "battleline",
-    points: 110,
+    modelCountOptions: [10],
+    pointsByModelCount: { 10: 110 },
     defaultWargear: [
-      { id: "plaguesword", name: "Plaguesword", image: "" },
+      { id: "plaguesword", name: "Plaguesword", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
-    wargear: [],
+    wargear: [
+      { id: "pb-daemonic-icon", name: "Daemonic Icon", image: "", note: "Models in the bearer's unit have a Leadership characteristic of 6+." },
+      { id: "pb-instrument-of-chaos", name: "Instrument of Chaos", image: "", note: "Add 1 to Charge rolls made for the bearer's unit." },
+    ],
+    notes: [
+      {
+        id: "plaguebearers-daemonic-icon",
+        text: "Daemonic Icon",
+        checkbox: true,
+        weaponId: "pb-daemonic-icon",
+      },
+      {
+        id: "plaguebearers-instrument-of-chaos",
+        text: "Instrument of Chaos",
+        checkbox: true,
+        weaponId: "pb-instrument-of-chaos",
+      },
+    ],
+    abilities: [
+      {
+        name: "Infected Outbreak",
+        description: "If you control an objective marker at the end of your Command phase and this unit is within range of that objective marker, that objective marker remains under your control, even if you have no models within range of it, until your opponent controls it at the start or end of any turn.",
+      },
+    ],
     ledBy: ["epidemius","poxbringer","sloppity-bilepiper","spoilpox-scrivener"],
   },
 
@@ -286,11 +332,19 @@ export const chaosDaemonsUnits: Unit[] = [
     faction: "chaos-daemons",
     category: "infantry",
     points: 65,
+    modelCountOptions: [1, 2],
+    pointsByModelCount: { 1: 65, 2: 130 },
     defaultWargear: [
-      { id: "putrid-appendages", name: "Putrid appendages", image: "" },
+      { id: "bon-putrid-appendages", name: "Putrid appendages", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "4+", strength: "6", ap: "-1", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
     wargear: [],
-    ledBy: [],
+    ledBy: ["horticulous-slimux"],
+    abilities: [
+      {
+        name: "Grotesque Regeneration",
+        description: "At the end of each phase, if a Beasts of Nurgle model in this unit has lost any wounds but is not destroyed, that model regains all of its lost wounds.",
+      },
+    ],
   },
 
   {
@@ -299,15 +353,30 @@ export const chaosDaemonsUnits: Unit[] = [
     faction: "chaos-daemons",
     category: "infantry",
     points: 125,
+    modelCountOptions: [10],
+    pointsByModelCount: { 10: 125 },
     defaultWargear: [
-      { id: "coruscating-blue-flames", name: "Coruscating Blue Flames", image: "" },
-      { id: "blue-claws", name: "Blue claws", image: "" },
+      { id: "bh-coruscating-blue-flames", name: "Coruscating Blue Flames", image: "", profiles: [{ range: '18"', attacks: "2", skill: "4+", strength: "3", ap: "-1", damage: "1", keywords: ["PISTOL", "PSYCHIC"] }] },
+      { id: "bh-coruscating-yellow-flames", name: "Coruscating Yellow Flames", image: "", profiles: [{ range: '18"', attacks: "2", skill: "5+", strength: "2", ap: "-1", damage: "1", keywords: ["PISTOL", "PSYCHIC"] }] },
+      { id: "bh-blue-claws", name: "Blue claws", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "5+", strength: "3", ap: "0", damage: "1" }] },
+      { id: "bh-yellow-claws", name: "Yellow claws", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "5+", strength: "2", ap: "0", damage: "1" }] },
     ],
-    wargear: [
-      { id: "coruscating-yellow-flames", name: "Coruscating Yellow Flames", image: "" },
-      { id: "yellow-claws", name: "Yellow claws", image: "" },
-    ],
+    wargear: [],
     ledBy: ["changecaster","fluxmaster"],
+    abilities: [
+      {
+        name: "Split",
+        description: "Each time a BLUE HORROR model in this unit is destroyed, after the attacking unit has finished making its attacks, if this unit is not destroyed, roll one D6 for that model. On a 4+, add one BRIMSTONE HORROR model to this unit.",
+      },
+      {
+        name: "Sullen Malevolence (Aura)",
+        description: "While an enemy unit is within 6\" of this unit, if this unit contains one or more BLUE HORROR models, worsen the Leadership characteristic of models in that enemy unit by 1.",
+      },
+      {
+        name: "Exploding Horrors",
+        description: "Each time this unit is selected to fight, you can select one enemy unit within Engagement Range of it, then select one or more BRIMSTONE HORROR models in this unit. For each BRIMSTONE HORROR model you select, roll one D6: on a 4+, that model is destroyed and that enemy unit suffers 1 mortal wound.",
+      },
+    ],
   },
 
   {
@@ -538,12 +607,27 @@ export const chaosDaemonsUnits: Unit[] = [
     faction: "chaos-daemons",
     category: "infantry",
     points: 140,
+    modelCountOptions: [10],
+    pointsByModelCount: { 10: 140 },
     defaultWargear: [
-      { id: "coruscating-pink-flames", name: "Coruscating Pink Flames", image: "" },
-      { id: "pink-claws", name: "Pink claws", image: "" },
+      { id: "ph-coruscating-pink-flames", name: "Coruscating Pink Flames", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL", "PSYCHIC"] }] },
+      { id: "ph-coruscating-blue-flames", name: "Coruscating Blue Flames", image: "", profiles: [{ range: '18"', attacks: "2", skill: "4+", strength: "3", ap: "-1", damage: "1", keywords: ["PISTOL", "PSYCHIC"] }] },
+      { id: "ph-coruscating-yellow-flames", name: "Coruscating Yellow Flames", image: "", profiles: [{ range: '18"', attacks: "2", skill: "5+", strength: "2", ap: "-1", damage: "1", keywords: ["PISTOL", "PSYCHIC"] }] },
+      { id: "ph-pink-claws", name: "Pink claws", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
+      { id: "ph-blue-claws", name: "Blue claws", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "5+", strength: "3", ap: "0", damage: "1" }] },
+      { id: "ph-yellow-claws", name: "Yellow claws", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "5+", strength: "2", ap: "0", damage: "1" }] },
     ],
-    wargear: [],
+    wargear: [
+      { id: "ph-daemonic-icon", name: "Daemonic Icon", image: "", note: "Models in the bearer's unit have a Leadership characteristic of 6+." },
+      { id: "ph-instrument-of-chaos", name: "Instrument of Chaos", image: "", note: "Add 1 to Charge rolls made for the bearer's unit." },
+    ],
     ledBy: ["changecaster","fluxmaster"],
+    abilities: [
+      {
+        name: "Split",
+        description: "Each time a PINK HORROR or BLUE HORROR model in this unit is destroyed, after the attacking unit has finished making its attacks, if this unit is not destroyed, roll one D6 for that model. On a 4+, if it was a PINK HORROR, add two BLUE HORROR models to this unit, and if it was a BLUE HORROR, add one BRIMSTONE HORROR model to this unit.",
+      },
+    ],
   },
 
   {
@@ -664,11 +748,19 @@ export const chaosDaemonsUnits: Unit[] = [
     faction: "chaos-daemons",
     category: "infantry",
     points: 80,
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 80, 6: 160 },
     defaultWargear: [
-      { id: "lamprey-bite", name: "Lamprey bite", image: "" },
+      { id: "screamers-lamprey-bite", name: "Lamprey bite", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "6", ap: "-2", damage: "2", keywords: ["ANTI-MONSTER 4+", "ANTI-VEHICLE 4+"] }] },
     ],
     wargear: [],
     ledBy: [],
+    abilities: [
+      {
+        name: "Slashing Dive",
+        description: "In your Movement phase, after this unit ends a Normal move, you can select one enemy unit it moved over during that move and roll one D6 for each model in this unit: for each 4+, that enemy unit suffers 1 mortal wound.",
+      },
+    ],
   },
 
   {
@@ -742,18 +834,37 @@ export const chaosDaemonsUnits: Unit[] = [
     category: "vehicle",
     points: 180,
     defaultWargear: [
-      { id: "harvester-cannon", name: "Harvester cannon", image: "" },
-      { id: "iron-claw", name: "Iron claw", image: "" },
-      { id: "warpsword", name: "Warpsword", image: "" },
+      { id: "sg-harvester-cannon", name: "Harvester cannon", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "10", ap: "-1", damage: "3" }] },
+      { id: "sg-iron-claw", name: "Iron claw", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "16", ap: "-3", damage: "D6+2" }] },
     ],
     wargear: [
-      { id: "torrent-of-burning-blood", name: "Torrent of burning blood", image: "" },
-      { id: "phlegm-bombardment", name: "Phlegm bombardment", image: "" },
-      { id: "scream-of-despair", name: "Scream of despair", image: "" },
-      { id: "warp-gaze", name: "Warp gaze", image: "" },
-      { id: "warpclaw", name: "Warpclaw", image: "" },
+      { id: "sg-torrent-of-burning-blood", name: "Torrent of burning blood", image: "", profiles: [{ range: '12"', attacks: "2D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "sg-warp-gaze", name: "Warp gaze", image: "", profiles: [{ range: '48"', attacks: "D3", skill: "3+", strength: "12", ap: "-2", damage: "D6+2", keywords: ["BLAST"] }] },
+      { id: "sg-phlegm-bombardment", name: "Phlegm bombardment", image: "", profiles: [{ range: '36"', attacks: "D6+1", skill: "3+", strength: "7", ap: "-1", damage: "2", keywords: ["BLAST", "INDIRECT FIRE", "LETHAL HITS"] }] },
+      { id: "sg-scream-of-despair", name: "Scream of despair", image: "", profiles: [{ range: '24"', attacks: "6", skill: "3+", strength: "9", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS", "SUSTAINED HITS 1"] }] },
+      { id: "sg-warpsword", name: "Warpsword", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "D6", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "sg-warpclaw", name: "Warpclaw", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "8", ap: "-1", damage: "2", keywords: ["EXTRA ATTACKS"] }] },
     ],
+    wargearGroups: [
+      ["sg-torrent-of-burning-blood", "sg-warp-gaze", "sg-phlegm-bombardment", "sg-scream-of-despair"],
+      ["sg-warpsword", "sg-warpclaw"],
+    ],
+    defaultSelectedWargear: ["sg-torrent-of-burning-blood", "sg-warpsword"],
     ledBy: [],
+    abilities: [
+      {
+        name: "Scuttling Walker",
+        description: "Each time this model makes a Normal or Advance move, it can move over friendly MONSTER and VEHICLE models and terrain features that are 4\" or less in height as if they were not there.",
+      },
+      {
+        name: "Damaged: 1-5 Wounds Remaining",
+        description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+      {
+        name: "Daemonic Allegiance",
+        description: "When you select this model, choose one keyword: KHORNE (additionally equipped with torrent of burning blood), TZEENTCH (warp gaze), NURGLE (phlegm bombardment), or SLAANESH (scream of despair).",
+      },
+    ],
   },
 
   {

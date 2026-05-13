@@ -17,7 +17,10 @@ export default function CharacterCard({
   const [showWargear, setShowWargear] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
 
-  const hasStats = [...(character.defaultWargear ?? []), ...(character.wargear ?? [])].some(w => w.profiles?.length) || !!character.abilities?.length;
+  const hasStats =
+    [...(character.defaultWargear ?? []), ...(character.wargear ?? [])].some(w => w.profiles?.length) ||
+    !!character.abilities?.length ||
+    [...(character.defaultWargear ?? []), ...(character.wargear ?? [])].some(w => w.note);
 
   return (
     <div style={{
@@ -193,6 +196,28 @@ export default function CharacterCard({
                     ))}
                   </div>
                 )}
+                {(() => {
+                  const noteGear = [
+                    ...(character.defaultWargear ?? []).filter(w => w.note),
+                    ...(character.wargear ?? []).filter(w => selectedWargear.includes(w.id) && w.note),
+                  ];
+                  if (noteGear.length === 0) return null;
+                  return (
+                    <div>
+                      <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--text-dim)", marginBottom: "10px" }}>
+                        Wargear Rules
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        {noteGear.map(w => (
+                          <div key={w.id} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-2)", padding: "10px 14px" }}>
+                            <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", color: "var(--accent)", marginBottom: "4px" }}>{w.name}</div>
+                            <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-dim)", lineHeight: 1.6 }}>{w.note}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>

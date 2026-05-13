@@ -587,6 +587,16 @@ export const tyranidsUnits: Unit[] = [
       { id: "powerful-limbs", name: "Powerful limbs", image: "" },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Symbiotic Targeting",
+        description: "In your Shooting phase, after this model has shot, select one enemy unit hit by one or more of those attacks. Until the end of the phase, each time a friendly TYRANIDS model makes an attack that targets that unit, re-roll a Hit roll of 1.",
+      },
+      {
+        name: "Damaged: 1-5 Wounds Remaining",
+        description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
     ledBy: [],
   },
 
@@ -597,12 +607,25 @@ export const tyranidsUnits: Unit[] = [
     category: "monster",
     points: 215,
     defaultWargear: [
-      { id: "stinger-salvoes", name: "Stinger salvoes", image: "" },
-      { id: "twin-stranglethorn-cannon", name: "Twin stranglethorn cannon", image: "" },
-      { id: "scything-wings", name: "Scything wings", image: "" },
+      { id: "harpy-stinger-salvoes", name: "Stinger salvoes", image: "", profiles: [{ range: '24"', attacks: "8", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
+      { id: "harpy-scything-wings", name: "Scything wings", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "7", ap: "-1", damage: "2" }] },
     ],
     wargear: [
-      { id: "twin-heavy-venom-cannon", name: "Twin heavy venom cannon", image: "" },
+      { id: "harpy-twin-heavy-venom-cannon", name: "Twin heavy venom cannon", image: "", profiles: [{ range: '36"', attacks: "D3", skill: "3+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST", "TWIN-LINKED"] }] },
+      { id: "harpy-twin-stranglethorn-cannon", name: "Twin stranglethorn cannon", image: "", profiles: [{ range: '36"', attacks: "D6+1", skill: "2+", strength: "7", ap: "-1", damage: "2", keywords: ["BLAST", "TWIN-LINKED"] }] },
+    ],
+    wargearGroups: [
+      ["harpy-twin-heavy-venom-cannon", "harpy-twin-stranglethorn-cannon"],
+    ],
+    abilities: [
+      {
+        name: "Spore Mine Cysts",
+        description: "Each time this model ends a Normal move, you can select one of the following:\n• Select one enemy unit it moved over during that move and roll six D6: for each 3+, that unit suffers 1 mortal wound.\n• Add one new SPORE MINES unit containing D3 models to your army and set it up anywhere on the battlefield that is wholly within 6\" of this model and more than 9\" horizontally away from all enemy units. You cannot select this option for more than one model per turn.",
+      },
+      {
+        name: "Damaged: 1-4 Wounds Remaining",
+        description: "While this model has 1-4 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
     ledBy: [],
   },
@@ -614,11 +637,21 @@ export const tyranidsUnits: Unit[] = [
     category: "monster",
     points: 125,
     defaultWargear: [
-      { id: "grasping-tongue", name: "Grasping tongue", image: "" },
-      { id: "ravenous-maw", name: "Ravenous maw", image: "" },
-      { id: "shovelling-claws", name: "Shovelling claws", image: "" },
+      { id: "haruspex-grasping-tongue", name: "Grasping tongue", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "6", ap: "-2", damage: "D6+1", keywords: ["PRECISION"] }] },
+      { id: "haruspex-ravenous-maw", name: "Ravenous maw", image: "", profiles: [{ range: "Melee", attacks: "14", skill: "3+", strength: "7", ap: "-1", damage: "2" }] },
+      { id: "haruspex-shovelling-claws", name: "Shovelling claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-2", damage: "D6+1", keywords: ["EXTRA ATTACKS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Grisly Spectacle",
+        description: "Each time this model is selected to fight, after resolving its attacks, if one or more enemy units were destroyed by those attacks, each enemy unit within 6\" of this model must take a Battle-shock test.",
+      },
+      {
+        name: "Damaged: 1-5 Wounds Remaining",
+        description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
     ledBy: [],
   },
 
@@ -629,13 +662,23 @@ export const tyranidsUnits: Unit[] = [
     category: "monster",
     points: 200,
     defaultWargear: [
-      { id: "drool-cannon", name: "Drool cannon", image: "" },
-      { id: "stinger-salvoes", name: "Stinger salvoes", image: "" },
-      { id: "tentaclids", name: "Tentaclids", image: "" },
-      { id: "scything-wings", name: "Scything wings", image: "" },
-      { id: "thorax-spur", name: "Thorax spur", image: "" },
+      { id: "hive-crone-drool-cannon", name: "Drool cannon", image: "", profiles: [{ range: '12"', attacks: "2D6", skill: "N/A", strength: "6", ap: "-1", damage: "1", keywords: ["TORRENT"] }] },
+      { id: "hive-crone-stinger-salvoes", name: "Stinger salvoes", image: "", profiles: [{ range: '24"', attacks: "8", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
+      { id: "hive-crone-tentaclids", name: "Tentaclids", image: "", profiles: [{ range: '36"', attacks: "4", skill: "3+", strength: "7", ap: "0", damage: "2", keywords: ["ANTI-VEHICLE 4+", "DEVASTATING WOUNDS"] }] },
+      { id: "hive-crone-scything-wings", name: "Scything wings", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "7", ap: "-1", damage: "2" }] },
+      { id: "hive-crone-thorax-spur", name: "Thorax spur", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "3+", strength: "10", ap: "-3", damage: "D6", keywords: ["ANTI-FLY 2+", "EXTRA ATTACKS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Airborne Predator",
+        description: "Each time this model makes a ranged attack that targets a unit that can FLY, add 1 to the Hit roll.",
+      },
+      {
+        name: "Damaged: 1-4 Wounds Remaining",
+        description: "While this model has 1-4 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
     ledBy: [],
   },
 
@@ -645,10 +688,35 @@ export const tyranidsUnits: Unit[] = [
     faction: "tyranids",
     category: "monster",
     points: 170,
+    abilities: [
+      {
+        name: "Encephalic Diffusion (Aura, Psychic)",
+        description: "While an enemy unit is within 6\" of this model, each time a model in that unit makes an attack, subtract 1 from the Hit roll, and, if that enemy unit is Below Half-strength, subtract 1 from the Wound roll as well.",
+      },
+      {
+        name: "Damaged: 1-5 Wounds Remaining",
+        description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
     defaultWargear: [
-      { id: "psychic-overload", name: "Psychic overload", image: "" },
-      { id: "massive-scything-talons-strike", name: "Massive scything talons – strike", image: "" },
-      { id: "massive-scything-talons-sweep", name: "Massive scything talons – sweep", image: "" },
+      {
+        id: "psychic-overload",
+        name: "Psychic overload",
+        image: "",
+        profiles: [{ range: '18"', attacks: "D6+3", skill: "3+", strength: "10", ap: "-2", damage: "3", keywords: ["BLAST", "PSYCHIC"] }],
+      },
+      {
+        id: "massive-scything-talons-strike",
+        name: "Massive scything talons – strike",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "9", ap: "-2", damage: "D6+1" }],
+      },
+      {
+        id: "massive-scything-talons-sweep",
+        name: "Massive scything talons – sweep",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "7", ap: "-1", damage: "2" }],
+      },
     ],
     wargear: [],
     ledBy: [],
@@ -817,8 +885,26 @@ export const tyranidsUnits: Unit[] = [
     faction: "tyranids",
     category: "monster",
     points: 150,
+    abilities: [
+      {
+        name: "Grasping Tendrils",
+        description: "Each time an enemy unit (excluding TITANIC units) within Engagement Range of one or more units from your army with this ability is selected to Fall Back, you can roll one D6: on a 3+, that enemy unit must Remain Stationary instead.",
+      },
+      {
+        name: "Hypertoxic Miasma (Aura)",
+        description: "At the end of your Movement phase, roll one D6 for each enemy unit within 6\" of this model: on a 2-3, that unit suffers 1 mortal wound; on a 4-5, that unit suffers D3 mortal wounds; on a 6, that unit suffers D6 mortal wounds.",
+      },
+    ],
     defaultWargear: [
-      { id: "massive-toxic-lashes", name: "Massive toxic lashes", image: "" },
+      {
+        id: "massive-toxic-lashes",
+        name: "Massive toxic lashes",
+        image: "",
+        profiles: [
+          { profileName: "Ranged", range: '9"', attacks: "2D6", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["ANTI-INFANTRY 2+"] },
+          { profileName: "Melee", range: "Melee", attacks: "12", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["ANTI-INFANTRY 2+"] },
+        ],
+      },
     ],
     wargear: [],
     ledBy: [],
@@ -877,13 +963,25 @@ export const tyranidsUnits: Unit[] = [
     id: "harridan",
     name: "Harridan",
     faction: "tyranids",
-    category: "transport",
+    category: "monster",
     points: 610,
+    transportCapacity: 20,
+    monsterTransportCapacity: 1,
     defaultWargear: [
-      { id: "dire-bio-cannon", name: "Dire bio-cannon", image: "" },
-      { id: "gargantuan-scything-talons", name: "Gargantuan scything talons", image: "" },
+      { id: "harridan-dire-bio-cannon", name: "Dire bio-cannon", image: "", profiles: [{ range: '48"', attacks: "D6+6", skill: "3+", strength: "10", ap: "-3", damage: "3", keywords: ["BLAST"] }] },
+      { id: "harridan-gargantuan-scything-talons", name: "Gargantuan scything talons", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "14", ap: "-2", damage: "D6" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Frenzied Metabolism",
+        description: "Each time this model is selected to shoot, you can use this ability. If you do, until the end of the phase, each time this model makes an attack, add 1 to the Wound roll. After resolving those attacks, roll one D6: on a 2+, this model suffers D3 mortal wounds.",
+      },
+      {
+        name: "Damaged: 1-10 Wounds Remaining",
+        description: "While this model has 1-10 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
     ledBy: [],
   },
 
@@ -891,15 +989,30 @@ export const tyranidsUnits: Unit[] = [
     id: "hierophant",
     name: "Hierophant",
     faction: "tyranids",
-    category: "transport",
+    category: "monster",
     points: 810,
+    transportCapacity: 20,
     defaultWargear: [
-      { id: "bio-plasma-torrent", name: "Bio-plasma torrent", image: "" },
-      { id: "dire-bio-cannon", name: "Dire bio-cannon", image: "" },
-      { id: "lashwhip-pods", name: "Lashwhip pods", image: "" },
-      { id: "titanic-scything-talons", name: "Titanic scything talons", image: "" },
+      { id: "hierophant-bio-plasma-torrent", name: "Bio-plasma torrent", image: "", profiles: [{ range: '12"', attacks: "3D6", skill: "N/A", strength: "7", ap: "-2", damage: "1", keywords: ["ASSAULT", "TORRENT"] }] },
+      { id: "hierophant-dire-bio-cannon", name: "Dire bio-cannon", image: "", profiles: [{ range: '48"', attacks: "D6+6", skill: "3+", strength: "10", ap: "-3", damage: "3", keywords: ["BLAST"] }] },
+      { id: "hierophant-lashwhip-pods", name: "Lashwhip pods", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "hierophant-titanic-scything-talons", name: "Titanic scything talons", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "20", ap: "-2", damage: "D6+1" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Apex-beast",
+        description: "Each time this model makes an attack that targets a unit that is Battle-shocked, add 1 to the Hit roll.",
+      },
+      {
+        name: "Stalking Forward",
+        description: "Each time this model makes a Normal, Advance or Fall Back move, it can move over models (excluding TITANIC models) and terrain features that are 4\" or less in height as if they were not there.",
+      },
+      {
+        name: "Damaged: 1-10 Wounds Remaining",
+        description: "While this model has 1-10 wounds remaining, subtract 6 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
     ledBy: [],
   },
 
@@ -909,12 +1022,20 @@ export const tyranidsUnits: Unit[] = [
     faction: "tyranids",
     category: "transport",
     points: 105,
+    abilities: [
+      {
+        name: "Aerial Seeding",
+        description: "This model must start the battle in Reserves, but neither it nor any units embarked within it are counted towards any limits placed on the maximum number of Reserves units you can start the battle with. This model can be set up in the Reinforcements step of your first, second or third Movement phase, regardless of any mission rules. Any units embarked within this model must immediately disembark after it has been set up on the battlefield, and they must be set up more than 9\" away from all enemy models. After this model has been set up on the battlefield, no units can embark within it.",
+      },
+    ],
     defaultWargear: [
-      { id: "tyrannocyte-bio-weapons", name: "Tyrannocyte bio-weapons", image: "" },
-      { id: "flensing-whips", name: "Flensing whips", image: "" },
+      { id: "tyrannocyte-bio-weapons", name: "Tyrannocyte bio-weapons", image: "", profiles: [{ range: '24"', attacks: "5", skill: "4+", strength: "5", ap: "-1", damage: "2" }] },
+      { id: "flensing-whips", name: "Flensing whips", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "4+", strength: "7", ap: "-1", damage: "2" }] },
     ],
     wargear: [],
     ledBy: [],
+    transportCapacity: 20,
+    monsterTransportCapacity: 1,
   },
 
 ];

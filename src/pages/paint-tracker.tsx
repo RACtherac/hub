@@ -128,6 +128,83 @@ function DetailView({
     link.click();
     URL.revokeObjectURL(url);
   }
+
+  function exportPDF() {
+    const cols = record.collections
+      .map((c) => ({ ...c, paints: c.paints.filter((p) => p.color || p.brand) }))
+      .filter((c) => c.paints.length > 0);
+
+    const collectionsHTML = cols.map((col) => `
+      ${col.name ? `<h3 class="col-name">${col.name}</h3>` : ""}
+      <table>
+        <thead>
+          <tr><th>#</th><th>Color</th><th>Brand</th><th>Area</th><th>Technique</th></tr>
+        </thead>
+        <tbody>
+          ${col.paints.map((p, i) => `
+            <tr>
+              <td class="num">${String(i + 1).padStart(2, "0")}</td>
+              <td><strong>${p.color || "—"}</strong></td>
+              <td>${p.brand || "—"}</td>
+              <td>${p.area || "—"}</td>
+              <td>${p.technique || "—"}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `).join("");
+
+    const imageHTML = record.imageBase64
+      ? `<img src="${record.imageBase64}" class="mini-img" alt="${record.name}" />`
+      : "";
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${record.name || "Paint Recipe"}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 12px; color: #1a1a1a; padding: 32px; }
+    .header { display: flex; gap: 24px; align-items: flex-start; margin-bottom: 28px; border-bottom: 2px solid #1a1a1a; padding-bottom: 20px; }
+    .mini-img { width: 120px; height: 120px; object-fit: cover; border: 1px solid #ccc; flex-shrink: 0; }
+    .meta { flex: 1; }
+    .faction { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #666; margin-bottom: 4px; }
+    .mini-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .date { font-size: 10px; color: #999; margin-bottom: 10px; }
+    .notes { font-size: 11px; color: #444; line-height: 1.6; border-left: 3px solid #e8c547; padding-left: 10px; }
+    .recipe-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: #999; margin-bottom: 14px; }
+    .col-name { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin: 16px 0 8px; color: #333; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    th { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; text-align: left; padding: 6px 8px; background: #f4f4f4; border-bottom: 1px solid #ddd; color: #666; }
+    td { padding: 7px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+    td.num { color: #aaa; font-size: 10px; width: 28px; }
+    tr:last-child td { border-bottom: none; }
+    .footer { margin-top: 32px; font-size: 9px; color: #bbb; letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    ${imageHTML}
+    <div class="meta">
+      <p class="faction">${record.faction || "Unknown Faction"}</p>
+      <h1 class="mini-name">${record.name || "Untitled Miniature"}</h1>
+      <p class="date">Recorded ${new Date(record.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</p>
+      ${record.notes ? `<p class="notes">${record.notes}</p>` : ""}
+    </div>
+  </div>
+  <p class="recipe-label">// paint recipe</p>
+  ${cols.length === 0 ? "<p>No paints recorded.</p>" : collectionsHTML}
+  <p class="footer">Exported from Paint Tracker · ${new Date().toLocaleDateString()}</p>
+  <script>window.onload = () => { window.print(); }<\/script>
+</body>
+</html>`;
+
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(html);
+    win.document.close();
+  }
   const collections = record.collections
     .map((c) => ({
       ...c,
@@ -146,7 +223,10 @@ function DetailView({
             edit
           </button>
           <button className="pt-io-btn" onClick={exportRecord}>
-            export ↓
+            JSON ↓
+          </button>
+          <button className="pt-io-btn" onClick={exportPDF}>
+            PDF ↓
           </button>
           <button className="pt-delete-btn" onClick={onDelete}>
             delete
@@ -235,6 +315,8 @@ function EditorForm({
   );
   const [notes, setNotes] = useState(initial?.notes ?? "");
   const fileRef = useRef<HTMLInputElement>(null);
+  const dragPaint = useRef<{ collectionId: string; paintId: string } | null>(null);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
 
   function handleImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -296,6 +378,27 @@ function EditorForm({
           : c
       )
     );
+  }
+
+  function handleDragStart(collectionId: string, paintId: string) {
+    dragPaint.current = { collectionId, paintId };
+  }
+
+  function handleDrop(targetCollectionId: string) {
+    setDropTarget(null);
+    const src = dragPaint.current;
+    if (!src) return;
+    dragPaint.current = null;
+    if (src.collectionId === targetCollectionId) return;
+    setCollections((prev) => {
+      const paint = prev.find((c) => c.id === src.collectionId)?.paints.find((p) => p.id === src.paintId);
+      if (!paint) return prev;
+      return prev.map((c) => {
+        if (c.id === src.collectionId) return { ...c, paints: c.paints.filter((p) => p.id !== src.paintId) };
+        if (c.id === targetCollectionId) return { ...c, paints: [...c.paints, paint] };
+        return c;
+      });
+    });
   }
 
   function handleSave() {
@@ -394,7 +497,13 @@ function EditorForm({
           </div>
 
           {collections.map((col, colIndex) => (
-            <div key={col.id} className="pt-collection-block">
+            <div
+              key={col.id}
+              className={`pt-collection-block${dropTarget === col.id ? " pt-collection-block--drop-target" : ""}`}
+              onDragOver={(e) => { e.preventDefault(); setDropTarget(col.id); }}
+              onDragLeave={() => setDropTarget(null)}
+              onDrop={() => handleDrop(col.id)}
+            >
               <div className="pt-collection-block-header">
                 <input
                   className="pt-input pt-collection-name-input"
@@ -415,7 +524,13 @@ function EditorForm({
 
               <div className="pt-paint-entries">
                 {col.paints.map((paint, i) => (
-                  <div key={paint.id} className="pt-paint-entry">
+                  <div
+                    key={paint.id}
+                    className="pt-paint-entry"
+                    draggable
+                    onDragStart={() => handleDragStart(col.id, paint.id)}
+                    onDragEnd={() => { dragPaint.current = null; setDropTarget(null); }}
+                  >
                     <span className="pt-entry-num">{String(i + 1).padStart(2, "0")}</span>
                     <input
                       className="pt-input pt-input-sm"

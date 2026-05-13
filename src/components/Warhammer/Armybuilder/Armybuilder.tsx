@@ -57,7 +57,7 @@ function getSavesForFaction(faction: Faction): ArmySave[] {
 
 const SUPERFACTIONS: Record<SuperFaction, Faction[]> = {
   imperium: ["space-marines", "astra-militarum", "adeptus-mechanicus", "adeptus-custodes", "adepta-sororitas", "grey-knights", "imperial-agents", "imperial-knights"],
-  chaos:    ["chaos-space-marine", "death-guard", "thousand-sons", "world-eaters", "chaos-daemons", "chaos-knights"],
+  chaos:    ["chaos-space-marine", "death-guard", "thousand-sons", "world-eaters", "chaos-daemons", "chaos-knights", "emperors-children"],
   xenos:    ["tyranids", "necrons", "orks", "tau-empire", "aeldari", "drukhari", "genestealer-cults", "leagues-of-votann"],
 };
 
@@ -82,6 +82,7 @@ const FACTION_LABELS: Record<Faction, string> = {
   "world-eaters":       "World Eaters",
   "chaos-daemons":      "Chaos Daemons",
   "chaos-knights":      "Chaos Knights",
+  "emperors-children":  "Emperor's Children",
   "tyranids":           "Tyranids",
   "necrons":            "Necrons",
   "orks":               "Orks",
@@ -92,7 +93,7 @@ const FACTION_LABELS: Record<Faction, string> = {
   "leagues-of-votann":  "Leagues of Votann",
 };
 
-const BASE_CATEGORIES: UnitCategory[] = ["battleline", "infantry", "mounted", "vehicle", "transport"];
+const BASE_CATEGORIES: UnitCategory[] = ["battleline", "infantry", "mounted", "vehicle", "monster", "transport"];
 
 const CATEGORY_COLORS: Record<string, string> = {
   battleline: "#4a9eff",
@@ -349,6 +350,8 @@ export default function ArmyBuilder() {
   const [infoOpen, setInfoOpen] = useState(false);
   const [addingUnit, setAddingUnit] = useState(false);
   const [openCategory, setOpenCategory] = useState<UnitCategory | null>(null);
+  const [unitSearch, setUnitSearch] = useState("");
+  const [pointsLimit, setPointsLimit] = useState<number>(0);
   const [characterMenuOpen, setCharacterMenuOpen] = useState(false);
   const [selectedFaction, setSelectedFaction] = useState<Faction>("space-marines");
   const [openSuperFaction, setOpenSuperFaction] = useState<SuperFaction | null>(null);
@@ -370,11 +373,9 @@ export default function ArmyBuilder() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const categories = (selectedFaction === "tyranids"
-    ? BASE_CATEGORIES.map((c) => (c === "vehicle" ? "monster" : c))
-    : BASE_CATEGORIES
-  )
+  const categories = BASE_CATEGORIES
     .filter((c) => c !== "mounted" || units.some((u) => u.category === "mounted" && u.faction === selectedFaction))
+    .filter((c) => c !== "monster" || units.some((u) => u.category === "monster" && u.faction === selectedFaction))
     .filter((c) => selectedFaction !== "chaos-knights" || (c !== "battleline" && c !== "infantry"));
 
   const getUnitsByCategory = (category: UnitCategory) =>
@@ -859,8 +860,48 @@ export default function ArmyBuilder() {
             onBlur={(e) => { e.currentTarget.style.borderColor = "transparent"; e.currentTarget.style.borderBottomColor = "var(--border-2)"; }}
           />
           <div>
-            <div style={s.pointsLabel}>Army Strength</div>
-            <div style={s.pointsValue}>{totalPoints} <span style={{ fontSize: "12px", color: "var(--text-dim)" }}>pts</span></div>
+            <div style={{ ...s.pointsLabel, display: "flex", alignItems: "center", gap: "6px" }}>
+              Army Strength
+              {pointsLimit > 0 && totalPoints > pointsLimit && (
+                <span style={{ color: "#e05252", fontSize: "9px", letterSpacing: "0.1em" }}>OVER LIMIT</span>
+              )}
+            </div>
+            <div style={{
+              ...s.pointsValue,
+              color: pointsLimit > 0 && totalPoints > pointsLimit ? "#e05252" : "var(--accent)",
+              transition: "color 0.2s",
+            }}>
+              {totalPoints}
+              {pointsLimit > 0 && (
+                <span style={{ fontSize: "13px", color: pointsLimit > 0 && totalPoints > pointsLimit ? "#e05252" : "var(--text-dim)", fontWeight: 400 }}>
+                  {" "}/ {pointsLimit}
+                </span>
+              )}
+              <span style={{ fontSize: "12px", color: "var(--text-dim)" }}> pts</span>
+            </div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+            <div style={{ ...s.pointsLabel }}>Limit</div>
+            <input
+              type="number"
+              min={0}
+              value={pointsLimit || ""}
+              placeholder="—"
+              onChange={(e) => setPointsLimit(Number(e.target.value) || 0)}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: "72px",
+                background: "none",
+                border: "1px solid var(--border-2)",
+                color: "var(--text)",
+                fontFamily: "var(--font-mono)",
+                fontSize: "13px",
+                fontWeight: 700,
+                padding: "3px 6px",
+                outline: "none",
+                textAlign: "center",
+              }}
+            />
           </div>
           <button
             style={{
@@ -954,31 +995,53 @@ export default function ArmyBuilder() {
 
                 {isOpen && addingUnit && (
                   <div style={s.dropdown}>
-                    {available.length === 0 ? (
+                    <div style={{ padding: "6px 8px", borderBottom: "1px solid var(--border)" }}>
+                      <input
+                        autoFocus
+                        value={unitSearch}
+                        onChange={(e) => setUnitSearch(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        placeholder="Search units…"
+                        style={{
+                          width: "100%",
+                          background: "var(--bg)",
+                          border: "1px solid var(--border-2)",
+                          color: "var(--text)",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "11px",
+                          letterSpacing: "0.05em",
+                          padding: "5px 8px",
+                          outline: "none",
+                        }}
+                      />
+                    </div>
+                    {available.filter((u) => u.name.toLowerCase().includes(unitSearch.toLowerCase())).length === 0 ? (
                       <div style={{ ...s.dropdownItem, color: "var(--text-dim)", cursor: "default" }}>
-                        No units available
+                        No units found
                       </div>
-                    ) : available.map((unit) => (
-                      <button
-                        key={unit.id}
-                        style={s.dropdownItem}
-                        onMouseEnter={(e) => {
-                          (e.target as HTMLElement).style.background = "var(--accent-dim)";
-                          (e.target as HTMLElement).style.color = "var(--accent)";
-                        }}
-                        onMouseLeave={(e) => {
-                          (e.target as HTMLElement).style.background = "none";
-                          (e.target as HTMLElement).style.color = "var(--text)";
-                        }}
-                        onClick={() => addUnit(unit.id)}
-                      >
-                        <span style={{ color: "var(--text-dim)", marginRight: "8px" }}>+</span>
-                        {unit.name}
-                        <span style={{ float: "right", color: "var(--accent)", fontFamily: "var(--font-mono)" }}>
-                          {unit.points}
-                        </span>
-                      </button>
-                    ))}
+                    ) : available
+                        .filter((u) => u.name.toLowerCase().includes(unitSearch.toLowerCase()))
+                        .map((unit) => (
+                          <button
+                            key={unit.id}
+                            style={s.dropdownItem}
+                            onMouseEnter={(e) => {
+                              (e.target as HTMLElement).style.background = "var(--accent-dim)";
+                              (e.target as HTMLElement).style.color = "var(--accent)";
+                            }}
+                            onMouseLeave={(e) => {
+                              (e.target as HTMLElement).style.background = "none";
+                              (e.target as HTMLElement).style.color = "var(--text)";
+                            }}
+                            onClick={() => { addUnit(unit.id); setUnitSearch(""); }}
+                          >
+                            <span style={{ color: "var(--text-dim)", marginRight: "8px" }}>+</span>
+                            {unit.name}
+                            <span style={{ float: "right", color: "var(--accent)", fontFamily: "var(--font-mono)" }}>
+                              {unit.points}
+                            </span>
+                          </button>
+                        ))}
                   </div>
                 )}
               </div>
@@ -1065,7 +1128,7 @@ export default function ArmyBuilder() {
 
           <button
             style={s.addBtn(addingUnit)}
-            onClick={(e) => { e.stopPropagation(); setAddingUnit(!addingUnit); if (addingUnit) setOpenCategory(null); }}
+            onClick={(e) => { e.stopPropagation(); setAddingUnit(!addingUnit); if (addingUnit) { setOpenCategory(null); setUnitSearch(""); } }}
           >
             {addingUnit ? "✕ Cancel" : "+ Add Unit"}
           </button>

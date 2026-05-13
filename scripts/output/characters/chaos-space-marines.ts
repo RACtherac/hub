@@ -49,13 +49,30 @@ export const chaosSpaceMarinesCharacters: Character[] = [
     faction: "chaos-space-marine",
     image: "",
     points: 90,
-    canAttachTo: [],
-    defaultWargear: [
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
-      { id: "daemon-hammer", name: "Daemon hammer", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
+    canAttachTo: ["chosen", "legionaries", "nemesis-claw", "red-corsairs-raiders"],
+    abilities: [
+      {
+        name: "Lord of Chaos",
+        description: "Once per battle round, one unit from your army with this ability can use it when its unit is targeted with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP.",
+      },
+      {
+        name: "Chance for Glory",
+        description: "Once per battle, at the start of the Fight phase, this model can use this ability. If it does, until the end of the phase, improve the Strength, Attacks, Armour Penetration and Damage characteristics of melee weapons equipped by this model by 1.",
+      },
     ],
     wargear: [
-      { id: "accursed-weapon", name: "Accursed weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "-2", damage: "1" }] },
+      { id: "chaos-lord-plasma-pistol", name: "Plasma pistol", image: "", profiles: [
+        { profileName: "standard", range: '12"', attacks: "1", skill: "2+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+        { profileName: "supercharge", range: '12"', attacks: "1", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+      ]},
+      { id: "chaos-lord-accursed-weapon", name: "Accursed weapon", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "chaos-lord-astartes-chainsword", name: "Astartes chainsword", image: "", profiles: [{ range: "Melee", attacks: "7", skill: "2+", strength: "4", ap: "-1", damage: "1" }] },
+      { id: "chaos-lord-daemon-hammer", name: "Daemon hammer", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "chaos-lord-power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "8", ap: "-2", damage: "2" }] },
+    ],
+    wargearGroups: [
+      ["chaos-lord-daemon-hammer", "chaos-lord-accursed-weapon", "chaos-lord-astartes-chainsword"],
+      ["chaos-lord-plasma-pistol", "chaos-lord-power-fist"],
     ],
   },
 
