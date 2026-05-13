@@ -47,8 +47,9 @@ export interface UnitNote {
   triggersWargear?: string[];
   maxCountByModelCount?: Record<number, number>;
   replacesDefaultWargear?: string;
-  exclusiveWith?: string;
+  exclusiveWith?: string | string[];
   noteGroup?: string;
+  requiredWargear?: string[];
 }
 
 export interface WeaponProfile {
@@ -84,6 +85,7 @@ export interface WargearOption {
   maxCountReducedByWargear?: string[];
   linkedCounterId?: string;
   wargearGroup?: string;
+  showForModelCounts?: number[];
 }
 
 export interface Unit {

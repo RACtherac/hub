@@ -54,14 +54,28 @@ export const chaosKnightsCharacters: Character[] = [
     name: "Chaos Cerastus Knight Lancer",
     faction: "chaos-knights",
     image: "",
-    points: 420,
+    points: 385,
     canAttachTo: [],
     defaultWargear: [
-      { id: "cerastus-shock-lance", name: "Cerastus shock lance", image: "", profiles: [{ range: '18"', attacks: "4", skill: "3+", strength: "8", ap: "-2", damage: "3", keywords: ["HEAVY"] }] },
-      { id: "cerastus-shock-lance-strike", name: "Cerastus shock lance – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-4", damage: "D6+2" }] },
-      { id: "cerastus-shock-lance-sweep", name: "Cerastus shock lance – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-3", damage: "2" }] },
+      { id: "cerastus-shock-lance", name: "Cerastus shock lance", image: "", profiles: [{ range: '12"', attacks: "6", skill: "3+", strength: "6", ap: "0", damage: "2", keywords: ["ASSAULT", "SUSTAINED HITS 2"] }] },
+      { id: "cerastus-shock-lance-strike", name: "► Cerastus shock lance – strike lance", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "20", ap: "-3", damage: "8" }] },
+      { id: "cerastus-shock-lance-sweep", name: "► Cerastus shock lance – sweep", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "2+", strength: "10", ap: "-2", damage: "3" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Shock Charge",
+        description: "You can target this model with the Tank Shock Stratagem for 0CP, and can do so even if you have already targeted a different unit with that Stratagem this phase.",
+      },
+      {
+        name: "Dark Fervour (Aura)",
+        description: "While a friendly WAR DOG model is within 6\" of this model, ranged weapons equipped by that War Dog model have the [ASSAULT] ability.",
+      },
+      {
+        name: "Damaged: 1-10 Wounds Remaining",
+        description: "While this model has 1-10 wounds remaining, subtract 5 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {
@@ -158,25 +172,69 @@ export const chaosKnightsCharacters: Character[] = [
     name: "Knight Despoiler",
     faction: "chaos-knights",
     image: "",
-    points: 400,
+    points: 390,
     canAttachTo: [],
     defaultWargear: [
-      { id: "daemonbreath-meltagun", name: "Daemonbreath meltagun", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 3"] }] },
-      { id: "reaper-chainsword-strike", name: "Reaper chainsword – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
-      { id: "reaper-chainsword-sweep", name: "Reaper chainsword – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
-      { id: "titanic-feet", name: "Titanic feet", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "4+", strength: "8", ap: "-1", damage: "2" }] },
-      { id: "warpstrike-claw-strike", name: "Warpstrike claw – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "16", ap: "-4", damage: "D6+4" }] },
-      { id: "warpstrike-claw-sweep", name: "Warpstrike claw – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-3", damage: "3" }] },
+      { id: "kd-titanic-feet", name: "Titanic feet", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "8", ap: "-1", damage: "2" }] },
     ],
     wargear: [
-      { id: "daemonbreath-thermal-cannon", name: "Daemonbreath thermal cannon", image: "", profiles: [{ range: '24"', attacks: "D6+3", skill: "3+", strength: "14", ap: "-4", damage: "D6", keywords: ["BLAST", "HEAVY", "MELTA 4"] }] },
-      { id: "despoiler-battle-cannon", name: "Despoiler battle cannon", image: "", profiles: [{ range: '72"', attacks: "D6+3", skill: "3+", strength: "12", ap: "-3", damage: "D6", keywords: ["BLAST", "HEAVY"] }] },
-      { id: "despoiler-gatling-cannon", name: "Despoiler gatling cannon", image: "", profiles: [{ range: '48"', attacks: "18", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["HEAVY"] }] },
-      { id: "havoc-missile-pod", name: "Havoc missile pod", image: "", profiles: [{ range: '48"', attacks: "D6", skill: "3+", strength: "10", ap: "-2", damage: "D6", keywords: ["BLAST", "HEAVY"] }] },
-      { id: "heavy-darkflamer", name: "Heavy darkflamer", image: "", profiles: [{ range: '18"', attacks: "D6+6", skill: "N/A", strength: "9", ap: "-2", damage: "2", keywords: ["IGNORES COVER", "TORRENT"] }] },
-      { id: "diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "6", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["HEAVY"] }] },
-      { id: "ruinspear-rocket-pod", name: "Ruinspear rocket pod", image: "", profiles: [{ range: '48"', attacks: "3", skill: "3+", strength: "10", ap: "-4", damage: "D6+3", keywords: ["HEAVY"] }] },
-      { id: "hellstorm-autocannons", name: "Hellstorm autocannons", image: "", profiles: [{ range: '48"', attacks: "4", skill: "3+", strength: "9", ap: "-1", damage: "3", keywords: ["HEAVY"] }] },
+      { id: "kd-meltagun", name: "Daemonbreath meltagun", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2"] }] },
+      { id: "kd-diabolus-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] }] },
+      { id: "kd-arm1-chainsword", name: "Reaper chainsword", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-4", damage: "6" },
+        { profileName: "sweep", range: "Melee", attacks: "12", skill: "3+", strength: "9", ap: "-3", damage: "2" },
+      ]},
+      { id: "kd-arm1-thermal", name: "Daemonbreath thermal cannon", image: "", profiles: [{ range: '24"', attacks: "2D3", skill: "3+", strength: "12", ap: "-4", damage: "D6", keywords: ["BLAST", "MELTA 6"] }] },
+      { id: "kd-arm1-gatling-dark", name: "Despoiler gatling cannon and Heavy darkflamer", image: "", profiles: [
+        { profileName: "Despoiler gatling cannon", range: '36"', attacks: "18", skill: "3+", strength: "6", ap: "-2", damage: "2" },
+        { profileName: "Heavy darkflamer", range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] },
+      ]},
+      { id: "kd-arm1-battle-stubber", name: "Despoiler battle cannon and Diabolus heavy stubber", image: "", profiles: [
+        { profileName: "Despoiler battle cannon", range: '72"', attacks: "D6+3", skill: "3+", strength: "10", ap: "-1", damage: "3", keywords: ["BLAST", "RAPID FIRE D6+3"] },
+        { profileName: "Diabolus heavy stubber", range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] },
+      ]},
+      { id: "kd-arm2-warpstrike", name: "Warpstrike claw", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "4", skill: "3+", strength: "20", ap: "-3", damage: "8" },
+        { profileName: "sweep", range: "Melee", attacks: "8", skill: "3+", strength: "10", ap: "-2", damage: "3" },
+      ]},
+      { id: "kd-arm2-thermal", name: "Daemonbreath thermal cannon", image: "", profiles: [{ range: '24"', attacks: "2D3", skill: "3+", strength: "12", ap: "-4", damage: "D6", keywords: ["BLAST", "MELTA 6"] }] },
+      { id: "kd-arm2-gatling-dark", name: "Despoiler gatling cannon and Heavy darkflamer", image: "", profiles: [
+        { profileName: "Despoiler gatling cannon", range: '36"', attacks: "18", skill: "3+", strength: "6", ap: "-2", damage: "2" },
+        { profileName: "Heavy darkflamer", range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] },
+      ]},
+      { id: "kd-arm2-battle-stubber", name: "Despoiler battle cannon and Diabolus heavy stubber", image: "", profiles: [
+        { profileName: "Despoiler battle cannon", range: '72"', attacks: "D6+3", skill: "3+", strength: "10", ap: "-1", damage: "3", keywords: ["BLAST", "RAPID FIRE D6+3"] },
+        { profileName: "Diabolus heavy stubber", range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] },
+      ]},
+      { id: "kd-havoc-pod", name: "Havoc missile pod", image: "", profiles: [{ range: '48"', attacks: "D6+1", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST", "INDIRECT FIRE"] }] },
+      { id: "kd-ruinspear-pod", name: "Ruinspear rocket pod", image: "", profiles: [{ range: '48"', attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "D6" }] },
+      { id: "kd-hellstorm-autocannons", name: "Hellstorm autocannons", image: "", profiles: [{ range: '48"', attacks: "3", skill: "3+", strength: "7", ap: "-1", damage: "2", keywords: ["ANTI-FLY 2+", "TWIN-LINKED"] }] },
+    ],
+    wargearGroups: [
+      ["kd-meltagun", "kd-diabolus-stubber"],
+      ["kd-arm1-chainsword", "kd-arm1-thermal", "kd-arm1-gatling-dark", "kd-arm1-battle-stubber"],
+      ["kd-arm2-warpstrike", "kd-arm2-thermal", "kd-arm2-gatling-dark", "kd-arm2-battle-stubber"],
+      ["kd-havoc-pod", "kd-ruinspear-pod", "kd-hellstorm-autocannons"],
+    ],
+    wargearSections: [
+      { label: "Underslung Weapon", ids: ["kd-meltagun", "kd-diabolus-stubber"] },
+      { label: "Right Arm", ids: ["kd-arm1-chainsword", "kd-arm1-thermal", "kd-arm1-gatling-dark", "kd-arm1-battle-stubber"] },
+      { label: "Left Arm", ids: ["kd-arm2-warpstrike", "kd-arm2-thermal", "kd-arm2-gatling-dark", "kd-arm2-battle-stubber"] },
+      { label: "Carapace (Optional)", ids: ["kd-havoc-pod", "kd-ruinspear-pod", "kd-hellstorm-autocannons"] },
+    ],
+    abilities: [
+      {
+        name: "Dread Dominion (Aura)",
+        description: "While a friendly WAR DOG model is within 9\" of this model, improve that WAR DOG model's Leadership and Objective Control characteristics by 1.",
+      },
+      {
+        name: "Seething Hatred",
+        description: "Each time this model is selected to shoot or fight, you can re-roll one Hit roll or you can re-roll one Wound roll when resolving those attacks.",
+      },
+      {
+        name: "Damaged: 1-9 Wounds Remaining",
+        description: "While this model has 1-9 wounds remaining, subtract 5 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
   },
 
@@ -255,24 +313,5 @@ export const chaosKnightsCharacters: Character[] = [
     wargear: [],
   },
 
-  {
-    id: "war-dog-stalker",
-    name: "War Dog Stalker",
-    faction: "chaos-knights",
-    image: "",
-    points: 140,
-    canAttachTo: [],
-    defaultWargear: [
-      { id: "avenger-chaincannon", name: "Avenger chaincannon", image: "", profiles: [{ range: '36"', attacks: "12", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["HEAVY"] }] },
-      { id: "diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "6", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["HEAVY"] }] },
-      { id: "slaughterclaw", name: "Slaughterclaw", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-3", damage: "D6" }] },
-    ],
-    wargear: [
-      { id: "daemonbreath-spear", name: "Daemonbreath spear", image: "", profiles: [{ range: '24"', attacks: "D3+3", skill: "3+", strength: "9", ap: "-3", damage: "D6", keywords: ["HEAVY", "MELTA 3"] }] },
-      { id: "havoc-multi-launcher", name: "Havoc multi-launcher", image: "", profiles: [{ range: '36"', attacks: "D6+3", skill: "3+", strength: "6", ap: "0", damage: "1", keywords: ["BLAST", "HEAVY", "INDIRECT FIRE"] }] },
-      { id: "reaper-chaintalon-strike", name: "Reaper chaintalon – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-3", damage: "D6" }] },
-      { id: "reaper-chaintalon-sweep", name: "Reaper chaintalon – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "5", ap: "-2", damage: "2" }] },
-    ],
-  },
 
 ];

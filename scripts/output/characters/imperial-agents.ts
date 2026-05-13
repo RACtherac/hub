@@ -10,10 +10,20 @@ export const imperialAgentsCharacters: Character[] = [
     points: 100,
     canAttachTo: [],
     defaultWargear: [
-      { id: "neural-shredder", name: "Neural shredder", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "5", ap: "0", damage: "D3", keywords: ["IGNORES COVER", "PISTOL", "PSYCHIC"] }] },
-      { id: "phase-sword-and-poison-blades", name: "Phase sword and poison blades", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "-3", damage: "1", keywords: ["LETHAL HITS"] }] },
+      { id: "neural-shredder", name: "Neural shredder", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 2+", "PRECISION", "TORRENT"] }] },
+      { id: "phase-sword-and-poison-blades", name: "Phase sword and poison blades", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-4", damage: "2", keywords: ["LETHAL HITS", "PRECISION"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Acrobatic Escape",
+        description: "At the end of the Fight phase, if this model is within Engagement Range of one or more enemy units, it can make a Fall Back move of up to D6\". In addition, at the end of your opponent's turn, if this model is not within 3\" of one or more enemy units, you can remove it from the battlefield and then, in the Reinforcements step of your next Movement phase, set it up anywhere on the battlefield that is more than 9\" horizontally away from all enemy models. If the battle ends and this model is not on the battlefield, it is destroyed.",
+      },
+      {
+        name: "Lord of Deceit (Aura)",
+        description: "Each time your opponent targets a unit from their army with a Stratagem, if that unit is within 12\" of this model, increase the cost of that use of that Stratagem by 1CP.",
+      },
+    ],
   },
 
   {
@@ -24,10 +34,28 @@ export const imperialAgentsCharacters: Character[] = [
     points: 85,
     canAttachTo: [],
     defaultWargear: [
-      { id: "animus-speculum", name: "Animus speculum", image: "", profiles: [{ range: '18"', attacks: "3", skill: "2+", strength: "5", ap: "-3", damage: "2", keywords: ["ANTI-PSYKER 4+", "DEVASTATING WOUNDS"] }] },
-      { id: "life-draining-touch", name: "Life-draining touch", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "5", ap: "-3", damage: "2" }] },
+      { id: "animus-speculum", name: "Animus speculum", image: "", profiles: [{ range: '24"', attacks: "3", skill: "2+", strength: "5", ap: "-2", damage: "D3", keywords: ["ANTI-PSYKER 2+", "ASSAULT", "PRECISION", "PSYCHIC ASSASSIN"] }] },
+      { id: "life-draining-touch", name: "Life-draining touch", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "4", ap: "-2", damage: "2", keywords: ["ANTI-PSYKER 2+", "DEVASTATING WOUNDS", "PRECISION"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Psychic Assassin",
+        description: "Each time you select a PSYKER unit as the target for this weapon, until those attacks are resolved, change the Attacks characteristic of this weapon to 6.",
+      },
+      {
+        name: "Etheric Emergence",
+        description: "In your Movement phase, when this model is set up on the battlefield using the Deep Strike ability, it can perform an etheric emergence. If it does, this model can be set up anywhere on the battlefield that is more than 6\" horizontally away from all enemy units, but until the end of the turn, it is not eligible to declare a charge.",
+      },
+      {
+        name: "Abomination",
+        description: "This model has the Feel No Pain 2+ ability against Psychic Attacks.",
+      },
+      {
+        name: "Soulless Horror",
+        description: "Once per battle, at the start of any Command phase, this model can use this ability. If it does, each enemy unit within 9\" of this model must take a Battle-shock test, subtracting 1 from that test (or subtracting 2 if that unit is a PSYKER).",
+      },
+    ],
   },
 
   {
@@ -38,10 +66,20 @@ export const imperialAgentsCharacters: Character[] = [
     points: 110,
     canAttachTo: [],
     defaultWargear: [
-      { id: "executioner-pistol", name: "Executioner pistol", image: "", profiles: [{ profileName: "bolt rounds", range: '12"', attacks: "3", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }, { profileName: "bio-explosive", range: '12"', attacks: "1", skill: "2+", strength: "3", ap: "0", damage: "D3", keywords: ["BLAST", "PISTOL"] }] },
-      { id: "power-sword-and-neuro-gauntlet", name: "Power sword and neuro gauntlet", image: "", profiles: [{ profileName: "power sword", range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "1" }, { profileName: "neuro gauntlet", range: "Melee", attacks: "3", skill: "4+", strength: "5", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 2+"] }] },
+      { id: "executioner-pistol", name: "Executioner pistol", image: "", profiles: [{ range: '12"', attacks: "4", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "PISTOL", "PRECISION", "SUSTAINED HITS 3"] }] },
+      { id: "power-sword-and-neuro-gauntlet", name: "Power sword and neuro gauntlet", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-2", damage: "2", keywords: ["ANTI-INFANTRY 3+", "PRECISION", "SUSTAINED HITS 3"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Frenzon",
+        description: "This model is eligible to shoot and declare a charge in a turn in which it Advanced.",
+      },
+      {
+        name: "Overkill",
+        description: "Once per battle, in your Movement phase, this model can use this ability before it makes a Normal move. If it does, until the end of the turn, add 6\" to this model's Move characteristic and add 3 to the Attacks characteristic of this model's melee weapons.",
+      },
+    ],
   },
 
   {
@@ -252,11 +290,21 @@ export const imperialAgentsCharacters: Character[] = [
     points: 110,
     canAttachTo: [],
     defaultWargear: [
-      { id: "exitus-pistol", name: "Exitus pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "5", ap: "-3", damage: "D3", keywords: ["DEVASTATING WOUNDS", "PISTOL"] }] },
-      { id: "exitus-rifle", name: "Exitus rifle", image: "", profiles: [{ range: '36"', attacks: "1", skill: "2+", strength: "5", ap: "-3", damage: "D3+3", keywords: ["DEVASTATING WOUNDS", "HEAVY", "PRECISION"] }] },
+      { id: "exitus-pistol", name: "Exitus pistol", image: "", profiles: [{ range: '12"', attacks: "3", skill: "2+", strength: "6", ap: "-2", damage: "3", keywords: ["DEVASTATING WOUNDS", "IGNORES COVER", "PISTOL", "PRECISION"] }] },
+      { id: "exitus-rifle", name: "Exitus rifle", image: "", profiles: [{ range: '48"', attacks: "1", skill: "2+", strength: "8", ap: "-3", damage: "D3+3", keywords: ["DEVASTATING WOUNDS", "HEAVY", "IGNORES COVER", "PRECISION"] }] },
       { id: "vindicare-combat-knife", name: "Vindicare combat knife", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "4", ap: "-1", damage: "1" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Deadshot",
+        description: "Each time this model makes a ranged attack, when selecting targets for that attack, you can ignore the Lone Operative ability.",
+      },
+      {
+        name: "Shieldbreaker",
+        description: "Once per battle, when selecting targets for this model's exitus rifle, it can fire a shieldbreaker round. If it does, until the end of the phase, each time this model makes an attack with that weapon, add 1 to the Wound roll and any successful Wound roll scores a Critical Wound.",
+      },
+    ],
   },
 
   {

@@ -100,6 +100,8 @@ export default function PokemonTCGTool() {
     player2: { active: null, bench: [null, null, null] },
   });
   const [turn, setTurn] = useState<PlayerTurn>("player1");
+  const [attackMode, setAttackMode] = useState(false);
+  const [attackDamage, setAttackDamage] = useState("30");
 
   function handleStart(picks1: EnergyType[], picks2: EnergyType[]) {
     setP1Picks(picks1);
@@ -112,11 +114,28 @@ export default function PokemonTCGTool() {
 
   function endTurn() {
     const next: PlayerTurn = turn === "player1" ? "player2" : "player1";
-    // Draw 1 energy for the player whose turn is starting
     if (next === "player1") setP1Energy(drawOne(p1Picks));
     else setP2Energy(drawOne(p2Picks));
     setTurn(next);
+    setAttackMode(false);
   }
+
+  const attackPokemon = (targetPlayer: "player1" | "player2", type: "active" | "bench", index?: number) => {
+    const dmg = parseInt(attackDamage, 10);
+    if (!dmg || dmg <= 0) return;
+    const updated = { ...board };
+    const player = updated[targetPlayer];
+    if (type === "active" && player.active) {
+      player.active.hp -= dmg;
+      if (player.active.hp <= 0) player.active = null;
+    }
+    if (type === "bench" && index !== undefined && player.bench[index]) {
+      player.bench[index]!.hp -= dmg;
+      if (player.bench[index]!.hp <= 0) player.bench[index] = null;
+    }
+    setBoard(updated);
+    setAttackMode(false);
+  };
 
   const createPokemon = (type: "active" | "bench", index: number | undefined, hp: number) => {
     const updated = { ...board };
@@ -127,9 +146,9 @@ export default function PokemonTCGTool() {
     setBoard(updated);
   };
 
-  const damagePokemon = (type: "active" | "bench", index?: number) => {
+  const damagePokemon = (targetPlayer: "player1" | "player2", type: "active" | "bench", index?: number) => {
     const updated = { ...board };
-    const player = updated[turn];
+    const player = updated[targetPlayer];
     if (type === "active" && player.active) {
       player.active.hp -= 10;
       if (player.active.hp <= 0) player.active = null;
@@ -141,9 +160,9 @@ export default function PokemonTCGTool() {
     setBoard(updated);
   };
 
-  const healPokemon = (type: "active" | "bench", index?: number) => {
+  const healPokemon = (targetPlayer: "player1" | "player2", type: "active" | "bench", index?: number) => {
     const updated = { ...board };
-    const player = updated[turn];
+    const player = updated[targetPlayer];
     if (type === "active" && player.active)
       player.active.hp = Math.min(player.active.hp + 10, player.active.maxHp);
     if (type === "bench" && index !== undefined && player.bench[index])
@@ -216,20 +235,41 @@ export default function PokemonTCGTool() {
             playerId="player2"
             board={board.player2}
             isActive={turn === "player2"}
+            isAttackTarget={attackMode && turn === "player1"}
             energyPool={p2Energy ? [p2Energy] : []}
             selectedSlot={null}
             onSelectSlot={() => {}}
             onCreatePokemon={createPokemon}
-            onDamage={damagePokemon}
-            onHeal={healPokemon}
+            onDamage={(type, index) => damagePokemon("player2", type, index)}
+            onHeal={(type, index) => healPokemon("player2", type, index)}
             onDropEnergy={dropEnergy}
             onMovePokemon={movePokemon}
+            onAttack={(type, index) => attackPokemon("player2", type, index)}
           />
 
           <div className="pkm-middle">
             <div className="pkm-turn-info">
               <span className="pkm-turn-label">Turn</span>
               <span className="pkm-turn-value">{turn === "player1" ? "Player 1" : "Player 2"}</span>
+            </div>
+            <div className="pkm-attack-area">
+              {attackMode ? (
+                <>
+                  <span className="pkm-attack-hint">Damage:</span>
+                  <input
+                    className="pkm-attack-input"
+                    type="number"
+                    min={1}
+                    value={attackDamage}
+                    onChange={(e) => setAttackDamage(e.target.value)}
+                    autoFocus
+                  />
+                  <span className="pkm-attack-hint">→ pick a target</span>
+                  <button className="pkm-attack-cancel-btn" onClick={() => setAttackMode(false)}>Cancel</button>
+                </>
+              ) : (
+                <button className="pkm-attack-btn" onClick={() => setAttackMode(true)}>⚔ Attack</button>
+              )}
             </div>
             <button className="pkm-end-turn-btn" onClick={endTurn}>
               End Turn →
@@ -240,14 +280,16 @@ export default function PokemonTCGTool() {
             playerId="player1"
             board={board.player1}
             isActive={turn === "player1"}
+            isAttackTarget={attackMode && turn === "player2"}
             energyPool={p1Energy ? [p1Energy] : []}
             selectedSlot={null}
             onSelectSlot={() => {}}
             onCreatePokemon={createPokemon}
-            onDamage={damagePokemon}
-            onHeal={healPokemon}
+            onDamage={(type, index) => damagePokemon("player1", type, index)}
+            onHeal={(type, index) => healPokemon("player1", type, index)}
             onDropEnergy={dropEnergy}
             onMovePokemon={movePokemon}
+            onAttack={(type, index) => attackPokemon("player1", type, index)}
           />
         </div>
       )}

@@ -6,12 +6,14 @@ type Props = {
   selected: boolean;
   slotType: "active" | "bench";
   slotIndex?: number;
+  isAttackTarget?: boolean;
   onSelect: () => void;
   onCreate: (hp: number) => void;
   onDamage: () => void;
   onHeal: () => void;
   onDropEnergy: (energy: EnergyType) => void;
   onPokemonDrop: (pokemon: Pokemon, fromType: "active" | "bench", fromIndex?: number) => void;
+  onAttack?: () => void;
 };
 
 const ENERGY_ICONS: Record<EnergyType, string> = {
@@ -20,8 +22,8 @@ const ENERGY_ICONS: Record<EnergyType, string> = {
 };
 
 export default function PokemonSlot({
-  pokemon, selected, slotType, slotIndex,
-  onSelect, onCreate, onDamage, onHeal, onDropEnergy, onPokemonDrop,
+  pokemon, selected, slotType, slotIndex, isAttackTarget,
+  onSelect, onCreate, onDamage, onHeal, onDropEnergy, onPokemonDrop, onAttack,
 }: Props) {
   const [adding, setAdding] = useState(false);
   const [hpInput, setHpInput] = useState("100");
@@ -84,6 +86,35 @@ export default function PokemonSlot({
 
   const hpPct = Math.max(0, Math.min(100, (pokemon.hp / pokemon.maxHp) * 100));
   const hpColor = hpPct > 50 ? "#22c55e" : hpPct > 25 ? "#e8c547" : "#ef4444";
+
+  if (isAttackTarget && onAttack) {
+    return (
+      <div
+        className={`pkm-slot pkm-slot--target${isActiveSlot ? " pkm-slot--active-slot" : ""}`}
+        onClick={pokemon ? onAttack : undefined}
+      >
+        {pokemon ? (
+          <div className="pkm-pokemon pkm-pokemon--target">
+            <div className="pkm-hp-row">
+              <span className="pkm-hp-label">HP</span>
+              <span className="pkm-hp-value">{pokemon.hp}</span>
+              <div className="pkm-hp-bar-wrap">
+                <div className="pkm-hp-bar" style={{ width: `${hpPct}%`, backgroundColor: hpColor }} />
+              </div>
+            </div>
+            <div className="pkm-energy-row">
+              {pokemon.energy.map((e, i) => (
+                <div key={i} className={`pkm-energy-pip pkm-pip--${e}`} title={e}>{ENERGY_ICONS[e]}</div>
+              ))}
+            </div>
+            <div className="pkm-target-hit">Hit!</div>
+          </div>
+        ) : (
+          <span className="pkm-slot-empty-label">—</span>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div

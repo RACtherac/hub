@@ -71,14 +71,28 @@ export const imperialKnightsCharacters: Character[] = [
     name: "Cerastus Knight Lancer",
     faction: "imperial-knights",
     image: "",
-    points: 430,
+    points: 395,
     canAttachTo: [],
     defaultWargear: [
-      { id: "cerastus-shock-lance", name: "Cerastus shock lance", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "9", ap: "-2", damage: "3" }] },
-      { id: "cerastus-shock-lance-strike", name: "Cerastus shock lance – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-4", damage: "4" }] },
-      { id: "cerastus-shock-lance-sweep", name: "Cerastus shock lance – sweep", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "cerastus-shock-lance", name: "Cerastus shock lance", image: "", profiles: [{ range: '12"', attacks: "6", skill: "3+", strength: "6", ap: "0", damage: "2", keywords: ["ASSAULT", "SUSTAINED HITS 2"] }] },
+      { id: "cerastus-shock-lance-strike", name: "► Cerastus shock lance – strike lance", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "20", ap: "-3", damage: "8" }] },
+      { id: "cerastus-shock-lance-sweep", name: "► Cerastus shock lance – sweep", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "2+", strength: "10", ap: "-2", damage: "3" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Lancer's Duty (Bondsman)",
+        description: "While a model is affected by this ability, it is eligible to declare a charge in a turn in which it Advanced.",
+      },
+      {
+        name: "Shock Charge",
+        description: "You can target this model with the Tank Shock Stratagem for 0CP, and can do so even if you have already targeted a different unit with that Stratagem this phase.",
+      },
+      {
+        name: "Damaged: 1-10 Wounds Remaining",
+        description: "While this model has 1-10 wounds remaining, subtract 5 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {

@@ -86,11 +86,25 @@ export const deathGuardCharacters: Character[] = [
     points: 160,
     canAttachTo: [],
     defaultWargear: [
-      { id: "plague-spewer", name: "Plague spewer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "LETHAL HITS", "TORRENT"] }] },
-      { id: "hellforged-weapons-strike", name: "Hellforged weapons – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-3", damage: "D6+1" }] },
-      { id: "hellforged-weapons-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "dpn-infernal-cannon", name: "Infernal cannon", image: "", profiles: [{ range: '24"', attacks: "3", skill: "2+", strength: "5", ap: "-1", damage: "2", keywords: ["LETHAL HITS"] }] },
+      { id: "dpn-hellforged-strike", name: "Hellforged weapons – strike", image: "", profiles: [{ range: "Melee", attacks: "7", skill: "2+", strength: "8", ap: "-2", damage: "3", keywords: ["LETHAL HITS"] }] },
+      { id: "dpn-hellforged-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "14", skill: "2+", strength: "6", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Death Guard Defenders",
+        description: "While this model is within 3\" of one or more friendly DEATH GUARD INFANTRY units, this model has the Lone Operative ability.",
+      },
+      {
+        name: "Fevered Strategist",
+        description: "Once per battle round, one model from your army with this ability can use it when a friendly DEATH GUARD unit within 12\" of that model is targeted with a Stratagem. If it does, reduce the CP cost of that usage of that Stratagem by 1CP.",
+      },
+      {
+        name: "Miasma of Pestilence (Aura)",
+        description: "While a friendly DEATH GUARD unit is within 6\" of this model, each time a ranged attack targets that unit, models in that unit have the Benefit of Cover against that attack.",
+      },
+    ],
   },
 
   {
@@ -98,14 +112,36 @@ export const deathGuardCharacters: Character[] = [
     name: "Death Guard Daemon Prince With Wings",
     faction: "death-guard",
     image: "",
-    points: 195,
+    points: 180,
     canAttachTo: [],
     defaultWargear: [
-      { id: "plague-spewer", name: "Plague spewer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "LETHAL HITS", "TORRENT"] }] },
-      { id: "hellforged-weapons-strike", name: "Hellforged weapons – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-3", damage: "D6+1" }] },
-      { id: "hellforged-weapons-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "dpnw-infernal-cannon", name: "Infernal cannon", image: "", profiles: [{ range: '24"', attacks: "3", skill: "2+", strength: "5", ap: "-1", damage: "2", keywords: ["LETHAL HITS"] }] },
+      { id: "dpnw-hellforged-strike", name: "Hellforged weapons – strike", image: "", profiles: [{ range: "Melee", attacks: "7", skill: "2+", strength: "8", ap: "-2", damage: "3", keywords: ["LETHAL HITS"] }] },
+      { id: "dpnw-hellforged-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "14", skill: "2+", strength: "6", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Death Guard Defenders",
+        description: "While this model is within 3\" of one or more friendly DEATH GUARD INFANTRY units, this model has the Lone Operative ability.",
+      },
+      {
+        name: "Fevered Strategist",
+        description: "Once per battle round, one model from your army with this ability can use it when a friendly DEATH GUARD unit within 12\" of that model is targeted with a Stratagem. If it does, reduce the CP cost of that usage of that Stratagem by 1CP.",
+      },
+      {
+        name: "Miasma of Pestilence (Aura)",
+        description: "While a friendly DEATH GUARD unit is within 6\" of this model, each time a ranged attack targets that unit, models in that unit have the Benefit of Cover against that attack.",
+      },
+      {
+        name: "Horrifying Visage",
+        description: "Each time this model ends a Charge move, select one enemy unit within Engagement Range of it. That unit must take a Battle-shock test, subtracting 1 from that test.",
+      },
+      {
+        name: "Enfeebling Miasma (Aura)",
+        description: "While an enemy unit (excluding MONSTERS and VEHICLES) is within 6\" of this model, each time that unit is selected to Fall Back, models in that enemy unit must take Desperate Escape tests. When doing so, if that enemy unit is Battle-shocked, subtract 1 from each of those Desperate Escape tests.",
+      },
+    ],
   },
 
   {

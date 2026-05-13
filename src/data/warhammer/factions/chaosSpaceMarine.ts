@@ -306,8 +306,104 @@ export const chaosSpaceMarinesUnits: Unit[] = [
     name: "Raptors",
     faction: "chaos-space-marine",
     category: "infantry",
-    points: 90,
-    wargear: [],
+    modelCountOptions: [5, 10],
+    pointsByModelCount: { 5: 110, 10: 210 },
+    defaultWargear: [
+      { id: "raptor-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "raptor-astartes-chainsword", name: "Astartes chainsword", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }] },
+    ],
+    wargear: [
+      // Champion options
+      { id: "raptor-champ-plasma-pistol", name: "Champion: Plasma pistol", image: "", sergeantOnly: true, profiles: [
+        { profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+        { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+      ]},
+      { id: "raptor-champ-accursed-weapon", name: "Champion: Accursed weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "raptor-champ-heavy-melee-weapon", name: "Champion: Heavy melee weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+      // Note-linked weapons (hidden from WargearSelector, shown via notes)
+      { id: "raptor-squad-plasma-pistol", name: "Plasma pistol", image: "", profiles: [
+        { profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+        { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+      ]},
+      { id: "raptor-squad-heavy-melee-weapon", name: "Heavy melee weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+      { id: "raptor-squad-mutations", name: "Mutations", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "raptor-squad-flamer", name: "Flamer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "raptor-squad-meltagun", name: "Meltagun", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2"] }] },
+      { id: "raptor-squad-plasma-gun", name: "Plasma gun", image: "", profiles: [
+        { profileName: "standard", range: '24"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["RAPID FIRE 1"] },
+        { profileName: "supercharge", range: '24"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "RAPID FIRE 1"] },
+      ]},
+      // Countable — taken alongside a special weapon (flamer / meltagun / plasma gun)
+      { id: "raptor-squad-close-combat-weapon", name: "Close combat weapon", image: "", countable: true, maxCountByModelCount: { 5: 2, 10: 4 }, profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+    ],
+    wargearGroups: [
+      ["raptor-champ-accursed-weapon", "raptor-champ-heavy-melee-weapon"],
+    ],
+    notes: [
+      {
+        id: "raptor-plasma-pistol-note",
+        text: "Up to 2 Raptors can each replace their bolt pistol with 1 plasma pistol. These models' Astartes chainswords cannot be replaced.",
+        textByModelCount: { 10: "Up to 4 Raptors can each replace their bolt pistol with 1 plasma pistol (up to 2 per 5 models). These models' Astartes chainswords cannot be replaced." },
+        checkbox: true,
+        weaponId: "raptor-squad-plasma-pistol",
+        maxCountByModelCount: { 5: 2, 10: 4 },
+      },
+      {
+        id: "raptor-heavy-melee-note",
+        text: "Up to 2 Raptors can each replace their Astartes chainsword with 1 heavy melee weapon.",
+        textByModelCount: { 10: "Up to 4 Raptors can each replace their Astartes chainsword with 1 heavy melee weapon (up to 2 per 5 models)." },
+        checkbox: true,
+        weaponId: "raptor-squad-heavy-melee-weapon",
+        maxCountByModelCount: { 5: 2, 10: 4 },
+      },
+      {
+        id: "raptor-mutations-note",
+        text: "1 Raptor can replace their Astartes chainsword with 1 mutations.",
+        textByModelCount: { 10: "Up to 2 Raptors can each replace their Astartes chainsword with 1 mutations (1 per 5 models)." },
+        checkbox: true,
+        weaponId: "raptor-squad-mutations",
+        maxCountByModelCount: { 5: 1, 10: 2 },
+      },
+      {
+        id: "raptor-flamer-note",
+        text: "1 Raptor can replace their Astartes chainsword with 1 flamer and 1 close combat weapon (cannot select the same option more than once; max 2 combined).",
+        textByModelCount: { 10: "Up to 2 Raptors per group of 5 can replace their Astartes chainsword with 1 flamer and 1 close combat weapon (cannot select the same option more than once per group; max 4 combined)." },
+        checkbox: true,
+        weaponId: "raptor-squad-flamer",
+        maxCountByModelCount: { 5: 1, 10: 2 },
+        noteGroup: "raptor-specials",
+      },
+      {
+        id: "raptor-meltagun-note",
+        text: "1 Raptor can replace their Astartes chainsword with 1 meltagun and 1 close combat weapon (cannot select the same option more than once; max 2 combined).",
+        textByModelCount: { 10: "Up to 2 Raptors per group of 5 can replace their Astartes chainsword with 1 meltagun and 1 close combat weapon (cannot select the same option more than once per group; max 4 combined)." },
+        checkbox: true,
+        weaponId: "raptor-squad-meltagun",
+        maxCountByModelCount: { 5: 1, 10: 2 },
+        noteGroup: "raptor-specials",
+      },
+      {
+        id: "raptor-plasma-gun-note",
+        text: "1 Raptor can replace their Astartes chainsword with 1 plasma gun and 1 close combat weapon (cannot select the same option more than once; max 2 combined).",
+        textByModelCount: { 10: "Up to 2 Raptors per group of 5 can replace their Astartes chainsword with 1 plasma gun and 1 close combat weapon (cannot select the same option more than once per group; max 4 combined)." },
+        checkbox: true,
+        weaponId: "raptor-squad-plasma-gun",
+        maxCountByModelCount: { 5: 1, 10: 2 },
+        noteGroup: "raptor-specials",
+      },
+    ],
+    noteGroupLimitsByModelCount: { "raptor-specials": { 5: 2, 10: 4 } },
+    abilities: [
+      {
+        name: "Fearsome (Aura)",
+        description: "While an enemy unit is within 6\" of this unit, each time that enemy unit takes a Battle-shock or Leadership test, subtract 1 from the result.",
+      },
+      {
+        name: "Terrifying Assault",
+        description: "At the start of the Fight phase, each enemy unit within Engagement Range of one or more units with this ability must take a Battle-shock test.",
+      },
+    ],
+    ledBy: ["chaos-lord-with-jump-pack", "haarken-worldclaimer"],
   },
 
   {
