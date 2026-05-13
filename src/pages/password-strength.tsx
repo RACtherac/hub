@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles/password-strength.css";
 
@@ -8,6 +8,20 @@ const COMMON_PASSWORDS = [
   "master", "sunshine", "princess", "shadow", "superman", "michael", "football",
   "pass", "password123", "qwerty123", "1q2w3e", "test", "root", "hello",
 ];
+
+async function checkPwned(password: string): Promise<number> {
+  const hashBuffer = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(password));
+  const hash = Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase();
+  const prefix = hash.slice(0, 5);
+  const suffix = hash.slice(5);
+  const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
+  const text = await res.text();
+  const match = text.split("\n").find(line => line.startsWith(suffix));
+  return match ? parseInt(match.split(":")[1]) : 0;
+}
 
 interface Analysis {
   score: number;       // 0–100
@@ -82,8 +96,34 @@ export default function PasswordStrength() {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+  const [pwnedCount, setPwnedCount] = useState<number | null>(null);
+  const [pwnedLoading, setPwnedLoading] = useState(false);
 
   const result = useMemo(() => analyse(password), [password]);
+
+  useEffect(() => {
+    if (password.length === 0) {
+      setPwnedCount(null);
+      setPwnedLoading(false);
+      return;
+    }
+    setPwnedLoading(true);
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const count = await checkPwned(password);
+        if (!cancelled) setPwnedCount(count);
+      } catch {
+        if (!cancelled) setPwnedCount(null);
+      } finally {
+        if (!cancelled) setPwnedLoading(false);
+      }
+    }, 600);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [password]);
 
   return (
     <div className="pw-page">
@@ -97,7 +137,7 @@ export default function PasswordStrength() {
       <header className="pw-hero">
         <p className="pw-eyebrow">// security tool</p>
         <h1 className="pw-title">How <em>strong</em> is your password?</h1>
-        <p className="pw-subtitle">Analysed locally — nothing is sent anywhere.</p>
+        <p className="pw-subtitle">Analysis runs locally. Breach check sends only a 5-char hash prefix — never your password.</p>
       </header>
 
       <div className="pw-content">
@@ -137,6 +177,7 @@ export default function PasswordStrength() {
         </div>
 
         {password.length > 0 && (
+          <>
           <div className="pw-panels">
 
             <div className="pw-panel">
@@ -163,6 +204,20 @@ export default function PasswordStrength() {
             )}
 
           </div>
+
+          <div className="pw-panel pw-panel--breach">
+            <p className="pw-panel-label">// breach check</p>
+            {pwnedLoading ? (
+              <p className="pw-pwned-loading">Checking against known breaches…</p>
+            ) : pwnedCount === null ? (
+              <p className="pw-pwned-loading">—</p>
+            ) : pwnedCount === 0 ? (
+              <p className="pw-pwned-clean">✓ Not found in any known data breaches.</p>
+            ) : (
+              <p className="pw-pwned-found">✗ Found in {pwnedCount.toLocaleString()} known data breaches — avoid this password.</p>
+            )}
+          </div>
+          </>
         )}
 
       </div>

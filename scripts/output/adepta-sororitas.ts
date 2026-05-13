@@ -167,22 +167,6 @@ export const adeptaSororitasUnits: Unit[] = [
   },
 
   {
-    id: "saint-celestine",
-    name: "Saint Celestine",
-    faction: "adepta-sororitas",
-    category: "infantry",
-    points: 160,
-    defaultWargear: [
-      { id: "the-ardent-blade", name: "The Ardent Blade", image: "" },
-    ],
-    wargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "power-weapon", name: "Power weapon", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
     id: "seraphim-squad",
     name: "Seraphim Squad",
     faction: "adepta-sororitas",
@@ -198,7 +182,7 @@ export const adeptaSororitasUnits: Unit[] = [
       { id: "chainsword", name: "Chainsword", image: "" },
       { id: "power-weapon", name: "Power weapon", image: "" },
     ],
-    ledBy: ["canoness-with-jump-pack","saint-celestine"],
+    ledBy: ["canoness-with-jump-pack"],
   },
 
   {
@@ -232,7 +216,7 @@ export const adeptaSororitasUnits: Unit[] = [
     wargear: [
       { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
     ],
-    ledBy: ["canoness-with-jump-pack","saint-celestine"],
+    ledBy: ["canoness-with-jump-pack"],
   },
 
   {
@@ -261,15 +245,29 @@ export const adeptaSororitasUnits: Unit[] = [
     category: "vehicle",
     points: 210,
     defaultWargear: [
-      { id: "exorcist-missile-launcher", name: "Exorcist missile launcher", image: "" },
-      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
-      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+      { id: "exorcist-heavy-bolter", name: "Heavy bolter", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["SUSTAINED HITS 1"] }] },
+      { id: "exorcist-armoured-tracks", name: "Armoured tracks", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "exorcist-conflagration-rockets", name: "Exorcist conflagration rockets", image: "" },
-      { id: "hunter-killer-missile", name: "Hunter-killer missile", image: "" },
+      { id: "exorcist-missile-launcher", name: "Exorcist missile launcher", image: "", profiles: [{ range: '36"', attacks: "D6+2", skill: "3+", strength: "10", ap: "-3", damage: "D6", keywords: ["INDIRECT FIRE"] }] },
+      { id: "exorcist-conflagration-rockets", name: "Exorcist conflagration rockets", image: "", profiles: [{ range: '36"', attacks: "3D6", skill: "3+", strength: "6", ap: "-1", damage: "1", keywords: ["BLAST", "IGNORES COVER", "INDIRECT FIRE"] }] },
+      { id: "exorcist-hunter-killer-missile", name: "Hunter-killer missile", image: "", profiles: [{ range: '48"', attacks: "1", skill: "2+", strength: "14", ap: "-3", damage: "D6", keywords: ["ONE SHOT"] }] },
     ],
+    wargearGroups: [
+      ["exorcist-missile-launcher", "exorcist-conflagration-rockets"],
+    ],
+    defaultSelectedWargear: ["exorcist-missile-launcher"],
     ledBy: [],
+    abilities: [
+      {
+        name: "Devastating Refrain",
+        description: "In your Shooting phase, after this model has shot, if one or more of those attacks made with an Indirect Fire weapon scored a hit against an enemy unit, that unit must take a Battle-shock test. Each time such an attack destroys an enemy model that has the Deadly Demise ability, that model's Deadly Demise ability inflicts mortal wounds on a D6 roll of 5+ instead of on a 6.",
+      },
+      {
+        name: "Damaged: 1-4 Wounds Remaining",
+        description: "While this model has 1-4 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {

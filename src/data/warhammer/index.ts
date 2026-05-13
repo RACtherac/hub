@@ -12,6 +12,7 @@ import { thousandSonsUnits } from "../../../scripts/output/thousand-sons";
 import { worldEatersUnits } from "../../../scripts/output/world-eaters";
 import { chaosDaemonsUnits } from "../../../scripts/output/chaos-daemons";
 import { chaosKnightsUnits } from "../../../scripts/output/chaos-knights";
+import { emperorsChildrenUnits } from "../../../scripts/output/emperors-children";
 import { tyranidsUnits } from "../../../scripts/output/tyranids";
 import { necronsUnits } from "../../../scripts/output/necrons";
 import { orksUnits } from "../../../scripts/output/orks";
@@ -35,6 +36,7 @@ import { thousandSonsCharacters } from "../../../scripts/output/characters/thous
 import { worldEatersCharacters } from "../../../scripts/output/characters/world-eaters";
 import { chaosDaemonsCharacters } from "../../../scripts/output/characters/chaos-daemons";
 import { chaosKnightsCharacters } from "../../../scripts/output/characters/chaos-knights";
+import { emperorsChildrenCharacters } from "../../../scripts/output/characters/emperors-children";
 import { tyranidsCharacters } from "../../../scripts/output/characters/tyranids";
 import { necronsCharacters } from "../../../scripts/output/characters/necrons";
 import { orksCharacters } from "../../../scripts/output/characters/orks";
@@ -59,6 +61,7 @@ export const allUnits = [
   ...worldEatersUnits,
   ...chaosDaemonsUnits,
   ...chaosKnightsUnits,
+  ...emperorsChildrenUnits,
   ...tyranidsUnits,
   ...necronsUnits,
   ...orksUnits,
@@ -84,6 +87,7 @@ export const allCharacters = [
   ...worldEatersCharacters,
   ...chaosDaemonsCharacters,
   ...chaosKnightsCharacters,
+  ...emperorsChildrenCharacters,
   ...tyranidsCharacters,
   ...necronsCharacters,
   ...orksCharacters,

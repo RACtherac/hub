@@ -18,6 +18,7 @@ export type Faction =
   | "world-eaters"
   | "chaos-daemons"
   | "chaos-knights"
+  | "emperors-children"
   | "tyranids"
   | "necrons"
   | "orks"
@@ -122,6 +123,8 @@ export interface Unit {
 
   transportCapacity?: number;
   transportSlots?: number;
+  monsterTransportCapacity?: number;
+  dreadnoughtTransportCapacity?: number;
 }
 
 export interface Character {

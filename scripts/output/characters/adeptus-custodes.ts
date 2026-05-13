@@ -21,13 +21,23 @@ export const adeptusCustodesCharacters: Character[] = [
     faction: "adeptus-custodes",
     image: "",
     points: 120,
-    canAttachTo: [],
+    canAttachTo: ["custodian-guard", "custodian-wardens"],
     defaultWargear: [
-      { id: "vaultswords-behemor", name: "Vaultswords – Behemor", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "7", ap: "-2", damage: "2" }] },
-      { id: "vaultswords-hurricanus", name: "Vaultswords – Hurricanus", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "2+", strength: "5", ap: "-1", damage: "1" }] },
-      { id: "vaultswords-victus", name: "Vaultswords – Victus", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "6", ap: "-3", damage: "2" }] },
+      { id: "vaultswords-behemor", name: "Vaultswords – Behemor", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "7", ap: "-2", damage: "2", keywords: ["PRECISION"] }] },
+      { id: "vaultswords-hurricanus", name: "Vaultswords – Hurricanus", image: "", profiles: [{ range: "Melee", attacks: "9", skill: "2+", strength: "5", ap: "-1", damage: "1", keywords: ["SUSTAINED HITS 1"] }] },
+      { id: "vaultswords-victus", name: "Vaultswords – Victus", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "6", ap: "-3", damage: "3", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Swift Onslaught",
+        description: "While this model is leading a unit, you can re-roll Charge rolls made for that unit.",
+      },
+      {
+        name: "Martial Inspiration",
+        description: "Once per battle, in your Charge phase, this model's unit is eligible to declare a charge in a turn which it Advanced.",
+      },
+    ],
   },
 
   {

@@ -341,14 +341,42 @@ export const aeldariUnits: Unit[] = [
     name: "Dire Avengers",
     faction: "aeldari",
     category: "infantry",
-    points: 80,
+    modelCountOptions: [5, 10],
+    pointsByModelCount: { 5: 75, 10: 150 },
     defaultWargear: [
-      { id: "avenger-shuriken-catapult", name: "Avenger shuriken catapult", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "da-avenger-shuriken-catapult", name: "Avenger shuriken catapult", image: "", profiles: [{ range: '18"', attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT"] }] },
+      { id: "da-shuriken-pistol", name: "Shuriken pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "PISTOL"] }] },
+      { id: "da-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "diresword", name: "Diresword", image: "" },
-      { id: "power-glaive", name: "Power glaive", image: "" },
+      // Exarch melee options (replace Avenger shuriken catapult)
+      { id: "da-exarch-diresword", name: "Diresword", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-2", damage: "1" }] },
+      { id: "da-exarch-power-glaive", name: "Power glaive", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-3", damage: "1" }] },
+      // Exarch off-hand option (replace shuriken pistol)
+      { id: "da-exarch-shimmershield", name: "Shimmershield", image: "", sergeantOnly: true, note: "The bearer has a 4+ invulnerable save." },
+      // Aspect Shrine Token (note-linked ability item)
+      { id: "da-aspect-shrine-token", name: "Aspect Shrine Token", image: "", note: "Once per battle for each Aspect Shrine token this unit has, you can change the result of one Hit roll or one Wound roll made for a model in this unit (excluding CHARACTER models) to an unmodified 6. Place an Aspect Shrine token next to the unit for each Aspect Shrine token it has, removing one each time this ability is used." },
+    ],
+    wargearGroups: [
+      ["da-exarch-diresword", "da-exarch-power-glaive"],
+    ],
+    sergeantOptionGroups: [
+      { label: "Exarch: Melee Options", ids: ["da-exarch-diresword", "da-exarch-power-glaive"] },
+      { label: "Exarch: Off-hand", ids: ["da-exarch-shimmershield"] },
+    ],
+    notes: [
+      {
+        id: "da-aspect-shrine-token-note",
+        text: "Aspect Shrine Token",
+        checkbox: true,
+        weaponId: "da-aspect-shrine-token",
+      },
+    ],
+    abilities: [
+      {
+        name: "Bladestorm",
+        description: "Ranged weapons equipped by models in this unit have the [SUSTAINED HITS 1] ability while targeting an enemy unit within half range.",
+      },
     ],
     ledBy: ["asurmen","autarch"],
   },
@@ -395,13 +423,20 @@ export const aeldariUnits: Unit[] = [
     name: "Rangers",
     faction: "aeldari",
     category: "infantry",
-    points: 55,
+    modelCountOptions: [5, 10],
+    pointsByModelCount: { 5: 55, 10: 110 },
     defaultWargear: [
-      { id: "long-rifle", name: "Long rifle", image: "" },
-      { id: "shuriken-pistol", name: "Shuriken pistol", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "rangers-long-rifle", name: "Long rifle", image: "", profiles: [{ range: '36"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "2", keywords: ["HEAVY", "PRECISION"] }] },
+      { id: "rangers-shuriken-pistol", name: "Shuriken pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "PISTOL"] }] },
+      { id: "rangers-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Path of the Outcast",
+        description: "Once per turn, when an enemy unit ends a Normal, Advance or Fall Back move within 9\" of this unit, it can make a Normal move of up to D6\".",
+      },
+    ],
     ledBy: [],
   },
 
