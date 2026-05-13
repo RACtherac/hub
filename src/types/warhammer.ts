@@ -150,4 +150,6 @@ export interface Character {
   wargearSections?: { label: string; ids: string[] }[];
   defaultWargear?: WargearOption[];
   wargear?: WargearOption[];
+  defaultSelectedWargear?: string[];
+  keywords?: string[];
 }
