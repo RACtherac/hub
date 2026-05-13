@@ -19,6 +19,7 @@ interface ArmyUnit {
   attachedUnitWargear: string[];
   checkedNotes: string[];
   noteWeaponSelections: Record<string, string>;
+  noteSlotSelections: Record<string, string[]>;
   noteCounts: Record<string, number>;
   transportedUnits: string[];
 }
@@ -372,7 +373,9 @@ export default function ArmyBuilder() {
   const categories = (selectedFaction === "tyranids"
     ? BASE_CATEGORIES.map((c) => (c === "vehicle" ? "monster" : c))
     : BASE_CATEGORIES
-  ).filter((c) => c !== "mounted" || units.some((u) => u.category === "mounted" && u.faction === selectedFaction));
+  )
+    .filter((c) => c !== "mounted" || units.some((u) => u.category === "mounted" && u.faction === selectedFaction))
+    .filter((c) => selectedFaction !== "chaos-knights" || (c !== "battleline" && c !== "infantry"));
 
   const getUnitsByCategory = (category: UnitCategory) =>
     units.filter((u) => u.category === category && u.faction === selectedFaction);
@@ -384,7 +387,7 @@ export default function ArmyBuilder() {
     const defaultModelCount = unit?.modelCountOptions?.[0] ?? 5;
     setArmyUnits([
       ...armyUnits,
-      { id: Date.now(), unitId, modelCount: defaultModelCount, wargear: unit?.defaultSelectedWargear ?? [], wargearCounts: {}, characterWargear: [], characterWargear2: [], attachedUnit: undefined, attachedUnitWargear: [], checkedNotes: [], noteWeaponSelections: {}, noteCounts: {}, transportedUnits: [] },
+      { id: Date.now(), unitId, modelCount: defaultModelCount, wargear: unit?.defaultSelectedWargear ?? [], wargearCounts: {}, characterWargear: [], characterWargear2: [], attachedUnit: undefined, attachedUnitWargear: [], checkedNotes: [], noteWeaponSelections: {}, noteSlotSelections: {}, noteCounts: {}, transportedUnits: [] },
     ]);
     setAddingUnit(false);
     setOpenCategory(null);
@@ -1174,6 +1177,8 @@ export default function ArmyBuilder() {
                     onWargearCountsChange={(counts) => updateUnit(armyUnit.id, { wargearCounts: counts })}
                     onCheckedNotesChange={(notes) => updateUnit(armyUnit.id, { checkedNotes: notes })}
                     onNoteWeaponSelect={(noteId, weaponId) => updateUnit(armyUnit.id, { noteWeaponSelections: { ...armyUnit.noteWeaponSelections, [noteId]: weaponId } })}
+                    noteSlotSelections={armyUnit.noteSlotSelections ?? {}}
+                    onNoteSlotSelectionsChange={(slots) => updateUnit(armyUnit.id, { noteSlotSelections: slots })}
                     onNoteCountsChange={(counts) => updateUnit(armyUnit.id, { noteCounts: counts })}
                     onTransportChange={(u) => updateUnit(armyUnit.id, { transportedUnits: u })}
                     onRemove={() => removeUnit(armyUnit.id)}

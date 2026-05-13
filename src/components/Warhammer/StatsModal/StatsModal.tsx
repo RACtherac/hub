@@ -216,8 +216,8 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Unit default weapons (always equipped, minus any replaced by checked notes) */}
-                    <WeaponRows weapons={(unit.defaultWargear ?? []).filter((w) => !replacedDefaultIds.has(w.id))} />
+                    {/* Unit default weapons (always equipped, minus replaced/model-count-hidden) */}
+                    <WeaponRows weapons={(unit.defaultWargear ?? []).filter((w) => !replacedDefaultIds.has(w.id) && (!w.showForModelCounts || w.showForModelCounts.includes(modelCount)))} />
                     {/* Unit selected optional weapons (toggled or countable with count > 0) */}
                     <WeaponRows weapons={unit.wargear.filter((w) => {
                       if (!w.countable) return selectedWargear.includes(w.id);

@@ -277,15 +277,41 @@ export const chaosKnightsUnits: Unit[] = [
     name: "War Dog Brigand",
     faction: "chaos-knights",
     category: "vehicle",
-    points: 165,
+    points: 140,
     defaultWargear: [
-      { id: "avenger-chaincannon", name: "Avenger chaincannon", image: "" },
-      { id: "daemonbreath-spear", name: "Daemonbreath spear", image: "" },
-      { id: "diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "" },
-      { id: "armoured-feet", name: "Armoured feet", image: "" },
+      { id: "brigand-avenger-chaincannon", name: "Avenger chaincannon", image: "", profiles: [{ range: '24"', attacks: "12", skill: "3+", strength: "6", ap: "-1", damage: "1" }] },
+      { id: "brigand-daemonbreath-spear", name: "Daemonbreath spear", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "12", ap: "-4", damage: "D6", keywords: ["MELTA 4"] }] },
+      { id: "brigand-armoured-feet", name: "Armoured feet", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "havoc-multi-launcher", name: "Havoc multi-launcher", image: "" },
+      { id: "brigand-diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] }] },
+      { id: "brigand-havoc-multi-launcher", name: "Havoc multi-launcher", image: "", profiles: [{ range: '48"', attacks: "D6", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST", "INDIRECT FIRE"] }] },
+    ],
+    notes: [
+      {
+        id: "brigand-equip-stubber",
+        text: "Diabolus heavy stubber",
+        checkbox: true,
+        exclusiveWith: "brigand-equip-havoc",
+        weaponId: "brigand-diabolus-heavy-stubber",
+      },
+      {
+        id: "brigand-equip-havoc",
+        text: "Havoc multi-launcher",
+        checkbox: true,
+        exclusiveWith: "brigand-equip-stubber",
+        weaponId: "brigand-havoc-multi-launcher",
+      },
+    ],
+    abilities: [
+      {
+        name: "Brigand",
+        description: "Each time this model makes a ranged attack that targets a unit that is within range of one or more objective markers, that attack has the [IGNORES COVER] ability.",
+      },
+      {
+        name: "Damaged: 1-5 Wounds Remaining",
+        description: "While this model has 1-5 wounds remaining, subtract 3 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
     ledBy: [],
   },
@@ -297,12 +323,22 @@ export const chaosKnightsUnits: Unit[] = [
     category: "vehicle",
     points: 130,
     defaultWargear: [
-      { id: "diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "" },
-      { id: "war-dog-autocannon", name: "War Dog autocannon", image: "" },
-      { id: "armoured-feet", name: "Armoured feet", image: "" },
+      { id: "executioner-war-dog-autocannon", name: "War Dog autocannon", image: "", profiles: [{ range: '48"', attacks: "4", skill: "3+", strength: "9", ap: "-1", damage: "3" }] },
+      { id: "executioner-diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] }] },
+      { id: "executioner-armoured-feet", name: "Armoured feet", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "daemonbreath-meltagun", name: "Daemonbreath meltagun", image: "" },
+      { id: "executioner-daemonbreath-meltagun", name: "Daemonbreath meltagun", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2"] }] },
+    ],
+    abilities: [
+      {
+        name: "Executioner",
+        description: "Each time this model makes an attack that targets a unit Below Half-strength, add 1 to the Hit roll. Each time an enemy unit is destroyed as the result of this model's attacks, before removing the last model in that unit from the battlefield, each unit from your opponent's army that is within 3\" of it must take a Battle-shock test.",
+      },
+      {
+        name: "Damaged: 1-5 Wounds Remaining",
+        description: "While this model has 1-5 wounds remaining, subtract 3 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
     ledBy: [],
   },
@@ -332,13 +368,84 @@ export const chaosKnightsUnits: Unit[] = [
     category: "vehicle",
     points: 140,
     defaultWargear: [
-      { id: "diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "" },
-      { id: "reaper-chaintalon-strike", name: "Reaper chaintalon – strike", image: "" },
-      { id: "reaper-chaintalon-sweep", name: "Reaper chaintalon – sweep", image: "" },
-      { id: "slaughterclaw", name: "Slaughterclaw", image: "" },
+      { id: "karnivore-reaper-chaintalon-strike", name: "Reaper chaintalon – strike", image: "" },
+      { id: "karnivore-reaper-chaintalon-sweep", name: "Reaper chaintalon – sweep", image: "" },
+      { id: "karnivore-slaughterclaw", name: "Slaughterclaw", image: "" },
     ],
     wargear: [
-      { id: "havoc-multi-launcher", name: "Havoc multi-launcher", image: "" },
+      { id: "karnivore-diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] }] },
+      { id: "karnivore-havoc-multi-launcher", name: "Havoc multi-launcher", image: "", profiles: [{ range: '48"', attacks: "D6", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST", "INDIRECT FIRE"] }] },
+    ],
+    notes: [
+      {
+        id: "karnivore-equip-stubber",
+        text: "Diabolus heavy stubber",
+        checkbox: true,
+        exclusiveWith: "karnivore-equip-havoc",
+        weaponId: "karnivore-diabolus-heavy-stubber",
+      },
+      {
+        id: "karnivore-equip-havoc",
+        text: "Havoc multi-launcher",
+        checkbox: true,
+        exclusiveWith: "karnivore-equip-stubber",
+        weaponId: "karnivore-havoc-multi-launcher",
+      },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "war-dog-stalker",
+    name: "War Dog Stalker",
+    faction: "chaos-knights",
+    category: "vehicle",
+    points: 140,
+    defaultWargear: [
+      { id: "stalker-avenger-chaincannon", name: "Avenger chaincannon", image: "", profiles: [{ range: '24"', attacks: "12", skill: "3+", strength: "6", ap: "-1", damage: "1" }] },
+      { id: "stalker-diabolus-heavy-stubber", name: "Diabolus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] }] },
+      { id: "stalker-slaughterclaw", name: "Slaughterclaw", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "12", ap: "-3", damage: "D6+2" }] },
+    ],
+    wargear: [
+      { id: "stalker-daemonbreath-spear", name: "Daemonbreath spear", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "12", ap: "-4", damage: "D6", keywords: ["MELTA 4"] }] },
+      { id: "stalker-havoc-multi-launcher", name: "Havoc multi-launcher", image: "", profiles: [{ range: '48"', attacks: "D6", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST", "INDIRECT FIRE"] }] },
+      { id: "stalker-reaper-chaintalon", name: "Reaper chaintalon", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "4", skill: "3+", strength: "10", ap: "-3", damage: "3" },
+        { profileName: "sweep", range: "Melee", attacks: "8", skill: "3+", strength: "8", ap: "-2", damage: "1" },
+      ] },
+    ],
+    notes: [
+      {
+        id: "stalker-swap-chaincannon",
+        text: "Replace Avenger chaincannon with Daemonbreath spear",
+        checkbox: true,
+        weaponId: "stalker-daemonbreath-spear",
+        replacesDefaultWargear: "stalker-avenger-chaincannon",
+      },
+      {
+        id: "stalker-swap-stubber",
+        text: "Replace Diabolus heavy stubber with Havoc multi-launcher",
+        checkbox: true,
+        weaponId: "stalker-havoc-multi-launcher",
+        replacesDefaultWargear: "stalker-diabolus-heavy-stubber",
+      },
+      {
+        id: "stalker-swap-slaughterclaw",
+        text: "Replace Slaughterclaw with Reaper chaintalon",
+        checkbox: true,
+        weaponId: "stalker-reaper-chaintalon",
+        replacesDefaultWargear: "stalker-slaughterclaw",
+      },
+    ],
+    abilities: [
+      {
+        name: "Stalker",
+        description: "Each time this model makes an attack that targets an enemy unit, if there are no other units from your opponent's army within 6\" of that target, add 1 to the Wound roll.",
+      },
+      {
+        name: "Damaged: 1-5 Wounds Remaining",
+        description: "While this model has 1-5 wounds remaining, subtract 3 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
     ledBy: [],
   },

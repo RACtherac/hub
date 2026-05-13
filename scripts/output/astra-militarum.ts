@@ -125,7 +125,7 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "plasma-gun-standard", name: "Plasma gun – standard", image: "" },
       { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "" },
     ],
-    ledBy: ["cadian-castellan","cadian-command-squad","commissar","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","ursula-creed","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["cadian-castellan","cadian-command-squad","commissar","commissar-graves-on-foot","commissar-yarrick","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","ursula-creed","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -142,7 +142,7 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "flamer", name: "Flamer", image: "" },
       { id: "lasgun", name: "Lasgun", image: "" },
     ],
-    ledBy: ["catachan-command-squad","commissar","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["catachan-command-squad","commissar","commissar-graves-on-foot","commissar-yarrick","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -290,7 +290,7 @@ export const astraMilitarumUnits: Unit[] = [
         requiresNote: "krieg-vox-caster-note",
       },
     ],
-    ledBy: ["commissar","krieg-command-squad","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","krieg-command-squad","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -458,28 +458,6 @@ export const astraMilitarumUnits: Unit[] = [
     wargear: [
       { id: "bombast-field-gun", name: "Bombast field gun", image: "" },
       { id: "heavy-lascannon", name: "Heavy lascannon", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "gaunt-s-ghosts",
-    name: "Gaunt S Ghosts",
-    faction: "astra-militarum",
-    category: "infantry",
-    points: 110,
-    defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "gaunt-s-chainsword", name: "Gaunt's chainsword", image: "" },
-    ],
-    wargear: [
-      { id: "bragg-s-autocannon", name: "Bragg's autocannon", image: "" },
-      { id: "corbec-s-hot-shot-lascarbine", name: "Corbec's hot-shot lascarbine", image: "" },
-      { id: "larkin-s-long-las", name: "Larkin's long-las", image: "" },
-      { id: "lascarbine", name: "Lascarbine", image: "" },
-      { id: "rawne-s-lascarbine", name: "Rawne's lascarbine", image: "" },
-      { id: "straight-silver-knife", name: "Straight silver knife", image: "" },
-      { id: "mkoll-s-straight-silver-knife", name: "Mkoll's straight silver knife", image: "" },
     ],
     ledBy: [],
   },
@@ -716,7 +694,7 @@ export const astraMilitarumUnits: Unit[] = [
         requiresNote: "laspistol-melta-mine-note",
       },
     ],
-    ledBy: ["cadian-castellan","commissar","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","ursula-creed"],
+    ledBy: ["cadian-castellan","commissar","commissar-graves-on-foot","commissar-yarrick","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","ursula-creed"],
   },
 
   {
@@ -734,7 +712,8 @@ export const astraMilitarumUnits: Unit[] = [
         name: "Autopistol",
         image: "",
         countable: true,
-        maxCountByModelCount: { 5: 5, 10: 10 },
+        maxCountByModelCount: { 5: 4, 10: 9 },
+        maxCountReducedByWargear: ["eng-combat-shotgun", "eng-flamer", "eng-remote-mine"],
         profiles: [
           { range: '12"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] },
           { profileName: "Trench club", range: "Melee", attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1" },
@@ -745,7 +724,8 @@ export const astraMilitarumUnits: Unit[] = [
         name: "Combat shotgun",
         image: "",
         countable: true,
-        maxCountByModelCount: { 5: 5, 10: 10 },
+        maxCountByModelCount: { 5: 4, 10: 9 },
+        maxCountReducedByWargear: ["eng-autopistol", "eng-flamer", "eng-remote-mine"],
         profiles: [
           { range: '12"', attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["ASSAULT"] },
           { profileName: "Close combat weapon", range: "Melee", attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1" },
@@ -755,13 +735,24 @@ export const astraMilitarumUnits: Unit[] = [
         id: "eng-flamer",
         name: "Flamer",
         image: "",
+        countable: true,
+        maxCountByModelCount: { 5: 1, 10: 2 },
         profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }],
       },
       {
         id: "eng-remote-mine",
         name: "Remote Mine",
         image: "",
+        countable: true,
+        maxCountByModelCount: { 5: 1, 10: 2 },
         note: "Once per battle, at the start of your Shooting phase, you can select one enemy unit within 9\" of and visible to the bearer and roll one D6: on a 3+, that enemy unit suffers D3 mortal wounds, or 2D3 mortal wounds instead if it is a VEHICLE or FORTIFICATIONS unit. Designer's Note: Place a Remote Mine token next to the unit, removing it once this ability has been used.",
+      },
+      {
+        id: "eng-sgt-autopistol",
+        name: "Autopistol",
+        image: "",
+        sergeantOnly: true,
+        profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }],
       },
       {
         id: "eng-sgt-bolt-pistol",
@@ -803,11 +794,11 @@ export const astraMilitarumUnits: Unit[] = [
       },
     ],
     wargearGroups: [
-      ["eng-sgt-bolt-pistol", "eng-sgt-hand-flamer", "eng-sgt-plasma-pistol"],
+      ["eng-sgt-autopistol", "eng-sgt-bolt-pistol", "eng-sgt-hand-flamer", "eng-sgt-plasma-pistol"],
       ["eng-sgt-chainsword", "eng-sgt-power-weapon"],
     ],
     sergeantOptionGroups: [
-      { label: "Watchmaster Ranged", ids: ["eng-sgt-bolt-pistol", "eng-sgt-hand-flamer", "eng-sgt-plasma-pistol"] },
+      { label: "Watchmaster Ranged", ids: ["eng-sgt-autopistol", "eng-sgt-bolt-pistol", "eng-sgt-hand-flamer", "eng-sgt-plasma-pistol"] },
       { label: "Watchmaster Melee", ids: ["eng-sgt-chainsword", "eng-sgt-power-weapon"] },
     ],
     abilities: [
@@ -816,7 +807,7 @@ export const astraMilitarumUnits: Unit[] = [
         description: "Once per turn, you can target this unit with the Grenade Stratagem for 0CP.",
       },
     ],
-    ledBy: ["commissar","krieg-command-squad","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer"],
+    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","krieg-command-squad","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer"],
   },
 
   {
@@ -1012,7 +1003,7 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "power-fist", name: "Power fist", image: "" },
       { id: "power-weapon", name: "Power weapon", image: "" },
     ],
-    ledBy: ["commissar","militarum-tempestus-command-squad","ministorum-priest","primaris-psyker"],
+    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","militarum-tempestus-command-squad","ministorum-priest","primaris-psyker"],
   },
 
   {

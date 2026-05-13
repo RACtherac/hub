@@ -29,6 +29,7 @@ interface Props {
   attachedUnitWargear: string[];
   checkedNotes: string[];
   noteWeaponSelections: Record<string, string>;
+  noteSlotSelections: Record<string, string[]>;
   noteCounts: Record<string, number>;
   transportedUnits: string[];
   deployedUnits: { unit: Unit; modelCount: number; attachedCharacterCount: number }[];
@@ -45,6 +46,7 @@ interface Props {
   onAttachedUnitWargearChange: (gear: string[]) => void;
   onCheckedNotesChange: (notes: string[]) => void;
   onNoteWeaponSelect: (noteId: string, weaponId: string) => void;
+  onNoteSlotSelectionsChange: (slots: Record<string, string[]>) => void;
   onNoteCountsChange: (counts: Record<string, number>) => void;
   onTransportChange: (units: string[]) => void;
   onRemove: () => void;
@@ -56,14 +58,14 @@ export default function UnitCard({
   attachedCharacter, characterWargear,
   attachedCharacter2, characterWargear2,
   attachedUnit, attachedUnitWargear,
-  checkedNotes, noteWeaponSelections, noteCounts,
+  checkedNotes, noteWeaponSelections, noteSlotSelections, noteCounts,
   transportedUnits, deployedUnits, points,
   wargearCounts, onWargearCountsChange,
   onModelCountChange, onWargearChange,
   onCharacterChange, onCharacterWargearChange,
   onCharacter2Change, onCharacterWargear2Change,
   onAttachedUnitChange, onAttachedUnitWargearChange,
-  onCheckedNotesChange, onNoteWeaponSelect, onNoteCountsChange,
+  onCheckedNotesChange, onNoteWeaponSelect, onNoteSlotSelectionsChange, onNoteCountsChange,
   onTransportChange, onRemove,
 }: Props) {
   const [expanded, setExpanded] = useState(true);
@@ -125,6 +127,24 @@ export default function UnitCard({
   const selectedCharacter = characters.find((c) => c.id === attachedCharacter);
   const selectedCharacter2 = characters.find((c) => c.id === attachedCharacter2);
   const selectedAttachedUnit = allUnits.find((u) => u.id === attachedUnit);
+
+  // Notes where triggered wargear is non-countable + has per-model-count slots → use per-slot dropdowns
+  const slotDropdownNoteIds = new Set(
+    (unit.notes ?? [])
+      .filter((n) =>
+        n.triggersWargear && n.triggersWargear.length > 0 &&
+        n.maxCountByModelCount &&
+        n.triggersWargear.every((wid) => !unit.wargear.find((w) => w.id === wid)?.countable)
+      )
+      .map((n) => n.id)
+  );
+  const slotDropdownTriggeredWargear = new Set(
+    (unit.notes ?? [])
+      .filter((n) => slotDropdownNoteIds.has(n.id))
+      .flatMap((n) => n.triggersWargear ?? [])
+  );
+  const slotSelectedWargearIds = Object.values(noteSlotSelections).flat().filter(Boolean);
+  const effectiveSelectedWargear = [...selectedWargear, ...slotSelectedWargearIds];
 
   const hasStats =
     [...(unit.defaultWargear ?? []), ...unit.wargear].some((w) => w.profiles && w.profiles.length > 0) ||
@@ -291,7 +311,7 @@ export default function UnitCard({
         <StatsModal
           unit={unit}
           modelCount={modelCount}
-          selectedWargear={selectedWargear}
+          selectedWargear={effectiveSelectedWargear}
           wargearCounts={wargearCounts}
           checkedNotes={checkedNotes}
           noteWeaponSelections={noteWeaponSelections}
@@ -438,7 +458,8 @@ export default function UnitCard({
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
                   {dedupWargearNames((unit.defaultWargear ?? []).filter((w) => {
                     const replaced = (unit.notes ?? []).some((n) => n.replacesDefaultWargear === w.id && checkedNotes.includes(n.id));
-                    return !replaced;
+                    const hiddenByCount = w.showForModelCounts && !w.showForModelCounts.includes(modelCount);
+                    return !replaced && !hiddenByCount;
                   })).map((w) => (
                     <span key={w.id} style={{
                       fontFamily: "var(--font-mono)",
@@ -469,6 +490,7 @@ export default function UnitCard({
                   const baseMax = triggeredWargearItem?.maxCountByModelCount?.[modelCount] ?? 0;
                   const consumed = triggeredWargearItem ? getConsumedSlots(triggeredWargearItem.id) : 0;
                   const effectiveMax = Math.max(0, baseMax - consumed);
+                  const allTriggersCountable = note.triggersWargear?.every(wid => unit.wargear.find(x => x.id === wid)?.countable) ?? true;
                   const groupLimit = note.noteGroup
                     ? (unit.noteGroupLimitsByModelCount?.[note.noteGroup]?.[modelCount]
                         ?? unit.noteGroupLimits?.[note.noteGroup]
@@ -480,7 +502,8 @@ export default function UnitCard({
                         .reduce((sum, n) => sum + (noteCounts[n.id] ?? 1), 0)
                     : 0;
                   const groupAtMax = groupTotal >= groupLimit;
-                  const noteDisabled = (note.triggersWargear ? effectiveMax === 0 : false) || (groupAtMax && !checkedNotes.includes(note.id));
+                  const requiredWargearMet = !note.requiredWargear || note.requiredWargear.some(id => selectedWargear.includes(id));
+                  const noteDisabled = !requiredWargearMet || (note.triggersWargear && allTriggersCountable ? effectiveMax === 0 : false) || (groupAtMax && !checkedNotes.includes(note.id));
                   return (
                     <div key={note.id}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
@@ -490,9 +513,17 @@ export default function UnitCard({
                               if (noteDisabled) return;
                               if (isChecked) {
                                 onCheckedNotesChange(checkedNotes.filter((n) => n !== note.id));
+                                if (slotDropdownNoteIds.has(note.id) && noteSlotSelections[note.id]) {
+                                  const newSlots = { ...noteSlotSelections };
+                                  delete newSlots[note.id];
+                                  onNoteSlotSelectionsChange(newSlots);
+                                }
                               } else {
                                 const exclusive = note.exclusiveWith
-                                  ? checkedNotes.filter((n) => n !== note.exclusiveWith)
+                                  ? checkedNotes.filter((n) => {
+                                      const excl = note.exclusiveWith!;
+                                      return Array.isArray(excl) ? !excl.includes(n) : n !== excl;
+                                    })
                                   : [...checkedNotes];
                                 onCheckedNotesChange([...exclusive.filter((n) => n !== note.id), note.id]);
                               }
@@ -608,6 +639,42 @@ export default function UnitCard({
                           />
                         </div>
                       )}
+                      {slotDropdownNoteIds.has(note.id) && isChecked && (() => {
+                        const slotCount = note.maxCountByModelCount![modelCount] ?? 1;
+                        const currentSlots = noteSlotSelections[note.id] ?? [];
+                        return (
+                          <div style={{ marginTop: "6px", marginLeft: "22px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                            {Array.from({ length: slotCount }).map((_, i) => (
+                              <select
+                                key={i}
+                                value={currentSlots[i] ?? ""}
+                                onChange={(e) => {
+                                  const newSlots = [...currentSlots];
+                                  newSlots[i] = e.target.value;
+                                  onNoteSlotSelectionsChange({ ...noteSlotSelections, [note.id]: newSlots });
+                                }}
+                                style={{
+                                  background: "var(--surface-2)",
+                                  border: `1px solid ${currentSlots[i] ? "var(--accent)" : "var(--border-2)"}`,
+                                  color: currentSlots[i] ? "var(--accent)" : "var(--text-dim)",
+                                  fontFamily: "var(--font-mono)",
+                                  fontSize: "10px",
+                                  letterSpacing: "0.08em",
+                                  padding: "4px 10px",
+                                  cursor: "pointer",
+                                  outline: "none",
+                                }}
+                              >
+                                <option value="" style={{ background: "var(--surface)" }}>— select weapon —</option>
+                                {(note.triggersWargear ?? []).map((wid) => {
+                                  const w = unit.wargear.find((x) => x.id === wid);
+                                  return w ? <option key={wid} value={wid} style={{ background: "var(--surface)" }}>{w.name}</option> : null;
+                                })}
+                              </select>
+                            ))}
+                          </div>
+                        );
+                      })()}
                       {note.weaponIds && note.weaponIds.length > 0 && isChecked && (
                         <div style={{ marginTop: "6px", marginLeft: "22px" }}>
                           <select
@@ -650,7 +717,12 @@ export default function UnitCard({
               const triggeredWargear = new Set(
                 (unit.notes ?? []).flatMap((n) => n.triggersWargear ?? [])
               );
-              const selectableWargear = unit.wargear.filter((w) => !noteWeaponIds.has(w.id) && !triggeredWargear.has(w.id));
+              const unlockedNonCountable = new Set(
+                (unit.notes ?? [])
+                  .filter((n) => checkedNotes.includes(n.id))
+                  .flatMap((n) => (n.triggersWargear ?? []).filter((wid) => !unit.wargear.find((x) => x.id === wid)?.countable))
+              );
+              const selectableWargear = unit.wargear.filter((w) => !noteWeaponIds.has(w.id) && !slotDropdownTriggeredWargear.has(w.id) && (!triggeredWargear.has(w.id) || unlockedNonCountable.has(w.id)));
               const unitWargear = selectableWargear.filter((w) => !w.sergeantOnly);
               const sergeantWargear = selectableWargear.filter((w) => w.sergeantOnly);
               return (

@@ -181,13 +181,23 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 70,
-    canAttachTo: [],
+    canAttachTo: ["eliminator-squad", "incursor-squad", "infiltrator-squad", "reiver-squad", "scout-squad"],
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "instigator-bolt-carbine", name: "Instigator bolt carbine", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "4", ap: "0", damage: "2" }] },
-      { id: "combat-knife", name: "Combat knife", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "instigator-bolt-carbine", name: "Instigator bolt carbine", image: "", profiles: [{ range: '24"', attacks: "1", skill: "2+", strength: "4", ap: "-2", damage: "2", keywords: ["PRECISION"] }] },
+      { id: "combat-knife", name: "Combat knife", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "4", ap: "-1", damage: "1" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Rites of Battle",
+        description: "Once per battle round, one unit from your army with this ability can use it when its unit is targeted with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP.",
+      },
+      {
+        name: "Master of Deceit",
+        description: "After both players have deployed their armies, if your army includes one or more models with this ability, you can select up to three friendly ADEPTUS ASTARTES INFANTRY units and redeploy all of those units. When doing so, any of those units can be placed into Strategic Reserves, regardless of how many units are already in Strategic Reserves.",
+      },
+    ],
   },
 
   {
@@ -430,14 +440,28 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 70,
-    canAttachTo: [],
+    canAttachTo: ["eliminator-squad", "incursor-squad", "infiltrator-squad", "reiver-squad"],
     defaultWargear: [
       { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "smite-witchfire", name: "Smite – witchfire", image: "", profiles: [{ range: '18"', attacks: "D3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "smite-focused-witchfire", name: "Smite – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "D3+3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "force-weapon", name: "Force weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
+      {
+        id: "smite", name: "Smite", image: "", profiles: [
+          { profileName: "Witchfire", range: '24"', attacks: "D6", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] },
+          { profileName: "Focused witchfire", range: '24"', attacks: "D6", skill: "3+", strength: "6", ap: "-2", damage: "D3", keywords: ["DEVASTATING WOUNDS", "HAZARDOUS", "PSYCHIC"] },
+        ],
+      },
+      { id: "force-weapon", name: "Force weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Psychic Hood",
+        description: "While this model is leading a unit, models in that unit have the Feel No Pain 4+ ability against Psychic Attacks.",
+      },
+      {
+        name: "Shrouding",
+        description: "(Psychic): While this model is leading a unit, models in that unit have the Stealth ability and that unit cannot be targeted by ranged attacks unless the attacking model is within 12\".",
+      },
+    ],
   },
 
   {
@@ -502,12 +526,22 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 55,
-    canAttachTo: [],
+    canAttachTo: ["reiver-squad"],
     defaultWargear: [
-      { id: "master-crafted-special-issue-bolt-pistol", name: "Master-crafted special issue bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["PISTOL"] }] },
-      { id: "combat-knife", name: "Combat knife", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
+      { id: "master-crafted-special-issue-bolt-pistol", name: "Master-crafted special issue bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["PISTOL", "PRECISION"] }] },
+      { id: "combat-knife", name: "Combat knife", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["PRECISION"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Tactical Precision",
+        description: "While this model is leading a unit, weapons equipped by models in that unit have the [LETHAL HITS] ability.",
+      },
+      {
+        name: "Deadly Terror",
+        description: "While this model is leading a unit, increase the range of that unit's Terror Troops ability by 3\".",
+      },
+    ],
   },
 
   {

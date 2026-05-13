@@ -138,12 +138,17 @@ export const tyranidsCharacters: Character[] = [
     points: 175,
     canAttachTo: [],
     defaultWargear: [
-      { id: "stinger-salvoes", name: "Stinger salvoes", image: "", profiles: [{ range: '24"', attacks: "4", skill: "4+", strength: "5", ap: "-1", damage: "1" }] },
-      { id: "massive-scything-talons-strike", name: "Massive scything talons – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "10", ap: "-3", damage: "D6+1" }] },
-      { id: "massive-scything-talons-sweep", name: "Massive scything talons – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "6", ap: "-2", damage: "2" }] },
+      { id: "tervigon-stinger-salvoes", name: "Stinger salvoes", image: "", profiles: [{ range: '24"', attacks: "8", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "massive-crushing-claws", name: "Massive crushing claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "12", ap: "-3", damage: "D6+2", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "tervigon-massive-scything-talons", name: "Massive scything talons", image: "", profiles: [
+        { profileName: "► Massive scything talons – strike", range: "Melee", attacks: "4", skill: "3+", strength: "9", ap: "-2", damage: "D6" },
+        { profileName: "► Massive scything talons – sweep", range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-1", damage: "2" },
+      ]},
+      { id: "tervigon-massive-crushing-claws", name: "Massive crushing claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "12", ap: "-3", damage: "D6+1" }] },
+    ],
+    wargearGroups: [
+      ["tervigon-massive-scything-talons", "tervigon-massive-crushing-claws"],
     ],
   },
 
@@ -195,6 +200,34 @@ export const tyranidsCharacters: Character[] = [
   },
 
   {
+    id: "the-red-terror",
+    name: "The Red Terror",
+    faction: "tyranids",
+    image: "",
+    points: 130,
+    canAttachTo: [],
+    abilities: [
+      {
+        name: "Swallow Whole",
+        description: "Each time an attack with this model's gaping maw targets an INFANTRY, MOUNTED or BEASTS unit, each successful unmodified Wound roll is a Critical Wound. Each time an INFANTRY, MOUNTED or BEASTS model is destroyed as a result of an attack made by this model's gaping maw, this model regains up to D3+2 lost wounds.",
+      },
+      {
+        name: "Subterranean Hunter",
+        description: "At the end of the Fight phase, if this unit is not within Engagement Range of one or more enemy units, you can remove it from the battlefield and place it into Strategic Reserves.",
+      },
+      {
+        name: "Serpentine Fiend",
+        description: "This model can move through terrain features, but cannot end a move within a wall, a floor, etc. This model can be set up or end a move on any floor level of RUINS, but if that level is not the ground floor, it can only do so if its base does not overhang the floor at that level.",
+      },
+    ],
+    defaultWargear: [
+      { id: "red-terror-gaping-maw", name: "Gaping maw", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "2+", strength: "5", ap: "0", damage: "D3+2", keywords: ["EXTRA ATTACKS", "DEVASTATING WOUNDS", "PRECISION"] }] },
+      { id: "red-terror-scything-talons", name: "Scything talons", image: "", profiles: [{ range: "Melee", attacks: "12", skill: "2+", strength: "7", ap: "-2", damage: "2" }] },
+    ],
+    wargear: [],
+  },
+
+  {
     id: "winged-tyranid-prime",
     name: "Winged Tyranid Prime",
     faction: "tyranids",
@@ -213,6 +246,32 @@ export const tyranidsCharacters: Character[] = [
     ],
     defaultWargear: [
       { id: "prime-talons", name: "Prime talons", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "5", ap: "-2", damage: "2" }] },
+    ],
+    wargear: [],
+  },
+
+
+  {
+    id: "hyperadapted-raveners",
+    name: "Hyperadapted Raveners",
+    faction: "tyranids",
+    image: "",
+    points: 165,
+    canAttachTo: ["raveners"],
+    abilities: [
+      {
+        name: "Alpha Invader",
+        description: "Weapons equipped by models in this unit have the [SUSTAINED HITS 1] ability.",
+      },
+      {
+        name: "Hypersensory Array",
+        description: "Once per battle round, you can target this unit with the Rapid Ingress or Heroic Intervention Stratagem for 0CP, and can do so even if you have already targeted a different unit with that Stratagem this turn.",
+      },
+    ],
+    defaultWargear: [
+      { id: "venom-bolt", name: "Venom bolt", image: "", profiles: [{ range: '12"', attacks: "D6+3", skill: "N/A", strength: "6", ap: "-1", damage: "1", keywords: ["ASSAULT", "IGNORES COVER", "TORRENT"] }] },
+      { id: "prime-claws-and-talons", name: "Prime claws and talons", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "5", ap: "-2", damage: "2", keywords: ["ANTI-MONSTER 5+", "ANTI-VEHICLE 5+", "TWIN-LINKED"] }] },
+      { id: "ravener-heavy-claws-and-talons", name: "Ravener heavy claws and talons", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-2", damage: "2", keywords: ["ANTI-MONSTER 5+", "ANTI-VEHICLE 5+", "TWIN-LINKED"] }] },
     ],
     wargear: [],
   },

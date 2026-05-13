@@ -582,6 +582,7 @@ export const spaceMarinesUnits: Unit[] = [
     modelCountOptions: [3, 6],
     category: "infantry",
     points: 120,
+    pointsByModelCount: { 3: 120, 6: 240 },
     abilities: [
       {
         name: "Meteoric Descent",
@@ -727,14 +728,14 @@ export const spaceMarinesUnits: Unit[] = [
       },
     ],
     defaultWargear: [
-      { id: "special-issue-bolt-pistol", name: "Special issue bolt pistol", image: "" },
-      { id: "combat-knife", name: "Combat knife", image: "" },
+      { id: "bolt-carbine", name: "Bolt carbine", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PRECISION"] }] },
+      { id: "special-issue-bolt-pistol", name: "Special issue bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL", "PRECISION"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "combat-knife", name: "Combat knife", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PRECISION"] }] },
     ],
     wargear: [
-      { id: "bolt-carbine-and-ccw", name: "Bolt carbine + close combat weapon", image: "", note: "All models in this unit can each have their combat knife replaced with 1 bolt carbine and 1 close combat weapon." },
       { id: "reiver-grav-chute", name: "Reiver grav-chute", image: "", note: "Reiver Grav-chute: The bearer has the Deep Strike ability." },
       { id: "grapnel-launcher", name: "Grapnel launcher", image: "", note: "Grapnel Launcher: Each time the bearer's unit makes a Normal, Advance, Fall Back or Charge move, ignore any vertical distance when determining the total distance the bearer can be moved during that move." },
-      { id: "sergeant-combat-knife", name: "Combat knife", image: "", sergeantOnly: true, note: "Can be equipped if the Reiver Sergeant is equipped with 1 bolt carbine." },
     ],
     ledBy: ["captain-in-phobos-armour","librarian-in-phobos-armour","lieutenant-in-phobos-armour","lieutenant-in-reiver-armour"],
   },
@@ -745,19 +746,47 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 70,
+    modelCountOptions: [5, 10],
+    pointsByModelCount: { 5: 70, 10: 140 },
+    notes: [
+      {
+        id: "scout-heavy-note",
+        text: "1 in 5 models can have a heavy bolter or missile launcher:",
+        textByModelCount: { 5: "1 in 5 models can have a heavy bolter or missile launcher:", 10: "2 in 10 models — 1st model can have a heavy bolter or missile launcher:" },
+        checkbox: true,
+        weaponIds: ["scout-heavy-bolter", "scout-missile-launcher"],
+      },
+      {
+        id: "scout-heavy-note-2",
+        text: "2 in 10 models — 2nd model can have a heavy bolter or missile launcher:",
+        checkbox: true,
+        weaponIds: ["scout-heavy-bolter", "scout-missile-launcher"],
+        showForModelCounts: [10],
+      },
+    ],
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "boltgun", name: "Boltgun", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "astartes-shotgun", name: "Astartes shotgun", image: "" },
-      { id: "heavy-bolter", name: "Heavy bolter", image: "" },
-      { id: "missile-launcher-frag", name: "Missile launcher – frag", image: "" },
-      { id: "missile-launcher-krak", name: "Missile launcher – krak", image: "" },
-      { id: "scout-sniper-rifle", name: "Scout sniper rifle", image: "" },
-      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png" },
-      { id: "combat-knife", name: "Combat knife", image: "" },
+      { id: "boltgun", name: "Boltgun", image: "", countable: true, maxCountByModelCount: { 5: 5, 10: 10 }, maxCountReducedByWargear: ["astartes-shotgun", "combat-knife"], profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "astartes-shotgun", name: "Astartes shotgun", image: "", countable: true, maxCountByModelCount: { 5: 5, 10: 10 }, maxCountReducedByWargear: ["boltgun", "combat-knife"], profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["ASSAULT"] }] },
+      { id: "combat-knife", name: "Combat knife", image: "", countable: true, maxCountByModelCount: { 5: 5, 10: 10 }, maxCountReducedByWargear: ["boltgun", "astartes-shotgun"], profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "-1", damage: "1" }] },
+      { id: "sgt-scout-boltgun", name: "Boltgun", image: "", sergeantOnly: true, profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "sgt-scout-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }] },
+      { id: "scout-sniper-rifle", name: "Scout sniper rifle", image: "", countable: true, maxCountByModelCount: { 5: 1, 10: 2 }, profiles: [{ range: '36"', attacks: "1", skill: "3+", strength: "4", ap: "-2", damage: "2", keywords: ["HEAVY", "PRECISION"] }] },
+      { id: "scout-heavy-bolter", name: "Heavy bolter", image: "", profiles: [{ range: '36"', attacks: "3", skill: "4+", strength: "5", ap: "-1", damage: "2", keywords: ["HEAVY", "SUSTAINED HITS 1"] }] },
+      { id: "scout-missile-launcher", name: "Missile launcher", image: "", profiles: [
+        { profileName: "Frag", range: '48"', attacks: "D6", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST", "HEAVY"] },
+        { profileName: "Krak", range: '48"', attacks: "1", skill: "4+", strength: "9", ap: "-2", damage: "D6", keywords: ["HEAVY"] },
+      ]},
+    ],
+    wargearGroups: [["sgt-scout-boltgun", "sgt-scout-chainsword"]],
+    abilities: [
+      {
+        name: "Guerrilla Tactics",
+        description: "At the end of your opponent's turn, if this unit is more than 6\" away from all enemy models, you can remove this unit from the battlefield and place it into Strategic Reserves.",
+      },
     ],
     ledBy: ["captain-in-phobos-armour"],
   },
@@ -1022,18 +1051,46 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 135,
-    defaultWargear: [
-      { id: "assault-cannon", name: "Assault cannon", image: "" },
-      { id: "storm-bolter", name: "Storm bolter", image: "" },
-      { id: "dreadnought-combat-weapon", name: "Dreadnought combat weapon", image: "" },
+    abilities: [
+      {
+        name: "Wisdom of the Ancients",
+        description: "Aura: While a friendly ADEPTUS ASTARTES INFANTRY unit is within 6\" of this model, each time a model in that unit makes an attack, re-roll a Hit roll of 1.",
+      },
+    ],
+    wargearGroups: [
+      ["assault-cannon", "heavy-plasma-cannon", "multi-melta", "twin-lascannon"],
+      ["dreadnought-combat-weapon", "missile-launcher", "heavy-flamer"],
     ],
     wargear: [
-      { id: "heavy-flamer", name: "Heavy flamer", image: "" },
-      { id: "heavy-plasma-cannon-standard", name: "Heavy plasma cannon – standard", image: "" },
-      { id: "heavy-plasma-cannon-supercharge", name: "Heavy plasma cannon – supercharge", image: "" },
-      { id: "multi-melta", name: "Multi-melta", image: "" },
-      { id: "twin-lascannon", name: "Twin lascannon", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "assault-cannon", name: "Assault cannon", image: "", profiles: [
+        { range: '24"', attacks: "6", skill: "3+", strength: "6", ap: "0", damage: "1", keywords: ["DEVASTATING WOUNDS"] },
+      ]},
+      { id: "heavy-plasma-cannon", name: "Heavy plasma cannon", image: "", profiles: [
+        { profileName: "Standard", range: '36"', attacks: "D3", skill: "3+", strength: "7", ap: "-2", damage: "2", keywords: ["BLAST"] },
+        { profileName: "Supercharge", range: '36"', attacks: "D3", skill: "3+", strength: "8", ap: "-3", damage: "3", keywords: ["BLAST", "HAZARDOUS"] },
+      ]},
+      { id: "multi-melta", name: "Multi-melta", image: "", profiles: [
+        { range: '18"', attacks: "2", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2"] },
+      ]},
+      { id: "twin-lascannon", name: "Twin lascannon", image: "", profiles: [
+        { range: '48"', attacks: "1", skill: "3+", strength: "12", ap: "-3", damage: "D6+1", keywords: ["TWIN-LINKED"] },
+      ]},
+      { id: "dreadnought-combat-weapon", name: "Dreadnought combat weapon", image: "", linkedWargear: ["storm-bolter"], profiles: [
+        { range: "Melee", attacks: "5", skill: "3+", strength: "12", ap: "-2", damage: "3" },
+      ]},
+      { id: "missile-launcher", name: "Missile launcher", image: "", linkedWargear: ["close-combat-weapon"], profiles: [
+        { profileName: "Frag", range: '48"', attacks: "D6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] },
+        { profileName: "Krak", range: '48"', attacks: "1", skill: "3+", strength: "9", ap: "-2", damage: "D6" },
+      ]},
+      { id: "heavy-flamer", name: "Heavy flamer", image: "", linkedWargear: ["dreadnought-combat-weapon"], profiles: [
+        { range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] },
+      ]},
+      { id: "storm-bolter", name: "Storm bolter", image: "", profiles: [
+        { range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] },
+      ]},
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [
+        { range: "Melee", attacks: "5", skill: "3+", strength: "6", ap: "0", damage: "1" },
+      ]},
     ],
     ledBy: [],
   },

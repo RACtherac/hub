@@ -286,6 +286,10 @@ export const astraMilitarumCharacters: Character[] = [
     canAttachTo: ["death-riders"],
     abilities: [
       {
+        name: "Orders",
+        description: "This OFFICER can issue up to 3 Orders to REGIMENT units.",
+      },
+      {
         name: "Tough to Kill",
         description: "The first time this model is destroyed, roll one D6 at the end of the phase. On a 2+, set this model back up on the battlefield as close as possible to where it was destroyed and not within Engagement Range of any enemy units, with D3 wounds remaining.",
       },
@@ -507,6 +511,156 @@ export const astraMilitarumCharacters: Character[] = [
         description: "Once per battle round, one friendly REGIMENT unit within 12\" of this model can be targeted with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP.",
       },
     ],
+  },
+
+  {
+    id: "commissar-yarrick",
+    name: "Commissar Yarrick",
+    faction: "astra-militarum",
+    image: "",
+    points: 150,
+    canAttachTo: ["cadian-shock-troops", "catachan-jungle-fighters", "kasrkin", "krieg-combat-engineers", "tempestus-scions", "death-korps-of-krieg"],
+    defaultWargear: [
+      { id: "yarrick-bale-eye", name: "Bale Eye", image: "", profiles: [{ range: '12"', attacks: "2", skill: "2+", strength: "6", ap: "-2", damage: "D3+1", keywords: ["PRECISION"] }] },
+      { id: "yarrick-laspistol", name: "Laspistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "yarrick-storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
+      { id: "yarrick-power-klaw", name: "Power klaw", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "8", ap: "-2", damage: "2" }] },
+      { id: "yarrick-power-sword", name: "Power sword", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "4", ap: "-2", damage: "1" }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Orders",
+        description: "This OFFICER can issue up to 2 Orders to REGIMENT, SQUADRON or TITANIC units.",
+      },
+      {
+        name: "Will of Iron",
+        description: "The first time this model is destroyed, remove it from play, then, at the end of the phase, roll one D6: on a 2+, set this model back up on the battlefield as close as possible to where it was destroyed and not within Engagement Range of one or more enemy units, with 3 wounds remaining.",
+      },
+      {
+        name: "Hero of Hades Hive",
+        description: "In your Command phase, you can select one of the abilities in the Hero of Hades Hive section (see below). Until the start of your next Command phase, this model has that ability.",
+      },
+      {
+        name: "Counterstrategist",
+        description: "At the end of your opponent's Movement phase, you can select one enemy unit that was set up or ended a move within 9\" of this model, and one friendly REGIMENT unit within 6\" of and visible to this model that has not made a Normal move or been targeted with the Fire Overwatch Stratagem this phase. That REGIMENT unit can then either: Make a Normal move of up to D6\". Shoot at that enemy unit, but only if it is an eligible target (until the end of the phase, each time a model in that unit makes a ranged attack, an unmodified Hit roll of 6 is required to score a hit). Make a Surge move — roll one D6: models move up to that many inches toward the closest enemy unit and can end within Engagement Range of it.",
+      },
+      {
+        name: "Decisive Command",
+        description: "The next Order issued by this model can be issued to one eligible friendly unit within 12\" of this model; if this is the first Order issued by a unit from your army this Command phase, that Order affects not only that eligible unit, but every other eligible friendly unit within 6\" of that eligible unit.",
+      },
+      {
+        name: "Inspiring Hero (Aura)",
+        description: "While a friendly ASTRA MILITARUM unit is within 6\" of this model, you can re-roll Battle-shock and Leadership tests taken for that unit.",
+      },
+    ],
+  },
+
+  {
+    id: "commissar-graves-on-foot",
+    name: "Commissar Graves On Foot",
+    faction: "astra-militarum",
+    image: "",
+    points: 65,
+    canAttachTo: ["cadian-shock-troops", "catachan-jungle-fighters", "kasrkin", "krieg-combat-engineers", "tempestus-scions", "death-korps-of-krieg"],
+    defaultWargear: [
+      { id: "graves-foot-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "graves-foot-power-sword-and-manus-mortis", name: "Power sword and Manus Mortis", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "6", ap: "-2", damage: "2" }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Using Commissar Graves",
+        description: "Your army can only include one COMMISSAR GRAVES or COMMISSAR GRAVES ON FOOT unit.",
+      },
+      {
+        name: "Orders",
+        description: "This OFFICER can issue 1 Order to REGIMENT units. This OFFICER can only issue the Move! Move! Move!, Duty and Honour! and Fix Bayonets! Orders.",
+      },
+      {
+        name: "Icon of Discipline",
+        description: "This model's unit is eligible to shoot and declare a Charge in a turn in which it Fell Back.",
+      },
+      {
+        name: "Brutal Disciplinarian",
+        description: "Once per turn, at the start of any phase, you can select one friendly ASTRA MILITARUM INFANTRY (excluding units that only contain one model) unit that is Battle-shocked and within 12\" of this model. If you do, one model in that unit is destroyed, and that unit is no longer Battle-shocked.",
+      },
+    ],
+  },
+
+  {
+    id: "commissar-graves",
+    name: "Commissar Graves",
+    faction: "astra-militarum",
+    image: "",
+    points: 110,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "graves-chiron-gatling-cannon", name: "Chiron gatling cannon", image: "", profiles: [{ range: '24"', attacks: "12", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
+      { id: "graves-prefectus-heavy-stubber", name: "Prefectus heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] }] },
+      { id: "graves-armoured-hull", name: "Armoured hull", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "graves-enforcer-crew", name: "Enforcer crew", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "graves-power-sword-and-manus-mortis-lance", name: "Power sword and Manus Mortis lance", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "6", ap: "-2", damage: "2" }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Using Commissar Graves",
+        description: "Your army can only include one COMMISSAR GRAVES or COMMISSAR GRAVES ON FOOT unit.",
+      },
+      {
+        name: "Orders",
+        description: "This OFFICER can issue 1 Order to REGIMENT or SQUADRON units. This OFFICER can only issue the Move! Move! Move!, Duty and Honour! and Fix Bayonets! Orders.",
+      },
+      {
+        name: "Mechanised Spearhead",
+        description: "In your Movement phase, each time a friendly ASTRA MILITARUM REGIMENT unit disembarks from a TRANSPORT that is within 6\" of this model, after that unit has been set up, this model can issue 1 Order to that Regiment unit, regardless of how many Orders this model has already issued this turn.",
+      },
+      {
+        name: "Brutal Disciplinarian",
+        description: "Once per turn, at the start of any phase, you can select one friendly ASTRA MILITARUM INFANTRY unit (excluding units that only contain one model) that is Battle-shocked and within 24\" of and visible to this model. If you do, one model in that unit is destroyed, and that unit is no longer Battle-shocked.",
+      },
+      {
+        name: "Aquiline Prow",
+        description: "Each time this unit ends a Charge move, you can select one enemy unit within Engagement Range of it, then roll one D6: on a 2-3, that enemy unit suffers D3 mortal wounds; on a 4-5, that enemy unit suffers 3 mortal wounds; on a 6, that enemy unit suffers D3+3 mortal wounds.",
+      },
+    ],
+  },
+
+
+  {
+    id: "gaunt-s-ghosts",
+    name: "Gaunt's Ghosts",
+    faction: "astra-militarum",
+    image: "",
+    points: 100,
+    canAttachTo: [],
+    abilities: [
+      {
+        name: "Orders",
+        description: "This unit's OFFICER can issue up to 2 Orders to REGIMENT or GAUNT'S GHOSTS units.",
+      },
+      {
+        name: "Tanith Camo-cloaks",
+        description: "Models in this unit have the Benefit of Cover.",
+      },
+      {
+        name: "Covert Stealth Team",
+        description: "At the end of your opponent's turn, if this unit is not within Engagement Range of one or more enemy units, you can remove this unit from the battlefield. In the Reinforcements step of your next Movement phase, set it up anywhere on the battlefield that is more than 9\" horizontally away from all enemy models.",
+      },
+    ],
+    defaultWargear: [
+      { id: "ghosts-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "ghosts-gaunt-chainsword", name: "Gaunt's chainsword", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "3", ap: "-1", damage: "1" }] },
+      { id: "ghosts-corbec-lascarbine", name: "Corbec's hot-shot lascarbine", image: "", profiles: [{ range: '24"', attacks: "3", skill: "3+", strength: "3", ap: "-1", damage: "1", keywords: ["ASSAULT"] }] },
+      { id: "ghosts-rawne-lascarbine", name: "Rawne's lascarbine", image: "", profiles: [{ range: '24"', attacks: "3", skill: "3+", strength: "3", ap: "0", damage: "1", keywords: ["ASSAULT", "SUSTAINED HITS 1"] }] },
+      { id: "ghosts-larkin-long-las", name: "Larkin's long-las", image: "", profiles: [{ range: '36"', attacks: "1", skill: "2+", strength: "5", ap: "-2", damage: "4", keywords: ["HEAVY", "PRECISION"] }] },
+      { id: "ghosts-bragg-autocannon", name: "Bragg's autocannon", image: "", profiles: [{ range: '48"', attacks: "4", skill: "5+", strength: "9", ap: "-1", damage: "3", keywords: ["HEAVY"] }] },
+      { id: "ghosts-lascarbine", name: "Lascarbine", image: "", profiles: [{ range: '24"', attacks: "3", skill: "3+", strength: "3", ap: "0", damage: "1", keywords: ["ASSAULT"] }] },
+      { id: "ghosts-mkoll-knife", name: "Mkoll's straight silver knife", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "3", ap: "-1", damage: "1", keywords: ["DEVASTATING WOUNDS", "PRECISION"] }] },
+      { id: "ghosts-straight-silver-knife", name: "Straight silver knife", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
+    ],
+    wargear: [],
   },
 
 ];
