@@ -118,6 +118,16 @@ export const tyranidsCharacters: Character[] = [
       { id: "old-one-eye-s-claws-and-talons-strike", name: "Old One Eye's claws and talons – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "10", ap: "-3", damage: "D6+1" }] },
       { id: "old-one-eye-s-claws-and-talons-sweep", name: "Old One Eye's claws and talons – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "6", ap: "-2", damage: "2" }] },
     ],
+    abilities: [
+      {
+        name: "Alpha Leader",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack, you can re-roll the Hit roll.",
+      },
+      {
+        name: "Unstoppable Monster",
+        description: "At the start of each player’s Command phase, this model regains up to D3 lost wounds.",
+      },
+    ],
     wargear: [],
   },
 
