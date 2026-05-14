@@ -222,9 +222,10 @@ export const spaceMarinesCharacters: Character[] = [
     id: "captain-with-jump-pack",
     name: "Captain With Jump Pack",
     faction: "space-marines",
-    image: "",
+    image: "/Warhammerimages/SpaceMarine/Jump Pack Captain.png",
+    imageCredit: "Oscar",
     points: 75,
-    canAttachTo: [],
+    canAttachTo: ["assault-intercessor-with-jump-pack-squad"],
     abilities: [
       {
         name: "Angel's Wrath",
