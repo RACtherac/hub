@@ -254,6 +254,7 @@ export const tyranidsUnits: Unit[] = [
     faction: "tyranids",
     category: "infantry",
     image: "/Warhammerimages/Tyranids/Neurolictor.png",
+    imageCredit: "Alana K.A",
     modelCountOptions: [1],
     pointsByModelCount: { 1: 70 },
     defaultWargear: [

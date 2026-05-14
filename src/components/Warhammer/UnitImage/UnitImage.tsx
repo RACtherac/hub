@@ -23,12 +23,12 @@ export default function UnitImage({
     unit.category === "vehicle" || unit.category === "transport" || unit.category === "monster"
       ? unit.image
       : modelCount === 10
-      ? unit.image10
+      ? (unit.image10 ?? unit.image)
       : modelCount === 6
-      ? unit.image6
+      ? (unit.image6 ?? unit.image)
       : modelCount === 3
-      ? unit.image3
-      : unit.image5;
+      ? (unit.image3 ?? unit.image)
+      : (unit.image5 ?? unit.image);
 
 
   return (
@@ -71,8 +71,10 @@ export default function UnitImage({
           <img src={baseImage} style={{
             position: "absolute",
             width: "240px",
-            left: "16px",
-            bottom: "0",
+            left: 0,
+            right: 0,
+            margin: "0 auto",
+            bottom: "15px",
             zIndex: 3,
             ...(unit.id !== "deathshroud-terminators" && { objectFit: "contain" }),
           }} />
@@ -83,8 +85,8 @@ export default function UnitImage({
       {selectedCharacter && (
         <div style={{
           position: "relative",
-          width: 120,
-          height: 160,
+          width: 200,
+          height: 200,
           background: "var(--surface-2)",
           border: "1px solid var(--border-2)",
           overflow: "hidden",
@@ -96,9 +98,9 @@ export default function UnitImage({
           <div style={{ position: "absolute", bottom: 0, right: 0, width: "8px", height: "8px", borderBottom: "1px solid var(--accent)", borderRight: "1px solid var(--accent)", zIndex: 10 }} />
           <img src={selectedCharacter.image} style={{
             position: "absolute",
-            width: "110px",
+            width: "180px",
             bottom: "0",
-            left: "5px",
+            left: "10px",
             zIndex: 4,
             objectFit: "contain",
           }} />
@@ -109,8 +111,8 @@ export default function UnitImage({
       {selectedCharacter2 && (
         <div style={{
           position: "relative",
-          width: 120,
-          height: 160,
+          width: 200,
+          height: 200,
           background: "var(--surface-2)",
           border: "1px solid var(--border-2)",
           overflow: "hidden",
@@ -123,9 +125,9 @@ export default function UnitImage({
           {selectedCharacter2.image ? (
             <img src={selectedCharacter2.image} style={{
               position: "absolute",
-              width: "110px",
+              width: "180px",
               bottom: "0",
-              left: "5px",
+              left: "10px",
               zIndex: 4,
               objectFit: "contain",
             }} />
