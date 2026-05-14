@@ -17,7 +17,7 @@ export const thousandSonsUnits: Unit[] = [
       { id: "chainsword", name: "Chainsword", image: "" },
       { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
     ],
-    ledBy: [],
+    ledBy: ["ahriman"],
   },
 
   {
@@ -131,7 +131,7 @@ export const thousandSonsUnits: Unit[] = [
         requiresNote: "icon-of-flame",
       },
     ],
-    ledBy: ["ahriman","ahriman-on-disc-of-tzeentch","exalted-sorcerer","exalted-sorcerer-on-disc-of-tzeentch","infernal-master","thousand-sons-sorcerer"],
+    ledBy: ["ahriman","exalted-sorcerer","exalted-sorcerer-on-disc-of-tzeentch","infernal-master","thousand-sons-sorcerer"],
   },
 
   {
@@ -678,15 +678,29 @@ export const thousandSonsUnits: Unit[] = [
     name: "Mutalith Vortex Beast",
     faction: "thousand-sons",
     category: "monster",
-    points: 165,
+    points: 170,
     defaultWargear: [
-      { id: "warp-vortex-blast", name: "Warp vortex – blast", image: "" },
-      { id: "warp-vortex-beam", name: "Warp vortex – beam", image: "" },
-      { id: "warp-vortex-torrent", name: "Warp vortex – torrent", image: "" },
-      { id: "betentacled-maw", name: "Betentacled maw", image: "" },
-      { id: "mutalith-claws", name: "Mutalith claws", image: "" },
+      { id: "warp-vortex-blast", name: "Warp vortex – blast", image: "", profiles: [{ range: '24"', attacks: "D6+3", skill: "3+", strength: "9", ap: "-2", damage: "2", keywords: ["BLAST"] }] },
+      { id: "warp-vortex-beam", name: "Warp vortex – beam", image: "", profiles: [{ range: '36"', attacks: "1", skill: "3+", strength: "18", ap: "-3", damage: "D6+6", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "warp-vortex-torrent", name: "Warp vortex – torrent", image: "", profiles: [{ range: '18"', attacks: "2D6", skill: "N/A", strength: "6", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "betentacled-maw", name: "Betentacled maw", image: "", profiles: [{ range: "Melee", attacks: "15", skill: "3+", strength: "7", ap: "0", damage: "1" }] },
+      { id: "mutalith-claws", name: "Mutalith claws", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "10", ap: "-2", damage: "3" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Mutating Vortex (Aura)",
+        description: "At the end of your Movement phase, roll one D6 for each enemy unit within 6\" of this model: on a 2-3, that unit suffers 1 mortal wound; on a 4-5, that unit suffers D3 mortal wounds; on a 6, that unit suffers D6 mortal wounds. Each enemy unit within range of this ability must then take a Battle-shock test.",
+      },
+      {
+        name: "Immaterial Flare (Aura)",
+        description: "While a friendly THOUSAND SONS PSYKER model is within 6\" of this model, each time that model Channels the Warp, add 1 to the Psychic test result. This is not cumulative with any other modifiers to the Psychic test result.",
+      },
+      {
+        name: "Damaged: 1-4 Wounds Remaining",
+        description: "While this model has 1-4 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
     ledBy: [],
   },
 

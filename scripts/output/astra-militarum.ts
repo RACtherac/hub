@@ -113,19 +113,103 @@ export const astraMilitarumUnits: Unit[] = [
     faction: "astra-militarum",
     category: "battleline",
     points: 65,
+    modelCountOptions: [10, 20],
+    pointsByModelCount: { 10: 65, 20: 120 },
+    abilities: [
+      {
+        name: "Shock Troops",
+        description: "At the end of your Command phase, if this unit is within range of an objective marker you control, that objective marker remains under your control, even if you have no models within range of it, until your opponent controls it at the start or end of any turn.",
+      },
+      {
+        name: "Vox-caster",
+        description: "Each time you target the bearer's unit with a Stratagem, roll one D6, adding 1 to the result if there are one or more friendly OFFICER models within 6\": on a 5+, you gain 1CP.",
+        requiresNote: "cadian-vox-caster-note",
+      },
+    ],
     defaultWargear: [
-      { id: "laspistol", name: "Laspistol", image: "" },
-      { id: "chainsword", name: "Chainsword", image: "" },
+      { id: "lasgun", name: "Lasgun", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
+      { id: "laspistol", name: "Laspistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "flamer", name: "Flamer", image: "" },
-      { id: "grenade-launcher-frag", name: "Grenade launcher – frag", image: "" },
-      { id: "grenade-launcher-krak", name: "Grenade launcher – krak", image: "" },
-      { id: "meltagun", name: "Meltagun", image: "" },
-      { id: "plasma-gun-standard", name: "Plasma gun – standard", image: "" },
-      { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "" },
+      { id: "flamer", name: "Flamer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      {
+        id: "grenade-launcher",
+        name: "Grenade launcher",
+        image: "",
+        profiles: [
+          { profileName: "Frag", range: '24"', attacks: "D3", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] },
+          { profileName: "Krak", range: '24"', attacks: "1", skill: "4+", strength: "9", ap: "-2", damage: "D3" },
+        ],
+      },
+      { id: "meltagun", name: "Meltagun", image: "", profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2"] }] },
+      {
+        id: "plasma-gun",
+        name: "Plasma gun",
+        image: "",
+        profiles: [
+          { profileName: "Standard", range: '24"', attacks: "1", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["RAPID FIRE 1"] },
+          { profileName: "Supercharge", range: '24"', attacks: "1", skill: "4+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "RAPID FIRE 1"] },
+        ],
+      },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", sergeantOnly: true, profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "sgt-chainsword", name: "Chainsword", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
+      { id: "sergeants-autogun", name: "Sergeant's autogun", image: "", sergeantOnly: true, profiles: [{ range: '24"', attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
     ],
-    ledBy: ["cadian-castellan","cadian-command-squad","commissar","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","ursula-creed","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    wargearGroups: [
+      ["bolt-pistol", "sergeants-autogun"],
+      ["sgt-chainsword", "sergeants-autogun"],
+    ],
+    sergeantOptionGroups: [
+      { label: "Sergeant Wargear", ids: ["bolt-pistol", "sgt-chainsword", "sergeants-autogun"] },
+    ],
+    noteGroupLimitsByModelCount: { "cadian-special-weapons": { 10: 2, 20: 4 } },
+    notes: [
+      {
+        id: "cadian-vox-caster-note",
+        text: "Vox-caster",
+        checkbox: true,
+        maxCountByModelCount: { 10: 1, 20: 2 },
+        image: "/Warhammerimages/AstraMilitarum/vox-caster.png",
+      },
+      {
+        id: "cadian-flamer-note",
+        text: "Flamer",
+        checkbox: true,
+        weaponId: "flamer",
+        noteGroup: "cadian-special-weapons",
+        maxCountByModelCount: { 10: 2, 20: 4 },
+        image: "/Warhammerimages/AstraMilitarum/flamer.png",
+      },
+      {
+        id: "cadian-grenade-launcher-note",
+        text: "Grenade launcher",
+        checkbox: true,
+        weaponId: "grenade-launcher",
+        noteGroup: "cadian-special-weapons",
+        maxCountByModelCount: { 10: 2, 20: 4 },
+        image: "/Warhammerimages/AstraMilitarum/grenade-launcher.png",
+      },
+      {
+        id: "cadian-meltagun-note",
+        text: "Meltagun",
+        checkbox: true,
+        weaponId: "meltagun",
+        noteGroup: "cadian-special-weapons",
+        maxCountByModelCount: { 10: 2, 20: 4 },
+        image: "/Warhammerimages/AstraMilitarum/meltagun.png",
+      },
+      {
+        id: "cadian-plasma-gun-note",
+        text: "Plasma gun",
+        checkbox: true,
+        weaponId: "plasma-gun",
+        noteGroup: "cadian-special-weapons",
+        maxCountByModelCount: { 10: 2, 20: 4 },
+        image: "/Warhammerimages/AstraMilitarum/plasma-gun.png",
+      },
+    ],
+    ledBy: ["cadian-castellan","cadian-command-squad","commissar","commissar-graves-on-foot","commissar-yarrick","lord-solar-leontus","ministorum-priest","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer","ursula-creed","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -142,7 +226,7 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "flamer", name: "Flamer", image: "" },
       { id: "lasgun", name: "Lasgun", image: "" },
     ],
-    ledBy: ["catachan-command-squad","commissar","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["catachan-command-squad","commissar","commissar-graves-on-foot","commissar-yarrick","lord-solar-leontus","ministorum-priest","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -290,7 +374,7 @@ export const astraMilitarumUnits: Unit[] = [
         requiresNote: "krieg-vox-caster-note",
       },
     ],
-    ledBy: ["commissar","krieg-command-squad","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","krieg-command-squad","lord-solar-leontus","ministorum-priest","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -458,28 +542,6 @@ export const astraMilitarumUnits: Unit[] = [
     wargear: [
       { id: "bombast-field-gun", name: "Bombast field gun", image: "" },
       { id: "heavy-lascannon", name: "Heavy lascannon", image: "" },
-    ],
-    ledBy: [],
-  },
-
-  {
-    id: "gaunt-s-ghosts",
-    name: "Gaunt S Ghosts",
-    faction: "astra-militarum",
-    category: "infantry",
-    points: 110,
-    defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "gaunt-s-chainsword", name: "Gaunt's chainsword", image: "" },
-    ],
-    wargear: [
-      { id: "bragg-s-autocannon", name: "Bragg's autocannon", image: "" },
-      { id: "corbec-s-hot-shot-lascarbine", name: "Corbec's hot-shot lascarbine", image: "" },
-      { id: "larkin-s-long-las", name: "Larkin's long-las", image: "" },
-      { id: "lascarbine", name: "Lascarbine", image: "" },
-      { id: "rawne-s-lascarbine", name: "Rawne's lascarbine", image: "" },
-      { id: "straight-silver-knife", name: "Straight silver knife", image: "" },
-      { id: "mkoll-s-straight-silver-knife", name: "Mkoll's straight silver knife", image: "" },
     ],
     ledBy: [],
   },
@@ -716,7 +778,7 @@ export const astraMilitarumUnits: Unit[] = [
         requiresNote: "laspistol-melta-mine-note",
       },
     ],
-    ledBy: ["cadian-castellan","commissar","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","ursula-creed"],
+    ledBy: ["cadian-castellan","commissar","commissar-graves-on-foot","commissar-yarrick","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer","ursula-creed"],
   },
 
   {
@@ -734,7 +796,8 @@ export const astraMilitarumUnits: Unit[] = [
         name: "Autopistol",
         image: "",
         countable: true,
-        maxCountByModelCount: { 5: 5, 10: 10 },
+        maxCountByModelCount: { 5: 4, 10: 9 },
+        maxCountReducedByWargear: ["eng-combat-shotgun", "eng-flamer", "eng-remote-mine"],
         profiles: [
           { range: '12"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] },
           { profileName: "Trench club", range: "Melee", attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1" },
@@ -745,7 +808,8 @@ export const astraMilitarumUnits: Unit[] = [
         name: "Combat shotgun",
         image: "",
         countable: true,
-        maxCountByModelCount: { 5: 5, 10: 10 },
+        maxCountByModelCount: { 5: 4, 10: 9 },
+        maxCountReducedByWargear: ["eng-autopistol", "eng-flamer", "eng-remote-mine"],
         profiles: [
           { range: '12"', attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["ASSAULT"] },
           { profileName: "Close combat weapon", range: "Melee", attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1" },
@@ -755,13 +819,24 @@ export const astraMilitarumUnits: Unit[] = [
         id: "eng-flamer",
         name: "Flamer",
         image: "",
+        countable: true,
+        maxCountByModelCount: { 5: 1, 10: 2 },
         profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }],
       },
       {
         id: "eng-remote-mine",
         name: "Remote Mine",
         image: "",
+        countable: true,
+        maxCountByModelCount: { 5: 1, 10: 2 },
         note: "Once per battle, at the start of your Shooting phase, you can select one enemy unit within 9\" of and visible to the bearer and roll one D6: on a 3+, that enemy unit suffers D3 mortal wounds, or 2D3 mortal wounds instead if it is a VEHICLE or FORTIFICATIONS unit. Designer's Note: Place a Remote Mine token next to the unit, removing it once this ability has been used.",
+      },
+      {
+        id: "eng-sgt-autopistol",
+        name: "Autopistol",
+        image: "",
+        sergeantOnly: true,
+        profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }],
       },
       {
         id: "eng-sgt-bolt-pistol",
@@ -803,11 +878,11 @@ export const astraMilitarumUnits: Unit[] = [
       },
     ],
     wargearGroups: [
-      ["eng-sgt-bolt-pistol", "eng-sgt-hand-flamer", "eng-sgt-plasma-pistol"],
+      ["eng-sgt-autopistol", "eng-sgt-bolt-pistol", "eng-sgt-hand-flamer", "eng-sgt-plasma-pistol"],
       ["eng-sgt-chainsword", "eng-sgt-power-weapon"],
     ],
     sergeantOptionGroups: [
-      { label: "Watchmaster Ranged", ids: ["eng-sgt-bolt-pistol", "eng-sgt-hand-flamer", "eng-sgt-plasma-pistol"] },
+      { label: "Watchmaster Ranged", ids: ["eng-sgt-autopistol", "eng-sgt-bolt-pistol", "eng-sgt-hand-flamer", "eng-sgt-plasma-pistol"] },
       { label: "Watchmaster Melee", ids: ["eng-sgt-chainsword", "eng-sgt-power-weapon"] },
     ],
     abilities: [
@@ -816,7 +891,7 @@ export const astraMilitarumUnits: Unit[] = [
         description: "Once per turn, you can target this unit with the Grenade Stratagem for 0CP.",
       },
     ],
-    ledBy: ["commissar","krieg-command-squad","lord-solar-leontus","ministorum-priest","primaris-psyker","tech-priest-enginseer"],
+    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","krieg-command-squad","lord-solar-leontus","ministorum-priest","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer"],
   },
 
   {
@@ -1012,7 +1087,7 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "power-fist", name: "Power fist", image: "" },
       { id: "power-weapon", name: "Power weapon", image: "" },
     ],
-    ledBy: ["commissar","militarum-tempestus-command-squad","ministorum-priest","primaris-psyker"],
+    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","militarum-tempestus-command-squad","ministorum-priest","ogryn-bodyguard","primaris-psyker"],
   },
 
   {
@@ -1061,19 +1136,130 @@ export const astraMilitarumUnits: Unit[] = [
     faction: "astra-militarum",
     category: "vehicle",
     points: 65,
+    modelCountOptions: [1, 2],
+    pointsByModelCount: { 1: 65, 2: 130 },
+    abilities: [
+      {
+        name: "Mobile Hunter-killers",
+        description: "Each time a model in this unit makes an attack that targets a MONSTER or VEHICLE unit, you can re-roll the Wound roll.",
+      },
+    ],
     defaultWargear: [
       { id: "multi-laser", name: "Multi-laser", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      {
+        id: "close-combat-weapon",
+        name: "Close combat weapon",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "6", ap: "0", damage: "1", keywords: [] }],
+      },
     ],
     wargear: [
-      { id: "autocannon", name: "Autocannon", image: "" },
-      { id: "heavy-flamer", name: "Heavy flamer", image: "" },
-      { id: "lascannon", name: "Lascannon", image: "" },
-      { id: "missile-launcher-frag", name: "Missile launcher – frag", image: "" },
-      { id: "missile-launcher-krak", name: "Missile launcher – krak", image: "" },
-      { id: "plasma-cannon-standard", name: "Plasma cannon – standard", image: "" },
-      { id: "plasma-cannon-supercharge", name: "Plasma cannon – supercharge", image: "" },
+      {
+        id: "autocannon",
+        name: "Autocannon",
+        image: "",
+        profiles: [{ range: '48"', attacks: "2", skill: "4+", strength: "9", ap: "-1", damage: "3", keywords: [] }],
+      },
+      {
+        id: "heavy-flamer",
+        name: "Heavy flamer",
+        image: "",
+        profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }],
+      },
+      {
+        id: "lascannon",
+        name: "Lascannon",
+        image: "",
+        profiles: [{ range: '48"', attacks: "1", skill: "4+", strength: "12", ap: "-3", damage: "D6+1", keywords: [] }],
+      },
+      {
+        id: "missile-launcher",
+        name: "Missile launcher",
+        image: "",
+        profiles: [
+          { profileName: "Frag", range: '48"', attacks: "D6", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST", "HEAVY"] },
+          { profileName: "Krak", range: '48"', attacks: "1", skill: "4+", strength: "9", ap: "-2", damage: "D6", keywords: ["HEAVY"] },
+        ],
+      },
+      {
+        id: "plasma-cannon",
+        name: "Plasma cannon",
+        image: "",
+        profiles: [
+          { profileName: "Standard", range: '36"', attacks: "D3", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["BLAST"] },
+          { profileName: "Supercharge", range: '36"', attacks: "D3", skill: "4+", strength: "8", ap: "-3", damage: "2", keywords: ["BLAST", "HAZARDOUS"] },
+        ],
+      },
+      {
+        id: "sentinel-chainsaw",
+        name: "Sentinel chainsaw",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "-1", damage: "1", keywords: [] }],
+      },
+      {
+        id: "hunter-killer-missile",
+        name: "Hunter-killer missile",
+        image: "",
+        profiles: [{ range: '48"', attacks: "1", skill: "4+", strength: "14", ap: "-3", damage: "D6", keywords: ["ONE SHOT"] }],
+      },
     ],
+    notes: [
+      {
+        id: "armoured-autocannon-note",
+        text: "1 autocannon",
+        checkbox: true,
+        weaponId: "autocannon",
+        noteGroup: "main-weapon",
+        image: "/Warhammerimages/AstraMilitarum/autocannon.png",
+      },
+      {
+        id: "armoured-heavy-flamer-note",
+        text: "1 heavy flamer",
+        checkbox: true,
+        weaponId: "heavy-flamer",
+        noteGroup: "main-weapon",
+        image: "/Warhammerimages/AstraMilitarum/heavy-flamer.png",
+      },
+      {
+        id: "armoured-lascannon-note",
+        text: "1 lascannon",
+        checkbox: true,
+        weaponId: "lascannon",
+        noteGroup: "main-weapon",
+        image: "/Warhammerimages/AstraMilitarum/lascannon.png",
+      },
+      {
+        id: "armoured-missile-launcher-note",
+        text: "1 missile launcher",
+        checkbox: true,
+        weaponId: "missile-launcher",
+        noteGroup: "main-weapon",
+        image: "/Warhammerimages/AstraMilitarum/missile-launcher.png",
+      },
+      {
+        id: "armoured-plasma-cannon-note",
+        text: "1 plasma cannon",
+        checkbox: true,
+        weaponId: "plasma-cannon",
+        noteGroup: "main-weapon",
+        image: "/Warhammerimages/AstraMilitarum/plasma-cannon.png",
+      },
+      {
+        id: "armoured-sentinel-chainsaw-note",
+        text: "Sentinel chainsaw",
+        checkbox: true,
+        weaponId: "sentinel-chainsaw",
+        image: "/Warhammerimages/AstraMilitarum/sentinel-chainsaw.png",
+      },
+      {
+        id: "armoured-hunter-killer-missile-note",
+        text: "Hunter-killer missile",
+        checkbox: true,
+        weaponId: "hunter-killer-missile",
+        image: "/Warhammerimages/AstraMilitarum/hunter-killer-missile.png",
+      },
+    ],
+    noteGroupLimits: { "main-weapon": 1 },
     ledBy: [],
   },
 
@@ -1115,19 +1301,37 @@ export const astraMilitarumUnits: Unit[] = [
     name: "Baneblade",
     faction: "astra-militarum",
     category: "vehicle",
-    points: 480,
+    points: 450,
     defaultWargear: [
-      { id: "baneblade-cannon", name: "Baneblade cannon", image: "" },
-      { id: "coaxial-autocannon", name: "Coaxial autocannon", image: "" },
-      { id: "demolisher-cannon", name: "Demolisher cannon", image: "" },
-      { id: "heavy-stubber", name: "Heavy stubber", image: "" },
-      { id: "lascannon", name: "Lascannon", image: "" },
-      { id: "twin-heavy-bolter", name: "Twin heavy bolter", image: "" },
-      { id: "twin-heavy-flamer", name: "Twin heavy flamer", image: "" },
-      { id: "armoured-tracks", name: "Armoured tracks", image: "" },
+      { id: "bb-baneblade-cannon", name: "Baneblade cannon", image: "", profiles: [{ range: '72"', attacks: "3D6", skill: "4+", strength: "12", ap: "-2", damage: "3", keywords: ["BLAST"] }] },
+      { id: "bb-coaxial-autocannon", name: "Coaxial autocannon", image: "", profiles: [{ range: '48"', attacks: "2", skill: "4+", strength: "9", ap: "-1", damage: "3" }] },
+      { id: "bb-demolisher-cannon", name: "Demolisher cannon", image: "", profiles: [{ range: '24"', attacks: "D6+3", skill: "4+", strength: "14", ap: "-3", damage: "D6", keywords: ["BLAST"] }] },
+      { id: "bb-heavy-stubber", name: "Heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] }] },
+      { id: "bb-lascannon", name: "Lascannon", image: "", profiles: [{ range: '48"', attacks: "1", skill: "4+", strength: "12", ap: "-3", damage: "D6+1" }] },
+      { id: "bb-armoured-tracks", name: "Armoured tracks", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "4+", strength: "8", ap: "0", damage: "1" }] },
     ],
-    wargear: [],
+    wargear: [
+      { id: "bb-hull-heavy-flamer", name: "Heavy flamer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "bb-hull-twin-heavy-bolter", name: "Twin heavy bolter", image: "", profiles: [{ range: '36"', attacks: "3", skill: "4+", strength: "5", ap: "-1", damage: "2", keywords: ["SUSTAINED HITS 1", "TWIN-LINKED"] }] },
+      { id: "bb-sponson-twin-heavy-bolter", name: "Twin heavy bolter", image: "", profiles: [{ range: '36"', attacks: "3", skill: "4+", strength: "5", ap: "-1", damage: "2", keywords: ["SUSTAINED HITS 1", "TWIN-LINKED"] }] },
+      { id: "bb-sponson-twin-heavy-flamer", name: "Twin heavy flamer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT", "TWIN-LINKED"] }] },
+    ],
+    wargearGroups: [
+      ["bb-hull-heavy-flamer", "bb-hull-twin-heavy-bolter"],
+      ["bb-sponson-twin-heavy-bolter", "bb-sponson-twin-heavy-flamer"],
+    ],
+    defaultSelectedWargear: ["bb-hull-twin-heavy-bolter", "bb-sponson-twin-heavy-bolter"],
     ledBy: [],
+    abilities: [
+      {
+        name: "Rolling Fortress",
+        description: "Each time a ranged attack is allocated to an ASTRA MILITARUM model from your army, if that model is not fully visible to every model in the attacking unit because of this BANEBLADE model, that model has the Benefit of Cover against that attack.",
+      },
+      {
+        name: "Damaged: 1-8 Wounds Remaining",
+        description: "While this model has 1-8 wounds remaining, subtract 4 from its Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {
@@ -2500,6 +2704,37 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "hunter-killer-missile", name: "Hunter-killer missile", image: "" },
     ],
     ledBy: [],
+  },
+
+  {
+    id: "centaur-rsv",
+    name: "Centaur RSV",
+    faction: "astra-militarum",
+    category: "transport",
+    points: 85,
+    abilities: [
+      {
+        name: "Rapid Strike Vehicle",
+        description: "While one or more units are embarked within this model, unless this model is Battle-shocked, add 1 to this model's Objective Control characteristic for every 3 models (rounding down) embarked within it.",
+      },
+    ],
+    defaultWargear: [
+      {
+        id: "pintle-mounted-heavy-stubber",
+        name: "Pintle-mounted heavy stubber",
+        image: "",
+        profiles: [{ range: '36"', attacks: "3", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 3"] }],
+      },
+      {
+        id: "armoured-hull-centaur-rsv",
+        name: "Armoured hull",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1" }],
+      },
+    ],
+    wargear: [],
+    ledBy: [],
+    transportCapacity: 12,
   },
 
   {

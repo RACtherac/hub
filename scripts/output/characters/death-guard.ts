@@ -7,14 +7,24 @@ export const deathGuardCharacters: Character[] = [
     name: "Biologus Putrifier",
     faction: "death-guard",
     image: "",
-    points: 50,
-    canAttachTo: [],
+    points: 60,
+    canAttachTo: ["plague-marines"],
     defaultWargear: [
-      { id: "hyper-blight-grenades", name: "Hyper blight grenades", image: "", profiles: [{ range: '6"', attacks: "D6", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["BLAST", "GRENADES"] }] },
-      { id: "injector-pistol", name: "Injector pistol", image: "", profiles: [{ range: '6"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["PISTOL", "POISONED WEAPON 2+"] }] },
-      { id: "plague-knives", name: "Plague knives", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["POISONED WEAPON 4+"] }] },
+      { id: "hyper-blight-grenades", name: "Hyper blight grenades", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "3+", strength: "7", ap: "-1", damage: "2", keywords: ["ASSAULT", "BLAST", "LETHAL HITS"] }] },
+      { id: "injector-pistol", name: "Injector pistol", image: "", profiles: [{ range: '3"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "3", keywords: ["ANTI-INFANTRY 2+", "PISTOL", "PRECISION"] }] },
+      { id: "plague-knives", name: "Plague knives", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Foul Infusion",
+        description: "While this model is leading a unit, weapons equipped by models in that unit have the [LETHAL HITS] ability. In addition, each time a model in that unit makes an attack, a Critical Hit is scored on an unmodified Hit roll of 5+, instead of only a 6.",
+      },
+      {
+        name: "Extraction of Fresh Disease",
+        description: "The first time this model's unit destroys an enemy unit as the result of a melee attack, until the end of the battle, add 6 to the Objective Control characteristic of this model.",
+      },
+    ],
   },
 
   {
@@ -86,11 +96,25 @@ export const deathGuardCharacters: Character[] = [
     points: 160,
     canAttachTo: [],
     defaultWargear: [
-      { id: "plague-spewer", name: "Plague spewer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "LETHAL HITS", "TORRENT"] }] },
-      { id: "hellforged-weapons-strike", name: "Hellforged weapons – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-3", damage: "D6+1" }] },
-      { id: "hellforged-weapons-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "dpn-infernal-cannon", name: "Infernal cannon", image: "", profiles: [{ range: '24"', attacks: "3", skill: "2+", strength: "5", ap: "-1", damage: "2", keywords: ["LETHAL HITS"] }] },
+      { id: "dpn-hellforged-strike", name: "Hellforged weapons – strike", image: "", profiles: [{ range: "Melee", attacks: "7", skill: "2+", strength: "8", ap: "-2", damage: "3", keywords: ["LETHAL HITS"] }] },
+      { id: "dpn-hellforged-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "14", skill: "2+", strength: "6", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Death Guard Defenders",
+        description: "While this model is within 3\" of one or more friendly DEATH GUARD INFANTRY units, this model has the Lone Operative ability.",
+      },
+      {
+        name: "Fevered Strategist",
+        description: "Once per battle round, one model from your army with this ability can use it when a friendly DEATH GUARD unit within 12\" of that model is targeted with a Stratagem. If it does, reduce the CP cost of that usage of that Stratagem by 1CP.",
+      },
+      {
+        name: "Miasma of Pestilence (Aura)",
+        description: "While a friendly DEATH GUARD unit is within 6\" of this model, each time a ranged attack targets that unit, models in that unit have the Benefit of Cover against that attack.",
+      },
+    ],
   },
 
   {
@@ -98,14 +122,36 @@ export const deathGuardCharacters: Character[] = [
     name: "Death Guard Daemon Prince With Wings",
     faction: "death-guard",
     image: "",
-    points: 195,
+    points: 180,
     canAttachTo: [],
     defaultWargear: [
-      { id: "plague-spewer", name: "Plague spewer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "LETHAL HITS", "TORRENT"] }] },
-      { id: "hellforged-weapons-strike", name: "Hellforged weapons – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-3", damage: "D6+1" }] },
-      { id: "hellforged-weapons-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "dpnw-infernal-cannon", name: "Infernal cannon", image: "", profiles: [{ range: '24"', attacks: "3", skill: "2+", strength: "5", ap: "-1", damage: "2", keywords: ["LETHAL HITS"] }] },
+      { id: "dpnw-hellforged-strike", name: "Hellforged weapons – strike", image: "", profiles: [{ range: "Melee", attacks: "7", skill: "2+", strength: "8", ap: "-2", damage: "3", keywords: ["LETHAL HITS"] }] },
+      { id: "dpnw-hellforged-sweep", name: "Hellforged weapons – sweep", image: "", profiles: [{ range: "Melee", attacks: "14", skill: "2+", strength: "6", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Death Guard Defenders",
+        description: "While this model is within 3\" of one or more friendly DEATH GUARD INFANTRY units, this model has the Lone Operative ability.",
+      },
+      {
+        name: "Fevered Strategist",
+        description: "Once per battle round, one model from your army with this ability can use it when a friendly DEATH GUARD unit within 12\" of that model is targeted with a Stratagem. If it does, reduce the CP cost of that usage of that Stratagem by 1CP.",
+      },
+      {
+        name: "Miasma of Pestilence (Aura)",
+        description: "While a friendly DEATH GUARD unit is within 6\" of this model, each time a ranged attack targets that unit, models in that unit have the Benefit of Cover against that attack.",
+      },
+      {
+        name: "Horrifying Visage",
+        description: "Each time this model ends a Charge move, select one enemy unit within Engagement Range of it. That unit must take a Battle-shock test, subtracting 1 from that test.",
+      },
+      {
+        name: "Enfeebling Miasma (Aura)",
+        description: "While an enemy unit (excluding MONSTERS and VEHICLES) is within 6\" of this model, each time that unit is selected to Fall Back, models in that enemy unit must take Desperate Escape tests. When doing so, if that enemy unit is Battle-shocked, subtract 1 from each of those Desperate Escape tests.",
+      },
+    ],
   },
 
   {
@@ -114,12 +160,22 @@ export const deathGuardCharacters: Character[] = [
     faction: "death-guard",
     image: "",
     points: 45,
-    canAttachTo: [],
+    canAttachTo: ["plague-marines"],
     defaultWargear: [
-      { id: "plague-boltgun", name: "Plague boltgun", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS", "RAPID FIRE 1"] }] },
-      { id: "plague-knife", name: "Plague knife", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS"] }] },
+      { id: "icon-bearer-boltgun", name: "Boltgun", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS", "RAPID FIRE 1"] }] },
+      { id: "icon-bearer-plague-knife", name: "Plague knife", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Unclean Icon",
+        description: "While this model is leading a unit, add 1 to the Objective Control characteristic of models in that unit.",
+      },
+      {
+        name: "Blessed Icon of Disease",
+        description: "Once per battle, at the start of any phase, you can select one friendly DEATH GUARD unit that is Battle-shocked and within 12\" of this model. That unit is no longer Battle-shocked.",
+      },
+    ],
   },
 
   {
@@ -223,7 +279,7 @@ export const deathGuardCharacters: Character[] = [
     points: 60,
     canAttachTo: ["plague-marines", "poxwalkers"],
     allowsSecondCharacter: true,
-    secondCharacterOptions: ["foul-blightspawn"],
+    secondCharacterOptions: ["biologus-putrifier", "foul-blightspawn", "noxious-blightbringer", "death-guard-icon-bearer", "plague-surgeon", "tallyman"],
     defaultWargear: [
       { id: "plaguecaster-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS", "PISTOL"] }] },
       { id: "plague-wind-witchfire", name: "Plague Wind – witchfire", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "D3", keywords: ["PSYCHIC", "TORRENT"] }] },
@@ -292,13 +348,26 @@ export const deathGuardCharacters: Character[] = [
     name: "Noxious Blightbringer",
     faction: "death-guard",
     image: "",
-    points: 45,
-    canAttachTo: ["poxwalkers"],
+    points: 50,
+    canAttachTo: ["plague-marines", "poxwalkers"],
     defaultWargear: [
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
-      { id: "cursed-plague-bell", name: "Cursed plague bell", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["LETHAL HITS"] }] },
+      { id: "blightbringer-plasma-pistol", name: "Plasma pistol", image: "", profiles: [
+        { profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+        { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+      ]},
+      { id: "cursed-plague-bell", name: "Cursed plague bell", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "0", damage: "2", keywords: ["ANTI-PSYKER 2+", "LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Sickening Vitality",
+        description: "While this model is leading a unit, add 1\" to the Move characteristic of models in that unit and you can re-roll Advance and Charge rolls made for that unit.",
+      },
+      {
+        name: "Tocsin of Misery (Aura)",
+        description: "In the Battle-shock step of your opponent's Command phase, if an enemy unit that is below its Starting Strength is within 9\" of this model, that enemy unit must take a Battle-shock test, subtracting 1 from that test if it is a PSYKER unit.",
+      },
+    ],
   },
 
   {
@@ -307,12 +376,22 @@ export const deathGuardCharacters: Character[] = [
     faction: "death-guard",
     image: "",
     points: 50,
-    canAttachTo: [],
+    canAttachTo: ["plague-marines"],
     defaultWargear: [
-      { id: "plague-bolt-pistol", name: "Plague bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL", "LETHAL HITS"] }] },
-      { id: "balesword", name: "Balesword", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["LETHAL HITS"] }] },
+      { id: "plague-surgeon-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS", "PISTOL"] }] },
+      { id: "plague-surgeon-balesword", name: "Balesword", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "2", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Tainted Narthecium",
+        description: "While this model is leading a unit, in your Command phase, you can return 1 destroyed Bodyguard model to that unit.",
+      },
+      {
+        name: "Inflamed Infections",
+        description: "At the start of the Fight phase, select one enemy unit within Engagement Range of this model. Until the end of the phase, each time this model makes an attack that targets that unit, an unmodified Hit roll of 5+ scores a Critical Hit. If that unit is Below Half-strength, an unmodified Hit roll of 4+ scores a Critical Hit instead.",
+      },
+    ],
   },
 
   {
@@ -344,14 +423,26 @@ export const deathGuardCharacters: Character[] = [
     name: "Tallyman",
     faction: "death-guard",
     image: "",
-    points: 45,
-    canAttachTo: [],
+    points: 50,
+    canAttachTo: ["plague-marines"],
     defaultWargear: [
-      { id: "infected-plasma-pistol-standard", name: "Infected plasma pistol – standard", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["LETHAL HITS", "PISTOL"] }] },
-      { id: "infected-plasma-pistol-supercharge", name: "Infected plasma pistol – supercharge", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "LETHAL HITS", "PISTOL"] }] },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "tallyman-plasma-pistol", name: "Plasma pistol", image: "", profiles: [
+        { profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+        { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+      ]},
+      { id: "tallyman-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Malicious Calculations",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack, you can ignore any or all modifiers to that attack's Ballistic Skill or Weapon Skill characteristics and/or any or all modifiers to the Hit roll.",
+      },
+      {
+        name: "Sevenfold Chant",
+        description: "In your Command phase, if this model is on the battlefield, roll 2D6: on a 7+, you gain 1CP.",
+      },
+    ],
   },
 
   {

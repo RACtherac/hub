@@ -18,6 +18,7 @@ export type Faction =
   | "world-eaters"
   | "chaos-daemons"
   | "chaos-knights"
+  | "emperors-children"
   | "tyranids"
   | "necrons"
   | "orks"
@@ -47,8 +48,9 @@ export interface UnitNote {
   triggersWargear?: string[];
   maxCountByModelCount?: Record<number, number>;
   replacesDefaultWargear?: string;
-  exclusiveWith?: string;
+  exclusiveWith?: string | string[];
   noteGroup?: string;
+  requiredWargear?: string[];
 }
 
 export interface WeaponProfile {
@@ -84,6 +86,7 @@ export interface WargearOption {
   maxCountReducedByWargear?: string[];
   linkedCounterId?: string;
   wargearGroup?: string;
+  showForModelCounts?: number[];
 }
 
 export interface Unit {
@@ -120,6 +123,8 @@ export interface Unit {
 
   transportCapacity?: number;
   transportSlots?: number;
+  monsterTransportCapacity?: number;
+  dreadnoughtTransportCapacity?: number;
 }
 
 export interface Character {
@@ -145,4 +150,6 @@ export interface Character {
   wargearSections?: { label: string; ids: string[] }[];
   defaultWargear?: WargearOption[];
   wargear?: WargearOption[];
+  defaultSelectedWargear?: string[];
+  keywords?: string[];
 }

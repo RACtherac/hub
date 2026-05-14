@@ -604,3 +604,110 @@
 .pkm-pip--Grass    { background: #22c55e; }
 .pkm-pip--Psychic  { background: #a855f7; }
 .pkm-pip--Fighting { background: #ef4444; }
+
+/* ── Attack mode ── */
+.pkm-board--attack-target {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  border-color: #ef444455;
+}
+
+.pkm-slot--target {
+  border: 1px dashed #ef444488;
+  background: #ef444408;
+  cursor: crosshair;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.pkm-slot--target:hover {
+  border-color: #ef4444;
+  background: #ef444420;
+  box-shadow: 0 0 12px #ef444430;
+}
+
+.pkm-pokemon--target {
+  cursor: crosshair;
+}
+
+.pkm-target-hit {
+  margin-top: auto;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ef4444;
+  text-align: center;
+  padding: 0.25rem 0;
+  border: 1px solid #ef444455;
+  background: #ef444412;
+}
+
+.pkm-attack-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.pkm-attack-btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ef4444;
+  background: #ef444412;
+  border: 1px solid #ef444455;
+  padding: 0.55rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.pkm-attack-btn:hover {
+  background: #ef444422;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+}
+
+.pkm-attack-hint {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.pkm-attack-input {
+  width: 5rem;
+  background: var(--surface-2);
+  border: 1px solid #ef444488;
+  color: #ef4444;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.3rem 0.5rem;
+  text-align: center;
+  outline: none;
+}
+
+.pkm-attack-input:focus {
+  border-color: #ef4444;
+}
+
+.pkm-attack-cancel-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.pkm-attack-cancel-btn:hover {
+  color: var(--text);
+  border-color: var(--border-2);
+}

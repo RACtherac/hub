@@ -71,14 +71,28 @@ export const imperialKnightsCharacters: Character[] = [
     name: "Cerastus Knight Lancer",
     faction: "imperial-knights",
     image: "",
-    points: 430,
+    points: 395,
     canAttachTo: [],
     defaultWargear: [
-      { id: "cerastus-shock-lance", name: "Cerastus shock lance", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "9", ap: "-2", damage: "3" }] },
-      { id: "cerastus-shock-lance-strike", name: "Cerastus shock lance – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "14", ap: "-4", damage: "4" }] },
-      { id: "cerastus-shock-lance-sweep", name: "Cerastus shock lance – sweep", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "cerastus-shock-lance", name: "Cerastus shock lance", image: "", profiles: [{ range: '12"', attacks: "6", skill: "3+", strength: "6", ap: "0", damage: "2", keywords: ["ASSAULT", "SUSTAINED HITS 2"] }] },
+      { id: "cerastus-shock-lance-strike", name: "► Cerastus shock lance – strike lance", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "20", ap: "-3", damage: "8" }] },
+      { id: "cerastus-shock-lance-sweep", name: "► Cerastus shock lance – sweep", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "2+", strength: "10", ap: "-2", damage: "3" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Lancer's Duty (Bondsman)",
+        description: "While a model is affected by this ability, it is eligible to declare a charge in a turn in which it Advanced.",
+      },
+      {
+        name: "Shock Charge",
+        description: "You can target this model with the Tank Shock Stratagem for 0CP, and can do so even if you have already targeted a different unit with that Stratagem this phase.",
+      },
+      {
+        name: "Damaged: 1-10 Wounds Remaining",
+        description: "While this model has 1-10 wounds remaining, subtract 5 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {
@@ -86,18 +100,32 @@ export const imperialKnightsCharacters: Character[] = [
     name: "Knight Castellan",
     faction: "imperial-knights",
     image: "",
-    points: 480,
+    points: 410,
     canAttachTo: [],
     defaultWargear: [
       { id: "plasma-decimator-standard", name: "Plasma decimator – standard", image: "", profiles: [{ range: '48"', attacks: "D6+3", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["BLAST"] }] },
       { id: "plasma-decimator-supercharge", name: "Plasma decimator – supercharge", image: "", profiles: [{ range: '48"', attacks: "D6+3", skill: "3+", strength: "9", ap: "-4", damage: "3", keywords: ["BLAST", "HAZARDOUS"] }] },
-      { id: "shieldbreaker-missile-launcher", name: "Shieldbreaker missile launcher", image: "", profiles: [{ range: '60"', attacks: "1", skill: "3+", strength: "14", ap: "-4", damage: "D6+2" }] },
+      { id: "shieldbreaker-missile-launcher", name: "Shieldbreaker missile launcher", image: "", profiles: [{ range: '72"', attacks: "1", skill: "3+", strength: "12", ap: "-6", damage: "D6+1", keywords: ["ANTI-TITANIC 4+", "DEVASTATING WOUNDS"] }] },
       { id: "twin-meltagun", name: "Twin meltagun", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2", "TWIN-LINKED"] }] },
-      { id: "twin-siegebreaker-cannon", name: "Twin siegebreaker cannon", image: "", profiles: [{ range: '48"', attacks: "2D6", skill: "3+", strength: "8", ap: "-1", damage: "3", keywords: ["BLAST", "TWIN-LINKED"] }] },
-      { id: "volcano-lance", name: "Volcano lance", image: "", profiles: [{ range: '80"', attacks: "D3+1", skill: "3+", strength: "22", ap: "-6", damage: "D6+6" }] },
-      { id: "titanic-feet", name: "Titanic feet", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "4+", strength: "8", ap: "-1", damage: "2" }] },
+      { id: "twin-siegebreaker-cannon", name: "Twin siegebreaker cannon", image: "", profiles: [{ range: '36"', attacks: "D6", skill: "3+", strength: "6", ap: "0", damage: "1", keywords: ["BLAST", "TWIN-LINKED"] }] },
+      { id: "volcano-lance", name: "Volcano lance", image: "", profiles: [{ range: '72"', attacks: "D3", skill: "3+", strength: "18", ap: "-5", damage: "D6+8", keywords: ["BLAST"] }] },
+      { id: "kc-titanic-feet", name: "Titanic feet", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "8", ap: "-1", damage: "2" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Ion Aegis (Aura)",
+        description: "While a friendly ARMIGER model is within 6\" of this model, each time a ranged attack targets that model, it has the Benefit of Cover against that attack.",
+      },
+      {
+        name: "Titan Hunter",
+        description: "Each time a ranged attack made by this model is allocated to a MONSTER or VEHICLE model, you can re-roll the Damage roll.",
+      },
+      {
+        name: "Damaged: 1-10 Wounds Remaining",
+        description: "While this model has 1-10 wounds remaining, subtract 5 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {
@@ -333,6 +361,62 @@ export const imperialKnightsCharacters: Character[] = [
     ],
     wargear: [
       { id: "transonic-cannon", name: "Transonic cannon", image: "", profiles: [{ range: '18"', attacks: "D6+1", skill: "2+", strength: "6", ap: "-1", damage: "1" }] },
+    ],
+  },
+
+  {
+    id: "knight-destrider",
+    name: "Knight Destrider",
+    faction: "imperial-knights",
+    image: "",
+    points: 250,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "kd-questoris-heavy-stubber", name: "Questoris heavy stubber", image: "", profiles: [{ range: '36"', attacks: "6", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "RAPID FIRE 3"] }] },
+      { id: "kd-titanic-feet", name: "Titanic feet", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "7", ap: "-1", damage: "2" }] },
+    ],
+    wargear: [
+      { id: "kd-slot1-chastiser", name: "Chastiser gatling cannon", image: "", profiles: [{ range: '24"', attacks: "12", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["ASSAULT"] }] },
+      { id: "kd-slot1-bellatus", name: "Bellatus reaper chainsword", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "5", skill: "3+", strength: "12", ap: "-3", damage: "D3+3" },
+        { profileName: "sweep", range: "Melee", attacks: "10", skill: "3+", strength: "8", ap: "-2", damage: "2" },
+      ]},
+      { id: "kd-slot1-thundershock", name: "Thundershock spear", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "4", skill: "3+", strength: "12", ap: "-3", damage: "D3+3", keywords: ["LANCE"] },
+        { profileName: "sweep", range: "Melee", attacks: "8", skill: "3+", strength: "6", ap: "-3", damage: "2", keywords: ["LANCE"] },
+      ]},
+      { id: "kd-slot2-frag-bombard", name: "Frag bombard", image: "", profiles: [{ range: '24"', attacks: "D6+3", skill: "3+", strength: "7", ap: "-1", damage: "2", keywords: ["ASSAULT", "BLAST", "RAPID FIRE D6+3"] }] },
+      { id: "kd-slot2-bellatus", name: "Bellatus reaper chainsword", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "5", skill: "3+", strength: "12", ap: "-3", damage: "D3+3" },
+        { profileName: "sweep", range: "Melee", attacks: "10", skill: "3+", strength: "8", ap: "-2", damage: "2" },
+      ]},
+      { id: "kd-slot2-thundershock", name: "Thundershock spear", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "4", skill: "3+", strength: "12", ap: "-3", damage: "D3+3", keywords: ["LANCE"] },
+        { profileName: "sweep", range: "Melee", attacks: "8", skill: "3+", strength: "6", ap: "-3", damage: "2", keywords: ["LANCE"] },
+      ]},
+    ],
+    wargearGroups: [
+      ["kd-slot1-chastiser", "kd-slot1-bellatus", "kd-slot1-thundershock"],
+      ["kd-slot2-frag-bombard", "kd-slot2-bellatus", "kd-slot2-thundershock"],
+    ],
+    defaultSelectedWargear: ["kd-slot1-chastiser", "kd-slot2-frag-bombard"],
+    abilities: [
+      {
+        name: "Ram Jets",
+        description: "Each time this unit is selected to make a Normal or Advance move, until the end of the phase, add D3\" to the Move characteristic of this model.",
+      },
+      {
+        name: "Thundercharge",
+        description: "If this model is equipped with a thundershock spear and a bellatus reaper chainsword, add 2 to the Attacks characteristic of melee weapons equipped by this model.",
+      },
+      {
+        name: "Saturation Fire",
+        description: "Each time this model makes a ranged attack that targets a unit within range of one or more objective markers, that attack has the [IGNORES COVER] ability.",
+      },
+      {
+        name: "Damaged: 1-6 Wounds Remaining",
+        description: "While this model has 1-6 wounds remaining, subtract 4 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
   },
 

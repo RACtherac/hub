@@ -53,6 +53,11 @@ const projects: Project[] = [
     description: "A personal blog — project updates, education notes, and hobby dispatches.",
     branch: "magazine",
   },
+  {
+    name: "Function Reference",
+    description: "A developer index of every project's components and functions.",
+    branch: "function-reference",
+  },
 ];
 
 export default function Home() {

@@ -29,6 +29,7 @@ interface Props {
   attachedUnitWargear: string[];
   checkedNotes: string[];
   noteWeaponSelections: Record<string, string>;
+  noteSlotSelections: Record<string, string[]>;
   noteCounts: Record<string, number>;
   transportedUnits: string[];
   deployedUnits: { unit: Unit; modelCount: number; attachedCharacterCount: number }[];
@@ -45,6 +46,7 @@ interface Props {
   onAttachedUnitWargearChange: (gear: string[]) => void;
   onCheckedNotesChange: (notes: string[]) => void;
   onNoteWeaponSelect: (noteId: string, weaponId: string) => void;
+  onNoteSlotSelectionsChange: (slots: Record<string, string[]>) => void;
   onNoteCountsChange: (counts: Record<string, number>) => void;
   onTransportChange: (units: string[]) => void;
   onRemove: () => void;
@@ -56,14 +58,14 @@ export default function UnitCard({
   attachedCharacter, characterWargear,
   attachedCharacter2, characterWargear2,
   attachedUnit, attachedUnitWargear,
-  checkedNotes, noteWeaponSelections, noteCounts,
+  checkedNotes, noteWeaponSelections, noteSlotSelections, noteCounts,
   transportedUnits, deployedUnits, points,
   wargearCounts, onWargearCountsChange,
   onModelCountChange, onWargearChange,
   onCharacterChange, onCharacterWargearChange,
   onCharacter2Change, onCharacterWargear2Change,
   onAttachedUnitChange, onAttachedUnitWargearChange,
-  onCheckedNotesChange, onNoteWeaponSelect, onNoteCountsChange,
+  onCheckedNotesChange, onNoteWeaponSelect, onNoteSlotSelectionsChange, onNoteCountsChange,
   onTransportChange, onRemove,
 }: Props) {
   const [expanded, setExpanded] = useState(true);
@@ -126,6 +128,24 @@ export default function UnitCard({
   const selectedCharacter2 = characters.find((c) => c.id === attachedCharacter2);
   const selectedAttachedUnit = allUnits.find((u) => u.id === attachedUnit);
 
+  // Notes where triggered wargear is non-countable + has per-model-count slots → use per-slot dropdowns
+  const slotDropdownNoteIds = new Set(
+    (unit.notes ?? [])
+      .filter((n) =>
+        n.triggersWargear && n.triggersWargear.length > 0 &&
+        n.maxCountByModelCount &&
+        n.triggersWargear.every((wid) => !unit.wargear.find((w) => w.id === wid)?.countable)
+      )
+      .map((n) => n.id)
+  );
+  const slotDropdownTriggeredWargear = new Set(
+    (unit.notes ?? [])
+      .filter((n) => slotDropdownNoteIds.has(n.id))
+      .flatMap((n) => n.triggersWargear ?? [])
+  );
+  const slotSelectedWargearIds = Object.values(noteSlotSelections).flat().filter(Boolean);
+  const effectiveSelectedWargear = [...selectedWargear, ...slotSelectedWargearIds];
+
   const hasStats =
     [...(unit.defaultWargear ?? []), ...unit.wargear].some((w) => w.profiles && w.profiles.length > 0) ||
     !!unit.abilities?.length ||
@@ -136,7 +156,7 @@ export default function UnitCard({
     !![...(selectedAttachedUnit?.defaultWargear ?? []), ...(selectedAttachedUnit?.wargear ?? [])].some((w) => w.profiles && w.profiles.length > 0);
 
   const isVehicle = unit.category === "vehicle" || unit.category === "monster";
-  const isTransport = unit.category === "transport" || (!!unit.transportCapacity && unit.category === "vehicle");
+  const isTransport = unit.category === "transport" || (!!unit.transportCapacity && (unit.category === "vehicle" || unit.category === "monster"));
 
   const modelCountOptions = unit.modelCountOptions ?? [5, 10];
   const allowedCharacters = characters
@@ -232,7 +252,7 @@ export default function UnitCard({
 
 
         {/* Model count badge (non-vehicle) */}
-        {!isVehicle && !isTransport && modelCountOptions.length > 1 && (
+        {(unit.modelCountOptions != null || (!isVehicle && !isTransport)) && modelCountOptions.length > 1 && (
           <span style={{
             fontFamily: "var(--font-mono)",
             fontSize: "11px",
@@ -291,7 +311,7 @@ export default function UnitCard({
         <StatsModal
           unit={unit}
           modelCount={modelCount}
-          selectedWargear={selectedWargear}
+          selectedWargear={effectiveSelectedWargear}
           wargearCounts={wargearCounts}
           checkedNotes={checkedNotes}
           noteWeaponSelections={noteWeaponSelections}
@@ -311,6 +331,10 @@ export default function UnitCard({
         const charWargear = charStatsOpen === "char1" ? characterWargear : characterWargear2;
         if (!char) return null;
         const allWeapons = [...(char.defaultWargear ?? []), ...(char.wargear ?? []).filter(w => charWargear.includes(w.id))].filter(w => w.profiles?.length);
+        const noteGear = [
+          ...(char.defaultWargear ?? []).filter(w => w.note),
+          ...(char.wargear ?? []).filter(w => charWargear.includes(w.id) && w.note),
+        ];
         return (
           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }} onClick={() => setCharStatsOpen(null)}>
             <div style={{ background: "var(--surface)", border: "1px solid var(--border-2)", width: "100%", maxWidth: "860px", maxHeight: "85vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
@@ -360,6 +384,21 @@ export default function UnitCard({
                     ))}
                   </div>
                 )}
+                {noteGear.length > 0 && (
+                  <div>
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--text-dim)", marginBottom: "10px" }}>
+                      Wargear Rules
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                      {noteGear.map(w => (
+                        <div key={w.id} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-2)", padding: "10px 14px" }}>
+                          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", color: "var(--accent)", marginBottom: "4px" }}>{w.name}</div>
+                          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-dim)", lineHeight: 1.6 }}>{w.note}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -387,7 +426,7 @@ export default function UnitCard({
             />
 
             {/* Model count toggle */}
-            {!isVehicle && !isTransport && modelCountOptions.length > 1 && (
+            {(unit.modelCountOptions != null || (!isVehicle && !isTransport)) && modelCountOptions.length > 1 && (
               <div style={{
                 display: "flex",
                 marginTop: "8px",
@@ -438,7 +477,8 @@ export default function UnitCard({
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
                   {dedupWargearNames((unit.defaultWargear ?? []).filter((w) => {
                     const replaced = (unit.notes ?? []).some((n) => n.replacesDefaultWargear === w.id && checkedNotes.includes(n.id));
-                    return !replaced;
+                    const hiddenByCount = w.showForModelCounts && !w.showForModelCounts.includes(modelCount);
+                    return !replaced && !hiddenByCount;
                   })).map((w) => (
                     <span key={w.id} style={{
                       fontFamily: "var(--font-mono)",
@@ -469,6 +509,7 @@ export default function UnitCard({
                   const baseMax = triggeredWargearItem?.maxCountByModelCount?.[modelCount] ?? 0;
                   const consumed = triggeredWargearItem ? getConsumedSlots(triggeredWargearItem.id) : 0;
                   const effectiveMax = Math.max(0, baseMax - consumed);
+                  const allTriggersCountable = note.triggersWargear?.every(wid => unit.wargear.find(x => x.id === wid)?.countable) ?? true;
                   const groupLimit = note.noteGroup
                     ? (unit.noteGroupLimitsByModelCount?.[note.noteGroup]?.[modelCount]
                         ?? unit.noteGroupLimits?.[note.noteGroup]
@@ -480,7 +521,8 @@ export default function UnitCard({
                         .reduce((sum, n) => sum + (noteCounts[n.id] ?? 1), 0)
                     : 0;
                   const groupAtMax = groupTotal >= groupLimit;
-                  const noteDisabled = (note.triggersWargear ? effectiveMax === 0 : false) || (groupAtMax && !checkedNotes.includes(note.id));
+                  const requiredWargearMet = !note.requiredWargear || note.requiredWargear.some(id => selectedWargear.includes(id));
+                  const noteDisabled = !requiredWargearMet || (note.triggersWargear && allTriggersCountable ? effectiveMax === 0 : false) || (groupAtMax && !checkedNotes.includes(note.id));
                   return (
                     <div key={note.id}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
@@ -490,9 +532,17 @@ export default function UnitCard({
                               if (noteDisabled) return;
                               if (isChecked) {
                                 onCheckedNotesChange(checkedNotes.filter((n) => n !== note.id));
+                                if (slotDropdownNoteIds.has(note.id) && noteSlotSelections[note.id]) {
+                                  const newSlots = { ...noteSlotSelections };
+                                  delete newSlots[note.id];
+                                  onNoteSlotSelectionsChange(newSlots);
+                                }
                               } else {
                                 const exclusive = note.exclusiveWith
-                                  ? checkedNotes.filter((n) => n !== note.exclusiveWith)
+                                  ? checkedNotes.filter((n) => {
+                                      const excl = note.exclusiveWith!;
+                                      return Array.isArray(excl) ? !excl.includes(n) : n !== excl;
+                                    })
                                   : [...checkedNotes];
                                 onCheckedNotesChange([...exclusive.filter((n) => n !== note.id), note.id]);
                               }
@@ -608,6 +658,42 @@ export default function UnitCard({
                           />
                         </div>
                       )}
+                      {slotDropdownNoteIds.has(note.id) && isChecked && (() => {
+                        const slotCount = note.maxCountByModelCount![modelCount] ?? 1;
+                        const currentSlots = noteSlotSelections[note.id] ?? [];
+                        return (
+                          <div style={{ marginTop: "6px", marginLeft: "22px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                            {Array.from({ length: slotCount }).map((_, i) => (
+                              <select
+                                key={i}
+                                value={currentSlots[i] ?? ""}
+                                onChange={(e) => {
+                                  const newSlots = [...currentSlots];
+                                  newSlots[i] = e.target.value;
+                                  onNoteSlotSelectionsChange({ ...noteSlotSelections, [note.id]: newSlots });
+                                }}
+                                style={{
+                                  background: "var(--surface-2)",
+                                  border: `1px solid ${currentSlots[i] ? "var(--accent)" : "var(--border-2)"}`,
+                                  color: currentSlots[i] ? "var(--accent)" : "var(--text-dim)",
+                                  fontFamily: "var(--font-mono)",
+                                  fontSize: "10px",
+                                  letterSpacing: "0.08em",
+                                  padding: "4px 10px",
+                                  cursor: "pointer",
+                                  outline: "none",
+                                }}
+                              >
+                                <option value="" style={{ background: "var(--surface)" }}>— select weapon —</option>
+                                {(note.triggersWargear ?? []).map((wid) => {
+                                  const w = unit.wargear.find((x) => x.id === wid);
+                                  return w ? <option key={wid} value={wid} style={{ background: "var(--surface)" }}>{w.name}</option> : null;
+                                })}
+                              </select>
+                            ))}
+                          </div>
+                        );
+                      })()}
                       {note.weaponIds && note.weaponIds.length > 0 && isChecked && (
                         <div style={{ marginTop: "6px", marginLeft: "22px" }}>
                           <select
@@ -650,7 +736,12 @@ export default function UnitCard({
               const triggeredWargear = new Set(
                 (unit.notes ?? []).flatMap((n) => n.triggersWargear ?? [])
               );
-              const selectableWargear = unit.wargear.filter((w) => !noteWeaponIds.has(w.id) && !triggeredWargear.has(w.id));
+              const unlockedNonCountable = new Set(
+                (unit.notes ?? [])
+                  .filter((n) => checkedNotes.includes(n.id))
+                  .flatMap((n) => (n.triggersWargear ?? []).filter((wid) => !unit.wargear.find((x) => x.id === wid)?.countable))
+              );
+              const selectableWargear = unit.wargear.filter((w) => !noteWeaponIds.has(w.id) && !slotDropdownTriggeredWargear.has(w.id) && (!triggeredWargear.has(w.id) || unlockedNonCountable.has(w.id)));
               const unitWargear = selectableWargear.filter((w) => !w.sergeantOnly);
               const sergeantWargear = selectableWargear.filter((w) => w.sergeantOnly);
               return (
@@ -941,7 +1032,8 @@ export default function UnitCard({
                   {unit.transportCapacity && (() => {
                     const usedSlots = transportedUnits.reduce((sum, id) => {
                       const du = deployedUnits.find((d) => d.unit.id === id);
-                      return sum + (du ? du.modelCount * (du.unit.transportSlots ?? 1) + du.attachedCharacterCount : 0);
+                      if (!du || du.unit.category === "vehicle" || du.unit.category === "monster") return sum;
+                      return sum + (du.modelCount * (du.unit.transportSlots ?? 1) + du.attachedCharacterCount);
                     }, 0);
                     return (
                       <span style={{ color: usedSlots >= unit.transportCapacity ? "#e84a4a" : "var(--accent)" }}>
@@ -958,7 +1050,8 @@ export default function UnitCard({
                       const active = transportedUnits.includes(d.unit.id);
                       const usedSlots = transportedUnits.reduce((sum, id) => {
                         const du = deployedUnits.find((x) => x.unit.id === id);
-                        return sum + (du ? du.modelCount * (du.unit.transportSlots ?? 1) + du.attachedCharacterCount : 0);
+                        if (!du || du.unit.category === "vehicle" || du.unit.category === "monster") return sum;
+                        return sum + (du.modelCount * (du.unit.transportSlots ?? 1) + du.attachedCharacterCount);
                       }, 0);
                       const atCapacity = !!unit.transportCapacity && usedSlots + (active ? 0 : slotCost) > unit.transportCapacity;
                       const disabled = !active && atCapacity;
@@ -988,6 +1081,118 @@ export default function UnitCard({
                       );
                     })}
                 </div>
+
+                {unit.monsterTransportCapacity && (() => {
+                  const monsterUnits = deployedUnits.filter((d) => d.unit.category === "monster");
+                  if (monsterUnits.length === 0) return null;
+                  const monsterUsed = transportedUnits.filter((id) => deployedUnits.find((x) => x.unit.id === id)?.unit.category === "monster").length;
+                  return (
+                    <div style={{ marginTop: "8px" }}>
+                      <div style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "10px",
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color: "var(--text-dim)",
+                        marginBottom: "6px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}>
+                        Monster Slot
+                        <span style={{ color: monsterUsed >= unit.monsterTransportCapacity ? "#e84a4a" : "var(--accent)" }}>
+                          {monsterUsed}/{unit.monsterTransportCapacity}
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                        {monsterUnits.map((d) => {
+                          const active = transportedUnits.includes(d.unit.id);
+                          const atCapacity = !active && monsterUsed >= unit.monsterTransportCapacity!;
+                          return (
+                            <button
+                              key={d.unit.id}
+                              disabled={atCapacity}
+                              onClick={() => {
+                                if (active) onTransportChange(transportedUnits.filter((x) => x !== d.unit.id));
+                                else onTransportChange([...transportedUnits, d.unit.id]);
+                              }}
+                              style={{
+                                background: active ? "var(--accent-dim)" : "none",
+                                border: `1px solid ${active ? "var(--accent)" : "var(--border-2)"}`,
+                                color: active ? "var(--accent)" : "var(--text-dim)",
+                                fontFamily: "var(--font-mono)",
+                                fontSize: "10px",
+                                letterSpacing: "0.08em",
+                                padding: "4px 10px",
+                                cursor: atCapacity ? "not-allowed" : "pointer",
+                                opacity: atCapacity ? 0.35 : 1,
+                                transition: "all 0.15s",
+                              }}
+                            >
+                              {d.unit.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {unit.dreadnoughtTransportCapacity && (() => {
+                  const dreadnoughtUnits = deployedUnits.filter((d) => d.unit.category === "vehicle" && d.unit.id.includes("dreadnought"));
+                  if (dreadnoughtUnits.length === 0) return null;
+                  const dreadnoughtUsed = transportedUnits.filter((id) => deployedUnits.find((x) => x.unit.id === id && x.unit.category === "vehicle" && x.unit.id.includes("dreadnought"))).length;
+                  return (
+                    <div style={{ marginTop: "8px" }}>
+                      <div style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "10px",
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color: "var(--text-dim)",
+                        marginBottom: "6px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}>
+                        Dreadnought Slot
+                        <span style={{ color: dreadnoughtUsed >= unit.dreadnoughtTransportCapacity ? "#e84a4a" : "var(--accent)" }}>
+                          {dreadnoughtUsed}/{unit.dreadnoughtTransportCapacity}
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                        {dreadnoughtUnits.map((d) => {
+                          const active = transportedUnits.includes(d.unit.id);
+                          const atCapacity = !active && dreadnoughtUsed >= unit.dreadnoughtTransportCapacity!;
+                          return (
+                            <button
+                              key={d.unit.id}
+                              disabled={atCapacity}
+                              onClick={() => {
+                                if (active) onTransportChange(transportedUnits.filter((x) => x !== d.unit.id));
+                                else onTransportChange([...transportedUnits, d.unit.id]);
+                              }}
+                              style={{
+                                background: active ? "var(--accent-dim)" : "none",
+                                border: `1px solid ${active ? "var(--accent)" : "var(--border-2)"}`,
+                                color: active ? "var(--accent)" : "var(--text-dim)",
+                                fontFamily: "var(--font-mono)",
+                                fontSize: "10px",
+                                letterSpacing: "0.08em",
+                                padding: "4px 10px",
+                                cursor: atCapacity ? "not-allowed" : "pointer",
+                                opacity: atCapacity ? 0.35 : 1,
+                                transition: "all 0.15s",
+                              }}
+                            >
+                              {d.unit.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             )}
 

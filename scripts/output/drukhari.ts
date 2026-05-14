@@ -373,11 +373,15 @@ export const drukhariUnits: Unit[] = [
     notes: [
       {
         id: "incubi-shrine",
-        text: "Incubi Shrine Token: Once per battle for each Incubi Shrine token this unit has, you can change the result of one Hit roll or one Wound roll made for a Klaivex or Incubi model in this unit to an unmodified 6.\n\nDesigner's Note: Place an Incubi Shrine token next to the unit for each Incubi Shrine token it has, removing one each time this ability is used.",
+        text: "Incubi Shrine",
         checkbox: true,
       },
     ],
     abilities: [
+      {
+        name: "Incubi Shrine Token",
+        description: "Once per battle for each Incubi Shrine token this unit has, you can change the result of one Hit roll or one Wound roll made for a Klaivex or Incubi model in this unit to an unmodified 6.\n\nDesigner's Note: Place an Incubi Shrine token next to the unit for each Incubi Shrine token it has, removing one each time this ability is used.",
+      },
       {
         name: "Decapitating Strikes (Pain)",
         description: "In the Fight phase, when you select this unit to fight, you can spend 1 Pain token to Empower this unit. While Empowered, each time a model in this unit makes a melee attack that targets an INFANTRY unit, that attack has the [DEVASTATING WOUNDS] ability.",
@@ -532,16 +536,22 @@ export const drukhariUnits: Unit[] = [
     category: "vehicle",
     points: 170,
     defaultWargear: [
-      { id: "dark-lance", name: "Dark Lance", image: "" },
-      { id: "razorwing-missiles-monoscythe-missiles", name: "Razorwing missiles – monoscythe missiles", image: "" },
-      { id: "razorwing-missiles-nuerotoxin-missiles", name: "Razorwing missiles – nuerotoxin missiles", image: "" },
-      { id: "razorwing-missiles-shatterfield-missiles", name: "Razorwing missiles – shatterfield missiles", image: "" },
-      { id: "twin-splinter-rifle", name: "Twin splinter rifle", image: "" },
-      { id: "bladed-wings", name: "Bladed wings", image: "" },
+      { id: "razorwing-missiles", name: "Razorwing missiles", image: "", profiles: [
+        { profileName: "► Razorwing missiles – monoscythe missiles", range: '48"', attacks: "D6", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["BLAST"] },
+        { profileName: "► Razorwing missiles – neurotoxin missiles", range: '48"', attacks: "D6+3", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 2+", "BLAST"] },
+        { profileName: "► Razorwing missiles – shatterfield missiles", range: '48"', attacks: "D6", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["BLAST"] },
+      ]},
+      { id: "razorwing-bladed-wings", name: "Bladed wings", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "-1", damage: "1" }] },
     ],
     wargear: [
-      { id: "disintegrator", name: "Disintegrator", image: "" },
-      { id: "splinter-cannon", name: "Splinter cannon", image: "" },
+      { id: "razorwing-dark-lance", name: "Dark Lance", image: "", profiles: [{ range: '36"', attacks: "1", skill: "3+", strength: "12", ap: "-3", damage: "D6+2" }] },
+      { id: "razorwing-disintegrator-cannon", name: "Disintegrator cannon", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "6", ap: "-3", damage: "2" }] },
+      { id: "razorwing-twin-splinter-rifle", name: "Twin splinter rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "RAPID FIRE 2", "TWIN-LINKED"] }] },
+      { id: "razorwing-splinter-cannon", name: "Splinter cannon", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "3", ap: "-1", damage: "2", keywords: ["ANTI-INFANTRY 3+", "SUSTAINED HITS 1"] }] },
+    ],
+    wargearGroups: [
+      ["razorwing-dark-lance", "razorwing-disintegrator-cannon"],
+      ["razorwing-twin-splinter-rifle", "razorwing-splinter-cannon"],
     ],
     ledBy: [],
   },
@@ -603,13 +613,14 @@ export const drukhariUnits: Unit[] = [
     name: "Cronos",
     faction: "drukhari",
     category: "monster",
-    points: 50,
+    modelCountOptions: [1, 2],
+    pointsByModelCount: { 1: 55, 2: 110 },
     defaultWargear: [
-      { id: "spirit-syphon", name: "Spirit syphon", image: "" },
-      { id: "spirit-leech-tentacles", name: "Spirit-leech tentacles", image: "" },
+      { id: "cronos-spirit-syphon", name: "Spirit syphon", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "cronos-spirit-leech-tentacles", name: "Spirit-leech tentacles", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["ANTI-INFANTRY 2+"] }] },
     ],
     wargear: [
-      { id: "spirit-vortex", name: "Spirit vortex", image: "" },
+      { id: "cronos-spirit-vortex", name: "Spirit vortex", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["BLAST", "IGNORES COVER"] }] },
     ],
     ledBy: [],
   },
@@ -619,19 +630,27 @@ export const drukhariUnits: Unit[] = [
     name: "Talos",
     faction: "drukhari",
     category: "monster",
-    points: 80,
-    defaultWargear: [
-      { id: "twin-splinter-cannon", name: "Twin splinter cannon", image: "" },
-      { id: "macro-scalpel", name: "Macro-scalpel", image: "" },
-    ],
+    modelCountOptions: [1, 2],
+    pointsByModelCount: { 1: 80, 2: 160 },
     wargear: [
-      { id: "twin-drukhari-haywire-blaster", name: "Twin Drukhari haywire blaster", image: "" },
-      { id: "twin-heat-lance", name: "Twin heat lance", image: "" },
-      { id: "stinger-pod", name: "Stinger pod", image: "" },
-      { id: "twin-liquifier-gun", name: "Twin liquifier gun", image: "" },
-      { id: "chain-flails", name: "Chain-flails", image: "" },
-      { id: "talos-gauntlet", name: "Talos gauntlet", image: "" },
-      { id: "talos-ichor-injector", name: "Talos ichor injector", image: "" },
+      // Group 1 – ranged (pick 1 of 4)
+      { id: "talos-twin-splinter-cannon", name: "Twin splinter cannon", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "3", ap: "-1", damage: "2", keywords: ["ANTI-INFANTRY 3+", "SUSTAINED HITS 1", "TWIN-LINKED"] }] },
+      { id: "talos-stinger-pod", name: "Stinger pod", image: "", profiles: [{ range: '24"', attacks: "2D6", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
+      { id: "talos-twin-haywire-blaster", name: "Twin haywire blaster", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "3", ap: "-1", damage: "3", keywords: ["ANTI-VEHICLE 4+", "DEVASTATING WOUNDS", "TWIN-LINKED"] }] },
+      { id: "talos-twin-heat-lance", name: "Twin heat lance", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "14", ap: "-4", damage: "D6", keywords: ["ASSAULT", "MELTA 3", "TWIN-LINKED"] }] },
+      // Group 2 – arm 1 (pick 1 of 3)
+      { id: "talos-macro-scalpel-1", name: "Macro-scalpel", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "talos-ichor-injector", name: "Talos ichor injector", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "2+", strength: "8", ap: "-2", damage: "D6", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "talos-twin-liquifier-gun", name: "Twin liquifier gun", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "1", keywords: ["ANTI-INFANTRY 3+", "TORRENT", "TWIN-LINKED"] }] },
+      // Group 3 – arm 2 (pick 1 of 3)
+      { id: "talos-macro-scalpel-2", name: "Macro-scalpel", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "talos-chain-flails", name: "Chain-flails", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "3+", strength: "6", ap: "-1", damage: "1" }] },
+      { id: "talos-gauntlet", name: "Talos gauntlet", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "4+", strength: "9", ap: "-2", damage: "3" }] },
+    ],
+    wargearGroups: [
+      ["talos-twin-splinter-cannon", "talos-stinger-pod", "talos-twin-haywire-blaster", "talos-twin-heat-lance"],
+      ["talos-macro-scalpel-1", "talos-ichor-injector", "talos-twin-liquifier-gun"],
+      ["talos-macro-scalpel-2", "talos-chain-flails", "talos-gauntlet"],
     ],
     ledBy: [],
   },
