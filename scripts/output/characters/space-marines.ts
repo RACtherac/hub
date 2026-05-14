@@ -222,10 +222,10 @@ export const spaceMarinesCharacters: Character[] = [
     id: "captain-with-jump-pack",
     name: "Captain With Jump Pack",
     faction: "space-marines",
-    image: "/Warhammerimages/SpaceMarine/Jump Pack Captain.png",
+    image: "/Warhammerimages/SpaceMarine/Captain with jumppack.png",
     imageCredit: "Oscar",
     points: 75,
-    canAttachTo: ["assault-intercessor-with-jump-pack-squad"],
+    canAttachTo: ["assault-intercessors-with-jump-packs"],
     abilities: [
       {
         name: "Angel's Wrath",
@@ -365,7 +365,7 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 75,
-    canAttachTo: [],
+    canAttachTo: ["assault-intercessors-with-jump-packs"],
     defaultWargear: [
       { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
       { id: "crozius-arcanum", name: "Crozius arcanum", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "6", ap: "-1", damage: "2" }] },
