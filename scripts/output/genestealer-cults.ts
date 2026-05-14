@@ -7,13 +7,33 @@ export const genestealerCultsUnits: Unit[] = [
     name: "Atalan Jackals",
     faction: "genestealer-cults",
     category: "mounted",
-    points: 80,
-    defaultWargear: [],
-    wargear: [
-      { id: "atalan-incinerator", name: "Atalan incinerator", image: "" },
-      { id: "mining-laser", name: "Mining laser", image: "" },
+    modelCountOptions: [5, 10],
+    pointsByModelCount: { 5: 85, 10: 150 },
+    defaultWargear: [
+      { id: "atalan-small-arms", name: "Atalan small arms", image: "", profiles: [{ range: '12"', attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "atalan-heavy-stubber", name: "Heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["ASSAULT", "RAPID FIRE 3"] }] },
+      { id: "atalan-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
     ],
-    ledBy: [],
+    wargear: [
+      { id: "atalan-incinerator", name: "Atalan incinerator", image: "", countable: true, maxCountByModelCount: { 5: 1, 10: 2 }, profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "5", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "mining-laser", name: "Mining laser", image: "", countable: true, maxCountByModelCount: { 5: 1, 10: 2 }, profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "12", ap: "-3", damage: "D6+1" }] },
+      { id: "grenade-launcher", name: "Grenade launcher", image: "", countable: true, maxCountByModelCount: { 5: 1, 10: 2 }, profiles: [
+        { profileName: "frag", range: '24"', attacks: "D3", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] },
+        { profileName: "krak", range: '24"', attacks: "1", skill: "4+", strength: "9", ap: "-2", damage: "D3" },
+      ]},
+      { id: "atalan-power-weapon", name: "Atalan power weapon", image: "", countable: true, maxCountByModelCount: { 5: 2, 10: 4 }, profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "4", ap: "-2", damage: "1" }] },
+    ],
+    abilities: [
+      {
+        name: "Outrider Gangs",
+        description: "Each time you use the Cult Ambush ability to set this unit back upon the battlefield, in addition to the normal rules, all of its models must be set up wholly within 9\" of a battlefield edge and at least one of its models must be touching one of your Cult Ambush markers (that marker is then removed from the battlefield). If this cannot be done, this unit cannot be set back up.",
+      },
+      {
+        name: "Demolition Run",
+        description: "Once per turn, in your Movement phase, when this unit ends a Normal, Advance or Fall Back move, you can select one enemy unit within 6\" of and visible to this unit and roll one D6 for each ATALAN JACKALS model in this unit: for each 4+, that enemy unit suffers 1 mortal wound (to a maximum of 6 mortal wounds).",
+      },
+    ],
+    ledBy: ["jackal-alphus"],
   },
 
   {

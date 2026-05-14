@@ -71,14 +71,43 @@ export const necronsUnits: Unit[] = [
     faction: "necrons",
     category: "battleline",
     points: 90,
+    pointsByModelCount: { 10: 90, 20: 200 },
+    modelCountOptions: [10, 20],
     defaultWargear: [
-      { id: "gauss-flayer", name: "Gauss flayer", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      {
+        id: "warrior-close-combat-weapon",
+        name: "Close combat weapon",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1" }],
+      },
     ],
     wargear: [
-      { id: "gauss-reaper", name: "Gauss reaper", image: "" },
+      {
+        id: "warrior-gauss-flayer",
+        name: "Gauss flayer",
+        image: "",
+        countable: true,
+        maxCountByModelCount: { 10: 10, 20: 20 },
+        maxCountReducedByWargear: ["warrior-gauss-reaper"],
+        profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["LETHAL HITS", "RAPID FIRE 1"] }],
+      },
+      {
+        id: "warrior-gauss-reaper",
+        name: "Gauss reaper",
+        image: "",
+        countable: true,
+        maxCountByModelCount: { 10: 10, 20: 20 },
+        maxCountReducedByWargear: ["warrior-gauss-flayer"],
+        profiles: [{ range: '12"', attacks: "2", skill: "4+", strength: "4", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] }],
+      },
     ],
-    ledBy: ["chronomancer","imotekh-the-stormlord","orikan-the-diviner","overlord","overlord-with-translocation-shroud","plasmancer","psychomancer","royal-warden","technomancer","trazyn-the-infinite"],
+    abilities: [
+      {
+        name: "Their Number is Legion",
+        description: "Each time this unit's Reanimation Protocols activate, you can re-roll the dice to see how many wounds are reanimated.",
+      },
+    ],
+    ledBy: ["chronomancer","geomancer","imotekh-the-stormlord","orikan-the-diviner","overlord","overlord-with-translocation-shroud","plasmancer","psychomancer","royal-warden","technomancer","trazyn-the-infinite"],
   },
 
   {
@@ -101,10 +130,27 @@ export const necronsUnits: Unit[] = [
     faction: "necrons",
     category: "infantry",
     points: 40,
+    pointsByModelCount: { 3: 40, 6: 80 },
+    modelCountOptions: [3, 6],
     defaultWargear: [
-      { id: "feeder-mandibles", name: "Feeder mandibles", image: "" },
+      {
+        id: "feeder-mandibles",
+        name: "Feeder mandibles",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "6", skill: "5+", strength: "2", ap: "0", damage: "1", keywords: ["LETHAL HITS"] }],
+      },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Self-destruction",
+        description: "At the start of the Fight phase, if this unit is within Engagement Range of one or more enemy units, you can select one model in this unit to destroy. If you do, select one enemy unit within Engagement Range of that model and roll one D6, adding 1 to the result if that unit is a VEHICLE. On a 2-5, that unit suffers D3 mortal wounds; on a 6+, that unit suffers 3 mortal wounds.",
+      },
+      {
+        name: "Chittering Swarm",
+        description: "While an enemy unit is within Engagement Range of this unit, subtract 1 from the Objective Control characteristic of models in that enemy unit (to a minimum of 1). While this unit is within 6\" of one or more friendly CRYPTEK models, the Objective Control characteristic of models in this unit is 1.",
+      },
+    ],
     ledBy: [],
   },
 
@@ -113,15 +159,23 @@ export const necronsUnits: Unit[] = [
     name: "Canoptek Wraiths",
     faction: "necrons",
     category: "infantry",
-    points: 115,
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 110, 6: 220 },
     defaultWargear: [
-      { id: "vicious-claws", name: "Vicious claws", image: "" },
+      { id: "vicious-claws", name: "Vicious claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "6", ap: "-1", damage: "2" }] },
+    ],
+    abilities: [
+      {
+        name: "Wraith Form",
+        description: "Each time this unit ends a Normal move, you can select one enemy unit it moved over during that move and roll one D6 for each model in this unit: for each 4+, that enemy unit suffers 1 mortal wound.",
+      },
     ],
     wargear: [
-      { id: "particle-caster", name: "Particle caster", image: "" },
-      { id: "transdimensional-beamer", name: "Transdimensional beamer", image: "" },
+      { id: "particle-caster", name: "Particle caster", image: "", profiles: [{ range: '12"', attacks: "3", skill: "4+", strength: "5", ap: "0", damage: "1", keywords: ["DEVASTATING WOUNDS", "PISTOL"] }] },
+      { id: "transdimensional-beamer", name: "Transdimensional beamer", image: "", profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "4", ap: "-2", damage: "3" }] },
+      { id: "whip-coils", name: "Whip coils", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "4+", strength: "5", ap: "0", damage: "1" }] },
     ],
-    ledBy: [],
+    ledBy: ["technomancer"],
   },
 
   {
@@ -185,11 +239,20 @@ export const necronsUnits: Unit[] = [
     name: "Ophydian Destroyers",
     faction: "necrons",
     category: "infantry",
-    points: 80,
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 80, 6: 160 },
     defaultWargear: [
-      { id: "ophydian-hyperphase-weapons", name: "Ophydian hyperphase weapons", image: "" },
+      { id: "ophydian-hyperphase-weapons", name: "Ophydian hyperphase weapons", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "-2", damage: "2" }] },
     ],
-    wargear: [],
+    abilities: [
+      {
+        name: "Tunnelling Horrors",
+        description: "At the end of your opponent's turn, if this unit is not within Engagement Range of one or more enemy units, you can remove this unit from the battlefield. In the Reinforcements step of your next Movement phase, set it up anywhere on the battlefield that is more than 9\" horizontally away from all enemy models.",
+      },
+    ],
+    wargear: [
+      { id: "plasmacyte", name: "Plasmacyte", image: "", countable: true, maxCountByModelCount: { 3: 1, 6: 2 }, note: "Once per battle for each Plasmacyte this unit has, when this unit is selected to fight, you can use this ability. If you do, until the end of the phase, melee weapons equipped by models in this unit have the [DEVASTATING WOUNDS] ability." },
+    ],
     ledBy: [],
   },
 
@@ -199,11 +262,36 @@ export const necronsUnits: Unit[] = [
     faction: "necrons",
     category: "infantry",
     points: 90,
+    pointsByModelCount: { 3: 90, 6: 180 },
+    modelCountOptions: [3, 6],
     defaultWargear: [
-      { id: "skorpekh-hyperphase-weapons", name: "Skorpekh hyperphase weapons", image: "" },
+      {
+        id: "skorpekh-hyperphase-weapons",
+        name: "Skorpekh hyperphase weapons",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "7", ap: "-2", damage: "2" }],
+      },
     ],
     wargear: [],
-    ledBy: [],
+    notes: [
+      {
+        id: "plasmacyte",
+        text: "Plasmacyte",
+        checkbox: true,
+      },
+    ],
+    abilities: [
+      {
+        name: "Whirling Onslaught",
+        description: "Each time a model in this unit makes a melee attack, re-roll a Hit roll of 1. If this unit made a Charge move this turn, you can re-roll the Hit roll instead.",
+      },
+      {
+        name: "Plasmacyte",
+        description: "Once per battle for each Plasmacyte this unit has, when this unit is selected to fight, you can use this ability. If you do, until the end of the phase, melee weapons equipped by models in this unit have the [DEVASTATING WOUNDS] ability.",
+        requiresNote: "plasmacyte",
+      },
+    ],
+    ledBy: ["skorpekh-lord"],
   },
 
   {
@@ -291,12 +379,21 @@ export const necronsUnits: Unit[] = [
     name: "Canoptek Spyders",
     faction: "necrons",
     category: "vehicle",
-    points: 75,
+    modelCountOptions: [1, 2],
+    pointsByModelCount: { 1: 75, 2: 150 },
     defaultWargear: [
-      { id: "automaton-claws", name: "Automaton claws", image: "" },
+      { id: "automaton-claws", name: "Automaton claws", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "4+", strength: "8", ap: "-2", damage: "2" }] },
+    ],
+    abilities: [
+      {
+        name: "Canoptek Swarm",
+        description: "In your Command phase, select one friendly CANOPTEK SCARAB SWARM unit within 6\" of this unit. One destroyed model is returned to that CANOPTEK SCARAB SWARM unit for each SPYDER model in this unit.",
+      },
     ],
     wargear: [
-      { id: "particle-beamer", name: "Particle beamer", image: "" },
+      { id: "particle-beamer", name: "Particle beamer", image: "", countable: true, maxCountByModelCount: { 1: 2, 2: 4 }, profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "6", ap: "0", damage: "1", keywords: ["BLAST", "DEVASTATING WOUNDS"] }] },
+      { id: "fabricator-claw-array", name: "Fabricator claw array", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, note: "Fabricator Claw Array (Aura): While a friendly NECRONS VEHICLE unit is within 6\" of the bearer, that unit has the Feel No Pain 6+ ability." },
+      { id: "gloom-prism", name: "Gloom prism", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2 }, note: "Gloom Prism (Aura): While a friendly NECRONS unit is within 6\" of the bearer, models in that unit have the Feel No Pain 5+ ability against mortal wounds and Psychic Attacks." },
     ],
     ledBy: [],
   },
@@ -321,9 +418,19 @@ export const necronsUnits: Unit[] = [
     category: "vehicle",
     points: 230,
     defaultWargear: [
-      { id: "heavy-death-ray", name: "Heavy death ray", image: "" },
-      { id: "twin-tesla-destructor", name: "Twin tesla destructor", image: "" },
-      { id: "armoured-bulk", name: "Armoured bulk", image: "" },
+      { id: "heavy-death-ray", name: "Heavy death ray", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "16", ap: "-4", damage: "D6+1", keywords: ["SUSTAINED HITS D3"] }] },
+      { id: "twin-tesla-destructor", name: "Twin tesla destructor", image: "", profiles: [{ range: '36"', attacks: "6", skill: "3+", strength: "8", ap: "0", damage: "2", keywords: ["SUSTAINED HITS 2", "TWIN-LINKED"] }] },
+      { id: "armoured-bulk", name: "Armoured bulk", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
+    ],
+    abilities: [
+      {
+        name: "Atavistic Instigation",
+        description: "Each time this model targets an enemy unit with its heavy death ray, your opponent must declare if that unit will stand firm or duck for cover:\nIf it stands firm, when resolving ranged attacks against that unit this phase, a successful unmodified Hit roll of 5+ scores a Critical Hit.\nIf it ducks for cover, until the start of your next Shooting phase, each time a model in that unit makes an attack, subtract 1 from the Hit roll.",
+      },
+      {
+        name: "Damaged: 1-4 Wounds Remaining",
+        description: "While this model has 1-4 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
     wargear: [],
     ledBy: [],
@@ -554,9 +661,24 @@ export const necronsUnits: Unit[] = [
     faction: "necrons",
     category: "transport",
     points: 145,
+    transportCapacity: 1,
     defaultWargear: [
-      { id: "twin-tesla-destructor", name: "Twin tesla destructor", image: "" },
-      { id: "armoured-bulk", name: "Armoured bulk", image: "" },
+      { id: "ns-twin-tesla-destructor", name: "Twin tesla destructor", image: "", profiles: [{ range: '36"', attacks: "6", skill: "3+", strength: "8", ap: "0", damage: "2", keywords: ["SUSTAINED HITS 2", "TWIN-LINKED"] }] },
+      { id: "ns-armoured-bulk", name: "Armoured bulk", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
+    ],
+    abilities: [
+      {
+        name: "Translocation Beams",
+        description: "At the end of the Fight phase, if there are no models currently embarked within this TRANSPORT, you can select one friendly NECRONS INFANTRY unit wholly within 6\" of this TRANSPORT. Unless that unit is within Engagement Range of one or more enemy units, it can embark within this TRANSPORT.",
+      },
+      {
+        name: "Quantum Invader",
+        description: "This model can be set up in the Reinforcements step of your first, second or third Movement phase, regardless of any mission rules.",
+      },
+      {
+        name: "Damaged: 1-4 Wounds Remaining",
+        description: "While this model has 1-4 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
     wargear: [],
     ledBy: [],

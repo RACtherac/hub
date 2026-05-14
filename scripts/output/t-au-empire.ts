@@ -37,14 +37,21 @@ export const tAuEmpireUnits: Unit[] = [
     name: "Krootox Riders",
     faction: "tau-empire",
     category: "mounted",
-    points: 40,
+    modelCountOptions: [1, 2, 3],
+    pointsByModelCount: { 1: 40, 2: 60, 3: 90 },
     defaultWargear: [
-      { id: "repeater-cannon", name: "Repeater cannon", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
-      { id: "krootox-fists", name: "Krootox fists", image: "" },
+      { id: "repeater-cannon", name: "Repeater cannon", image: "", profiles: [{ range: '36"', attacks: "2", skill: "4+", strength: "7", ap: "-1", damage: "2", keywords: ["RAPID FIRE 2"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "krootox-fists", name: "Krootox fists", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["EXTRA ATTACKS"] }] },
+    ],
+    abilities: [
+      {
+        name: "Kroot Packmates",
+        description: "Once per turn, in your opponent's Shooting phase, when a friendly KROOT INFANTRY unit within 6\" of this unit is selected as the target of an attack, one unit from your army with this ability can use it. If it does, after that enemy unit has finished making its attacks, that unit with this ability can shoot as if it were your Shooting phase, but when resolving those attacks it can only target that enemy unit (and only if it is an eligible target).",
+      },
     ],
     wargear: [
-      { id: "tanglecannon", name: "Tanglecannon", image: "" },
+      { id: "tanglecannon", name: "Tanglecannon", image: "", profiles: [{ range: '36"', attacks: "D6+1", skill: "4+", strength: "6", ap: "0", damage: "1", keywords: ["BLAST", "HEAVY"] }] },
     ],
     ledBy: [],
   },

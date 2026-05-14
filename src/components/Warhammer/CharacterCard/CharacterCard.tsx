@@ -268,6 +268,24 @@ export default function CharacterCard({
               )}
             </div>
 
+            {character.imageCredit && (
+              <div style={{
+                display: "inline-flex",
+                alignItems: "center",
+                padding: "4px 10px",
+                border: "1px solid var(--border-2)",
+                background: "var(--surface-2)",
+                fontFamily: "var(--font-mono)",
+                fontSize: "9px",
+                color: "white",
+                opacity: 0.85,
+                letterSpacing: "0.05em",
+                marginTop: "4px",
+              }}>
+                {character.imageCredit}
+              </div>
+            )}
+
           </div>
 
           {/* RIGHT: info + wargear */}

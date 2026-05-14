@@ -134,6 +134,7 @@ export interface Character {
   faction: Faction;
 
   image: string;
+  imageCredit?: string;
 
   points: number;
   pointsByModelCount?: Record<number, number>;

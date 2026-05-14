@@ -8,11 +8,21 @@ export const orksCharacters: Character[] = [
     faction: "orks",
     image: "",
     points: 80,
-    canAttachTo: [],
+    canAttachTo: ["beast-snagga-boyz"],
     defaultWargear: [
-      { id: "shoota", name: "Shoota", image: "", profiles: [{ range: '18"', attacks: "3", skill: "5+", strength: "4", ap: "0", damage: "1", keywords: ["ASSAULT"] }] },
-      { id: "beast-snagga-klaw", name: "Beast Snagga klaw", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "9", ap: "-2", damage: "3", keywords: ["ANTI-MONSTER 4+", "ANTI-VEHICLE 4+"] }] },
-      { id: "beastchoppa", name: "Beastchoppa", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "7", ap: "-1", damage: "2" }] },
+      { id: "shoota", name: "Shoota", image: "", profiles: [{ range: '18"', attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
+      { id: "beast-snagga-klaw", name: "Beast Snagga klaw", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "10", ap: "-2", damage: "2", keywords: ["ANTI-MONSTER 4+", "ANTI-VEHICLE 4+"] }] },
+      { id: "beastchoppa", name: "Beastchoppa", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "6", ap: "-1", damage: "2", keywords: ["ANTI-MONSTER 4+", "ANTI-VEHICLE 4+"] }] },
+    ],
+    abilities: [
+      {
+        name: "Beastboss",
+        description: "While this model is leading a unit, each time a model in that unit makes a melee attack, add 1 to the Hit roll.",
+      },
+      {
+        name: "Beastly Rage",
+        description: "Each time this model makes a Charge move, until the end of the turn, melee weapons it is equipped with have the [DEVASTATING WOUNDS] ability.",
+      },
     ],
     wargear: [],
   },
@@ -261,12 +271,22 @@ export const orksCharacters: Character[] = [
     name: "Mozrog Skragbad",
     faction: "orks",
     image: "",
-    points: 165,
-    canAttachTo: [],
+    points: 145,
+    canAttachTo: ["squighog-boyz"],
     defaultWargear: [
-      { id: "thump-gun", name: "Thump gun", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "5+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST"] }] },
-      { id: "big-chompa-s-jaws", name: "Big Chompa's jaws", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "4+", strength: "10", ap: "-3", damage: "D6+1" }] },
-      { id: "gutrippa", name: "Gutrippa", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "8", ap: "-2", damage: "3" }] },
+      { id: "thump-gun", name: "Thump gun", image: "", profiles: [{ range: '18"', attacks: "D3", skill: "5+", strength: "6", ap: "0", damage: "2", keywords: ["BLAST"] }] },
+      { id: "big-chompa-s-jaws", name: "Big Chompa's jaws", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "7", ap: "-2", damage: "4", keywords: ["DEVASTATING WOUNDS", "EXTRA ATTACKS"] }] },
+      { id: "gutrippa", name: "Gutrippa", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "7", ap: "-1", damage: "3", keywords: ["ANTI-MONSTER 4+", "ANTI-VEHICLE 4+"] }] },
+    ],
+    abilities: [
+      {
+        name: "One Last Kill",
+        description: "While this model is leading a unit, each time a model in that unit is destroyed by a melee attack, if it has not fought this phase, roll one D6: on a 4+, do not remove it from play. The destroyed model can fight after the attacking unit has finished making its attacks, and is then removed from play.",
+      },
+      {
+        name: "Da Bigger Dey iz...",
+        description: "Each time this model makes a melee attack that targets a MONSTER or VEHICLE unit, add 1 to the Damage characteristic of that attack. Each time this model makes a melee attack that targets a TITANIC unit, add 2 to the Damage characteristic of that attack instead.",
+      },
     ],
     wargear: [],
   },
@@ -391,6 +411,37 @@ export const orksCharacters: Character[] = [
       { id: "big-choppa", name: "Big choppa", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "7", ap: "-1", damage: "2" }] },
       { id: "power-klaw", name: "Power klaw", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "9", ap: "-2", damage: "3" }] },
     ],
+  },
+
+  {
+    id: "wazdakka-gutsmek",
+    name: "Wazdakka Gutsmek",
+    faction: "orks",
+    image: "",
+    points: 175,
+    canAttachTo: [],
+    defaultWargear: [
+      { id: "grabba-dragga-ranged", name: "Grabba dragga", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "10", ap: "-2", damage: "3", keywords: ["ASSAULT", "PRECISION"] }] },
+      { id: "psyko-gatler", name: "Psyko-gatler", image: "", profiles: [{ range: '24"', attacks: "12", skill: "4+", strength: "6", ap: "-2", damage: "2", keywords: ["ASSAULT", "SUSTAINED HITS 1"] }] },
+      { id: "fixit-s-wrench", name: "Fixit's wrench", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "grabba-dragga-melee", name: "Grabba dragga", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "10", ap: "-2", damage: "3", keywords: ["LANCE"] }] },
+      { id: "speeding-bulk-and-flaming-exhaust", name: "Speeding bulk and flaming exhaust", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-1", damage: "1", keywords: ["EXTRA ATTACKS"] }] },
+    ],
+    abilities: [
+      {
+        name: "Fixit da Grot",
+        description: "At the start of your Command phase, this model regains up to D3 lost wounds.",
+      },
+      {
+        name: "Throttlerokkit Shokka Engine",
+        description: "In your Command phase, select one of the following abilities. Until the start of your next Command phase, this model has that ability.\n\nTurbo Engine: This unit is eligible to declare a charge in a turn in which it Advanced or Fell Back.\n\nShokk Attack Engine: In your Command phase, if this unit is not within Engagement Range of one or more enemy units, you can remove it from the battlefield and place it into Strategic Reserves.\n\nPulse Jet: Each time this unit Advances, do not make an Advance roll for it. Instead, until the end of the phase: add 6\" to the Move characteristic of models in this unit; models in this unit can move through models and terrain features.",
+      },
+      {
+        name: "WAAAGH! Wazdakka",
+        description: "If this model is your WARLORD, WARBIKER units from your army have the BATTLELINE keyword.",
+      },
+    ],
+    wargear: [],
   },
 
   {

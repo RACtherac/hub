@@ -92,10 +92,24 @@ export const drukhariCharacters: Character[] = [
     faction: "drukhari",
     image: "",
     points: 60,
-    canAttachTo: [],
+    canAttachTo: ["wracks"],
     defaultWargear: [
-      { id: "stinger-pistol", name: "Stinger pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["PISTOL", "POISONED WEAPON 2+"] }] },
-      { id: "haemonculus-tools-and-scissorhands", name: "Haemonculus tools and scissorhands", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["SUSTAINED HITS 1"] }] },
+      { id: "stinger-pistol", name: "Stinger pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "2", ap: "-1", damage: "D3", keywords: ["ANTI-INFANTRY 2+", "PISTOL", "PRECISION"] }] },
+      { id: "haemonculus-tools-and-scissorhands", name: "Haemonculus tools and scissorhands", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "3", ap: "-1", damage: "D3", keywords: ["ANTI-INFANTRY 2+", "PRECISION"] }] },
+    ],
+    abilities: [
+      {
+        name: "Fleshcraft (Pain)",
+        description: "In your Command phase, you can spend 1 Pain token to Empower this model's unit. Each time you do, you can return up to D3+1 destroyed Bodyguard models to that unit.",
+      },
+      {
+        name: "Fear Incarnate (Aura)",
+        description: "While an enemy unit is within 6\" of this model, worsen the Leadership characteristic of models in that unit by 1. In addition, in the Battle-shock step of your opponent's Command phase, if such an enemy unit is below its Starting Strength, it must take a Battle-shock test.",
+      },
+      {
+        name: "Pain Adept",
+        description: "In your Command phase, if one or more models from your army with this ability are on the battlefield, roll one D6: on a 4+, you gain 1 Pain token.",
+      },
     ],
     wargear: [],
   },
@@ -105,10 +119,52 @@ export const drukhariCharacters: Character[] = [
     name: "Lelith Hesperax",
     faction: "drukhari",
     image: "",
-    points: 95,
-    canAttachTo: [],
+    points: 85,
+    canAttachTo: ["wyches"],
     defaultWargear: [
-      { id: "lelith-s-blades", name: "Lelith's blades", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "2+", strength: "4", ap: "-2", damage: "1" }] },
+      { id: "lelith-s-blades", name: "Lelith's blades", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "2+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 2+", "PRECISION", "SUSTAINED HITS 2"] }] },
+    ],
+    abilities: [
+      {
+        name: "Brides of Death (Pain)",
+        description: "In the Fight phase, when you select this model's unit to fight, you can spend 1 Pain token to Empower that unit. While that unit is Empowered, each time a model in that unit makes a melee attack, improve the Strength and Armour Penetration characteristics of that attack by 1.",
+      },
+      {
+        name: "Blur of Blades",
+        description: "While this model is leading a unit, models in that unit have the Fights First ability.",
+      },
+      {
+        name: "Thrilling Spectacle",
+        description: "Once per battle, at the start of the Fight phase, this model can use this ability. If it does, until the end of the phase, this model has a 3+ invulnerable save and change the Attacks characteristic of melee weapons equipped by this model to 12.",
+      },
+    ],
+    wargear: [],
+  },
+
+  {
+    id: "lady-malys",
+    name: "Lady Malys",
+    faction: "drukhari",
+    image: "",
+    points: 100,
+    canAttachTo: ["hand-of-the-archon", "incubi", "kabalite-warriors"],
+    defaultWargear: [
+      { id: "lady-s-blade", name: "Lady's Blade", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-3", damage: "3", keywords: ["DEVASTATING WOUNDS", "HAZARDOUS"] }] },
+      { id: "razor-fan", name: "Razor fan", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "3", ap: "0", damage: "1", keywords: ["EXTRA ATTACKS"] }] },
+    ],
+    abilities: [
+      {
+        name: "Archon of the Poisoned Tongue (Pain)",
+        description: "In your Shooting phase or the Fight phase, when you select this model's unit to shoot or fight, you can spend 1 Pain token to Empower that unit. If you do, select one of the following abilities: [SUSTAINED HITS 1]; [LETHAL HITS]. Until the end of the phase, while that unit is Empowered, weapons equipped by models in that unit have that selected ability.",
+      },
+      {
+        name: "Precognisant",
+        description: "If your army includes this model, after both players have deployed their armies, select up to three DRUKHARI units from your army and redeploy them. When doing so, you can set those units up in Strategic Reserves if you wish, regardless of how many units are already in Strategic Reserves.",
+      },
+      {
+        name: "Mind Like a Steel Trap (Aura)",
+        description: "Each time your opponent targets a unit from their army with a Stratagem, if that unit is within 12\" of this model, increase the cost of that use of that Stratagem by 1CP.",
+      },
     ],
     wargear: [],
   },

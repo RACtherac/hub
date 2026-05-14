@@ -100,6 +100,7 @@ export const spaceMarinesCharacters: Character[] = [
     name: "Bladeguard Ancient",
     faction: "space-marines",
     image: "/Warhammerimages/SpaceMarine/BladeGuard Ancient.png",
+    imageCredit: "Oscar",
     points: 45,
     canAttachTo: [],
     allowsSecondCharacter: true,
@@ -601,10 +602,131 @@ export const spaceMarinesCharacters: Character[] = [
   },
 
   {
+    id: "roboute-guilliman",
+    name: "Roboute Guilliman",
+    faction: "space-marines",
+    image: "",
+    points: 340,
+    canAttachTo: [],
+    defaultWargear: [
+      {
+        id: "hand-of-dominion-ranged",
+        name: "Hand of Dominion",
+        image: "",
+        profiles: [{ profileName: "Ranged", range: '30"', attacks: "2", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["RAPID FIRE 2"] }],
+      },
+      {
+        id: "emperors-sword",
+        name: "Emperor's Sword",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "14", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["DEVASTATING WOUNDS"] }],
+      },
+      {
+        id: "hand-of-dominion-melee",
+        name: "Hand of Dominion",
+        image: "",
+        profiles: [{ profileName: "Melee", range: "Melee", attacks: "7", skill: "2+", strength: "14", ap: "-4", damage: "4", keywords: ["LETHAL HITS"] }],
+      },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Supreme Commander",
+        description: "If this model is in your army, it must be your Warlord.",
+      },
+      {
+        name: "Ultramarines Bodyguard",
+        description: "While this model is within 3\" of one or more friendly ADEPTUS ASTARTES INFANTRY units, this model has the Lone Operative ability.",
+      },
+      {
+        name: "Armour of Fate",
+        description: "The first time this model is destroyed, roll one D6 at the end of the phase: on a 3+, set this model back up on the battlefield as close as possible to where it was destroyed and not within Engagement Range of any enemy models, with 6 wounds remaining.",
+      },
+      {
+        name: "Author of the Codex",
+        description: "At the start of your Command phase, select two Author of the Codex abilities. Until the start of your next Command phase, this model has those abilities.",
+      },
+      {
+        name: "Author of the Codex – Primarch of the XIII (Aura)",
+        description: "While a friendly ADEPTUS ASTARTES unit is within 6\" of this model, add 1 to the Objective Control characteristic of models in that unit and you can re-roll Battle-shock and Leadership tests taken for that unit.",
+      },
+      {
+        name: "Author of the Codex – Master of Battle",
+        description: "At the start of your Command phase, after you have selected your Oath of Moment target, select a second enemy unit. Until the start of your next Command phase, if your Oath of Moment target is destroyed, that second enemy unit becomes your Oath of Moment target until you select a new one.",
+      },
+      {
+        name: "Author of the Codex – Supreme Strategist",
+        description: "Once per battle round, one unit from your army with this ability can use it when a friendly ADEPTUS ASTARTES unit within 12\" of that model is targeted with a Stratagem. If it does, reduce the CP cost of that usage of that Stratagem by 1CP.",
+      },
+    ],
+  },
+
+  {
+    id: "lion-el-jonson",
+    name: "Lion El'Jonson",
+    faction: "space-marines",
+    image: "",
+    points: 315,
+    canAttachTo: [],
+    defaultWargear: [
+      {
+        id: "arma-luminis",
+        name: "Arma Luminis",
+        image: "",
+        profiles: [
+          { profileName: "Bolt pistol", range: '12"', attacks: "4", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["PISTOL"] },
+          { profileName: "Plasma pistol", range: '12"', attacks: "2", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL"] },
+        ],
+      },
+      {
+        id: "fealty",
+        name: "Fealty",
+        image: "",
+        profiles: [
+          { profileName: "Strike", range: "Melee", attacks: "8", skill: "2+", strength: "12", ap: "-4", damage: "4", keywords: ["LETHAL HITS"] },
+          { profileName: "Sweep", range: "Melee", attacks: "16", skill: "2+", strength: "6", ap: "-3", damage: "2", keywords: ["SUSTAINED HITS 1"] },
+        ],
+      },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Supreme Commander",
+        description: "If this model is in your army, it must be your Warlord.",
+      },
+      {
+        name: "The Emperor's Shield",
+        description: "Each time an attack is allocated to this model, if the Strength characteristic of that attack is greater than the Toughness characteristic of this model, subtract 1 from the Wound roll.",
+      },
+      {
+        name: "Dark Angels Bodyguard",
+        description: "While this model is within 3\" of one or more friendly ADEPTUS ASTARTES INFANTRY units, this model has the Lone Operative ability.",
+      },
+      {
+        name: "Primarch of the First Legion",
+        description: "At the start of your Command phase, select two Primarch of the First Legion abilities. Until the start of your next Command phase, this model has those abilities.",
+      },
+      {
+        name: "Primarch of the First Legion – Mist-wreathed Shadow Realms",
+        description: "In your Command phase, if this unit is not within Engagement Range of one or more enemy units, you can remove it from the battlefield and place it into Strategic Reserves.",
+      },
+      {
+        name: "Primarch of the First Legion – Martial Exemplar (Aura)",
+        description: "While a friendly ADEPTUS ASTARTES unit is within 6\" of this model, each time a model in that unit makes a melee attack, re-roll a Hit roll of 1 and re-roll a Wound roll of 1.",
+      },
+      {
+        name: "Primarch of the First Legion – No Hiding From the Watchers (Aura)",
+        description: "While a friendly ADEPTUS ASTARTES unit is within 6\" of this model, models in that unit have the Feel No Pain 4+ ability against mortal wounds.",
+      },
+    ],
+  },
+
+  {
     id: "korsarro-khan",
     name: "Kor'sarro Khan",
     faction: "space-marines",
     image: "",
+    imageCredit: "Oscar",
     points: 60,
     allowsSecondCharacter: true,
     secondCharacterOptions: ["bladeguard-ancient", "lieutenant"],

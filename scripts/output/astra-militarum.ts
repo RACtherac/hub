@@ -787,6 +787,8 @@ export const astraMilitarumUnits: Unit[] = [
     faction: "astra-militarum",
     category: "infantry",
     modelCountOptions: [5, 10],
+    image5: "/Warhammerimages/Astra militarium/combat enginer-5.png",
+    image10: "/Warhammerimages/Astra militarium/combat enginer-10.png",
     points: 60,
     pointsByModelCount: { 5: 60, 10: 90 },
     defaultWargear: [],
@@ -806,7 +808,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "eng-combat-shotgun",
         name: "Combat shotgun",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/Kreig combat shotgun.png",
         countable: true,
         maxCountByModelCount: { 5: 4, 10: 9 },
         maxCountReducedByWargear: ["eng-autopistol", "eng-flamer", "eng-remote-mine"],
@@ -818,7 +820,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "eng-flamer",
         name: "Flamer",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/Kreig combat flamer.png",
         countable: true,
         maxCountByModelCount: { 5: 1, 10: 2 },
         profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }],
@@ -826,7 +828,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "eng-remote-mine",
         name: "Remote Mine",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/combat enginer mine.png",
         countable: true,
         maxCountByModelCount: { 5: 1, 10: 2 },
         note: "Once per battle, at the start of your Shooting phase, you can select one enemy unit within 9\" of and visible to the bearer and roll one D6: on a 3+, that enemy unit suffers D3 mortal wounds, or 2D3 mortal wounds instead if it is a VEHICLE or FORTIFICATIONS unit. Designer's Note: Place a Remote Mine token next to the unit, removing it once this ability has been used.",
@@ -855,7 +857,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "eng-sgt-plasma-pistol",
         name: "Plasma pistol",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/Kreig plasma pistol.png",
         sergeantOnly: true,
         profiles: [
           { profileName: "Standard", range: '12"', attacks: "1", skill: "4+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
@@ -865,7 +867,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "eng-sgt-chainsword",
         name: "Chainsword",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/Kreig chainsword.png",
         sergeantOnly: true,
         profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "3", ap: "0", damage: "1" }],
       },

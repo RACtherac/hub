@@ -34,12 +34,26 @@ export const tAuEmpireCharacters: Character[] = [
     name: "Commander Farsight",
     faction: "tau-empire",
     image: "",
-    points: 95,
-    canAttachTo: [],
+    points: 85,
+    canAttachTo: ["crisis-fireknife-battlesuits", "crisis-starscythe-battlesuits", "crisis-sunforge-battlesuits"],
     defaultWargear: [
-      { id: "high-intensity-plasma-rifle", name: "High-intensity plasma rifle", image: "", profiles: [{ range: '30"', attacks: "2", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["RAPID FIRE 1"] }] },
-      { id: "dawn-blade-strike", name: "Dawn Blade – strike", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "8", ap: "-4", damage: "D6" }] },
-      { id: "dawn-blade-sweep", name: "Dawn Blade – sweep", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "2+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "high-intensity-plasma-rifle", name: "High-intensity plasma rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "8", ap: "-3", damage: "3" }] },
+      { id: "dawn-blade-strike", name: "Dawn Blade – strike", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "10", ap: "-2", damage: "3" }] },
+      { id: "dawn-blade-sweep", name: "Dawn Blade – sweep", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "2+", strength: "6", ap: "-1", damage: "1" }] },
+    ],
+    abilities: [
+      {
+        name: "Way of the Short Blade",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack that targets an enemy unit within 9\", add 1 to the Wound roll.",
+      },
+      {
+        name: "Puretide's Teachings",
+        description: "Once per battle round, you can target this model's unit with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP.",
+      },
+      {
+        name: "Independent Power",
+        description: "If your army includes COMMANDER FARSIGHT, it cannot include any ETHEREAL units. If your army includes any ETHEREAL units, it cannot include COMMANDER FARSIGHT.",
+      },
     ],
     wargear: [],
   },

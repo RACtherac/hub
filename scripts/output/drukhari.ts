@@ -146,17 +146,30 @@ export const drukhariUnits: Unit[] = [
     name: "Wracks",
     faction: "drukhari",
     category: "battleline",
-    points: 55,
+    modelCountOptions: [5, 8, 10],
+    pointsByModelCount: { 5: 60, 8: 100, 10: 120 },
     defaultWargear: [
-      { id: "wrack-blades", name: "Wrack blades", image: "" },
+      { id: "wrack-twin-torturer-s-tools", name: "Twin torturer's tools", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ANTI-INFANTRY 4+", "TWIN-LINKED"] }] },
     ],
     wargear: [
-      { id: "liquifier-gun", name: "Liquifier gun", image: "" },
-      { id: "ossefactor", name: "Ossefactor", image: "" },
-      { id: "hexrifle", name: "Hexrifle", image: "" },
-      { id: "stinger-pistol", name: "Stinger pistol", image: "" },
+      { id: "wrack-hexrifle", name: "Hexrifle", image: "", countable: true, maxCountByModelCount: { 5: 1, 8: 1, 10: 2 }, profiles: [{ range: '36"', attacks: "1", skill: "3+", strength: "8", ap: "-2", damage: "3", keywords: ["HEAVY", "PRECISION"] }] },
+      { id: "wrack-liquifier-gun", name: "Liquifier gun", image: "", countable: true, maxCountByModelCount: { 5: 1, 8: 1, 10: 2 }, profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "1", keywords: ["ANTI-INFANTRY 3+", "TORRENT"] }] },
+      { id: "wrack-ossefactor", name: "Ossefactor", image: "", countable: true, maxCountByModelCount: { 5: 1, 8: 1, 10: 2 }, profiles: [{ range: '24"', attacks: "1", skill: "3+", strength: "2", ap: "-2", damage: "2", keywords: ["ANTI-INFANTRY 4+", "DEVASTATING WOUNDS"] }] },
+      { id: "wrack-stinger-pistol", name: "Stinger pistol", image: "", countable: true, maxCountByModelCount: { 5: 1, 8: 1, 10: 2 }, profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 2+", "PISTOL"] }] },
+      { id: "wrack-power-weapon", name: "Power weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 3+"] }] },
+      { id: "wrack-torturer-s-tools", name: "Torturer's tools", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ANTI-INFANTRY 4+"] }] },
     ],
-    ledBy: ["haemonculus","urien-rakarth"],
+    abilities: [
+      {
+        name: "Experimental Enhancements (Pain)",
+        description: "In the Fight phase, when you select this unit to fight, you can spend 1 Pain token to Empower this unit. Each time you do, select one of the following to apply to this unit until the end of the phase: Melee weapons equipped by non-CHARACTER models in this unit have an Attacks characteristic of 3. Melee weapons equipped by non-CHARACTER models in this unit have an Attacks characteristic of 4 and the [HAZARDOUS] ability.",
+      },
+      {
+        name: "Torturer's Craft",
+        description: "In your Shooting phase and the Fight phase, after this unit has shot or fought, select one enemy unit (excluding VEHICLES) hit by one or more of those attacks. That unit must take a Battle-shock test.",
+      },
+    ],
+    ledBy: ["haemonculus", "urien-rakarth"],
   },
 
   {

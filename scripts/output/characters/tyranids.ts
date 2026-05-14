@@ -110,7 +110,8 @@ export const tyranidsCharacters: Character[] = [
     id: "old-one-eye",
     name: "Old One Eye",
     faction: "tyranids",
-    image: "/Warhammerimages/Tyranids/old-one-eye.png",
+    image: "/Warhammerimages/Tyranids/Old one eye.png",
+    imageCredit: "Alana K.A",
     points: 150,
     canAttachTo: ["carnifexes"],
     defaultWargear: [

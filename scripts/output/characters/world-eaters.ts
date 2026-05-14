@@ -62,14 +62,24 @@ export const worldEatersCharacters: Character[] = [
     name: "Lord Invocatus",
     faction: "world-eaters",
     image: "",
-    points: 140,
-    canAttachTo: [],
+    points: 110,
+    canAttachTo: ["eightbound", "exalted-eightbound", "khorne-berzerkers"],
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "coward-s-bane", name: "Coward's Bane", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
-      { id: "juggernaut-s-bladed-horn", name: "Juggernaut's bladed horn", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "-1", damage: "2" }] },
+      { id: "invocatus-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "cowards-bane", name: "Coward's Bane", image: "", profiles: [{ range: "Melee", attacks: "7", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "bladed-horn", name: "Bladed horn", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["EXTRA ATTACKS", "LANCE"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Fire Riders",
+        description: "While this model is leading a unit, models in that unit have the Deep Strike ability and each time a model in that unit makes a Normal, Advance, Fall Back or Charge move, it can move horizontally through models and terrain features. When making a Normal, Advance or Fall Back move, models in that unit can move within Engagement Range of enemy models, but cannot end that move within Engagement Range of them and any Desperate Escape test is automatically passed.",
+      },
+      {
+        name: "Bloody Stampede",
+        description: "Each time this model's unit ends a Charge move, select one enemy unit within Engagement Range of this model, then roll one D6: on a 2-3, that enemy unit suffers 1 mortal wound; on a 4-5, that enemy unit suffers D3 mortal wounds; on a 6, that enemy unit suffers D3+3 mortal wounds.",
+      },
+    ],
   },
 
   {

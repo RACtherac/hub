@@ -62,7 +62,7 @@ export const imperialAgentsCharacters: Character[] = [
     id: "eversor-assassin",
     name: "Eversor Assassin",
     faction: "imperial-agents",
-    image: "",
+    image: "/Warhammerimages/Imperial Agents/eversor assasin.png",
     points: 110,
     canAttachTo: [],
     defaultWargear: [
@@ -323,7 +323,7 @@ export const imperialAgentsCharacters: Character[] = [
     id: "vindicare-assassin",
     name: "Vindicare Assassin",
     faction: "imperial-agents",
-    image: "",
+    image: "/Warhammerimages/Imperial Agents/image.png",
     points: 110,
     canAttachTo: [],
     defaultWargear: [

@@ -54,16 +54,27 @@ export const thousandSonsCharacters: Character[] = [
     name: "Exalted Sorcerer",
     faction: "thousand-sons",
     image: "",
-    points: 110,
+    points: 80,
     canAttachTo: ["rubric-marines"],
     defaultWargear: [
-      { id: "astral-blast", name: "Astral Blast", image: "", profiles: [{ range: '24"', attacks: "3", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["PSYCHIC"] }] },
-      { id: "inferno-bolt-pistol", name: "Inferno bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-2", damage: "1", keywords: ["PISTOL", "PSYCHIC"] }] },
-      { id: "force-weapon", name: "Force weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
+      { id: "astral-blast", name: "Astral Blast", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "2+", strength: "6", ap: "-2", damage: "D3", keywords: ["BLAST", "DEVASTATING WOUNDS", "PSYCHIC"] }] },
+      { id: "exalted-inferno-bolt-pistol", name: "Inferno bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "exalted-force-weapon", name: "Force weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
     ],
     wargear: [
+      { id: "exalted-prosperine-khopesh", name: "Prosperine khopesh", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
       { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
       { id: "warpflame-pistol", name: "Warpflame pistol", image: "", profiles: [{ range: '6"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "PSYCHIC", "TORRENT"] }] },
+    ],
+    abilities: [
+      {
+        name: "Arcane Shield (Psychic)",
+        description: "While this model is leading a unit, models in that unit have a 4+ invulnerable save.",
+      },
+      {
+        name: "Rebind Rubricae (Psychic)",
+        description: "In your Command phase, if this model is leading a unit, you can roll one D6: on a 1, that unit suffers D3 mortal wounds; on a 2-5, you can return 1 destroyed Bodyguard model to that unit; on a 6, you can return up to 2 destroyed Bodyguard models to that unit.",
+      },
     ],
   },
 
@@ -72,16 +83,27 @@ export const thousandSonsCharacters: Character[] = [
     name: "Exalted Sorcerer On Disc Of Tzeentch",
     faction: "thousand-sons",
     image: "",
-    points: 115,
-    canAttachTo: ["rubric-marines"],
+    points: 100,
+    canAttachTo: ["rubric-marines", "tzaangor-enlightened", "tzaangor-enlightened-with-fatecaster-greatbows"],
     defaultWargear: [
-      { id: "arcane-fire", name: "Arcane Fire", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["PSYCHIC"] }] },
-      { id: "inferno-bolt-pistol", name: "Inferno bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-2", damage: "1", keywords: ["PISTOL", "PSYCHIC"] }] },
-      { id: "force-weapon", name: "Force weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
+      { id: "arcane-fire", name: "Arcane Fire", image: "", profiles: [{ range: '18"', attacks: "3", skill: "2+", strength: "6", ap: "-1", damage: "2", keywords: ["PSYCHIC"] }] },
+      { id: "disc-inferno-bolt-pistol", name: "Inferno bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "disc-force-weapon", name: "Force weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
     ],
     wargear: [
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
-      { id: "warpflame-pistol", name: "Warpflame pistol", image: "", profiles: [{ range: '6"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "PSYCHIC", "TORRENT"] }] },
+      { id: "disc-prosperine-khopesh", name: "Prosperine khopesh", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
+      { id: "disc-plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
+      { id: "disc-warpflame-pistol", name: "Warpflame pistol", image: "", profiles: [{ range: '6"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "PSYCHIC", "TORRENT"] }] },
+    ],
+    abilities: [
+      {
+        name: "Illusions of Tzeentch (Psychic)",
+        description: "While this model is leading a unit, that unit can only be selected as the target of a ranged attack if the attacking model is within 18\".",
+      },
+      {
+        name: "Binding Tendrils (Psychic)",
+        description: "In your Shooting phase, after this model has shot, select one enemy INFANTRY unit hit by one or more of those attacks made with Arcane Fire. Until the start of your next turn, that unit is ensnared. While a unit is ensnared, subtract 2\" from its Move characteristic and subtract 2 from Charge rolls made for it.",
+      },
     ],
   },
 

@@ -97,12 +97,26 @@ export const aeldariCharacters: Character[] = [
     name: "Avatar Of Khaine",
     faction: "aeldari",
     image: "",
-    points: 300,
+    points: 280,
     canAttachTo: [],
     defaultWargear: [
-      { id: "the-wailing-doom", name: "The Wailing Doom", image: "", profiles: [{ range: '18"', attacks: "3", skill: "2+", strength: "12", ap: "-4", damage: "D6" }] },
-      { id: "the-wailing-doom-strike", name: "The Wailing Doom – strike", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "14", ap: "-4", damage: "D6+2" }] },
-      { id: "the-wailing-doom-sweep", name: "The Wailing Doom – sweep", image: "", profiles: [{ range: "Melee", attacks: "12", skill: "2+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "the-wailing-doom", name: "The Wailing Doom", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "16", ap: "-4", damage: "D6+2", keywords: ["SUSTAINED HITS D3"] }] },
+      { id: "the-wailing-doom-strike", name: "The Wailing Doom – strike", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "16", ap: "-4", damage: "D6+2" }] },
+      { id: "the-wailing-doom-sweep", name: "The Wailing Doom – sweep", image: "", profiles: [{ range: "Melee", attacks: "12", skill: "2+", strength: "8", ap: "-2", damage: "2" }] },
+    ],
+    abilities: [
+      {
+        name: "Molten Form",
+        description: "Each time an attack is allocated to this model, halve the Damage characteristic of that attack.",
+      },
+      {
+        name: "The Bloody-Handed (Aura)",
+        description: "While a friendly AELDARI unit is within 6\" of this model, add 1 to Advance and Charge rolls made for that unit.",
+      },
+      {
+        name: "Damaged: 1-5 Wounds Remaining",
+        description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
     wargear: [],
   },
@@ -113,10 +127,20 @@ export const aeldariCharacters: Character[] = [
     faction: "aeldari",
     image: "",
     points: 115,
-    canAttachTo: [],
+    canAttachTo: ["swooping-hawks"],
     defaultWargear: [
-      { id: "fury-of-the-tempest", name: "Fury of the Tempest", image: "", profiles: [{ range: '18"', attacks: "6", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT"] }] },
-      { id: "shining-blade", name: "Shining Blade", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-3", damage: "2" }] },
+      { id: "fury-of-the-tempest", name: "Fury of the Tempest", image: "", profiles: [{ range: '24"', attacks: "4", skill: "2+", strength: "6", ap: "-1", damage: "2", keywords: ["ASSAULT", "LETHAL HITS"] }] },
+      { id: "shining-blade", name: "Shining Blade", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-2", damage: "2", keywords: ["SUSTAINED HITS 1"] }] },
+    ],
+    abilities: [
+      {
+        name: "Cloudstrider",
+        description: "While this model is leading a unit, at the end of your opponent's turn, if that unit is not within Engagement Range of one or more enemy units, you can remove it from the battlefield and place it into Strategic Reserves. In addition, while this model is leading a unit, when that unit is set up on the battlefield using the Deep Strike ability, in your movement phase, it can use this ability. If it does, that unit can be set up anywhere on the battlefield that is more than 6\" horizontally away from all enemy models, but until the end of the turn, it is not eligible to declare a charge.",
+      },
+      {
+        name: "Cry of the Wind",
+        description: "Each time this model is set up on the battlefield, until the end of the turn, each time this model makes a ranged attack, a successful unmodified Hit roll scores a Critical Hit.",
+      },
     ],
     wargear: [],
   },
@@ -246,11 +270,21 @@ export const aeldariCharacters: Character[] = [
     name: "Jain Zar",
     faction: "aeldari",
     image: "",
-    points: 105,
-    canAttachTo: [],
+    points: 120,
+    canAttachTo: ["howling-banshees"],
     defaultWargear: [
-      { id: "silent-death", name: "Silent Death", image: "", profiles: [{ range: '12"', attacks: "3", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "blade-of-destruction", name: "Blade of Destruction", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-3", damage: "2" }] },
+      { id: "silent-death", name: "Silent Death", image: "", profiles: [{ range: '12"', attacks: "6", skill: "2+", strength: "6", ap: "-2", damage: "1", keywords: ["ASSAULT"] }] },
+      { id: "blade-of-destruction", name: "Blade of Destruction", image: "", profiles: [{ range: "Melee", attacks: "8", skill: "2+", strength: "6", ap: "-3", damage: "2", keywords: ["ANTI-INFANTRY 3+"] }] },
+    ],
+    abilities: [
+      {
+        name: "Whirling Death",
+        description: "While this model is leading a unit, each time that unit Advances, do not make an Advance roll. Instead, until the end of the phase, add 6\" to the Move characteristic of models in that unit and each time a model in that unit makes an Advance move, ignore any vertical distance when determining the total distance that model can be moved during that move.",
+      },
+      {
+        name: "Storm of Silence",
+        description: "Each time this model makes an attack that targets a CHARACTER unit, you can re-roll the Wound roll.",
+      },
     ],
     wargear: [],
   },
@@ -290,9 +324,27 @@ export const aeldariCharacters: Character[] = [
     faction: "aeldari",
     image: "",
     points: 100,
-    canAttachTo: [],
+    canAttachTo: ["dark-reapers"],
     defaultWargear: [
-      { id: "maugetar", name: "Maugetar", image: "", profiles: [{ range: '36"', attacks: "4", skill: "2+", strength: "7", ap: "-3", damage: "2", keywords: ["ASSAULT", "PRECISION"] }] },
+      {
+        id: "maugetar",
+        name: "Maugetar",
+        image: "",
+        profiles: [
+          { profileName: "Ranged", range: '36"', attacks: "6", skill: "2+", strength: "7", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS", "IGNORES COVER"] },
+          { profileName: "Melee", range: "Melee", attacks: "5", skill: "2+", strength: "6", ap: "-2", damage: "2" },
+        ],
+      },
+    ],
+    abilities: [
+      {
+        name: "Harvester of Souls",
+        description: "While this model is leading a unit, in your Shooting phase, after selecting targets for that unit's attacks, if every attack targets the same unit, roll one D6 for the target unit and one D6 for every other enemy unit within 3\" of the target unit. On a 5+, the unit being rolled for is struck by explosive debris; after resolving all of that unit's attacks against the target unit, each unit struck by explosive debris suffers D3 mortal wounds.",
+      },
+      {
+        name: "Face of Death",
+        description: "In your Shooting phase, after this model has shot, select one enemy unit hit by one or more of those attacks. That enemy unit must take a Battle-shock test, subtracting 1 from the result.",
+      },
     ],
     wargear: [],
   },
@@ -374,12 +426,26 @@ export const aeldariCharacters: Character[] = [
     name: "The Yncarne",
     faction: "aeldari",
     image: "",
-    points: 250,
+    points: 260,
     canAttachTo: [],
     defaultWargear: [
-      { id: "swirling-soul-energy", name: "Swirling soul energy", image: "", profiles: [{ range: '9"', attacks: "D6+3", skill: "N/A", strength: "6", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
-      { id: "vilith-zhar-strike", name: "Vilith-zhar – strike", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "12", ap: "-4", damage: "D6+2" }] },
-      { id: "vilith-zhar-sweep", name: "Vilith-zhar – sweep", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "2+", strength: "6", ap: "-2", damage: "2" }] },
+      { id: "swirling-soul-energy", name: "Swirling soul energy", image: "", profiles: [{ range: '12"', attacks: "D6+3", skill: "N/A", strength: "7", ap: "-1", damage: "D3", keywords: ["IGNORES COVER", "PSYCHIC", "TORRENT"] }] },
+      { id: "vilith-zhar-strike", name: "Vilith-zhar – strike", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "12", ap: "-4", damage: "D6+1" }] },
+      { id: "vilith-zhar-sweep", name: "Vilith-zhar – sweep", image: "", profiles: [{ range: "Melee", attacks: "10", skill: "2+", strength: "6", ap: "-4", damage: "1" }] },
+    ],
+    abilities: [
+      {
+        name: "Avatar of the Whispering God",
+        description: "If your army includes THE YNCARNE, it cannot include any EPIC HERO units (excluding YNNARI units). If your army includes any EPIC HERO units (excluding YNNARI units), it cannot include THE YNCARNE.",
+      },
+      {
+        name: "Inevitable Death",
+        description: "Once in each of your opponent's turns, if this model is on the battlefield when another friendly AELDARI unit is destroyed, just after removing the last model in that unit, you can remove this model from the battlefield and set it up as close as possible to where that destroyed model was destroyed and not within Engagement Range of one or more enemy units.",
+      },
+      {
+        name: "Ethereal Form",
+        description: "Each time this model destroys an enemy unit, it regains up to D3 lost wounds.",
+      },
     ],
     wargear: [],
   },
@@ -451,15 +517,54 @@ export const aeldariCharacters: Character[] = [
   },
 
   {
+    id: "lhykis",
+    name: "Lhykis",
+    faction: "aeldari",
+    image: "",
+    points: 135,
+    canAttachTo: ["warp-spiders"],
+    defaultWargear: [
+      { id: "brood-twain", name: "Brood Twain", image: "", profiles: [{ range: '12"', attacks: "D6+3", skill: "N/A", strength: "6", ap: "-2", damage: "1", keywords: ["IGNORES COVER", "TORRENT", "TWIN-LINKED"] }] },
+      { id: "spiders-fangs", name: "Spider's Fangs", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "-2", damage: "1", keywords: ["EXTRA ATTACKS", "LETHAL HITS"] }] },
+      { id: "weaverender", name: "Weaverender", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["LETHAL HITS"] }] },
+    ],
+    abilities: [
+      {
+        name: "Empyric Ambush",
+        description: "While this model is leading a unit, that unit is eligible to declare a charge in a turn in which it used its Flickerjump ability.",
+      },
+      {
+        name: "Whispering Web",
+        description: "In your Shooting phase, after this model has shot, select one enemy unit hit by one or more of those attacks. Until the end of the turn, each time a friendly Aeldari model makes an attack that targets that unit, an unmodified Hit roll of 5+ scores a Critical Hit.",
+      },
+    ],
+    wargear: [],
+  },
+
+  {
     id: "yvraine",
     name: "Yvraine",
     faction: "aeldari",
     image: "",
     points: 100,
-    canAttachTo: [],
+    canAttachTo: ["corsair-voidreavers", "corsair-voidscarred", "guardian-defenders", "storm-guardians", "ynnari-incubi", "ynnari-kabalite-warriors", "ynnari-wyches"],
     defaultWargear: [
-      { id: "storm-of-whispers", name: "Storm of Whispers", image: "", profiles: [{ range: '18"', attacks: "D6+3", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PSYCHIC"] }] },
-      { id: "kha-vir", name: "Kha-vir", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-3", damage: "2", keywords: ["PSYCHIC"] }] },
+      { id: "storm-of-whispers", name: "Storm of Whispers", image: "", profiles: [{ range: '12"', attacks: "D6+3", skill: "2+", strength: "2", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 2+", "DEVASTATING WOUNDS", "PSYCHIC"] }] },
+      { id: "kha-vir", name: "Kha-vir", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "-3", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
+    ],
+    abilities: [
+      {
+        name: "Servant of the Whispering God",
+        description: "If your army includes YVRAINE, it cannot include any EPIC HERO units (excluding YNNARI units). If your army includes any EPIC HERO units (excluding YNNARI units), it cannot include YVRAINE.",
+      },
+      {
+        name: "Word of the Phoenix (Psychic)",
+        description: "While this model is leading a unit, in your Command phase, roll one D6: on a 2+, D3+1 destroyed Bodyguard models (excluding SUPPORT WEAPON models) are returned to that unit with their full wounds remaining.",
+      },
+      {
+        name: "Herald of Ynnead",
+        description: "At the start of the Fight phase, select one enemy unit within Engagement Range of this model. Until the end of the phase, each time a friendly AELDARI model makes an attack that targets that unit, you can re-roll a Wound roll of 1.",
+      },
     ],
     wargear: [],
   },

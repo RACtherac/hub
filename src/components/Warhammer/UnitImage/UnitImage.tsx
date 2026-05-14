@@ -74,7 +74,7 @@ export default function UnitImage({
             left: "16px",
             bottom: "0",
             zIndex: 3,
-            objectFit: "contain",
+            ...(unit.id !== "deathshroud-terminators" && { objectFit: "contain" }),
           }} />
         )}
       </div>
@@ -175,23 +175,34 @@ export default function UnitImage({
         </div>
       )}
     </div>
-    {unit.imageCredit && (
-      <div style={{
-        display: "inline-flex",
-        alignItems: "center",
-        padding: "4px 10px",
-        border: "1px solid var(--border-2)",
-        background: "var(--surface-2)",
-        fontFamily: "var(--font-mono)",
-        fontSize: "9px",
-        color: "white",
-        opacity: 0.85,
-        letterSpacing: "0.05em",
-        alignSelf: "flex-start",
-      }}>
-        {unit.imageCredit}
-      </div>
-    )}
+    {(() => {
+      const credits: { label: string; credit: string }[] = [];
+      if (unit.imageCredit) credits.push({ label: unit.name, credit: unit.imageCredit });
+      if (selectedCharacter?.imageCredit) credits.push({ label: selectedCharacter.name, credit: selectedCharacter.imageCredit });
+      if (selectedCharacter2?.imageCredit) credits.push({ label: selectedCharacter2.name, credit: selectedCharacter2.imageCredit });
+      if (credits.length === 0) return null;
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px", alignSelf: "flex-start" }}>
+          {credits.map(({ label, credit }) => (
+            <div key={label} style={{
+              display: "inline-flex",
+              alignItems: "center",
+              padding: "4px 10px",
+              border: "1px solid var(--border-2)",
+              background: "var(--surface-2)",
+              fontFamily: "var(--font-mono)",
+              fontSize: "9px",
+              color: "white",
+              opacity: 0.85,
+              letterSpacing: "0.05em",
+            }}>
+              <span style={{ color: "var(--text-dim)", marginRight: "6px" }}>{label}:</span>
+              {credit}
+            </div>
+          ))}
+        </div>
+      );
+    })()}
     </div>
   );
 }

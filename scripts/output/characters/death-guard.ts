@@ -203,7 +203,8 @@ export const deathGuardCharacters: Character[] = [
     id: "foul-blightspawn",
     name: "Foul Blightspawn",
     faction: "death-guard",
-    image: "",
+    image: "/Warhammerimages/Death guard/FoulBlightspawn.png",
+    imageCredit: "Alana K.A",
     points: 75,
     canAttachTo: ["plague-marines"],
     defaultWargear: [
@@ -348,6 +349,7 @@ export const deathGuardCharacters: Character[] = [
     name: "Noxious Blightbringer",
     faction: "death-guard",
     image: "",
+    imageCredit: "Oscar",
     points: 50,
     canAttachTo: ["plague-marines", "poxwalkers"],
     defaultWargear: [
@@ -423,6 +425,7 @@ export const deathGuardCharacters: Character[] = [
     name: "Tallyman",
     faction: "death-guard",
     image: "",
+    imageCredit: "Alana K.A",
     points: 50,
     canAttachTo: ["plague-marines"],
     defaultWargear: [
