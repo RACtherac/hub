@@ -74,7 +74,7 @@ export default function UnitImage({
             left: 0,
             right: 0,
             margin: "0 auto",
-            bottom: "15px",
+            bottom: "10px",
             zIndex: 3,
             ...(unit.id !== "deathshroud-terminators" && { objectFit: "contain" }),
           }} />
@@ -99,7 +99,7 @@ export default function UnitImage({
           <img src={selectedCharacter.image} style={{
             position: "absolute",
             width: "180px",
-            bottom: "15px",
+            bottom: "10px",
             left: "10px",
             zIndex: 4,
             objectFit: "contain",

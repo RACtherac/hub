@@ -254,7 +254,7 @@ export default function CharacterCard({
                 <img src={character.image} style={{
                   position: "absolute",
                   width: "180px",
-                  bottom: 0,
+                  bottom: 10,
                   left: "10px",
                   objectFit: "contain",
                 }} />
