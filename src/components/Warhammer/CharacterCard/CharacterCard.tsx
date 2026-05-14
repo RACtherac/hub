@@ -172,7 +172,8 @@ export default function CharacterCard({
                         {allWeapons.map(w => w.profiles!.map((p, i) => (
                           <tr key={`${w.id}-${i}`}>
                             <td style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text)", padding: "6px 10px", fontWeight: 600, borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                              {w.name}{p.profileName && <span style={{ color: "var(--text-dim)", fontWeight: 400, marginLeft: "6px" }}>[{p.profileName}]</span>}
+                              {(w.profiles!.length > 1 || / [–-] (strike|sweep)$/i.test(w.name)) && <span style={{ color: "var(--accent)", marginRight: "6px" }}>→</span>}
+                              {w.name}{p.profileName && <span style={{ color: "var(--text-dim)", fontWeight: 400, marginLeft: "6px" }}>{p.profileName}</span>}
                             </td>
                             {[p.range, p.attacks, p.skill, p.strength, p.ap, p.damage].map((v, j) => (
                               <td key={j} style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text)", padding: "6px 10px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>{v}</td>

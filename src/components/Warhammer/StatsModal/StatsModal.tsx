@@ -1,3 +1,4 @@
+import React from "react";
 import type { Unit, Character, WargearOption } from "../../../types/warhammer";
 
 interface Props {
@@ -44,6 +45,18 @@ const TD_NAME_STYLE: React.CSSProperties = {
   fontWeight: 600,
 };
 
+const KEYWORD_STYLE: React.CSSProperties = {
+  display: "inline-block",
+  fontSize: "9px",
+  letterSpacing: "0.08em",
+  color: "var(--accent)",
+  border: "1px solid var(--accent)",
+  padding: "1px 5px",
+  marginRight: "4px",
+  marginBottom: "2px",
+  opacity: 0.75,
+};
+
 function WeaponRows({ weapons, selected }: { weapons: WargearOption[]; selected?: string[] }) {
   const visible = (selected
     ? weapons.filter((w) => selected.includes(w.id))
@@ -54,14 +67,17 @@ function WeaponRows({ weapons, selected }: { weapons: WargearOption[]; selected?
 
   return (
     <>
-      {visible.map((w) => {
-        return w.profiles!.map((p, i) => (
+      {visible.map((w) =>
+        w.profiles!.map((p, i) => (
           <tr key={`${w.id}-${i}`}>
             <td style={TD_NAME_STYLE}>
+              {(w.profiles!.length > 1 || / [–-] (strike|sweep)$/i.test(w.name)) && (
+                <span style={{ color: "var(--accent)", marginRight: "6px" }}>→</span>
+              )}
               {w.name}
               {p.profileName && (
                 <span style={{ color: "var(--text-dim)", fontWeight: 400, marginLeft: "6px" }}>
-                  [{p.profileName}]
+                  {p.profileName}
                 </span>
               )}
             </td>
@@ -72,25 +88,11 @@ function WeaponRows({ weapons, selected }: { weapons: WargearOption[]; selected?
             <td style={TD_STYLE}>{p.ap}</td>
             <td style={TD_STYLE}>{p.damage}</td>
             <td style={{ ...TD_STYLE, textAlign: "left" }}>
-              {p.keywords?.map((k) => (
-                <span key={k} style={{
-                  display: "inline-block",
-                  fontSize: "9px",
-                  letterSpacing: "0.08em",
-                  color: "var(--accent)",
-                  border: "1px solid var(--accent)",
-                  padding: "1px 5px",
-                  marginRight: "4px",
-                  marginBottom: "2px",
-                  opacity: 0.75,
-                }}>
-                  {k}
-                </span>
-              ))}
+              {p.keywords?.map((k) => <span key={k} style={KEYWORD_STYLE}>{k}</span>)}
             </td>
           </tr>
-        ));
-      })}
+        ))
+      )}
     </>
   );
 }
