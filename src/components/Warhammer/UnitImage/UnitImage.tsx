@@ -99,7 +99,7 @@ export default function UnitImage({
           <img src={selectedCharacter.image} style={{
             position: "absolute",
             width: "180px",
-            bottom: "0",
+            bottom: "15px",
             left: "10px",
             zIndex: 4,
             objectFit: "contain",
