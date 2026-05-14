@@ -792,7 +792,7 @@ export default function UnitCard({
             })()}
 
             {/* Character attachment */}
-            {!isVehicle && !isTransport && allowedCharacters.length > 0 && (
+            {(!isVehicle || allowedCharacters.length > 0) && !isTransport && allowedCharacters.length > 0 && (
               <div>
                 <CharacterAttachment
                   characters={allowedCharacters}
