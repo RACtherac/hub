@@ -99,10 +99,12 @@ export default function UnitImage({
           <img src={selectedCharacter.image} style={{
             position: "absolute",
             width: "180px",
+            height: "180px",
             bottom: "10px",
             left: "10px",
             zIndex: 4,
             objectFit: "contain",
+            objectPosition: "bottom",
           }} />
         </div>
       )}
@@ -126,10 +128,12 @@ export default function UnitImage({
             <img src={selectedCharacter2.image} style={{
               position: "absolute",
               width: "180px",
-              bottom: "0",
+              height: "180px",
+              bottom: "10px",
               left: "10px",
               zIndex: 4,
               objectFit: "contain",
+              objectPosition: "bottom",
             }} />
           ) : (
             <div style={{
