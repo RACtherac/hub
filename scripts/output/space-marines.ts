@@ -994,6 +994,7 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Ballistus Dreadnought",
     faction: "space-marines",
     category: "vehicle",
+    image: "/Warhammerimages/SpaceMarine/Balistus dreadnought.png",
     points: 150,
     defaultWargear: [
       { id: "ballistus-missile-launcher", name: "Ballistus missile launcher", image: "", profiles: [{ profileName: "frag", range: '48"', attacks: "2D6", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST"] }, { profileName: "krak", range: '48"', attacks: "2", skill: "3+", strength: "10", ap: "-2", damage: "D6" }] },
