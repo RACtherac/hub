@@ -240,8 +240,8 @@ export default function CharacterCard({
             {/* Main frame */}
             <div style={{
               position: "relative",
-              width: 200,
-              height: 200,
+              width: 280,
+              height: 260,
               background: "var(--surface-2)",
               border: "1px solid var(--border-2)",
               overflow: "hidden",
@@ -254,10 +254,12 @@ export default function CharacterCard({
               {character.image ? (
                 <img src={character.image} style={{
                   position: "absolute",
-                  width: "180px",
+                  width: "240px",
+                  height: "240px",
                   bottom: 10,
-                  left: "10px",
+                  left: "20px",
                   objectFit: "contain",
+                  objectPosition: "bottom",
                 }} />
               ) : (
                 <div style={{
