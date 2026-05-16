@@ -132,6 +132,9 @@ export const tyranidsUnits: Unit[] = [
     faction: "tyranids",
     category: "infantry",
     modelCountOptions: [1, 2, 3],
+    image1: "/Warhammerimages/Tyranids/Biovores1.png",
+    image2: "/Warhammerimages/Tyranids/Biovores2.png",
+    image3: "/Warhammerimages/Tyranids/Biovores3.png",
     points: 50,
     pointsByModelCount: { 1: 50, 2: 100, 3: 150 },
     abilities: [
@@ -336,6 +339,9 @@ export const tyranidsUnits: Unit[] = [
     name: "Ripper Swarms",
     faction: "tyranids",
     category: "infantry",
+    image1: "/Warhammerimages/Tyranids/Ripper1.png",
+    image2: "/Warhammerimages/Tyranids/Ripper2.png",
+    image3: "/Warhammerimages/Tyranids/Ripper3.png",
     modelCountOptions: [1, 2, 3],
     pointsByModelCount: { 1: 25, 2: 40, 3: 50 },
     defaultWargear: [
@@ -849,6 +855,7 @@ export const tyranidsUnits: Unit[] = [
     name: "Screamer Killer",
     faction: "tyranids",
     category: "monster",
+    image: "/Warhammerimages/Tyranids/Screamer killer.png",
     points: 125,
     defaultWargear: [
       { id: "bio-plasmic-scream", name: "Bio-plasmic scream", image: "", profiles: [{ range: '18"', attacks: "D6+3", skill: "4+", strength: "8", ap: "-2", damage: "1", keywords: ["ASSAULT", "BLAST"] }] },
