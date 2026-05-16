@@ -87,6 +87,7 @@ export interface WargearOption {
   linkedCounterId?: string;
   wargearGroup?: string;
   showForModelCounts?: number[];
+  replacesDefaultWargear?: string[];
 }
 
 export interface Unit {

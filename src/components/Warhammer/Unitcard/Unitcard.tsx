@@ -891,7 +891,14 @@ export default function UnitCard({
                   {selectedCharacter.name} — Always Equipped
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                  {dedupWargearNames(selectedCharacter.defaultWargear).map((w) => (
+                  {dedupWargearNames(selectedCharacter.defaultWargear.filter((w) => {
+                    const replacedIds = new Set(
+                      (selectedCharacter.wargear ?? [])
+                        .filter(x => characterWargear.includes(x.id))
+                        .flatMap(x => x.replacesDefaultWargear ?? [])
+                    );
+                    return !replacedIds.has(w.id);
+                  })).map((w) => (
                     <span key={w.id} style={{
                       fontFamily: "var(--font-mono)",
                       fontSize: "10px",
@@ -988,7 +995,14 @@ export default function UnitCard({
                   {selectedCharacter2.name} — Always Equipped
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                  {dedupWargearNames(selectedCharacter2.defaultWargear).map((w) => (
+                  {dedupWargearNames(selectedCharacter2.defaultWargear.filter((w) => {
+                    const replacedIds = new Set(
+                      (selectedCharacter2.wargear ?? [])
+                        .filter(x => characterWargear2.includes(x.id))
+                        .flatMap(x => x.replacesDefaultWargear ?? [])
+                    );
+                    return !replacedIds.has(w.id);
+                  })).map((w) => (
                     <span key={w.id} style={{
                       fontFamily: "var(--font-mono)",
                       fontSize: "10px",

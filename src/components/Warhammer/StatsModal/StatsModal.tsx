@@ -247,7 +247,14 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
                             {character.name}
                           </td>
                         </tr>
-                        <WeaponRows weapons={character.defaultWargear ?? []} />
+                        <WeaponRows weapons={(character.defaultWargear ?? []).filter((w) => {
+                          const replacedIds = new Set(
+                            (character.wargear ?? [])
+                              .filter(x => characterWargear.includes(x.id))
+                              .flatMap(x => x.replacesDefaultWargear ?? [])
+                          );
+                          return !replacedIds.has(w.id);
+                        })} />
                         <WeaponRows weapons={(character.wargear ?? []).filter((w) => characterWargear.includes(w.id))} />
                       </>
                     )}
@@ -267,7 +274,14 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
                             {character2.name}
                           </td>
                         </tr>
-                        <WeaponRows weapons={character2.defaultWargear ?? []} />
+                        <WeaponRows weapons={(character2.defaultWargear ?? []).filter((w) => {
+                          const replacedIds = new Set(
+                            (character2.wargear ?? [])
+                              .filter(x => characterWargear2.includes(x.id))
+                              .flatMap(x => x.replacesDefaultWargear ?? [])
+                          );
+                          return !replacedIds.has(w.id);
+                        })} />
                         <WeaponRows weapons={(character2.wargear ?? []).filter((w) => characterWargear2.includes(w.id))} />
                       </>
                     )}

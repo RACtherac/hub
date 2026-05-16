@@ -163,10 +163,6 @@ export const astraMilitarumCharacters: Character[] = [
       { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
       { id: "lasgun", name: "Lasgun", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
       { id: "boltgun", name: "Boltgun", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
-      { id: "alchemyk-counteragents", name: "Alchemyk counteragents", image: "", note: "The bearer's unit has the Feel No Pain 6+ ability against mortal wounds." },
-      { id: "master-vox", name: "Master vox", image: "", note: "Each time the OFFICER in the bearer's unit issues an Order, it can issue it to an eligible unit up to 24\" away." },
-      { id: "regimental-standard", name: "Regimental standard", image: "", note: "Add 1 to the Objective Control characteristic of models in the bearer's unit." },
-      { id: "servo-scribes", name: "Servo-scribes", image: "", note: "Once per battle, when issuing an Order, the Lord Commissar can issue one additional Order." },
     ],
     wargear: [
       { id: "flamer", name: "Flamer", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },

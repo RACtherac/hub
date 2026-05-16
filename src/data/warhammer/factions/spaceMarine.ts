@@ -64,7 +64,118 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 75,
-    wargear: [],
+    defaultWargear: [
+      {
+        id: "ancient-storm-bolter",
+        name: "Storm bolter",
+        image: "",
+        profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }],
+      },
+      {
+        id: "ancient-power-fist",
+        name: "Power fist",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "8", ap: "-2", damage: "2" }],
+      },
+    ],
+    wargear: [
+      {
+        id: "ancient-chainfist",
+        name: "Chainfist",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["ANTI-VEHICLE 3+"] }],
+      },
+      {
+        id: "ancient-close-combat-weapon",
+        name: "Close combat weapon",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "0", damage: "1" }],
+      },
+      {
+        id: "ancient-power-weapon",
+        name: "Power weapon",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "1" }],
+      },
+      {
+        id: "ancient-thunder-hammer",
+        name: "Thunder hammer",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }],
+      },
+      {
+        id: "ancient-twin-lightning-claws",
+        name: "Twin lightning claws",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-2", damage: "1", keywords: ["TWIN-LINKED"] }],
+      },
+    ],
+    notes: [
+      {
+        id: "ancient-chainfist-note",
+        text: "This model's power fist can be replaced with 1 chainfist.",
+        checkbox: true,
+        weaponId: "ancient-chainfist",
+        replacesDefaultWargear: "ancient-power-fist",
+        noteGroup: "melee-choice",
+      },
+      {
+        id: "ancient-close-combat-weapon-note",
+        text: "This model's power fist can be replaced with 1 close combat weapon.",
+        checkbox: true,
+        weaponId: "ancient-close-combat-weapon",
+        replacesDefaultWargear: "ancient-power-fist",
+        noteGroup: "melee-choice",
+      },
+      {
+        id: "ancient-power-weapon-note",
+        text: "This model's power fist can be replaced with 1 power weapon.",
+        checkbox: true,
+        weaponId: "ancient-power-weapon",
+        replacesDefaultWargear: "ancient-power-fist",
+        noteGroup: "melee-choice",
+      },
+      {
+        id: "ancient-thunder-hammer-note",
+        text: "This model's power fist can be replaced with 1 thunder hammer.",
+        checkbox: true,
+        weaponId: "ancient-thunder-hammer",
+        replacesDefaultWargear: "ancient-power-fist",
+        noteGroup: "melee-choice",
+      },
+      {
+        id: "ancient-twin-lightning-claws-note",
+        text: "This model's storm bolter and power fist can be replaced with 1 pair of twin lightning claws.",
+        checkbox: true,
+        weaponId: "ancient-twin-lightning-claws",
+        replacesDefaultWargear: "ancient-power-fist",
+        noteGroup: "melee-choice",
+      },
+      {
+        id: "ancient-thunder-hammer-shield-note",
+        text: "This model's storm bolter and power fist can be replaced with 1 thunder hammer and 1 terminator storm shield.",
+        checkbox: true,
+        weaponId: "ancient-thunder-hammer",
+        replacesDefaultWargear: "ancient-power-fist",
+        noteGroup: "melee-choice",
+      },
+    ],
+    noteGroupLimits: { "melee-choice": 1 },
+    abilities: [
+      {
+        name: "Terminator Storm Shield",
+        description: "The bearer has a Wounds characteristic of 6.",
+        requiresNote: "ancient-thunder-hammer-shield-note",
+      },
+      {
+        name: "Astartes Banner",
+        description: "While this model is leading a unit, add 1 to the Objective Control characteristic of models in that unit.",
+      },
+      {
+        name: "Keep the Banner High",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack, add 1 to the Hit roll if that unit is below its Starting Strength, and add 1 to the Wound roll as well if that unit is Below Half-strength.",
+      },
+    ],
   },
 
   {
@@ -73,15 +184,6 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "infantry",
     points: 50,
-    wargear: [],
-  },
-
-  {
-    id: "apothecary-biologis",
-    name: "Apothecary Biologis",
-    faction: "space-marines",
-    category: "infantry",
-    points: 70,
     wargear: [],
   },
 

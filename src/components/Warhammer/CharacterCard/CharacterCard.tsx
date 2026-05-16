@@ -146,7 +146,15 @@ export default function CharacterCard({
 
       {/* STATS MODAL */}
       {statsOpen && (() => {
-        const allWeapons = [...(character.defaultWargear ?? []), ...(character.wargear ?? []).filter(w => selectedWargear.includes(w.id))].filter(w => w.profiles?.length);
+        const replacedDefaultIds = new Set(
+          (character.wargear ?? [])
+            .filter(w => selectedWargear.includes(w.id))
+            .flatMap(w => w.replacesDefaultWargear ?? [])
+        );
+        const allWeapons = [
+          ...(character.defaultWargear ?? []).filter(w => !replacedDefaultIds.has(w.id)),
+          ...(character.wargear ?? []).filter(w => selectedWargear.includes(w.id)),
+        ].filter(w => w.profiles?.length);
         return (
           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }} onClick={() => setStatsOpen(false)}>
             <div style={{ background: "var(--surface)", border: "1px solid var(--border-2)", width: "100%", maxWidth: "860px", maxHeight: "85vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
@@ -305,7 +313,14 @@ export default function CharacterCard({
                   Always Equipped
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                  {character.defaultWargear.map((w) => (
+                  {character.defaultWargear.filter((w) => {
+                    const replacedIds = new Set(
+                      (character.wargear ?? [])
+                        .filter(x => selectedWargear.includes(x.id))
+                        .flatMap(x => x.replacesDefaultWargear ?? [])
+                    );
+                    return !replacedIds.has(w.id);
+                  }).map((w) => (
                     <span key={w.id} style={{
                       fontFamily: "var(--font-mono)", fontSize: "10px",
                       letterSpacing: "0.06em", color: "var(--text)",

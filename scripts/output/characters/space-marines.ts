@@ -41,16 +41,28 @@ export const spaceMarinesCharacters: Character[] = [
     image: "",
     points: 75,
     canAttachTo: [],
+    wargearGroups: [["chainfist", "close-combat-weapon", "power-weapon", "thunder-hammer", "thunder-hammer-storm-shield", "twin-lightning-claws"]],
+    abilities: [
+      {
+        name: "Astartes Banner",
+        description: "While this model is leading a unit, add 1 to the Objective Control characteristic of models in that unit.",
+      },
+      {
+        name: "Keep the Banner High",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack, add 1 to the Hit roll if that unit is below its Starting Strength, and add 1 to the Wound roll as well if that unit is Below Half-strength.",
+      },
+    ],
     defaultWargear: [
-      { id: "storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
-      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+      { id: "storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
+      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "8", ap: "-2", damage: "2" }] },
     ],
     wargear: [
-      { id: "chainfist", name: "Chainfist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["ANTI-VEHICLE 4+"] }] },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
-      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
-      { id: "thunder-hammer", name: "Thunder hammer", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
-      { id: "twin-lightning-claws", name: "Twin lightning claws", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "5", ap: "-2", damage: "1", keywords: ["TWIN-LINKED"] }] },
+      { id: "chainfist", name: "Chainfist", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["ANTI-VEHICLE 3+"] }], replacesDefaultWargear: ["power-fist"] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "0", damage: "1" }], replacesDefaultWargear: ["power-fist"] },
+      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "1" }], replacesDefaultWargear: ["power-fist"] },
+      { id: "thunder-hammer", name: "Thunder hammer", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }], replacesDefaultWargear: ["power-fist"] },
+      { id: "thunder-hammer-storm-shield", name: "Thunder hammer and storm shield", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }], replacesDefaultWargear: ["storm-bolter", "power-fist"], note: "Terminator Storm Shield: The bearer has a Wounds characteristic of 6." },
+      { id: "twin-lightning-claws", name: "Twin lightning claws", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-2", damage: "1", keywords: ["TWIN-LINKED"] }], replacesDefaultWargear: ["storm-bolter", "power-fist"] },
     ],
   },
 
@@ -87,12 +99,22 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 70,
-    canAttachTo: [],
+    canAttachTo: ["aggressors", "eradicators", "heavy-intercessors"],
     defaultWargear: [
       { id: "absolvor-bolt-pistol", name: "Absolvor bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["PISTOL"] }] },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "biologis-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Surgical Precision",
+        description: "While this model is leading a unit, weapons equipped by models in that unit have the [LETHAL HITS] ability.",
+      },
+      {
+        name: "Vivispectrum",
+        description: "If this model's unit destroys an enemy unit as the result of a melee attack, until the end of the battle, this model has an Objective Control characteristic of 9.",
+      },
+    ],
   },
 
   {
@@ -162,17 +184,32 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 80,
-    canAttachTo: [],
+    canAttachTo: ["aggressors", "eradicators", "heavy-intercessors"],
+    allowsSecondCharacter: true,
+    secondCharacterOptions: ["apothecary-biologis"],
     defaultWargear: [
-      { id: "master-crafted-heavy-bolt-rifle", name: "Master-crafted heavy bolt rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "5", ap: "-1", damage: "2", keywords: ["HEAVY"] }] },
-      { id: "master-crafted-power-weapon", name: "Master-crafted power weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
+      { id: "master-crafted-heavy-bolt-rifle", name: "Master-crafted heavy bolt rifle", image: "", profiles: [{ range: '30"', attacks: "2", skill: "2+", strength: "5", ap: "-1", damage: "3", keywords: ["ASSAULT", "HEAVY"] }] },
+      { id: "master-crafted-power-weapon", name: "Master-crafted power weapon", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
     ],
     wargear: [
-      { id: "boltstorm-gauntlet", name: "Boltstorm gauntlet", image: "", profiles: [{ range: '12"', attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
-      { id: "relic-blade", name: "Relic blade", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-3", damage: "2" }] },
-      { id: "relic-chainsword", name: "Relic chainsword", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
-      { id: "relic-fist", name: "Relic fist", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "10", ap: "-2", damage: "3" }] },
+      { id: "boltstorm-gauntlet", name: "Boltstorm gauntlet pistol", image: "", profiles: [{ range: '12"', attacks: "3", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }], replacesDefaultWargear: ["master-crafted-heavy-bolt-rifle"], linkedWargear: ["power-fist"] },
+      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "8", ap: "-2", damage: "2" }], replacesDefaultWargear: ["master-crafted-power-weapon"] },
+      { id: "relic-chainsword", name: "Relic chainsword", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "relic-blade", name: "Relic blade", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "2+", strength: "5", ap: "-2", damage: "2", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "relic-fist", name: "Relic fist", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "2+", strength: "8", ap: "-2", damage: "2", keywords: ["EXTRA ATTACKS"] }] },
+    ],
+    wargearGroups: [
+      ["relic-chainsword", "relic-blade", "relic-fist"],
+    ],
+    abilities: [
+      {
+        name: "Rites of Battle",
+        description: "Once per battle round, one unit from your army with this ability can use it when its unit is targeted with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP.",
+      },
+      {
+        name: "Refuse to Yield",
+        description: "Each time an attack is allocated to this model, halve the Damage characteristic of that attack.",
+      },
     ],
   },
 
@@ -183,6 +220,8 @@ export const spaceMarinesCharacters: Character[] = [
     image: "",
     points: 70,
     canAttachTo: ["eliminator-squad", "incursor-squad", "infiltrator-squad", "reiver-squad", "scout-squad"],
+    allowsSecondCharacter: true,
+    secondCharacterOptions: ["lieutenant-in-phobos-armour", "lieutenant-in-reiver-armour"],
     defaultWargear: [
       { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
       { id: "instigator-bolt-carbine", name: "Instigator bolt carbine", image: "", profiles: [{ range: '24"', attacks: "1", skill: "2+", strength: "4", ap: "-2", damage: "2", keywords: ["PRECISION"] }] },
@@ -207,14 +246,28 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 95,
-    canAttachTo: [],
+    canAttachTo: ["terminator-assault-squad", "terminator-squad"],
     defaultWargear: [
-      { id: "storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
-      { id: "relic-weapon", name: "Relic weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "8", ap: "-3", damage: "2" }] },
+      { id: "storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
+      { id: "relic-weapon", name: "Relic weapon", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
     ],
     wargear: [
-      { id: "combi-weapon", name: "Combi-weapon", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
-      { id: "relic-fist", name: "Relic fist", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "10", ap: "-2", damage: "3" }] },
+      { id: "combi-weapon", name: "Combi-weapon", image: "", profiles: [{ range: '24"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 4+", "DEVASTATING WOUNDS", "RAPID FIRE 1"] }], replacesDefaultWargear: ["storm-bolter"] },
+      { id: "relic-fist", name: "Relic fist", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "8", ap: "-2", damage: "2" }], replacesDefaultWargear: ["relic-weapon"] },
+    ],
+    wargearGroups: [
+      ["storm-bolter", "combi-weapon"],
+      ["relic-weapon", "relic-fist"],
+    ],
+    abilities: [
+      {
+        name: "Rites of Battle",
+        description: "Once per battle round, one unit from your army with this ability can use it when its unit is targeted with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP.",
+      },
+      {
+        name: "The Imperium's Sword",
+        description: "You can re-roll Charge rolls made for this model's unit.",
+      },
     ],
   },
 
@@ -472,15 +525,33 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 75,
-    canAttachTo: [],
+    canAttachTo: ["terminator-assault-squad", "terminator-squad"],
     defaultWargear: [
-      { id: "smite-witchfire", name: "Smite – witchfire", image: "", profiles: [{ range: '18"', attacks: "D3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "smite-focused-witchfire", name: "Smite – focused witchfire", image: "", profiles: [{ range: '18"', attacks: "D3+3", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
-      { id: "force-weapon", name: "Force weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
+      {
+        id: "smite", name: "Smite", image: "",
+        profiles: [
+          { profileName: "witchfire", range: '24"', attacks: "D6", skill: "3+", strength: "5", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] },
+          { profileName: "focused witchfire", range: '24"', attacks: "D6", skill: "3+", strength: "6", ap: "-2", damage: "D3", keywords: ["DEVASTATING WOUNDS", "HAZARDOUS", "PSYCHIC"] },
+        ],
+      },
+      { id: "force-weapon", name: "Force weapon", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-1", damage: "D3", keywords: ["PSYCHIC"] }] },
     ],
     wargear: [
-      { id: "combi-weapon", name: "Combi-weapon", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
-      { id: "storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
+      { id: "storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
+      { id: "combi-weapon", name: "Combi-weapon", image: "", profiles: [{ range: '24"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 4+", "DEVASTATING WOUNDS", "RAPID FIRE 1"] }] },
+    ],
+    wargearGroups: [
+      ["storm-bolter", "combi-weapon"],
+    ],
+    abilities: [
+      {
+        name: "Psychic Hood",
+        description: "While this model is leading a unit, models in that unit have the Feel No Pain 4+ ability against Psychic Attacks.",
+      },
+      {
+        name: "Veil of Time (Psychic)",
+        description: "While this model is leading a unit, weapons equipped by models in that unit have the [SUSTAINED HITS 1] ability.",
+      },
     ],
   },
 
@@ -489,21 +560,36 @@ export const spaceMarinesCharacters: Character[] = [
     name: "Lieutenant",
     faction: "space-marines",
     image: "/Warhammerimages/SpaceMarine/lieutenant.png",
-    points: 65,
-    canAttachTo: [],
+    points: 55,
+    canAttachTo: ["assault-intercessor-squad", "bladeguard-veteran-squad", "company-heroes", "hellblaster-squad", "infernus-squad", "intercessor-squad", "sternguard-veteran-squad", "tactical-squad"],
     allowsSecondCharacter: true,
     secondCharacterOptions: ["ancient", "ancient-in-terminator-armour", "bladeguard-ancient", "apothecary", "apothecary-biologis", "lieutenant", "lieutenant-in-phobos-armour", "lieutenant-in-reiver-armour", "lieutenant-with-combi-weapon"],
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "master-crafted-bolter", name: "Master-crafted bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "4", ap: "0", damage: "2", keywords: ["RAPID FIRE 1"] }] },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "master-crafted-bolter", name: "Master-crafted bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "4", ap: "-1", damage: "2" }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "neo-volkite-pistol", name: "Neo-volkite pistol", image: "", profiles: [{ range: '12"', attacks: "2", skill: "2+", strength: "5", ap: "0", damage: "2", keywords: ["PISTOL"] }] },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
-      { id: "master-crafted-power-weapon", name: "Master-crafted power weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
-      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+      { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }], replacesDefaultWargear: ["bolt-pistol"] },
+      { id: "neo-volkite-pistol", name: "Neo-volkite pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "5", ap: "0", damage: "2", keywords: ["DEVASTATING WOUNDS", "PISTOL"] }], replacesDefaultWargear: ["bolt-pistol"] },
+      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "2+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] }], replacesDefaultWargear: ["bolt-pistol"] },
+      { id: "master-crafted-power-weapon", name: "Master-crafted power weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "2" }], replacesDefaultWargear: ["close-combat-weapon"] },
+      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "8", ap: "-2", damage: "2" }], replacesDefaultWargear: ["close-combat-weapon"] },
+      { id: "master-crafted-power-weapon-storm-shield", name: "Master-crafted power weapon and storm shield", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "2" }], replacesDefaultWargear: ["bolt-pistol", "master-crafted-bolter", "close-combat-weapon"], note: "Storm Shield: The bearer has a 4+ invulnerable save." },
+    ],
+    wargearGroups: [
+      ["heavy-bolt-pistol", "neo-volkite-pistol", "plasma-pistol", "master-crafted-power-weapon-storm-shield"],
+      ["master-crafted-power-weapon", "power-fist", "master-crafted-power-weapon-storm-shield"],
+    ],
+    abilities: [
+      {
+        name: "Tactical Precision",
+        description: "While this model is leading a unit, weapons equipped by models in that unit have the [LETHAL HITS] ability.",
+      },
+      {
+        name: "Target Priority",
+        description: "This model's unit is eligible to shoot and declare a charge in a turn in which it Fell Back.",
+      },
     ],
   },
 
@@ -513,13 +599,23 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 55,
-    canAttachTo: [],
+    canAttachTo: ["incursor-squad", "infiltrator-squad", "reiver-squad"],
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
       { id: "master-crafted-scoped-bolt-carbine", name: "Master-crafted scoped bolt carbine", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "4", ap: "0", damage: "2" }] },
-      { id: "paired-combat-blades", name: "Paired combat blades", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
+      { id: "paired-combat-blades", name: "Paired combat blades", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["SUSTAINED HITS 1"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Tactical Precision",
+        description: "While this model is leading a unit, weapons equipped by models in that unit have the [LETHAL HITS] ability.",
+      },
+      {
+        name: "Strategic Dispersal",
+        description: "In your Shooting phase, after this model's unit has shot, if it is not within Engagement Range of one or more enemy units, it can make a Normal move of up to 6\". If it does, until the end of the turn, that unit is not eligible to declare a charge.",
+      },
+    ],
   },
 
   {
@@ -551,13 +647,23 @@ export const spaceMarinesCharacters: Character[] = [
     name: "Lieutenant With Combi Weapon",
     faction: "space-marines",
     image: "",
-    points: 70,
+    points: 85,
     canAttachTo: [],
     defaultWargear: [
-      { id: "combi-weapon", name: "Combi-weapon", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
-      { id: "paired-combat-blades", name: "Paired combat blades", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
+      { id: "combi-weapon", name: "Combi-weapon", image: "", profiles: [{ range: '24"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 4+", "DEVASTATING WOUNDS", "RAPID FIRE 1"] }] },
+      { id: "paired-combat-blades", name: "Paired combat blades", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["ANTI-INFANTRY 4+", "SUSTAINED HITS 1"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Priority Objective Identified",
+        description: "At the start of the first battle round, if your army includes one or more models with this ability, you can select one objective marker on the battlefield. Until the end of the battle, while one or more models with this ability are on the battlefield, each time a friendly ADEPTUS ASTARTES model makes an attack that targets an enemy unit that is within range of that objective marker, re-roll a Wound roll of 1.",
+      },
+      {
+        name: "Evade and Survive",
+        description: "Once per turn, when an enemy unit ends a Normal, Advance or Fall Back move within 9\" of this unit, if this unit is not within Engagement Range of one or more enemy units, it can make a Normal move.",
+      },
+    ],
   },
 
   {
@@ -566,14 +672,28 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 55,
-    canAttachTo: [],
+    canAttachTo: ["assault-intercessor-squad", "desolation-squad", "devastator-squad", "intercessor-squad", "tactical-squad"],
     defaultWargear: [
       { id: "forge-bolter", name: "Forge bolter", image: "", profiles: [{ range: '24"', attacks: "3", skill: "2+", strength: "5", ap: "-1", damage: "2" }] },
-      { id: "grav-pistol", name: "Grav-pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "5", ap: "-3", damage: "1", keywords: ["PISTOL", "ANTI-VEHICLE 2+"] }] },
-      { id: "omnissian-power-axe", name: "Omnissian power axe", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "2+", strength: "8", ap: "-2", damage: "2" }] },
-      { id: "servo-arm", name: "Servo-arm", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "8", ap: "-2", damage: "3" }] },
+      { id: "grav-pistol", name: "Grav-pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["ANTI-VEHICLE 2+", "PISTOL"] }] },
+      { id: "omnissian-power-axe", name: "Omnissian power axe", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-2", damage: "2" }] },
+      { id: "servo-arm", name: "Servo-arm", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "3+", strength: "8", ap: "-2", damage: "3", keywords: ["EXTRA ATTACKS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Techmarine",
+        description: "While this model is within 3\" of one or more friendly ADEPTUS ASTARTES VEHICLE units, this model has the Lone Operative ability.",
+      },
+      {
+        name: "Blessing of the Omnissiah",
+        description: "In your Command phase, you can select one friendly ADEPTUS ASTARTES VEHICLE model within 3\" of this model. That model regains up to D3 lost wounds and, until the start of your next Command phase, each time that Vehicle model makes an attack, add 1 to the Hit roll. Each model can only be selected for this ability once per turn.",
+      },
+      {
+        name: "Vengeance of the Omnissiah",
+        description: "If a friendly ADEPTUS ASTARTES VEHICLE model is destroyed within 12\" of this model, until the end of the battle, this model's Omnissian power axe has an Attacks characteristic of 7.",
+      },
+    ],
   },
 
   {

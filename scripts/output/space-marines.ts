@@ -555,16 +555,23 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Eradicator Squad",
     faction: "space-marines",
     category: "infantry",
-    points: 100,
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 90, 6: 180 },
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "melta-rifle", name: "Melta rifle", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "melta-rifle", name: "Melta rifle", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["HEAVY", "MELTA 2"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "multi-melta", name: "Multi-melta", image: "" },
+      { id: "multi-melta", name: "Multi-melta", image: "", profiles: [{ range: '18"', attacks: "2", skill: "4+", strength: "9", ap: "-4", damage: "D6", keywords: ["HEAVY", "MELTA 2"] }], replacesDefaultWargear: ["melta-rifle"], countable: true, maxCountByModelCount: { 3: 1, 6: 2 } },
     ],
-    ledBy: ["apothecary-biologis","captain-in-gravis-armour"],
+    abilities: [
+      {
+        name: "Total Obliteration",
+        description: "Each time a ranged attack made by a model in this unit targets a MONSTER or VEHICLE model, you can re-roll the Hit roll, you can re-roll the Wound roll and you can re-roll the Damage roll.",
+      },
+    ],
+    ledBy: ["apothecary-biologis", "captain-in-gravis-armour"],
   },
 
   {

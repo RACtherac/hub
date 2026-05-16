@@ -65,6 +65,44 @@ export const spaceMarinesCharacters: Character[] = [
   },
 
   {
+    id: "apothecary-biologis",
+    name: "Apothecary Biologis",
+    image: "",
+    points: 70,
+    faction: "space-marines",
+    canAttachTo: ["aggressors", "eradicators", "heavy-intercessors"],
+    defaultWargear: [
+      {
+        id: "biologis-absolvor-bolt-pistol",
+        name: "Absolvor bolt pistol",
+        image: "",
+        profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["PISTOL"] }],
+      },
+      {
+        id: "biologis-close-combat-weapon",
+        name: "Close combat weapon",
+        image: "",
+        profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1" }],
+      },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Surgical Precision",
+        description: "While this model is leading a unit, weapons equipped by models in that unit have the [LETHAL HITS] ability.",
+      },
+      {
+        name: "Vivispectrum",
+        description: "If this model's unit destroys an enemy unit as the result of a melee attack, until the end of the battle, this model has an Objective Control characteristic of 9.",
+      },
+      {
+        name: "Leader",
+        description: "This model can be attached to the following units: Aggressor Squad, Eradicator Squad, Heavy Intercessor Squad. You can attach this model to one of the above units even if one CAPTAIN or CHAPTER MASTER model has already been attached to it.",
+      },
+    ],
+  },
+
+  {
     id: "chaplain",
     name: "Chaplain",
     image: "",
