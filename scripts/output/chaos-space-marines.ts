@@ -109,7 +109,10 @@ export const chaosSpaceMarinesUnits: Unit[] = [
     name: "Cultist Mob",
     faction: "chaos-space-marine",
     category: "battleline",
+    image10: "/Warhammerimages/ChaosSpaceMarine/Cultist-10.png",
+    image20: "/Warhammerimages/ChaosSpaceMarine/Cultist-20.png",
     points: 50,
+    imageCredit: "Painted by Emily Setzer",
     modelCountOptions: [10, 20],
     pointsByModelCount: { 10: 50, 20: 100 },
     defaultWargear: [
@@ -117,7 +120,7 @@ export const chaosSpaceMarinesUnits: Unit[] = [
       { id: "brutal-assault-weapon", name: "Brutal assault weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "champ-bolt-pistol", name: "Bolt pistol", image: "", sergeantOnly: true, profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "champ-bolt-pistol", name: "Bolt pistol", image: "/Warhammerimages/ChaosSpaceMarine/Cultist pistol.png", sergeantOnly: true, profiles: [{ range: '12"', attacks: "1", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
     ],
     abilities: [
       {
@@ -1212,13 +1215,14 @@ export const chaosSpaceMarinesUnits: Unit[] = [
     name: "Forgefiend",
     faction: "chaos-space-marine",
     category: "vehicle",
+    image: "/Warhammerimages/ChaosSpaceMarine/Forgefiend.png",
     points: 170,
     defaultWargear: [],
     defaultSelectedWargear: ["hades-autocannon", "forgefiend-jaws"],
     wargear: [
       { id: "hades-autocannon", name: "Hades autocannon", image: "", profiles: [{ range: '36"', attacks: "6", skill: "3+", strength: "8", ap: "-1", damage: "2" }] },
-      { id: "ectoplasma-cannon", name: "Ectoplasma cannon", image: "", profiles: [{ profileName: "blast", range: '36"', attacks: "D3", skill: "3+", strength: "10", ap: "-3", damage: "3", keywords: ["BLAST"] }] },
-      { id: "forgefiend-jaws", name: "Forgefiend jaws", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "7", ap: "0", damage: "2" }] },
+      { id: "ectoplasma-cannon", name: "Ectoplasma cannon", image: "/Warhammerimages/ChaosSpaceMarine/Ectoplasma cannon.png", profiles: [{ profileName: "blast", range: '36"', attacks: "D3", skill: "3+", strength: "10", ap: "-3", damage: "3", keywords: ["BLAST"] }] },
+      { id: "forgefiend-jaws", name: "Forgefiend jaws", image: "/Warhammerimages/ChaosSpaceMarine/Forgefiend jaw.png", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "7", ap: "0", damage: "2" }] },
       { id: "ectoplasma-cannon-and-armoured-limbs", name: "Ectoplasma cannon & Armoured limbs", image: "", profiles: [{ profileName: "Ectoplasma cannon – blast", range: '36"', attacks: "D3", skill: "3+", strength: "10", ap: "-3", damage: "3", keywords: ["BLAST"] }, { profileName: "Armoured limbs", range: "Melee", attacks: "2", skill: "3+", strength: "6", ap: "0", damage: "2" }] },
     ],
     wargearGroups: [
