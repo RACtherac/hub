@@ -369,7 +369,7 @@ export const chaosSpaceMarinesCharacters: Character[] = [
     id: "lord-discordant-on-helstalker",
     name: "Lord Discordant On Helstalker",
     faction: "chaos-space-marine",
-    image: "",
+    image: "/Warhammerimages/ChaosSpaceMarine/Lord Discordant on Helstalker.png",
     points: 160,
     canAttachTo: [],
     abilities: [
