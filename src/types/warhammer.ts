@@ -100,6 +100,7 @@ export interface Unit {
   image5?: string;
   image6?: string;
   image10?: string;
+  image20?: string;
   image?: string;
   imageCredit?: string;
 

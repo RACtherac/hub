@@ -181,7 +181,7 @@ const PROJECTS: Project[] = [
       {
         name: "UnitImage()",
         description: "Faction-tinted unit portrait card with image or placeholder.",
-        detail: "Selects the correct image field from the unit based on the current model count (image3, image5, image6, image10, or image). Applies a CSS filter tinted to the faction's colour. Falls back to a styled placeholder with the unit's initials if no image is set. Used inside UnitCard as the visual thumbnail. Image box sizes: unit frame 280×260px (img 240px wide), attached character frame 200×200px (img 180px wide), standalone CharacterCard frame 280×260px (img 240px wide). Recommended image resolution: 480×480px minimum (square, PNG).",
+        detail: "Selects the correct image field from the unit based on the current model count (image3, image5, image6, image10, image20, or image). Applies a CSS filter tinted to the faction's colour. Falls back to a styled placeholder with the unit's initials if no image is set. Used inside UnitCard as the visual thumbnail. Image box sizes: unit frame 280×260px (img 240px wide), attached character frame 200×200px (img 180px wide), standalone CharacterCard frame 280×260px (img 240px wide). Recommended image resolution: 480×480px minimum (square, PNG).",
         file: "src/components/Warhammer/UnitImage/UnitImage.tsx",
         props: ["unit: Unit", "modelCount: number", "faction: string"],
       },

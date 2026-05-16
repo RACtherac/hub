@@ -22,6 +22,8 @@ export default function UnitImage({
   const baseImage =
     unit.category === "vehicle" || unit.category === "transport" || unit.category === "monster"
       ? unit.image
+      : modelCount === 20
+      ? (unit.image20 ?? unit.image10 ?? unit.image)
       : modelCount === 10
       ? (unit.image10 ?? unit.image)
       : modelCount === 6
