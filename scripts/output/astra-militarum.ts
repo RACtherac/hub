@@ -1,4 +1,4 @@
-import type { Unit } from "../../src/types/warhammer";
+﻿import type { Unit } from "../../src/types/warhammer";
 
 export const astraMilitarumUnits: Unit[] = [
 
@@ -2327,6 +2327,22 @@ export const astraMilitarumUnits: Unit[] = [
             ap: "-2",
             damage: "D6",
             keywords: ["HEAVY"],
+          },
+        ],
+      },
+      {
+        id: "multi-laser",
+        name: "Multi-laser",
+        image: "",
+        profiles: [
+          {
+            range: '36"',
+            attacks: "4",
+            skill: "4+",
+            strength: "6",
+            ap: "0",
+            damage: "1",
+            keywords: [],
           },
         ],
       },

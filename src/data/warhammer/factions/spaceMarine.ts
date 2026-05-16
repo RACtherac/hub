@@ -1,4 +1,4 @@
-import type { Unit } from "../../../types/warhammer";
+﻿import type { Unit } from "../../../types/warhammer";
 
 export const spaceMarinesUnits: Unit[] = [
 
@@ -18,7 +18,7 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Heavy Intercessor Squad",
     faction: "space-marines",
     category: "battleline",
-    points: 110,
+    points: 100,
     wargear: [],
   },
 

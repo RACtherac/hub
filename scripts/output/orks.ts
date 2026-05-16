@@ -1,4 +1,4 @@
-import type { Unit } from "../../src/types/warhammer";
+﻿import type { Unit } from "../../src/types/warhammer";
 
 export const orksUnits: Unit[] = [
 
@@ -217,8 +217,8 @@ export const orksUnits: Unit[] = [
     pointsByModelCount: { 2: 235 },
     defaultWargear: [
       { id: "mork-s-roar", name: "Mork's Roar", image: "", profiles: [{ range: '36"', attacks: "12", skill: "5+", strength: "5", ap: "0", damage: "1", keywords: ["RAPID FIRE 4"] }] },
-      { id: "gork-s-klaw-strike", name: "Gork's Klaw - strike", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "14", ap: "-3", damage: "4" }] },
-      { id: "gork-s-klaw-sweep", name: "Gork's Klaw - sweep", image: "", profiles: [{ range: "Melee", attacks: "12", skill: "2+", strength: "8", ap: "-2", damage: "2" }] },
+      { id: "gork-s-klaw-strike", name: "Gork's Klaw – strike", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "14", ap: "-3", damage: "4" }] },
+      { id: "gork-s-klaw-sweep", name: "Gork's Klaw – sweep", image: "", profiles: [{ range: "Melee", attacks: "12", skill: "2+", strength: "8", ap: "-2", damage: "2" }] },
       { id: "makari-s-stabba", name: "Makari's stabba", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "4+", strength: "3", ap: "0", damage: "1", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
     abilities: [
@@ -666,13 +666,28 @@ export const orksUnits: Unit[] = [
     name: "Mek Gunz",
     faction: "orks",
     category: "vehicle",
-    points: 100,
+    modelCountOptions: [1, 2, 3],
+    pointsByModelCount: { 1: 50, 2: 100, 3: 150 },
     defaultWargear: [
-      { id: "s", name: "S", image: "" },
-      { id: "grot-crew", name: "Grot crew", image: "" },
+      { id: "mekgunz-grot-crew", name: "Grot crew", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "5+", strength: "2", ap: "0", damage: "1" }] },
     ],
-    wargear: [],
-    ledBy: ["big-mek","big-mek-with-shokk-attack-gun","mek"],
+    wargear: [
+      { id: "mekgunz-smasha-gun", name: "Smasha gun", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2, 3: 3 }, maxCountReducedByWargear: ["mekgunz-bubblechukka", "mekgunz-kustom-mega-kannon", "mekgunz-traktor-kannon"], profiles: [{ range: '48"', attacks: "D3+1", skill: "4+", strength: "9", ap: "-3", damage: "3", keywords: ["BLAST"] }] },
+      { id: "mekgunz-bubblechukka", name: "Bubblechukka", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2, 3: 3 }, maxCountReducedByWargear: ["mekgunz-smasha-gun", "mekgunz-kustom-mega-kannon", "mekgunz-traktor-kannon"], note: "Bubblechukka: Before selecting targets for one or more models equipped with this weapon, roll one D6 to determine which profile models equipped with this weapon will make attacks with, comparing the result with the numbers shown on the left.", profiles: [
+        { profileName: "► 1-2 Bubblechukka – big bubble bubblechukka", range: '48"', attacks: "2D6", skill: "4+", strength: "6", ap: "-1", damage: "1", keywords: ["BLAST"] },
+        { profileName: "► 3-4 Bubblechukka – wobbly bubble bubblechukka", range: '48"', attacks: "D6", skill: "4+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST"] },
+        { profileName: "► 5-6 Bubblechukka – dense bubble bubblechukka", range: '48"', attacks: "D3", skill: "4+", strength: "12", ap: "-3", damage: "D6+3", keywords: ["BLAST"] },
+      ]},
+      { id: "mekgunz-kustom-mega-kannon", name: "Kustom mega-kannon", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2, 3: 3 }, maxCountReducedByWargear: ["mekgunz-smasha-gun", "mekgunz-bubblechukka", "mekgunz-traktor-kannon"], profiles: [{ range: '36"', attacks: "D6", skill: "4+", strength: "12", ap: "-1", damage: "D6", keywords: ["BLAST", "HAZARDOUS"] }] },
+      { id: "mekgunz-traktor-kannon", name: "Traktor kannon", image: "", countable: true, maxCountByModelCount: { 1: 1, 2: 2, 3: 3 }, maxCountReducedByWargear: ["mekgunz-smasha-gun", "mekgunz-bubblechukka", "mekgunz-kustom-mega-kannon"], profiles: [{ range: '48"', attacks: "1", skill: "4+", strength: "10", ap: "-2", damage: "D6+1", keywords: ["ANTI-FLY 2+", "DEVASTATING WOUNDS"] }] },
+    ],
+    abilities: [
+      {
+        name: "Splat!",
+        description: "Each time a model in this unit makes a ranged attack that targets a unit that is at its Starting Strength (excluding MONSTERS and VEHICLES), re-roll a Hit roll of 1.",
+      },
+    ],
+    ledBy: ["big-mek", "big-mek-with-shokk-attack-gun", "mek"],
   },
 
   {

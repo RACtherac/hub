@@ -376,7 +376,8 @@ export default function ArmyBuilder() {
   const categories = BASE_CATEGORIES
     .filter((c) => c !== "mounted" || units.some((u) => u.category === "mounted" && u.faction === selectedFaction))
     .filter((c) => c !== "monster" || units.some((u) => u.category === "monster" && u.faction === selectedFaction))
-    .filter((c) => selectedFaction !== "chaos-knights" || (c !== "battleline" && c !== "infantry"));
+    .filter((c) => selectedFaction !== "chaos-knights" || (c !== "battleline" && c !== "infantry"))
+    .filter((c) => selectedFaction !== "tyranids" || c !== "vehicle");
 
   const getUnitsByCategory = (category: UnitCategory) =>
     units.filter((u) => u.category === category && u.faction === selectedFaction);

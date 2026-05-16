@@ -1,4 +1,4 @@
-import type { Unit } from "../../src/types/warhammer";
+﻿import type { Unit } from "../../src/types/warhammer";
 
 export const spaceMarinesUnits: Unit[] = [
 
@@ -117,21 +117,32 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Heavy Intercessor Squad",
     faction: "space-marines",
     category: "battleline",
-    points: 110,
+    modelCountOptions: [5, 10],
+    points: 100,
+    pointsByModelCount: { 5: 100, 10: 200 },
     notes: [
       {
         id: "heavy-bolter-swap",
         text: "For every 5 models in this unit, 1 Heavy Intercessor's heavy bolt rifle can be replaced with 1 heavy bolter.",
         textByModelCount: { 10: "For every 10 models in this unit, 2 Heavy Intercessor's heavy bolt rifles can be replaced with 2 heavy bolters." },
         checkbox: true,
+        triggersWargear: ["heavy-bolter-hi"],
+      },
+    ],
+    abilities: [
+      {
+        name: "Unyielding in the Face of the Foe",
+        description: "While this unit is within range of an objective marker you control, each time an attack with a Damage characteristic of 1 is allocated to a model in this unit, add 1 to any armour saving throw made against that attack.",
       },
     ],
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "heavy-bolt-rifle", name: "Heavy bolt rifle", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "heavy-bolt-rifle", name: "Heavy bolt rifle", image: "", profiles: [{ range: '30"', attacks: "2", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["ASSAULT", "HEAVY"] }] },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
     ],
-    wargear: [],
+    wargear: [
+      { id: "heavy-bolter-hi", name: "Heavy bolter", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["ASSAULT", "HEAVY", "SUSTAINED HITS 1"] }] },
+    ],
     ledBy: ["apothecary-biologis","captain-in-gravis-armour","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 

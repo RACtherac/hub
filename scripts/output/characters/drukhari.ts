@@ -87,6 +87,32 @@ export const drukhariCharacters: Character[] = [
   },
 
   {
+    id: "khaarseth",
+    name: "Khaarseth",
+    faction: "drukhari",
+    image: "",
+    points: 95,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 95 },
+    canAttachTo: ["corsair-voidreavers", "corsair-voidscarred"],
+    defaultWargear: [
+      { id: "khaarseth-dread-of-the-deep-void", name: "Dread of the Deep Void", image: "", profiles: [{ range: '24"', attacks: "D6+2", skill: "3+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 2+", "BLAST", "HAZARDOUS", "IGNORES COVER", "PSYCHIC"] }] },
+      { id: "khaarseth-waystave", name: "Waystave", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "2+", strength: "3", ap: "0", damage: "3", keywords: ["ANTI-INFANTRY 2+", "PSYCHIC"] }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Aethersense (Psychic)",
+        description: "Enemy units that are set up on the battlefield from Reserves cannot be set up within 12\" of this model.",
+      },
+      {
+        name: "Fury of the Void (Psychic)",
+        description: "In your Shooting phase, after this model's unit has shot, select one enemy unit hit by one or more attacks made with this model's Dread of the Deep Void. Until the end of the turn, that unit is riven. Each time an AELDARI model from your army makes an attack that targets a riven unit, add 1 to the Strength characteristic of that attack.",
+      },
+    ],
+  },
+
+  {
     id: "haemonculus",
     name: "Haemonculus",
     faction: "drukhari",
@@ -203,14 +229,33 @@ export const drukhariCharacters: Character[] = [
     name: "Succubus",
     faction: "drukhari",
     image: "",
-    points: 45,
-    canAttachTo: [],
+    points: 50,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 50 },
+    canAttachTo: ["wyches"],
     defaultWargear: [
-      { id: "succubus-weapons", name: "Succubus weapons", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "-2", damage: "1" }] },
+      { id: "succubus-archite-glaive-and-agoniser", name: "Archite glaive and agoniser", image: "", profiles: [{ range: "Melee", attacks: "7", skill: "2+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 3+", "PRECISION"] }] },
     ],
     wargear: [
-      { id: "blast-pistol", name: "Blast pistol", image: "", profiles: [{ range: '6"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D3", keywords: ["MELTA 2", "PISTOL"] }] },
-      { id: "splinter-pistol", name: "Splinter pistol", image: "", profiles: [{ range: '12"', attacks: "2", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["PISTOL", "RAPID FIRE 1"] }] },
+      { id: "succubus-blast-pistol", name: "Blast pistol", image: "", profiles: [{ range: '6"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D3", keywords: ["MELTA 2", "PISTOL"] }] },
+      { id: "succubus-splinter-pistol", name: "Splinter pistol", image: "", profiles: [{ range: '12"', attacks: "2", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["PISTOL", "RAPID FIRE 1"] }] },
+    ],
+    wargearGroups: [
+      ["succubus-blast-pistol", "succubus-splinter-pistol"],
+    ],
+    abilities: [
+      {
+        name: "Lithe Agility (Pain)",
+        description: "In your Movement phase when you select this model's unit to Advance, or in your Charge phase before you make a Charge roll for this model's unit, you can spend 1 Pain token to Empower that unit. While that unit is Empowered, you can re-roll Advance and Charge rolls made for that unit.",
+      },
+      {
+        name: "Storm of Blades",
+        description: "While this model is leading a unit, melee weapons equipped by models in that unit have the [SUSTAINED HITS 1] ability.",
+      },
+      {
+        name: "Bloody Spectacle",
+        description: "Each time this model makes a melee attack that targets a CHARACTER unit, you can re-roll the Hit roll and you can re-roll the Wound roll. Each time this model's unit destroys a CHARACTER model, you gain 1CP.",
+      },
     ],
   },
 

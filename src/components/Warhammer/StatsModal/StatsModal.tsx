@@ -345,7 +345,7 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
           {(() => {
             const noteGear = [
               ...(unit.defaultWargear ?? []).filter((w) => w.note),
-              ...unit.wargear.filter((w) => selectedWargear.includes(w.id) && w.note),
+              ...unit.wargear.filter((w) => (w.countable ? (wargearCounts[w.id] ?? 0) > 0 : selectedWargear.includes(w.id)) && w.note),
               ...unit.wargear.filter((w) => noteWeaponIds.has(w.id) && w.note),
             ];
             return noteGear.length > 0 ? (

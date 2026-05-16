@@ -1,4 +1,4 @@
-import type { Character } from "../../../src/types/warhammer";
+﻿import type { Character } from "../../../src/types/warhammer";
 
 export const aeldariCharacters: Character[] = [
 
@@ -354,13 +354,26 @@ export const aeldariCharacters: Character[] = [
     name: "Prince Yriel",
     faction: "aeldari",
     image: "",
-    points: 100,
-    canAttachTo: [],
+    points: 95,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 95 },
+    canAttachTo: ["corsair-voidreavers", "corsair-voidscarred"],
     defaultWargear: [
-      { id: "the-eye-of-wrath", name: "The Eye of Wrath", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }] },
-      { id: "the-spear-of-twilight", name: "The Spear of Twilight", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "7", ap: "-3", damage: "D3", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "yriel-eye-of-wrath", name: "Eye of Wrath", image: "", profiles: [{ range: '6"', attacks: "3", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["ASSAULT", "PISTOL"] }] },
+      { id: "yriel-shuriken-pistol", name: "Shuriken pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "PISTOL"] }] },
+      { id: "yriel-spear-of-twilight", name: "Spear of Twilight", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "7", ap: "-3", damage: "3", keywords: ["LANCE"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Piratical Hero",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack, that attack has the [SUSTAINED HITS 1] ability and add 1 to the Hit roll.",
+      },
+      {
+        name: "Prince of Corsairs",
+        description: "After both players have deployed their armies, if this unit is on the battlefield (or any TRANSPORT it is embarked within is on the battlefield), select up to three AELDARI units from your army and redeploy them. When doing so, you can set those units up in Strategic Reserves, regardless of how many units are already in Strategic Reserves.",
+      },
+    ],
   },
 
   {

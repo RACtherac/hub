@@ -126,8 +126,20 @@ export const tyranidsUnits: Unit[] = [
     name: "Mucolid Spores",
     faction: "tyranids",
     category: "infantry",
-    points: 30,
+    modelCountOptions: [1, 2],
+    pointsByModelCount: { 1: 30, 2: 60 },
     wargear: [],
+    abilities: [
+      {
+        name: "Bio-minefield",
+        description: "Enemy units cannot start or end an Advance move within 6\" of this unit.",
+      },
+      {
+        name: "Floating Death",
+        description: "Each time this unit or an enemy unit ends a move, for each model in this unit that is within 3\" of one or more enemy units, select one of those enemy units. That model in this unit is destroyed, then roll one D6: on a 2-5, that enemy unit suffers D3 mortal wounds; on a 6, that enemy unit suffers D6 mortal wounds.",
+      },
+    ],
+    ledBy: [],
   },
 
   {
@@ -284,7 +296,7 @@ export const tyranidsUnits: Unit[] = [
         description: "At the start of the Fight phase, select one of the following:\n• Aggression Imperative: Until the end of the phase, each time a model in this unit makes an attack, re-roll a Hit roll of 1.\n• Bioregeneration: Until the end of the phase, each time a saving throw is made for a model in this unit, re-roll a saving throw of 1.",
       },
     ],
-    ledBy: [],
+    ledBy: ["tyranid-prime-with-lash-whip", "winged-tyranid-prime"],
   },
 
   {
@@ -430,8 +442,23 @@ export const tyranidsUnits: Unit[] = [
     name: "Exocrine",
     faction: "tyranids",
     category: "monster",
-    points: 140,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 140 },
+    defaultWargear: [
+      { id: "exocrine-bio-plasmic-cannon", name: "Bio-plasmic cannon", image: "", profiles: [{ range: '36"', attacks: "D6+3", skill: "3+", strength: "9", ap: "-3", damage: "3", keywords: ["BLAST", "HEAVY"] }] },
+      { id: "exocrine-powerful-limbs", name: "Powerful limbs", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "7", ap: "0", damage: "2" }] },
+    ],
     wargear: [],
+    abilities: [
+      {
+        name: "Symbiotic Targeting",
+        description: "In your Shooting phase, after this model has shot, select one enemy unit hit by one or more of those attacks. Until the end of the phase, each time a friendly TYRANIDS model makes an attack that targets that unit, re-roll a Hit roll of 1.",
+      },
+      {
+        name: "DAMAGED: 1-5 WOUNDS REMAINING",
+        description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {
@@ -581,8 +608,35 @@ export const tyranidsUnits: Unit[] = [
     name: "Tervigon",
     faction: "tyranids",
     category: "monster",
-    points: 175,
-    wargear: [],
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 160 },
+    defaultWargear: [
+      { id: "tervigon-stinger-salvoes", name: "Stinger salvoes", image: "", profiles: [{ range: '24"', attacks: "8", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
+    ],
+    wargear: [
+      { id: "tervigon-mst", name: "Massive scything talons", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "4", skill: "3+", strength: "9", ap: "-2", damage: "D6" },
+        { profileName: "sweep", range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-1", damage: "2" },
+      ] },
+      { id: "tervigon-mcc", name: "Massive crushing claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "12", ap: "-3", damage: "D6+1" }] },
+    ],
+    wargearGroups: [
+      ["tervigon-mst", "tervigon-mcc"],
+    ],
+    abilities: [
+      {
+        name: "Spawn Termagants",
+        description: "In your Command phase, you can select one friendly TERMAGANTS unit within 6\" of this model and return up to D3+3 destroyed models to that unit. A TERMAGANTS unit cannot be selected for this ability more than once per phase.",
+      },
+      {
+        name: "Brood Progenitor (Aura, Psychic)",
+        description: "While a friendly TERMAGANTS unit is within 6\" of this model, ranged weapons equipped by models in that unit have the [LETHAL HITS] ability.",
+      },
+      {
+        name: "DAMAGED: 1-5 WOUNDS REMAINING",
+        description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
+    ],
   },
 
   {
@@ -590,8 +644,23 @@ export const tyranidsUnits: Unit[] = [
     name: "The Swarmlord",
     faction: "tyranids",
     category: "monster",
-    points: 240,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 220 },
     wargear: [],
+    abilities: [
+      {
+        name: "Hive Commander",
+        description: "At the start of your Command phase, if this model is on the battlefield, you gain 1CP.",
+      },
+      {
+        name: "Malign Presence (Aura)",
+        description: "If this model is your WARLORD, each time your opponent targets a unit from their army with a Stratagem, if that unit is within 12\" of this model, increase the cost of that use of that Stratagem by 1CP.",
+      },
+      {
+        name: "Domination of the Hive Mind (Aura)",
+        description: "While a friendly TYRANIDS unit is within 9\" of this model, that unit is within your army's Synapse Range.",
+      },
+    ],
   },
 
   {
@@ -626,8 +695,30 @@ export const tyranidsUnits: Unit[] = [
     name: "Winged Hive Tyrant",
     faction: "tyranids",
     category: "monster",
-    points: 200,
-    wargear: [],
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 170 },
+    defaultWargear: [
+      { id: "wht-tyrant-talons", name: "Tyrant talons", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "7", ap: "-2", damage: "2" }] },
+    ],
+    wargear: [
+      { id: "wht-bonesword-lashwhip", name: "Monstrous bonesword & lash whip", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "9", ap: "-2", damage: "3", keywords: ["TWIN-LINKED"] }] },
+      { id: "wht-hvc", name: "Heavy venom cannon", image: "", profiles: [{ range: '36"', attacks: "D3", skill: "2+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST"] }] },
+      { id: "wht-stranglethorn", name: "Stranglethorn cannon", image: "", profiles: [{ range: '36"', attacks: "D6+1", skill: "2+", strength: "7", ap: "-1", damage: "2", keywords: ["BLAST"] }] },
+      { id: "wht-mst", name: "Monstrous scything talons", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "7", ap: "-2", damage: "2", keywords: ["EXTRA ATTACKS"] }] },
+    ],
+    wargearGroups: [
+      ["wht-bonesword-lashwhip", "wht-hvc", "wht-stranglethorn", "wht-mst"],
+    ],
+    abilities: [
+      {
+        name: "Will of the Hive Mind",
+        description: "Once per battle round, one model from your army with this ability can use it when a friendly TYRANIDS unit within 12\" of that model is targeted with a Stratagem. If it does, reduce the CP cost of that usage of that Stratagem by 1CP.",
+      },
+      {
+        name: "Paroxysm (Psychic)",
+        description: "At the start of the Fight phase, you can select one enemy unit within 12\" of and visible to this model and roll one D6: on a 1, this PSYKER suffers D3 mortal wounds; on a 2+, until the end of the phase, subtract 1 from the Attacks characteristic of weapons equipped by models in that unit.",
+      },
+    ],
   },
 
   {

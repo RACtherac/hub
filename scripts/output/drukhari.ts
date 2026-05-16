@@ -30,14 +30,31 @@ export const drukhariUnits: Unit[] = [
     name: "Hellions",
     faction: "drukhari",
     category: "mounted",
-    points: 75,
+    modelCountOptions: [5, 10],
+    pointsByModelCount: { 5: 85, 10: 170 },
     defaultWargear: [
-      { id: "splinter-pods", name: "Splinter pods", image: "" },
-      { id: "hellglaive", name: "Hellglaive", image: "" },
+      { id: "hellions-splinter-pods", name: "Splinter pods", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "TWIN-LINKED"] }] },
+      { id: "hellions-hellglaive", name: "Hellglaive", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "-1", damage: "2", keywords: ["LANCE", "SUSTAINED HITS 1"] }] },
     ],
     wargear: [
-      { id: "splinter-pistol", name: "Splinter pistol", image: "" },
-      { id: "helliarch-weapon", name: "Helliarch weapon", image: "" },
+      { id: "hellions-phantasm-grenade-launcher", name: "Phantasm grenade launcher", image: "", sergeantOnly: true, note: "Phantasm Grenade Launcher: The bearer's unit has the SMOKE and GRENADES keywords." },
+      { id: "hellions-splinter-pistol", name: "Splinter pistol", image: "", sergeantOnly: true, profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "PISTOL"] }] },
+      { id: "hellions-power-weapon", name: "Power weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 3+", "LANCE", "SUSTAINED HITS 1"] }] },
+      { id: "hellions-stunclaw", name: "Stunclaw", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "3", ap: "-1", damage: "1", keywords: ["DEVASTATING WOUNDS", "LANCE", "PRECISION"] }] },
+    ],
+    wargearGroups: [
+      ["hellions-hellglaive", "hellions-splinter-pistol"],
+      ["hellions-power-weapon", "hellions-stunclaw"],
+    ],
+    abilities: [
+      {
+        name: "Battlefield Butchery (Pain)",
+        description: "In the Fight phase, when you select this unit to fight, you can spend 1 Pain token to Empower this unit. While Empowered, add 1 to the Attacks and Strength characteristics of this unit's melee weapons.",
+      },
+      {
+        name: "Skyboard Evasion",
+        description: "Once per turn, when an enemy unit ends a Normal, Advance or Fall Back move within 9\" of this unit, this unit can make a Normal move of up to D6\".",
+      },
     ],
     ledBy: [],
   },
@@ -47,15 +64,28 @@ export const drukhariUnits: Unit[] = [
     name: "Reavers",
     faction: "drukhari",
     category: "mounted",
-    points: 65,
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 70, 6: 140 },
     defaultWargear: [
-      { id: "splinter-pistol", name: "Splinter pistol", image: "" },
-      { id: "splinter-rifle", name: "Splinter rifle", image: "" },
-      { id: "bladevanes", name: "Bladevanes", image: "" },
+      { id: "reavers-splinter-pistol", name: "Splinter pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "PISTOL"] }] },
+      { id: "reavers-splinter-rifle", name: "Splinter rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT"] }] },
+      { id: "reavers-bladevanes", name: "Bladevanes", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["LANCE"] }] },
     ],
     wargear: [
-      { id: "blaster", name: "Blaster", image: "" },
-      { id: "heat-lance", name: "Heat lance", image: "" },
+      { id: "reavers-blaster", name: "Blaster", image: "", countable: true, maxCountByModelCount: { 3: 1, 6: 2 }, profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D6+1", keywords: ["ASSAULT"] }] },
+      { id: "reavers-heat-lance", name: "Heat lance", image: "", countable: true, maxCountByModelCount: { 3: 1, 6: 2 }, profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "14", ap: "-4", damage: "D6", keywords: ["ASSAULT", "MELTA 3"] }] },
+      { id: "reavers-cluster-caltrops", name: "Cluster caltrops", image: "", countable: true, maxCountByModelCount: { 3: 1, 6: 2 }, note: "Cluster Caltrops: Each time you roll to inflict wounds using this unit's Eviscerating Fly-by ability, you can re-roll one D6 for each model in this unit equipped with cluster caltrops." },
+      { id: "reavers-grav-talon", name: "Grav-talon", image: "", countable: true, maxCountByModelCount: { 3: 1, 6: 2 }, note: "Grav-talon: The bearer's melee weapons have an Armour Penetration characteristic of -2 and the [LETHAL HITS] ability." },
+    ],
+    abilities: [
+      {
+        name: "Matchless Swiftness (Pain)",
+        description: "In your Movement phase, when you select this unit to Advance, you can spend 1 Pain token to Empower this unit. While Empowered, each time this unit Advances, do not make an Advance roll. Instead, until the end of the phase, add 8\" to the Move characteristic of models in this unit.",
+      },
+      {
+        name: "Eviscerating Fly-by",
+        description: "Each time this unit ends a Normal or Advance move, you can select one enemy unit (excluding MONSTERS and VEHICLES) that it moved over during that move, then roll one D6 for each model in this unit: for each 4+, that enemy unit suffers 1 mortal wound.",
+      },
     ],
     ledBy: [],
   },
@@ -83,21 +113,33 @@ export const drukhariUnits: Unit[] = [
     name: "Corsair Voidreavers",
     faction: "drukhari",
     category: "battleline",
-    points: 60,
+    modelCountOptions: [5, 10],
+    pointsByModelCount: { 5: 65, 10: 110 },
     defaultWargear: [
-      { id: "shuriken-pistol", name: "Shuriken pistol", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
-      { id: "power-sword", name: "Power sword", image: "" },
+      { id: "cv-shuriken-pistol", name: "Shuriken pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "PISTOL"] }] },
+      { id: "cv-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
+      { id: "cv-power-sword", name: "Power sword", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "4", ap: "-2", damage: "1" }] },
     ],
     wargear: [
-      { id: "blaster", name: "Blaster", image: "" },
-      { id: "neuro-disruptor", name: "Neuro disruptor", image: "" },
-      { id: "shredder", name: "Shredder", image: "" },
-      { id: "shuriken-cannon", name: "Shuriken cannon", image: "" },
-      { id: "shuriken-rifle", name: "Shuriken rifle", image: "" },
-      { id: "wraithcannon", name: "Wraithcannon", image: "" },
+      { id: "cv-neuro-disruptor", name: "Neuro disruptor", image: "", sergeantOnly: true, profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 2+", "ASSAULT", "PISTOL"] }] },
+      { id: "cv-shuriken-rifle-sgt", name: "Shuriken rifle", image: "", sergeantOnly: true, profiles: [{ range: '24"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "RAPID FIRE 1"] }] },
+      { id: "cv-mistshield", name: "Mistshield", image: "", sergeantOnly: true, note: "Mistshield: The bearer has a 4+ invulnerable save." },
+      { id: "cv-shuriken-rifle", name: "Shuriken rifle", image: "", countable: true, maxCountByModelCount: { 5: 4, 10: 9 }, profiles: [{ range: '24"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "RAPID FIRE 1"] }] },
+      { id: "cv-blaster", name: "Blaster", image: "", countable: true, maxCountByModelCount: { 5: 1, 10: 2 }, profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D6+1", keywords: ["ASSAULT"] }] },
+      { id: "cv-shredder", name: "Shredder", image: "", countable: true, maxCountByModelCount: { 5: 1, 10: 2 }, profiles: [{ range: '18"', attacks: "D6", skill: "N/A", strength: "6", ap: "0", damage: "1", keywords: ["ASSAULT", "TORRENT"] }] },
+      { id: "cv-shuriken-cannon", name: "Shuriken cannon", image: "", countable: true, maxCountByModelCount: { 5: 0, 10: 1 }, profiles: [{ range: '24"', attacks: "3", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["LETHAL HITS"] }] },
+      { id: "cv-wraithcannon", name: "Wraithcannon", image: "", countable: true, maxCountByModelCount: { 5: 0, 10: 1 }, profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "14", ap: "-4", damage: "D6+1" }] },
     ],
-    ledBy: [],
+    wargearGroups: [
+      ["cv-shuriken-pistol", "cv-neuro-disruptor", "cv-shuriken-rifle-sgt"],
+    ],
+    abilities: [
+      {
+        name: "Reavers of the Void",
+        description: "Each time a model in this unit makes an attack, re-roll a Hit roll of 1. If the target of that attack is within range of an objective marker, you can re-roll the Hit roll instead.",
+      },
+    ],
+    ledBy: ["khaarseth", "prince-yriel"],
   },
 
   {
@@ -177,15 +219,32 @@ export const drukhariUnits: Unit[] = [
     name: "Wyches",
     faction: "drukhari",
     category: "battleline",
-    points: 80,
+    modelCountOptions: [10],
+    pointsByModelCount: { 10: 90 },
     defaultWargear: [
-      { id: "splinter-pistol", name: "Splinter pistol", image: "" },
-      { id: "hekatarii-blade", name: "Hekatarii blade", image: "" },
+      { id: "wyches-splinter-pistol", name: "Splinter pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "PISTOL"] }] },
+      { id: "wyches-hekatarii-blade", name: "Hekatarii blade", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "3", ap: "-1", damage: "1" }] },
     ],
     wargear: [
-      { id: "blast-pistol", name: "Blast pistol", image: "" },
+      { id: "wyches-blast-pistol", name: "Blast pistol", image: "", sergeantOnly: true, profiles: [{ range: '6"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D3", keywords: ["PISTOL"] }] },
+      { id: "wyches-power-weapon", name: "Power weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 3+"] }] },
+      { id: "wyches-gladiatorial-weapons", name: "Gladiatorial weapons", image: "", countable: true, maxCountByModelCount: { 10: 3 }, profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "-2", damage: "1" }] },
     ],
-    ledBy: ["lelith-hesperax","succubus"],
+    wargearGroups: [
+      ["wyches-splinter-pistol", "wyches-blast-pistol"],
+      ["wyches-hekatarii-blade", "wyches-power-weapon"],
+    ],
+    abilities: [
+      {
+        name: "Acrobatic Gladiators (Pain)",
+        description: "At the start of your Charge phase, you can spend 1 Pain token to Empower this unit. While Empowered, this unit is eligible to declare a charge in a turn in which it Advanced or Fell Back.",
+      },
+      {
+        name: "No Escape",
+        description: "Each time an enemy unit (excluding MONSTERS and VEHICLES) within Engagement Range of one or more units from your army with this ability Falls Back, all models in that enemy unit must take a Desperate Escape test. When doing so, if that enemy unit is Battle-shocked, subtract 1 from each of those tests.",
+      },
+    ],
+    ledBy: ["lelith-hesperax", "succubus"],
   },
 
   {
@@ -590,15 +649,36 @@ export const drukhariUnits: Unit[] = [
     name: "Voidraven Bomber",
     faction: "drukhari",
     category: "vehicle",
-    points: 235,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 245 },
     defaultWargear: [
-      { id: "void-lance", name: "Void lance", image: "" },
-      { id: "bladed-wings", name: "Bladed wings", image: "" },
+      { id: "vb-bladed-wings", name: "Bladed wings", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "-1", damage: "1" }] },
     ],
     wargear: [
-      { id: "dark-scythe", name: "Dark scythe", image: "" },
-      { id: "voidraven-missiles-implosion-missiles", name: "Voidraven missiles – implosion missiles", image: "" },
-      { id: "voidraven-missiles-shatterfield-missiles", name: "Voidraven missiles – shatterfield missiles", image: "" },
+      { id: "vb-void-lance", name: "Void lance", image: "", profiles: [{ range: '36"', attacks: "2", skill: "3+", strength: "14", ap: "-4", damage: "D6+2" }] },
+      { id: "vb-dark-scythe", name: "Dark scythe", image: "", profiles: [{ range: '24"', attacks: "6", skill: "3+", strength: "8", ap: "-4", damage: "2" }] },
+      { id: "vb-voidraven-missiles", name: "Voidraven missiles", image: "", profiles: [
+        { profileName: "► Voidraven missiles – implosion missiles", range: '48"', attacks: "D3", skill: "3+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST"] },
+        { profileName: "► Voidraven missiles – shatterfield missiles", range: '48"', attacks: "D6", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["BLAST"] },
+      ]},
+    ],
+    wargearGroups: [
+      ["vb-void-lance", "vb-dark-scythe"],
+    ],
+    defaultSelectedWargear: ["vb-void-lance"],
+    abilities: [
+      {
+        name: "Nowhere to Hide (Pain)",
+        description: "In your Shooting phase, when you select this unit to shoot, you can spend 1 Pain token to Empower this unit. While Empowered, after this unit has shot, select one enemy unit hit by one or more of those attacks. Until the end of the phase, that enemy unit cannot have the Benefit of Cover.",
+      },
+      {
+        name: "Void Mine",
+        description: "Once per battle, after this unit ends a Normal move, you can select one enemy model that it moved over during that move, then roll one D6 for each enemy unit within D6\" of that model: on a 4+, that enemy unit suffers D6 mortal wounds.",
+      },
+      {
+        name: "Damaged: 1-4 Wounds Remaining",
+        description: "While this model has 1-4 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
     ledBy: [],
   },

@@ -1,4 +1,4 @@
-import type { Character } from "../../../src/types/warhammer";
+﻿import type { Character } from "../../../src/types/warhammer";
 
 export const tyranidsCharacters: Character[] = [
 
@@ -53,15 +53,34 @@ export const tyranidsCharacters: Character[] = [
     name: "Hive Tyrant",
     faction: "tyranids",
     image: "",
-    points: 225,
-    canAttachTo: [],
-    defaultWargear: [
-      { id: "monstrous-bonesword-and-lash-whip", name: "Monstrous bonesword and lash whip", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "8", ap: "-2", damage: "3", keywords: ["ANTI-PSYKER 4+"] }] },
-      { id: "monstrous-scything-talons", name: "Monstrous scything talons", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+    points: 195,
+    canAttachTo: ["tyrant-guard"],
+    abilities: [
+      {
+        name: "Will of the Hive Mind",
+        description: "Once per battle round, one model from your army with this ability can use it when a friendly TYRANIDS unit within 12\" of that model is targeted with a Stratagem. If it does, reduce the CP cost of that usage of that Stratagem by 1CP.",
+      },
+      {
+        name: "Onslaught (Aura, Psychic)",
+        description: "While a friendly TYRANIDS unit is within 6\" of this model, ranged weapons equipped by models in that unit have the [ASSAULT] and [LETHAL HITS] abilities.",
+      },
+    ],
+    wargearGroups: [
+      ["tyrant-bonesword-lashwhip", "tyrant-hvc-1", "tyrant-stranglethorn-1", "tyrant-mst-1"],
+      ["tyrant-mst-2", "tyrant-hvc-2", "tyrant-stranglethorn-2"],
+    ],
+    wargearSections: [
+      { label: "Primary weapon (choose one)", ids: ["tyrant-bonesword-lashwhip", "tyrant-hvc-1", "tyrant-stranglethorn-1", "tyrant-mst-1"] },
+      { label: "Secondary weapon (choose one)", ids: ["tyrant-mst-2", "tyrant-hvc-2", "tyrant-stranglethorn-2"] },
     ],
     wargear: [
-      { id: "heavy-venom-cannon", name: "Heavy venom cannon", image: "", profiles: [{ range: '36"', attacks: "D6+3", skill: "3+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST", "HEAVY"] }] },
-      { id: "stranglethorn-cannon", name: "Stranglethorn cannon", image: "", profiles: [{ range: '36"', attacks: "D6+3", skill: "4+", strength: "8", ap: "0", damage: "2", keywords: ["BLAST", "HEAVY"] }] },
+      { id: "tyrant-bonesword-lashwhip", name: "Monstrous bonesword & lash whip", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "9", ap: "-2", damage: "3", keywords: ["TWIN-LINKED"] }] },
+      { id: "tyrant-hvc-1", name: "Heavy venom cannon", image: "", profiles: [{ range: '36"', attacks: "D3", skill: "2+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST"] }] },
+      { id: "tyrant-stranglethorn-1", name: "Stranglethorn cannon", image: "", profiles: [{ range: '36"', attacks: "D6+1", skill: "2+", strength: "7", ap: "-1", damage: "2", keywords: ["BLAST"] }] },
+      { id: "tyrant-mst-1", name: "Monstrous scything talons", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "7", ap: "-2", damage: "2", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "tyrant-mst-2", name: "Monstrous scything talons", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "7", ap: "-2", damage: "2", keywords: ["EXTRA ATTACKS"] }] },
+      { id: "tyrant-hvc-2", name: "Heavy venom cannon", image: "", profiles: [{ range: '36"', attacks: "D3", skill: "2+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST"] }] },
+      { id: "tyrant-stranglethorn-2", name: "Stranglethorn cannon", image: "", profiles: [{ range: '36"', attacks: "D6+1", skill: "2+", strength: "7", ap: "-1", damage: "2", keywords: ["BLAST"] }] },
     ],
   },
 
@@ -160,20 +179,34 @@ export const tyranidsCharacters: Character[] = [
     name: "Tervigon",
     faction: "tyranids",
     image: "",
-    points: 175,
+    points: 160,
     canAttachTo: [],
     defaultWargear: [
       { id: "tervigon-stinger-salvoes", name: "Stinger salvoes", image: "", profiles: [{ range: '24"', attacks: "8", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "tervigon-massive-scything-talons", name: "Massive scything talons", image: "", profiles: [
-        { profileName: "► Massive scything talons – strike", range: "Melee", attacks: "4", skill: "3+", strength: "9", ap: "-2", damage: "D6" },
-        { profileName: "► Massive scything talons – sweep", range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-1", damage: "2" },
-      ]},
-      { id: "tervigon-massive-crushing-claws", name: "Massive crushing claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "12", ap: "-3", damage: "D6+1" }] },
+      { id: "tervigon-mst", name: "Massive scything talons", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "4", skill: "3+", strength: "9", ap: "-2", damage: "D6" },
+        { profileName: "sweep", range: "Melee", attacks: "8", skill: "3+", strength: "7", ap: "-1", damage: "2" },
+      ] },
+      { id: "tervigon-mcc", name: "Massive crushing claws", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "12", ap: "-3", damage: "D6+1" }] },
     ],
     wargearGroups: [
-      ["tervigon-massive-scything-talons", "tervigon-massive-crushing-claws"],
+      ["tervigon-mst", "tervigon-mcc"],
+    ],
+    abilities: [
+      {
+        name: "Spawn Termagants",
+        description: "In your Command phase, you can select one friendly TERMAGANTS unit within 6\" of this model and return up to D3+3 destroyed models to that unit. A TERMAGANTS unit cannot be selected for this ability more than once per phase.",
+      },
+      {
+        name: "Brood Progenitor (Aura, Psychic)",
+        description: "While a friendly TERMAGANTS unit is within 6\" of this model, ranged weapons equipped by models in that unit have the [LETHAL HITS] ability.",
+      },
+      {
+        name: "DAMAGED: 1-5 WOUNDS REMAINING",
+        description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      },
     ],
   },
 
@@ -182,13 +215,27 @@ export const tyranidsCharacters: Character[] = [
     name: "The Swarmlord",
     faction: "tyranids",
     image: "",
-    points: 240,
-    canAttachTo: [],
+    points: 220,
+    canAttachTo: ["tyrant-guard"],
     defaultWargear: [
       { id: "synaptic-pulse", name: "Synaptic pulse", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "N/A", strength: "4", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
       { id: "bone-sabres", name: "Bone sabres", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "10", ap: "-3", damage: "3", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Hive Commander",
+        description: "At the start of your Command phase, if this model is on the battlefield, you gain 1CP.",
+      },
+      {
+        name: "Malign Presence (Aura)",
+        description: "If this model is your WARLORD, each time your opponent targets a unit from their army with a Stratagem, if that unit is within 12\" of this model, increase the cost of that use of that Stratagem by 1CP.",
+      },
+      {
+        name: "Domination of the Hive Mind (Aura)",
+        description: "While a friendly TYRANIDS unit is within 9\" of this model, that unit is within your army's Synapse Range.",
+      },
+    ],
   },
 
   {
@@ -196,16 +243,29 @@ export const tyranidsCharacters: Character[] = [
     name: "Winged Hive Tyrant",
     faction: "tyranids",
     image: "",
-    points: 200,
+    points: 170,
     canAttachTo: [],
     defaultWargear: [
-      { id: "monstrous-bonesword-and-lash-whip", name: "Monstrous bonesword and lash whip", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "8", ap: "-2", damage: "3", keywords: ["ANTI-PSYKER 4+"] }] },
-      { id: "tyrant-talons", name: "Tyrant talons", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "6", ap: "-2", damage: "2" }] },
+      { id: "wht-tyrant-talons", name: "Tyrant talons", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "7", ap: "-2", damage: "2" }] },
     ],
     wargear: [
-      { id: "heavy-venom-cannon", name: "Heavy venom cannon", image: "", profiles: [{ range: '36"', attacks: "D6+3", skill: "3+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST", "HEAVY"] }] },
-      { id: "stranglethorn-cannon", name: "Stranglethorn cannon", image: "", profiles: [{ range: '36"', attacks: "D6+3", skill: "4+", strength: "8", ap: "0", damage: "2", keywords: ["BLAST", "HEAVY"] }] },
-      { id: "monstrous-scything-talons", name: "Monstrous scything talons", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "7", ap: "-2", damage: "2" }] },
+      { id: "wht-bonesword-lashwhip", name: "Monstrous bonesword & lash whip", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "9", ap: "-2", damage: "3", keywords: ["TWIN-LINKED"] }] },
+      { id: "wht-hvc", name: "Heavy venom cannon", image: "", profiles: [{ range: '36"', attacks: "D3", skill: "2+", strength: "9", ap: "-2", damage: "3", keywords: ["BLAST"] }] },
+      { id: "wht-stranglethorn", name: "Stranglethorn cannon", image: "", profiles: [{ range: '36"', attacks: "D6+1", skill: "2+", strength: "7", ap: "-1", damage: "2", keywords: ["BLAST"] }] },
+      { id: "wht-mst", name: "Monstrous scything talons", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "7", ap: "-2", damage: "2", keywords: ["EXTRA ATTACKS"] }] },
+    ],
+    wargearGroups: [
+      ["wht-bonesword-lashwhip", "wht-hvc", "wht-stranglethorn", "wht-mst"],
+    ],
+    abilities: [
+      {
+        name: "Will of the Hive Mind",
+        description: "Once per battle round, one model from your army with this ability can use it when a friendly TYRANIDS unit within 12\" of that model is targeted with a Stratagem. If it does, reduce the CP cost of that usage of that Stratagem by 1CP.",
+      },
+      {
+        name: "Paroxysm (Psychic)",
+        description: "At the start of the Fight phase, you can select one enemy unit within 12\" of and visible to this model and roll one D6: on a 1, this PSYKER suffers D3 mortal wounds; on a 2+, until the end of the phase, subtract 1 from the Attacks characteristic of weapons equipped by models in that unit.",
+      },
     ],
   },
 

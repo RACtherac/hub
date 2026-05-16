@@ -1,4 +1,4 @@
-import type { Unit } from "../../src/types/warhammer";
+﻿import type { Unit } from "../../src/types/warhammer";
 
 export const tyranidsUnits: Unit[] = [
 
@@ -222,9 +222,20 @@ export const tyranidsUnits: Unit[] = [
     name: "Mucolid Spores",
     faction: "tyranids",
     category: "infantry",
-    points: 30,
+    modelCountOptions: [1, 2],
+    pointsByModelCount: { 1: 30, 2: 60 },
     defaultWargear: [],
     wargear: [],
+    abilities: [
+      {
+        name: "Bio-minefield",
+        description: "Enemy units cannot start or end an Advance move within 6\" of this unit.",
+      },
+      {
+        name: "Floating Death",
+        description: "Each time this unit or an enemy unit ends a move, for each model in this unit that is within 3\" of one or more enemy units, select one of those enemy units. That model in this unit is destroyed, then roll one D6: on a 2-5, that enemy unit suffers D3 mortal wounds; on a 6, that enemy unit suffers D6 mortal wounds.",
+      },
+    ],
     ledBy: [],
   },
 
@@ -395,7 +406,7 @@ export const tyranidsUnits: Unit[] = [
         description: "At the start of the Fight phase, select one of the following:\n• Aggression Imperative: Until the end of the phase, each time a model in this unit makes an attack, re-roll a Hit roll of 1.\n• Bioregeneration: Until the end of the phase, each time a saving throw is made for a model in this unit, re-roll a saving throw of 1.",
       },
     ],
-    ledBy: [],
+    ledBy: ["tyranid-prime", "winged-tyranid-prime"],
   },
 
   {
@@ -585,8 +596,8 @@ export const tyranidsUnits: Unit[] = [
     category: "monster",
     points: 140,
     defaultWargear: [
-      { id: "bio-plasmic-cannon", name: "Bio-plasmic cannon", image: "" },
-      { id: "powerful-limbs", name: "Powerful limbs", image: "" },
+      { id: "bio-plasmic-cannon", name: "Bio-plasmic cannon", image: "", profiles: [{ range: '36"', attacks: "D6+3", skill: "3+", strength: "9", ap: "-3", damage: "3", keywords: ["BLAST", "HEAVY"] }] },
+      { id: "powerful-limbs", name: "Powerful limbs", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "7", ap: "0", damage: "2" }] },
     ],
     wargear: [],
     abilities: [
@@ -595,7 +606,7 @@ export const tyranidsUnits: Unit[] = [
         description: "In your Shooting phase, after this model has shot, select one enemy unit hit by one or more of those attacks. Until the end of the phase, each time a friendly TYRANIDS model makes an attack that targets that unit, re-roll a Hit roll of 1.",
       },
       {
-        name: "Damaged: 1-5 Wounds Remaining",
+        name: "DAMAGED: 1-5 WOUNDS REMAINING",
         description: "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
       },
     ],
