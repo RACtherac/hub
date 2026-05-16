@@ -30,6 +30,10 @@ export default function UnitImage({
       ? (unit.image6 ?? unit.image)
       : modelCount === 3
       ? (unit.image3 ?? unit.image)
+      : modelCount === 2
+      ? (unit.image2 ?? unit.image)
+      : modelCount === 1
+      ? (unit.image1 ?? unit.image)
       : (unit.image5 ?? unit.image);
 
 

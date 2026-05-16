@@ -96,6 +96,8 @@ export interface Unit {
   faction: Faction;
   category: UnitCategory;
 
+  image1?: string;
+  image2?: string;
   image3?: string;
   image5?: string;
   image6?: string;

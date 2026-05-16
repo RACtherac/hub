@@ -15,6 +15,8 @@ export interface ApiUnit {
   faction: Faction;
   category: UnitCategory;
   image?: string;
+  image1?: string;
+  image2?: string;
   image3?: string;
   image5?: string;
   image6?: string;
