@@ -2260,7 +2260,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "autocannon",
         name: "Autocannon",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/SSAC.png",
         profiles: [
           {
             range: '48"',
@@ -2276,7 +2276,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "heavy-flamer",
         name: "Heavy flamer",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/SSHF.png",
         profiles: [
           {
             range: '12"',
@@ -2292,7 +2292,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "lascannon",
         name: "Lascannon",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/SSL.png",
         profiles: [
           {
             range: '48"',
@@ -2308,7 +2308,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "missile-launcher",
         name: "Missile launcher",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/SSML.png",
         profiles: [
           {
             profileName: "Frag",
@@ -2335,7 +2335,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "multi-laser",
         name: "Multi-laser",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/SSMLA.png",
         profiles: [
           {
             range: '36"',
@@ -2351,7 +2351,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "plasma-cannon",
         name: "Plasma cannon",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/SSHP.png",
         profiles: [
           {
             profileName: "Standard",
@@ -2378,7 +2378,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "sentinel-chainsaw",
         name: "Sentinel chainsaw",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/SSC.png",
         profiles: [
           {
             range: "Melee",
@@ -2394,7 +2394,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "hunter-killer-missile",
         name: "Hunter-killer missile",
-        image: "",
+        image: "/Warhammerimages/Astra militarium/Scout Sentinal HKM.png",
         profiles: [
           {
             range: '48"',
