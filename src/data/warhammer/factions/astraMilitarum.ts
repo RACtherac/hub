@@ -964,6 +964,8 @@ export const astraMilitarumUnits: Unit[] = [
     name: "Scout Sentinels",
     faction: "astra-militarum",
     category: "vehicle",
+    image1: "/Warhammerimages/Astra militarium/Scout Sential-1.png",
+    image2: "/Warhammerimages/Astra militarium/Scout Sential-2.png",
     points: 60,
     modelCountOptions: [1, 2],
     pointsByModelCount: { 1: 60, 2: 110 },
@@ -989,7 +991,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "autocannon",
         name: "Autocannon",
-        image: "",
+        image: "/Warhammerimages/AstraMilitarum/SSAC.png",
         profiles: [
           {
             range: '48"',
@@ -1005,7 +1007,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "heavy-flamer",
         name: "Heavy flamer",
-        image: "",
+        image: "/Warhammerimages/AstraMilitarum/SSHF.png",
         profiles: [
           {
             range: '12"',
@@ -1021,7 +1023,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "lascannon",
         name: "Lascannon",
-        image: "",
+        image: "/Warhammerimages/AstraMilitarum/SSL.png",
         profiles: [
           {
             range: '48"',
@@ -1037,7 +1039,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "missile-launcher",
         name: "Missile launcher",
-        image: "",
+        image: "/Warhammerimages/AstraMilitarum/SSML.png",
         profiles: [
           {
             profileName: "Frag",
@@ -1064,7 +1066,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "plasma-cannon",
         name: "Plasma cannon",
-        image: "",
+        image: "/Warhammerimages/AstraMilitarum/SSHP.png",
         profiles: [
           {
             profileName: "Standard",
@@ -1091,7 +1093,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "sentinel-chainsaw",
         name: "Sentinel chainsaw",
-        image: "",
+        image: "/Warhammerimages/AstraMilitarum/SSC.png",
         profiles: [
           {
             range: "Melee",
@@ -1107,7 +1109,7 @@ export const astraMilitarumUnits: Unit[] = [
       {
         id: "hunter-killer-missile",
         name: "Hunter-killer missile",
-        image: "",
+        image: "/Warhammerimages/AstraMilitarum/Scout Sentinal HKM.png",
         profiles: [
           {
             range: '48"',
@@ -1128,7 +1130,7 @@ export const astraMilitarumUnits: Unit[] = [
         checkbox: true,
         weaponId: "autocannon",
         noteGroup: "main-weapon",
-        image: "/Warhammerimages/AstraMilitarum/autocannon.png",
+        image: "/Warhammerimages/AstraMilitarum/SSAC.png",
       },
       {
         id: "heavy-flamer-note",
@@ -1136,7 +1138,7 @@ export const astraMilitarumUnits: Unit[] = [
         checkbox: true,
         weaponId: "heavy-flamer",
         noteGroup: "main-weapon",
-        image: "/Warhammerimages/AstraMilitarum/heavy-flamer.png",
+        image: "/Warhammerimages/AstraMilitarum/SSHF.png",
       },
       {
         id: "lascannon-note",
@@ -1144,7 +1146,7 @@ export const astraMilitarumUnits: Unit[] = [
         checkbox: true,
         weaponId: "lascannon",
         noteGroup: "main-weapon",
-        image: "/Warhammerimages/AstraMilitarum/lascannon.png",
+        image: "/Warhammerimages/AstraMilitarum/SSL.png",
       },
       {
         id: "missile-launcher-note",
@@ -1152,7 +1154,7 @@ export const astraMilitarumUnits: Unit[] = [
         checkbox: true,
         weaponId: "missile-launcher",
         noteGroup: "main-weapon",
-        image: "/Warhammerimages/AstraMilitarum/missile-launcher.png",
+        image: "/Warhammerimages/AstraMilitarum/SSML.png",
       },
       {
         id: "plasma-cannon-note",
@@ -1160,21 +1162,21 @@ export const astraMilitarumUnits: Unit[] = [
         checkbox: true,
         weaponId: "plasma-cannon",
         noteGroup: "main-weapon",
-        image: "/Warhammerimages/AstraMilitarum/plasma-cannon.png",
+        image: "/Warhammerimages/AstraMilitarum/SSHP.png",
       },
       {
         id: "sentinel-chainsaw-note",
         text: "Sentinel chainsaw",
         checkbox: true,
         weaponId: "sentinel-chainsaw",
-        image: "/Warhammerimages/AstraMilitarum/sentinel-chainsaw.png",
+        image: "/Warhammerimages/AstraMilitarum/SSC.png",
       },
       {
         id: "hunter-killer-missile-note",
         text: "Hunter-killer missile",
         checkbox: true,
         weaponId: "hunter-killer-missile",
-        image: "/Warhammerimages/AstraMilitarum/hunter-killer-missile.png",
+        image: "/Warhammerimages/AstraMilitarum/Scout Sentinal HKM.png",
       },
     ],
     noteGroupLimits: { "main-weapon": 1 },
