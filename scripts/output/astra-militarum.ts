@@ -2236,6 +2236,8 @@ export const astraMilitarumUnits: Unit[] = [
     points: 60,
     modelCountOptions: [1, 2],
     pointsByModelCount: { 1: 60, 2: 110 },
+    image1: "/Warhammerimages/Astra militarium/Scout Sentinal-1.png",
+    image2: "/Warhammerimages/Astra militarium/Scout Sentinal-2.png",
     defaultWargear: [
       {
         id: "close-combat-weapon",
