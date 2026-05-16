@@ -427,7 +427,7 @@ export const chaosSpaceMarinesCharacters: Character[] = [
     id: "master-of-possession",
     name: "Master Of Possession",
     faction: "chaos-space-marine",
-    image: "",
+    image: "/Warhammerimages/ChaosSpaceMarine/Master of Possession.png",
     points: 60,
     canAttachTo: ["chosen", "legionaries", "nemesis-claw", "possessed", "red-corsairs-raiders"],
     abilities: [
