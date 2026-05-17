@@ -450,27 +450,60 @@ export const chaosSpaceMarinesUnits: Unit[] = [
     name: "Havocs",
     faction: "chaos-space-marine",
     category: "infantry",
+    modelCountOptions: [5],
     points: 125,
     defaultWargear: [
-      { id: "flamer", name: "Flamer", image: "" },
-      { id: "astartes-chainsword", name: "Astartes chainsword", image: "" },
+      { id: "havocs-boltgun", name: "Boltgun", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "havocs-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "boltgun", name: "Boltgun", image: "" },
-      { id: "havoc-autocannon", name: "Havoc autocannon", image: "" },
-      { id: "havoc-heavy-bolter", name: "Havoc heavy bolter", image: "" },
-      { id: "havoc-lascannon", name: "Havoc lascannon", image: "" },
-      { id: "havoc-missile-launcher-frag", name: "Havoc missile launcher – frag", image: "" },
-      { id: "havoc-missile-launcher-krak", name: "Havoc missile launcher – krak", image: "" },
-      { id: "havoc-reaper-chaincannon", name: "Havoc reaper chaincannon", image: "" },
-      { id: "meltagun", name: "Meltagun", image: "" },
-      { id: "plasma-gun-standard", name: "Plasma gun – standard", image: "" },
-      { id: "plasma-gun-supercharge", name: "Plasma gun – supercharge", image: "" },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
-      { id: "accursed-weapon", name: "Accursed weapon", image: "" },
-      { id: "power-fist", name: "Power fist", image: "" },
+      // Heavy weapons (note-linked, combined max 4)
+      { id: "havoc-autocannon", name: "Havoc autocannon", image: "", profiles: [{ range: '48"', attacks: "2", skill: "3+", strength: "9", ap: "-1", damage: "3" }] },
+      { id: "havoc-heavy-bolter", name: "Havoc heavy bolter", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["SUSTAINED HITS 1"] }] },
+      { id: "havoc-lascannon", name: "Havoc lascannon", image: "", profiles: [{ range: '48"', attacks: "1", skill: "3+", strength: "12", ap: "-3", damage: "D6+1" }] },
+      { id: "havoc-missile-launcher", name: "Havoc missile launcher", image: "", profiles: [
+        { profileName: "frag", range: '48"', attacks: "D6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] },
+        { profileName: "krak", range: '48"', attacks: "1", skill: "3+", strength: "9", ap: "-2", damage: "D6" },
+      ]},
+      { id: "havoc-reaper-chaincannon", name: "Havoc reaper chaincannon", image: "", profiles: [{ range: '24"', attacks: "8", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
+      // Champion melee options
+      { id: "havoc-champ-astartes-chainsword", name: "Champion: Astartes chainsword", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "4", ap: "-1", damage: "1" }] },
+      { id: "havoc-champ-accursed-weapon", name: "Champion: Accursed weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "havoc-champ-power-fist", name: "Champion: Power fist", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+      // Champion ranged options
+      { id: "havoc-champ-flamer", name: "Champion: Flamer", image: "", sergeantOnly: true, profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["IGNORES COVER", "TORRENT"] }] },
+      { id: "havoc-champ-boltgun", name: "Champion: Boltgun", image: "", sergeantOnly: true, profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "havoc-champ-meltagun", name: "Champion: Meltagun", image: "", sergeantOnly: true, profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "9", ap: "-4", damage: "D6", keywords: ["MELTA 2"] }] },
+      { id: "havoc-champ-plasma-gun", name: "Champion: Plasma gun", image: "", sergeantOnly: true, profiles: [
+        { profileName: "standard", range: '24"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["RAPID FIRE 1"] },
+        { profileName: "supercharge", range: '24"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "RAPID FIRE 1"] },
+      ]},
+      { id: "havoc-champ-plasma-pistol", name: "Champion: Plasma pistol", image: "", sergeantOnly: true, profiles: [
+        { profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+        { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] },
+      ]},
+      { id: "havoc-champ-ranged-accursed-weapon", name: "Champion: Accursed weapon", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "havoc-champ-ranged-power-fist", name: "Champion: Power fist", image: "", sergeantOnly: true, profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
     ],
-    ledBy: [],
+    wargearGroups: [
+      ["havoc-champ-astartes-chainsword", "havoc-champ-accursed-weapon", "havoc-champ-power-fist"],
+      ["havoc-champ-flamer", "havoc-champ-boltgun", "havoc-champ-meltagun", "havoc-champ-plasma-gun", "havoc-champ-plasma-pistol", "havoc-champ-ranged-accursed-weapon", "havoc-champ-ranged-power-fist"],
+    ],
+    notes: [
+      { id: "havoc-autocannon-note", text: "Up to 4 Havocs can each replace their boltgun with a Havoc autocannon.", checkbox: true, weaponId: "havoc-autocannon", maxCountByModelCount: { 5: 4 }, noteGroup: "havoc-weapons" },
+      { id: "havoc-heavy-bolter-note", text: "Up to 4 Havocs can each replace their boltgun with a Havoc heavy bolter.", checkbox: true, weaponId: "havoc-heavy-bolter", maxCountByModelCount: { 5: 4 }, noteGroup: "havoc-weapons" },
+      { id: "havoc-lascannon-note", text: "Up to 4 Havocs can each replace their boltgun with a Havoc lascannon.", checkbox: true, weaponId: "havoc-lascannon", maxCountByModelCount: { 5: 4 }, noteGroup: "havoc-weapons" },
+      { id: "havoc-missile-launcher-note", text: "Up to 4 Havocs can each replace their boltgun with a Havoc missile launcher.", checkbox: true, weaponId: "havoc-missile-launcher", maxCountByModelCount: { 5: 4 }, noteGroup: "havoc-weapons" },
+      { id: "havoc-reaper-chaincannon-note", text: "Up to 4 Havocs can each replace their boltgun with a Havoc reaper chaincannon.", checkbox: true, weaponId: "havoc-reaper-chaincannon", maxCountByModelCount: { 5: 4 }, noteGroup: "havoc-weapons" },
+    ],
+    noteGroupLimitsByModelCount: { "havoc-weapons": { 5: 4 } },
+    abilities: [
+      {
+        name: "Stabilisation Talons",
+        description: "Each time a model in this unit makes an attack with a ranged weapon, you can ignore any or all modifiers to the Hit roll and any or all modifiers to the Ballistic Skill characteristic of that weapon.",
+      },
+    ],
+    ledBy: ["warpsmith"],
   },
 
   {
