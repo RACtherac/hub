@@ -427,14 +427,32 @@ export const astraMilitarumCharacters: Character[] = [
     name: "Lord Solar Leontus",
     faction: "astra-militarum",
     image: "",
-    points: 150,
-    canAttachTo: ["kasrkin"],
+    points: 130,
+    canAttachTo: ["attilan-rough-riders", "cadian-shock-troops", "catachan-jungle-fighters", "death-riders", "kasrkin", "krieg-combat-engineers", "death-korps-of-krieg"],
     defaultWargear: [
-      { id: "sol-s-righteous-gaze", name: "Sol's Righteous Gaze", image: "", profiles: [{ range: '18"', attacks: "3", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
-      { id: "conquest", name: "Conquest", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
-      { id: "konstantin-s-hooves", name: "Konstantin's hooves", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
+      { id: "sols-righteous-gaze", name: "Sol's Righteous Gaze", image: "", profiles: [{ range: '12"', attacks: "2", skill: "2+", strength: "8", ap: "-2", damage: "2", keywords: ["PISTOL"] }] },
+      { id: "conquest", name: "Conquest", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "6", ap: "-2", damage: "2" }] },
+      { id: "konstantins-hooves", name: "Konstantin's hooves", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "4", ap: "0", damage: "1", keywords: ["EXTRA ATTACKS"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "The Lord Solar",
+        description: "At the start of your Command phase, if this model is on the battlefield, you gain 1CP.",
+      },
+      {
+        name: "The Collegiate Astrolex",
+        description: "After both players have deployed their armies, select up to three ASTRA MILITARUM units from your army and redeploy them. When doing so, you can set those units up in Strategic Reserves if you wish, regardless of how many units are already in Strategic Reserves.",
+      },
+      {
+        name: "Supreme Commander",
+        description: "If this model is in your army, it must be your WARLORD.",
+      },
+      {
+        name: "Orders",
+        description: "This OFFICER can issue up to 3 Orders to: REGIMENT units, SQUADRON units, TITANIC units.",
+      },
+    ],
   },
 
   {

@@ -1424,11 +1424,30 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "transport",
     points: 70,
+    transportCapacity: 12,
     defaultWargear: [
       { id: "storm-bolter", name: "Storm bolter", image: "" },
     ],
     wargear: [
       { id: "deathwind-launcher", name: "Deathwind launcher", image: "" },
+    ],
+    abilities: [
+      {
+        name: "Drop Pod Assault",
+        description: "This model must start the battle in Reserves and can be set up in the Reinforcements step of your first, second or third Movement phase, regardless of any mission rules. Any units embarked within this model must immediately disembark after it has been set up on the battlefield, and they must be set up more than 9\" away from all enemy models.",
+      },
+      {
+        name: "Combat Disembarkation",
+        description: "Each time a unit disembarks from this model after it has been set up on the battlefield, that unit is still eligible to declare a charge this turn.",
+      },
+      {
+        name: "Deployment Complete",
+        description: "Once this unit is set up on the battlefield and all units within it have disembarked, until the end of the battle, units cannot embark within this TRANSPORT model.",
+      },
+      {
+        name: "Transport",
+        description: "This model has a transport capacity of 12 ADEPTUS ASTARTES INFANTRY models. It cannot transport CENTURION, GRAVIS, JUMP PACK, WULFEN or TERMINATOR models.",
+      },
     ],
     ledBy: [],
   },

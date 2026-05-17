@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { WargearOption } from "../../../types/warhammer";
 
 interface Props {
@@ -15,6 +15,16 @@ interface Props {
 
 export default function WargearSelector({ label = "Wargear", wargear, selected, onChange, groups, counts = {}, onCountChange, modelCount, checkedNotes = [] }: Props) {
   const [showImages, setShowImages] = useState(false);
+
+  useEffect(() => {
+    const hiddenIds = new Set(
+      wargear
+        .filter((g) => g.showForModelCounts && (modelCount == null || !g.showForModelCounts.includes(modelCount)))
+        .map((g) => g.id)
+    );
+    const toRemove = selected.filter((id) => hiddenIds.has(id));
+    if (toRemove.length > 0) onChange(selected.filter((id) => !hiddenIds.has(id)));
+  }, [modelCount]);
 
   const getLinked = (id: string) => wargear.find((w) => w.id === id)?.linkedWargear ?? [];
 
@@ -43,7 +53,8 @@ export default function WargearSelector({ label = "Wargear", wargear, selected, 
     }
   };
 
-  const withImages = wargear.filter((g) => g.image);
+  const visibleWargear = wargear.filter((g) => !g.showForModelCounts || (modelCount != null && g.showForModelCounts.includes(modelCount)));
+  const withImages = visibleWargear.filter((g) => g.image);
 
   return (
     <div>
@@ -142,7 +153,7 @@ export default function WargearSelector({ label = "Wargear", wargear, selected, 
 
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-        {wargear.map((gear) => {
+        {visibleWargear.map((gear) => {
           if (gear.countable) {
             const baseMax = modelCount != null && gear.maxCountByModelCount
               ? (gear.maxCountByModelCount[modelCount] ?? 0)
