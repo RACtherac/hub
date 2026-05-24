@@ -100,7 +100,7 @@ export const deathGuardUnits: Unit[] = [
         description: "In your Shooting phase, each time this unit is selected to shoot, after this unit has shot, select one enemy unit hit by one or more of those attacks. Until the start of your next turn, that enemy unit is Afflicted.",
       },
     ],
-    ledBy: ["biologus-putrifier", "foul-blightspawn", "death-guard-icon-bearer", "malignant-plaguecaster", "noxious-blightbringer", "plague-surgeon", "tallyman"],
+    ledBy: ["biologus-putrifier", "foul-blightspawn", "death-guard-icon-bearer", "lord-of-poxes", "malignant-plaguecaster", "noxious-blightbringer", "plague-surgeon", "tallyman"],
   },
 
   {
@@ -260,8 +260,11 @@ export const deathGuardUnits: Unit[] = [
       },
     ],
     defaultWargear: [
-      { id: "plaguespurt-gauntlet", name: "Plaguespurt gauntlet", image: "" },
-      { id: "manreaper", name: "Manreaper", image: "" },
+      { id: "plaguespurt-gauntlet", name: "Plaguespurt gauntlet", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 4+", "IGNORES COVER", "PISTOL", "TORRENT"] }] },
+      { id: "manreaper", name: "Manreaper", image: "", profiles: [
+        { profileName: "strike", range: "Melee", attacks: "4", skill: "2+", strength: "8", ap: "-2", damage: "2", keywords: ["LETHAL HITS"] },
+        { profileName: "sweep", range: "Melee", attacks: "8", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["LETHAL HITS"] },
+      ] },
     ],
     wargear: [
       { id: "plaguespurt-gauntlet-champion", name: "Plaguespurt gauntlet", image: "/Warhammerimages/Death guard/Plaugespwer gauntlet.png", note: "The Deathshroud Champion can be equipped with 1 additional plaguespurt gauntlet." },
@@ -327,7 +330,7 @@ export const deathGuardUnits: Unit[] = [
       },
     ],
     defaultWargear: [
-      { id: "improvised-weapon", name: "Improvised weapon", image: "" },
+      { id: "improvised-weapon", name: "Improvised weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "5+", strength: "3", ap: "0", damage: "1", keywords: ["LETHAL HITS"] }] },
     ],
     wargear: [],
     ledBy: ["malignant-plaguecaster", "noxious-blightbringer", "typhus"],

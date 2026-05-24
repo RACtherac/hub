@@ -243,7 +243,7 @@ export const chaosSpaceMarinesUnits: Unit[] = [
         weaponIds: ["plasma-pistol-and-chainsword", "flamer", "havoc-autocannon", "heavy-bolter", "lascannon", "meltagun", "missile-launcher", "plasma-gun", "reaper-chaincannon"],
       },
     ],
-    ledBy: ["chaos-lord","dark-apostle","fabius-bile","huron-blackheart","master-of-executions","master-of-possession","sorcerer","warpsmith","lucius-the-eternal"],
+    ledBy: ["chaos-lord","dark-apostle","fabius-bile","huron-blackheart","master-of-executions","master-of-possession","masters-of-the-maelstrom","sorcerer","warpsmith","lucius-the-eternal"],
   },
 
   {

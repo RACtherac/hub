@@ -351,6 +351,7 @@ export default function ArmyBuilder() {
   const [addingUnit, setAddingUnit] = useState(false);
   const [openCategory, setOpenCategory] = useState<UnitCategory | null>(null);
   const [unitSearch, setUnitSearch] = useState("");
+  const [characterSearch, setCharacterSearch] = useState("");
   const [pointsLimit, setPointsLimit] = useState<number>(0);
   const [characterMenuOpen, setCharacterMenuOpen] = useState(false);
   const [selectedFaction, setSelectedFaction] = useState<Faction>("space-marines");
@@ -398,6 +399,7 @@ export default function ArmyBuilder() {
   const addCharacter = (characterId: string) => {
     setArmyCharacters([...armyCharacters, { id: Date.now(), characterId, wargear: [] }]);
     setCharacterMenuOpen(false);
+    setCharacterSearch("");
   };
 
   const removeUnit = (id: number) => setArmyUnits(armyUnits.filter((u) => u.id !== id));
@@ -1070,6 +1072,7 @@ export default function ArmyBuilder() {
               }}
               onClick={(e) => {
                 e.stopPropagation();
+                if (characterMenuOpen) setCharacterSearch("");
                 setCharacterMenuOpen(!characterMenuOpen);
                 setAddingUnit(false);
                 setOpenCategory(null);
@@ -1098,11 +1101,31 @@ export default function ArmyBuilder() {
                 }}>
                   {FACTION_LABELS[selectedFaction]}
                 </div>
-                {factionCharacters.length === 0 ? (
+                <div style={{ padding: "6px 8px", borderBottom: "1px solid var(--border)" }}>
+                  <input
+                    autoFocus
+                    value={characterSearch}
+                    onChange={(e) => setCharacterSearch(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Search characters…"
+                    style={{
+                      width: "100%",
+                      background: "var(--bg)",
+                      border: "1px solid var(--border-2)",
+                      color: "var(--text)",
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "11px",
+                      letterSpacing: "0.05em",
+                      padding: "5px 8px",
+                      outline: "none",
+                    }}
+                  />
+                </div>
+                {factionCharacters.filter((c) => c.name.toLowerCase().includes(characterSearch.toLowerCase())).length === 0 ? (
                   <div style={{ ...s.dropdownItem, color: "var(--text-dim)", cursor: "default" }}>
-                    No characters available
+                    No characters found
                   </div>
-                ) : factionCharacters.map((char) => (
+                ) : factionCharacters.filter((c) => c.name.toLowerCase().includes(characterSearch.toLowerCase())).map((char) => (
                   <button
                     key={char.id}
                     style={s.dropdownItem}

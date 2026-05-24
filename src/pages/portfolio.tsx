@@ -11,7 +11,7 @@ const projects = [
   { name: "Mini Paint Tracker", description: "Save paint recipes and photos for your miniatures.", path: "/paint-tracker" },
   { name: "Pixel Art Editor", description: "Draw pixel art on an 8×8, 16×16, or 32×32 canvas.", path: "/pixel-art" },
   { name: "Tactics Game", description: "Turn-based strategy — pick a faction and fight the PC or a friend.", path: "/tactics-game" },
-  { name: "Todo App", description: "Task management application.", path: "/todo-app" },
+  { name: "Kanban Board", description: "Drag-and-drop task board with To Do, In Progress, and Done columns.", path: "/todo-app" },
   { name: "Password Strength Checker", description: "Analyse a password's strength, entropy, and get improvement suggestions.", path: "/password-strength" },
   { name: "Rate Limiter Demo", description: "Fire requests at a live API and watch the rate limiter block you at 5 per 10s.", path: "/rate-limiter" },
   { name: "The Log", description: "A personal blog — project updates, education notes, and hobby dispatches.", path: "/blog" },

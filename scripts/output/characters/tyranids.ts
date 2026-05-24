@@ -30,6 +30,7 @@ export const tyranidsCharacters: Character[] = [
     name: "Deathleaper",
     faction: "tyranids",
     image: "/Warhammerimages/Tyranids/Death leaper.png",
+    imageCredit: "Painted by Alana K.A",
     points: 80,
     canAttachTo: [],
     defaultWargear: [
@@ -318,6 +319,7 @@ export const tyranidsCharacters: Character[] = [
     faction: "tyranids",
     image: "/Warhammerimages/Tyranids/Winged Prime.png",
     points: 85,
+    imageCredit: "Painted by Alana K.A",
     canAttachTo: [],
     abilities: [
       {

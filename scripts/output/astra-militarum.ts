@@ -218,7 +218,7 @@ export const astraMilitarumUnits: Unit[] = [
         image: "/Warhammerimages/AstraMilitarum/plasma-gun.png",
       },
     ],
-    ledBy: ["cadian-castellan","cadian-command-squad","commissar","commissar-graves-on-foot","commissar-yarrick","lord-solar-leontus","ministorum-priest","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer","ursula-creed","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["cadian-castellan","cadian-command-squad","commissar","commissar-graves-on-foot","commissar-yarrick","lord-solar-leontus","ministorum-priest","nork-deddog","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer","ursula-creed","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -235,7 +235,7 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "flamer", name: "Flamer", image: "" },
       { id: "lasgun", name: "Lasgun", image: "" },
     ],
-    ledBy: ["catachan-command-squad","commissar","commissar-graves-on-foot","commissar-yarrick","lord-solar-leontus","ministorum-priest","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["catachan-command-squad","commissar","commissar-graves-on-foot","commissar-yarrick","lord-solar-leontus","ministorum-priest","nork-deddog","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -383,7 +383,7 @@ export const astraMilitarumUnits: Unit[] = [
         requiresNote: "krieg-vox-caster-note",
       },
     ],
-    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","krieg-command-squad","lord-solar-leontus","ministorum-priest","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
+    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","krieg-command-squad","lord-solar-leontus","ministorum-priest","nork-deddog","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
   },
 
   {
@@ -1055,7 +1055,7 @@ export const astraMilitarumUnits: Unit[] = [
         description: "Once per turn, you can target this unit with the Grenade Stratagem for 0CP.",
       },
     ],
-    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","krieg-command-squad","lord-solar-leontus","ministorum-priest","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer"],
+    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","krieg-command-squad","lord-solar-leontus","ministorum-priest","nork-deddog","ogryn-bodyguard","primaris-psyker","tech-priest-enginseer"],
   },
 
   {
@@ -1065,7 +1065,7 @@ export const astraMilitarumUnits: Unit[] = [
     category: "infantry",
     points: 75,
     modelCountOptions: [4],
-    image4: "",
+    image: "",
     abilities: [
       {
         name: "Final Duty",
@@ -1327,7 +1327,7 @@ export const astraMilitarumUnits: Unit[] = [
       { id: "power-fist", name: "Power fist", image: "" },
       { id: "power-weapon", name: "Power weapon", image: "" },
     ],
-    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","militarum-tempestus-command-squad","ministorum-priest","ogryn-bodyguard","primaris-psyker"],
+    ledBy: ["commissar","commissar-graves-on-foot","commissar-yarrick","militarum-tempestus-command-squad","ministorum-priest","nork-deddog","ogryn-bodyguard","primaris-psyker"],
   },
 
   {
@@ -2624,9 +2624,9 @@ export const astraMilitarumUnits: Unit[] = [
     name: "Scout Sentinels",
     faction: "astra-militarum",
     category: "vehicle",
-    points: 60,
+    points: 55,
     modelCountOptions: [1, 2],
-    pointsByModelCount: { 1: 60, 2: 110 },
+    pointsByModelCount: { 1: 55, 2: 110 },
     image1: "/Warhammerimages/Astra militarium/Scout Sentinal-1.png",
     image2: "/Warhammerimages/Astra militarium/Scout Sentinal-2.png",
     defaultWargear: [

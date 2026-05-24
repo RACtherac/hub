@@ -347,15 +347,24 @@ export const drukhariUnits: Unit[] = [
     category: "infantry",
     points: 95,
     defaultWargear: [
-      { id: "shaimeshi-blade", name: "Shaimeshi blade", image: "" },
+      { id: "cota-eyeburst", name: "Eyeburst pistol", image: "", profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "6", ap: "-2", damage: "1", keywords: ["TORRENT"] }] },
+      { id: "cota-shardcarbine", name: "Shardcarbine", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT"] }] },
+      { id: "cota-splinter-pistol", name: "Splinter pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "2", ap: "0", damage: "1", keywords: ["ANTI-INFANTRY 3+", "ASSAULT", "PISTOL"] }] },
+      { id: "cota-close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "3+", strength: "3", ap: "0", damage: "1" }] },
+      { id: "cota-shaimeshi-blade", name: "Shaimeshi blade", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 2+"] }] },
+      { id: "cota-sslyth-battle-blade", name: "Sslyth battle-blade", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-2", damage: "2" }] },
+      { id: "cota-ur-ghul-talons", name: "Ur-ghul talons", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["SUSTAINED HITS 1"] }] },
     ],
-    wargear: [
-      { id: "eyeburst", name: "Eyeburst", image: "" },
-      { id: "shardcarbine", name: "Shardcarbine", image: "" },
-      { id: "splinter-pistol", name: "Splinter pistol", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
-      { id: "sslyth-battle-blade", name: "Sslyth battle-blade", image: "" },
-      { id: "ur-ghul-talons", name: "Ur-ghul talons", image: "" },
+    wargear: [],
+    abilities: [
+      {
+        name: "Deadly Retinue (Pain)",
+        description: "At the start of your Shooting phase or at the start of the Fight phase, you can spend 1 Pain token to Empower this unit. While this unit is Empowered: if it contains one or more Lhamaean models, melee weapons equipped by models in this unit have the [LETHAL HITS] ability. If it contains one or more Medusae models, ranged weapons equipped by models in this unit have the [IGNORES COVER] ability. If it contains one or more Sslyth models, each time a melee attack targets this unit, subtract 1 from the Wound roll. If this unit contains one or more Ur-ghul models, this unit has the Fights First ability.",
+      },
+      {
+        name: "Court of the Archon",
+        description: "While a CHARACTER model is leading a unit that contains one or more Lhamaean, Medusae, Sslyth and/or Ur-ghul models, that CHARACTER model has the Feel No Pain 4+ ability.",
+      },
     ],
     ledBy: [],
   },

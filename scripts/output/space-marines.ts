@@ -1128,12 +1128,27 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 75,
+    pointsByModelCount: { 1: 75, 2: 150 },
+    modelCountOptions: [1, 2],
+    abilities: [
+      {
+        name: "Sentinel Protocols: ",
+        description: "Each time you select this unit for the Fire Overwatch Stratagem, hits are scored on unmodified Hit rolls of 4+ when resolving that Stratagem.",
+      },
+    ],
     defaultWargear: [
-      { id: "twin-firestrike-las-talon", name: "Twin Firestrike las-talon", image: "" },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "" },
+      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
+    ],
+    wargearGroups: [
+      ["twin-firestrike-autocannon", "twin-firestrike-las-talon"],
     ],
     wargear: [
-      { id: "twin-firestrike-autocannon", name: "Twin Firestrike autocannon", image: "" },
+      { id: "twin-firestrike-autocannon", name: "Twin Firestrike autocannon", image: "", profiles: [
+        { range: '48"', attacks: "3", skill: "2+", strength: "9", ap: "-1", damage: "3", keywords: ["TWIN-LINKED"] },
+      ]},
+      { id: "twin-firestrike-las-talon", name: "Twin Firestrike las-talon", image: "", profiles: [
+        { range: '36"', attacks: "2", skill: "2+", strength: "10", ap: "-3", damage: "D6+1", keywords: ["TWIN-LINKED"] },
+      ]},
     ],
     ledBy: [],
   },
@@ -1144,15 +1159,28 @@ export const spaceMarinesUnits: Unit[] = [
     faction: "space-marines",
     category: "vehicle",
     points: 160,
+    abilities: [
+      {
+        name: "Aquilon Optics:",
+        description: "Each time this model is selected to shoot, you can re-roll one Hit roll, you can re-roll one Wound roll and you can re-roll one Damage roll when resolving those attacks.",
+      },
+      {
+        name: "DAMAGED: 1-4 WOUNDS REMAINING",
+        description: "While this model has 1-4 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll.",
+      }
+    ],
     defaultWargear: [
-      { id: "lancer-laser-destroyer", name: "Lancer laser destroyer", image: "" },
-      { id: "storm-bolter", name: "Storm bolter", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
+      { id: "lancer-laser-destroyer", name: "Lancer laser destroyer", image: "", profiles: [{ range: '72"', attacks: "2", skill: "3+", strength: "14", ap: "-4", damage: "D6+3" }] },
+      { id: "armoured-hull", name: "Armoured hull", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "/Warhammerimages/SpaceMarine/Intercessor-granade.png" },
-      { id: "icarus-rocket-pod", name: "Icarus rocket pod", image: "" },
-      { id: "ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "" },
+      { id: "fragstorm-grenade-launcher", name: "Fragstorm grenade launcher", image: "", profiles: [{ range: '18"', attacks: "D6", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] }] },
+      { id: "storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
+      { id: "icarus-rocket-pod", name: "Icarus rocket pod", image: "", profiles: [{ range: '24"', attacks: "D3", skill: "3+", strength: "8", ap: "-1", damage: "1", keywords: ["ANTI-FLY 2+"] }] },
+      { id: "ironhail-heavy-stubber", name: "Ironhail heavy stubber", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["Rapid Fire 3"] }] },
+    ],
+    wargearGroups: [
+      ["fragstorm-grenade-launcher", "storm-bolter"],
     ],
     ledBy: [],
   },

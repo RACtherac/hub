@@ -415,12 +415,22 @@ export const chaosSpaceMarinesCharacters: Character[] = [
     faction: "chaos-space-marine",
     image: "",
     points: 80,
-    canAttachTo: [],
+    canAttachTo: ["chosen", "legionaries", "nemesis-claw", "red-corsairs-raiders"],
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "axe-of-dismemberment", name: "Axe of dismemberment", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "moe-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "axe-of-dismemberment", name: "Axe of dismemberment", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "7", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS", "PRECISION"] }] },
     ],
     wargear: [],
+    abilities: [
+      {
+        name: "Warp-sighted Butcher",
+        description: "While this model is leading a unit, each time a model in that unit makes a melee attack that targets a unit that is below its Starting Strength, you can re-roll the Hit roll. If that unit is Below Half-strength, you can re-roll the Wound roll as well.",
+      },
+      {
+        name: "Trophy Taker",
+        description: "Each time this model destroys an enemy CHARACTER model, you gain 1CP.",
+      },
+    ],
   },
 
   {
@@ -763,6 +773,57 @@ export const chaosSpaceMarinesCharacters: Character[] = [
       { id: "dc-commune-stave", name: "Commune stave", image: "", profiles: [{ range: "Melee", attacks: "2", skill: "4+", strength: "3", ap: "0", damage: "D3", keywords: ["DEVASTATING WOUNDS"] }] },
     ],
     wargear: [],
+  },
+
+  {
+    id: "huron-blackheart",
+    name: "Huron Blackheart",
+    faction: "chaos-space-marine",
+    image: "",
+    points: 120,
+    canAttachTo: ["chaos-terminator-squad", "chosen", "legionaries", "masters-of-the-maelstrom", "red-corsairs-raiders"],
+    defaultWargear: [
+      { id: "tyrants-claw-flamer", name: "Tyrant's Claw – heavy flamer", image: "", profiles: [{ range: '12"', attacks: "D6+2", skill: "N/A", strength: "6", ap: "-1", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }] },
+      { id: "tyrants-claw-melee", name: "Tyrant's Claw and exalted power weapon", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "8", ap: "-3", damage: "3" }] },
+    ],
+    wargear: [],
+    abilities: [],
+  },
+
+  {
+    id: "masters-of-the-maelstrom",
+    name: "Masters of the Maelstrom",
+    faction: "chaos-space-marine",
+    image: "",
+    points: 115,
+    canAttachTo: ["chosen", "legionaries", "red-corsairs-raiders"],
+    defaultWargear: [
+      { id: "absolvor-bolt-pistol", name: "Absolvor bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "2", keywords: ["PISTOL"] }] },
+      { id: "motm-bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "laspistol", name: "Laspistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
+      { id: "londaxi-maimer", name: "Londaxi maimer", image: "", profiles: [{ range: '18"', attacks: "3", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT"] }] },
+      { id: "mind-wrench", name: "Mind Wrench", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "6", ap: "-2", damage: "D6+1", keywords: ["PRECISION", "PSYCHIC"] }] },
+      { id: "axe-of-ending", name: "Axe of Ending", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["ANTI-CHARACTER 2+", "PRECISION"] }] },
+      { id: "bionic-gauntlet", name: "Bionic gauntlet", image: "", profiles: [{ range: "Melee", attacks: "1", skill: "2+", strength: "6", ap: "-2", damage: "2" }] },
+      { id: "force-stave", name: "Force stave", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["PSYCHIC"] }] },
+      { id: "power-sabre", name: "Power sabre", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-2", damage: "1" }] },
+      { id: "reductor-array", name: "Reductor array", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "3+", strength: "4", ap: "-2", damage: "1" }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Choice Samples",
+        description: "While this unit's Garreon the Corpsemaster is on the battlefield, in your Command phase, select one of the following: you can return 1 destroyed model (excluding CHARACTER models) to this unit, or, if one or more HERETIC ASTARTES INFANTRY units from your army are below Starting Strength and within 3\" of this unit, you gain 1CP.",
+      },
+      {
+        name: "Fleet Command",
+        description: "After both players have deployed their armies, if this unit is on the battlefield (or any TRANSPORT it is embarked within is on the battlefield) select up to three HERETIC ASTARTES units from your army and redeploy them. When doing so, you can set those units up in Strategic Reserves, regardless of how many units are already in Strategic Reserves.",
+      },
+      {
+        name: "Plunder",
+        description: "Once per battle, after this unit ends a Normal move, you can select one visible enemy unit within 12\" of it and roll one D6: on a 2+, that enemy unit suffers D3+1 mortal wounds.",
+      },
+    ],
   },
 
 ];

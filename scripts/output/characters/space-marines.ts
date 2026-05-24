@@ -795,8 +795,8 @@ export const spaceMarinesCharacters: Character[] = [
         name: "Arma Luminis",
         image: "",
         profiles: [
-          { profileName: "Bolt pistol", range: '12"', attacks: "4", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["PISTOL"] },
-          { profilename: "Plasma pistol", range: '12"', attacks: "2", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL"] },
+          { profileName: "Bolt", range: '12"', attacks: "4", skill: "2+", strength: "4", ap: "-1", damage: "2", keywords: ["PISTOL"] },
+          { profileName: "Plasma", range: '12"', attacks: "2", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL"] },
         ],
       },
       {

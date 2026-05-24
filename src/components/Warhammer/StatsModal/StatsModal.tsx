@@ -336,10 +336,10 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
                       fontSize: "11px",
                       fontWeight: 700,
                       letterSpacing: "0.06em",
-                      color: "var(--accent)",
+                      color: a.name.toUpperCase().startsWith("DAMAGED") ? "#ff4444" : "var(--accent)",
                       marginBottom: "4px",
                     }}>
-                      {a.name}
+                      {a.name.toUpperCase().startsWith("DAMAGED") && "💀 "}{a.name}
                     </div>
                     <div style={{
                       fontFamily: "var(--font-mono)",
@@ -481,10 +481,10 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
                       fontSize: "11px",
                       fontWeight: 700,
                       letterSpacing: "0.06em",
-                      color: "var(--accent)",
+                      color: a.name.toUpperCase().startsWith("DAMAGED") ? "#ff4444" : "var(--accent)",
                       marginBottom: "4px",
                     }}>
-                      {a.name}
+                      {a.name.toUpperCase().startsWith("DAMAGED") && "💀 "}{a.name}
                     </div>
                     <div style={{
                       fontFamily: "var(--font-mono)",
@@ -575,10 +575,10 @@ export default function StatsModal({ unit, modelCount, selectedWargear, wargearC
                       fontSize: "11px",
                       fontWeight: 700,
                       letterSpacing: "0.06em",
-                      color: "var(--accent)",
+                      color: a.name.toUpperCase().startsWith("DAMAGED") ? "#ff4444" : "var(--accent)",
                       marginBottom: "4px",
                     }}>
-                      {a.name}
+                      {a.name.toUpperCase().startsWith("DAMAGED") && "💀 "}{a.name}
                     </div>
                     <div style={{
                       fontFamily: "var(--font-mono)",

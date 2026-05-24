@@ -243,7 +243,7 @@ export default function CharacterCard({
         }}>
 
           {/* LEFT: frame */}
-          <div style={{ display: "flex", alignItems: "flex-end" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 
             {/* Main frame */}
             <div style={{

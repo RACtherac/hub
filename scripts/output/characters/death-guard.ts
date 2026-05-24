@@ -472,4 +472,31 @@ export const deathGuardCharacters: Character[] = [
     wargear: [],
   },
 
+  {
+    id: "lord-of-poxes",
+    name: "Lord of Poxes",
+    faction: "death-guard",
+    image: "",
+    points: 75,
+    canAttachTo: ["plague-marines"],
+    defaultWargear: [
+      { id: "plasma-pistol-lord-of-poxes", name: "Plasma pistol", image: "", profiles: [
+        { profileName: "standard", range: '12"', attacks: "1", skill: "2+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
+        { profileName: "supercharge", range: '12"', attacks: "1", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
+      ] },
+      { id: "great-plague-blade", name: "Great plague blade", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS", "LETHAL HITS"] }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Gift of Poxes",
+        description: "Add 3\" to the range of this model's Contagion Range.",
+      },
+      {
+        name: "Shroud of Disease",
+        description: "While this model is leading a unit, that unit cannot be targeted by ranged attacks unless the attacking model is within 18\".",
+      },
+    ],
+  },
+
 ];
