@@ -141,12 +141,10 @@ export default function Portfolio() {
             <div className="reference-card">
               <h3 className="reference-name">Andreas Wijk</h3>
               <p className="reference-role">Former Manager — Växjö Arena Service, Evedal Camping & Badplats</p>
-              <a className="reference-contact" href="tel:0470734774">0470-734774</a>
             </div>
             <div className="reference-card">
               <h3 className="reference-name">Daniel Andersson</h3>
               <p className="reference-role">Mentor — Visma Enterprise AB</p>
-              <a className="reference-contact" href="mailto:daniel.andersson@visma.com">daniel.andersson@visma.com</a>
             </div>
           </div>
         </section>
