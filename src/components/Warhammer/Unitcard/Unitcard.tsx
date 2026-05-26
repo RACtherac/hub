@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import type { Unit, Character, UnitNote } from "../../../types/warhammer";
 import UnitImage from "../UnitImage/UnitImage";
 import WargearSelector from "../WargearSelector/WargearSelector";
