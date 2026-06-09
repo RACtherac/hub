@@ -67,11 +67,6 @@ export default function PokemonSlot({
     setDragOver(false);
   };
 
-  const handleEnergyChipTouchStart = (energy: EnergyType) => {
-    draggedEnergyRef = energy;
-    setDragOver(true);
-  };
-
   const confirmAdd = () => {
     const hp = parseInt(hpInput, 10);
     if (hp > 0) { onCreate(hp); setAdding(false); setHpInput("100"); }

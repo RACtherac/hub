@@ -14,7 +14,6 @@ export default function EnergyPool({ energies }: Props) {
   const handleTouchStart = (e: React.TouchEvent, energy: EnergyType) => {
     draggedEnergyRef.current = energy;
     // Set data for compatibility with drag event listeners
-    const touch = e.touches[0];
     const element = e.currentTarget as HTMLElement;
     element.style.opacity = "0.5";
   };
