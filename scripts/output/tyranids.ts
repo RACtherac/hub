@@ -136,6 +136,7 @@ export const tyranidsUnits: Unit[] = [
     image2: "/Warhammerimages/Tyranids/Biovores2.png",
     image3: "/Warhammerimages/Tyranids/Biovores3.png",
     points: 50,
+    imageCredit: "Painted by Alana K.A",
     pointsByModelCount: { 1: 50, 2: 100, 3: 150 },
     abilities: [
       {
@@ -343,6 +344,7 @@ export const tyranidsUnits: Unit[] = [
     image2: "/Warhammerimages/Tyranids/Ripper2.png",
     image3: "/Warhammerimages/Tyranids/Ripper3.png",
     modelCountOptions: [1, 2, 3],
+    imageCredit: "Painted by Alana K.A",
     pointsByModelCount: { 1: 25, 2: 40, 3: 50 },
     defaultWargear: [
       { id: "ripper-spinemaws", name: "Spinemaws", image: "", profiles: [{ range: '6"', attacks: "4", skill: "5+", strength: "3", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
@@ -856,6 +858,7 @@ export const tyranidsUnits: Unit[] = [
     faction: "tyranids",
     category: "monster",
     image: "/Warhammerimages/Tyranids/Screamer killer.png",
+    imageCredit: "Painted by Alana K.A",
     points: 125,
     defaultWargear: [
       { id: "bio-plasmic-scream", name: "Bio-plasmic scream", image: "", profiles: [{ range: '18"', attacks: "D6+3", skill: "4+", strength: "8", ap: "-2", damage: "1", keywords: ["ASSAULT", "BLAST"] }] },

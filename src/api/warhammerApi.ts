@@ -7,6 +7,7 @@ export interface ApiWargearOption {
   image?: string;
   points?: number;
   profiles?: WeaponProfile[];
+  linkedWargear?: string[];
 }
 
 export interface ApiUnit {

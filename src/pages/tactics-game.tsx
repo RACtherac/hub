@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ARMIES } from "../data/tactics/armies";
@@ -798,7 +799,7 @@ export default function TacticsGame() {
 
   const p1Army = ARMIES.find(a => a.id === p1ArmyId);
   const p2Army = ARMIES.find(a => a.id === p2ArmyId);
-  function teamLabel(t: 0 | 1) { return gameMode === "1v1" ? `Player ${t + 1}` : t === 0 ? "You" : "AI"; }
+  function teamLabel(t: 0 | 1) { return gameMode === "1v1" ? `Player ${t + 1}` : t === 0 ? "You" : "PC"; }
 
   function UnitPanel({ team }: { team: 0 | 1 }) {
     const isActive = currentTeam === team && phase === "playing" && !aiRunning.current;

@@ -27,8 +27,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 2.5rem;
+  padding: clamp(0.75rem, 3vw, 1.5rem) clamp(1rem, 4vw, 2.5rem);
   border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .wt-topbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
 
 .wt-topbar-back {
@@ -64,7 +71,7 @@
 
 /* ── Hero ── */
 .wt-hero {
-  padding: 3rem 2.5rem 2rem;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2rem);
   border-bottom: 1px solid var(--border);
   opacity: 0;
   animation: wtFade 0.4s ease forwards;
@@ -99,13 +106,25 @@
 
 /* ── Setup container ── */
 .wt-setup {
-  padding: 2rem 2.5rem 3rem;
+  padding: clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 3rem);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.75rem;
   opacity: 0;
   animation: wtFade 0.4s 0.1s ease forwards;
+}
+
+@media (max-width: 768px) {
+  .wt-setup--framed {
+    flex-direction: column;
+  }
+  
+  .wt-side-portraits {
+    width: 100%;
+    flex-direction: row;
+    padding: 1rem 0;
+  }
 }
 
 .wt-setup--framed {
@@ -269,6 +288,18 @@
 .wt-mode-cards {
   display: flex;
   gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .wt-mode-cards {
+    flex-direction: column;
+  }
+  
+  .wt-mode-card {
+    min-width: auto;
+    width: 100%;
+  }
 }
 
 .wt-mode-card {

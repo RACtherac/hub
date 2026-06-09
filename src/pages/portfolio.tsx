@@ -141,10 +141,12 @@ export default function Portfolio() {
             <div className="reference-card">
               <h3 className="reference-name">Andreas Wijk</h3>
               <p className="reference-role">Former Manager — Växjö Arena Service, Evedal Camping & Badplats</p>
+              <p>Contact info can be found in my resume.</p>
             </div>
             <div className="reference-card">
               <h3 className="reference-name">Daniel Andersson</h3>
               <p className="reference-role">Mentor — Visma Enterprise AB</p>
+              <p>Contact info can be found in my resume.</p>
             </div>
           </div>
         </section>

@@ -14,8 +14,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 2.5rem;
+  padding: clamp(0.75rem, 3vw, 1.5rem) clamp(1rem, 4vw, 2.5rem);
   border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .px-topbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
 
 .px-topbar-back {
@@ -43,8 +50,14 @@
 
 /* ── Hero ── */
 .px-hero {
-  padding: 3rem 2.5rem 2rem;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2.5rem) clamp(1rem, 3vw, 2rem);
   border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .px-hero {
+    padding: 1.5rem 1rem 1rem;
+  }
 }
 
 .px-eyebrow {
@@ -89,17 +102,34 @@
   flex: 1;
   opacity: 0;
   animation: pxFadeUp 0.5s 0.24s ease forwards;
+  flex-direction: column;
 }
 
-/* ── Sidebar ── */
+@media (max-width: 768px) {
+  .px-editor {
+    overflow-x: auto;
+  }
+}
+
 .px-sidebar {
   width: 176px;
   flex-shrink: 0;
   border-right: 1px solid var(--border);
-  padding: 1.25rem 1rem 1.5rem;
+  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(0.5rem, 2vw, 1rem) clamp(1rem, 2vw, 1.5rem);
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
+}
+
+@media (max-width: 768px) {
+  .px-sidebar {
+    width: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    flex-direction: row;
+    padding: 0.75rem;
+    overflow-x: auto;
+  }
 }
 
 .px-section-label {

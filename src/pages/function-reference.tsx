@@ -72,17 +72,17 @@ const PROJECTS: Project[] = [
       },
       {
         name: "PokemonSlot()",
-        description: "A single Pokémon card slot with drag-drop, HP controls, and knockout detection.",
-        detail: "Handles everything for one slot: renders the Pokémon's name, HP bar, and attached energy icons. Accepts dragged energy chips via onDrop and updates the energy count. Exposes + / − buttons for damage and healing. Detects when HP reaches 0 and triggers a knockout callback. Active slot has a glowing border; bench slots are dimmed when it's not the player's turn.",
+        description: "A single Pokémon card slot with drag-drop support (desktop & touch), HP controls, and knockout detection.",
+        detail: "Handles everything for one slot: renders the Pokémon's name, HP bar, and attached energy icons. Accepts dragged/touched energy chips via onDropEnergy and updates the energy count. Exposes +/− buttons for damage and healing. Detects when HP reaches 0 and triggers a knockout callback. Supports both HTML5 drag-and-drop events (desktop) and touch events (mobile) for full cross-platform drag-and-drop. Active slot has a glowing border; bench slots are dimmed when it's not the player's turn. In attack mode, slots become clickable targets.",
         file: "src/components/Pokemon/PokemonSlot.tsx",
-        props: ["pokemon: PokemonCard | null", "isActive: boolean", "onDamage: (n: number) => void", "onHeal: (n: number) => void", "onEnergyDrop: (type: string) => void"],
+        props: ["pokemon: Pokemon | null", "selected: boolean", "slotType: 'active' | 'bench'", "slotIndex?: number", "isAttackTarget?: boolean", "onDropEnergy: (energy: EnergyType) => void", "onPokemonDrop: (pokemon, fromType, fromIndex) => void"],
       },
       {
         name: "EnergyPool()",
-        description: "Displays the available energy types for the current player as coloured icons.",
-        detail: "Reads the current player's energy pool from game state and renders one icon per energy type that still has remaining energy. Used as a read-only display — does not handle drag interactions. Updates reactively when energy is spent (attached to a Pokémon) or when the turn switches.",
+        description: "Displays the available energy types for the current player as draggable chips.",
+        detail: "Receives an array of EnergyType values for the current player's drawn energy. Renders each energy as a draggable chip with an icon and label. Supports both HTML5 drag-and-drop (desktop) and touch events (mobile). When dragged or touched, sets the energy data so PokemonSlot's drop handlers can attach the energy to a Pokémon. Displays a semi-transparent visual feedback when touched/dragged on mobile.",
         file: "src/components/Pokemon/EnergyPool.tsx",
-        props: ["pool: Record<EnergyType, number>"],
+        props: ["energies: EnergyType[]"],
       },
       {
         name: "EnergyDragPool()",

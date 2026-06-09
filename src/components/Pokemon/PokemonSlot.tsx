@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { Pokemon, EnergyType } from "../../types/pokemon";
 
 type Props = {
@@ -21,6 +21,9 @@ const ENERGY_ICONS: Record<EnergyType, string> = {
   Grass: "🌿", Psychic: "🔮", Fighting: "🥊",
 };
 
+// Global ref to track dragged energy for touch support
+let draggedEnergyRef: string | null = null;
+
 export default function PokemonSlot({
   pokemon, selected, slotType, slotIndex, isAttackTarget,
   onSelect, onCreate, onDamage, onHeal, onDropEnergy, onPokemonDrop, onAttack,
@@ -28,6 +31,7 @@ export default function PokemonSlot({
   const [adding, setAdding] = useState(false);
   const [hpInput, setHpInput] = useState("100");
   const [dragOver, setDragOver] = useState(false);
+  const slotRef = useRef<HTMLDivElement>(null);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -49,6 +53,25 @@ export default function PokemonSlot({
 
   const handleDragLeave = () => setDragOver(false);
 
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!draggedEnergyRef) return;
+    const touch = e.changedTouches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (slotRef.current && (element === slotRef.current || slotRef.current.contains(element as Node))) {
+      const energy = draggedEnergyRef as EnergyType;
+      if (energy && pokemon) {
+        onDropEnergy(energy);
+      }
+    }
+    draggedEnergyRef = null;
+    setDragOver(false);
+  };
+
+  const handleEnergyChipTouchStart = (energy: EnergyType) => {
+    draggedEnergyRef = energy;
+    setDragOver(true);
+  };
+
   const confirmAdd = () => {
     const hp = parseInt(hpInput, 10);
     if (hp > 0) { onCreate(hp); setAdding(false); setHpInput("100"); }
@@ -59,10 +82,12 @@ export default function PokemonSlot({
   if (!pokemon) {
     return (
       <div
+        ref={slotRef}
         className={`pkm-slot pkm-slot--empty${isActiveSlot ? " pkm-slot--active-slot" : ""}${dragOver ? " pkm-slot--drag-over" : ""}`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        onTouchEnd={handleTouchEnd}
         onClick={() => !adding && setAdding(true)}
       >
         {adding ? (
@@ -90,6 +115,7 @@ export default function PokemonSlot({
   if (isAttackTarget && onAttack) {
     return (
       <div
+        ref={slotRef}
         className={`pkm-slot pkm-slot--target${isActiveSlot ? " pkm-slot--active-slot" : ""}`}
         onClick={pokemon ? onAttack : undefined}
       >
@@ -118,6 +144,7 @@ export default function PokemonSlot({
 
   return (
     <div
+      ref={slotRef}
       draggable
       onDragStart={(e) => {
         e.dataTransfer.setData("pokemon", JSON.stringify({ pokemon, fromType: slotType, fromIndex: slotIndex }));
@@ -125,6 +152,7 @@ export default function PokemonSlot({
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
+      onTouchEnd={handleTouchEnd}
       onClick={onSelect}
       className={`pkm-slot${isActiveSlot ? " pkm-slot--active-slot" : ""}${dragOver ? " pkm-slot--drag-over" : ""}`}
     >

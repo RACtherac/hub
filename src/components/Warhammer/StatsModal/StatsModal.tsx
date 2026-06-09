@@ -1,4 +1,5 @@
 import React from "react";
+import "./stats-modal.css";
 import type { Unit, Character, WargearOption } from "../../../types/warhammer";
 
 interface Props {

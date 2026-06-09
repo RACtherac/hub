@@ -8,13 +8,25 @@
   max-width: 860px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 2rem 3rem;
+  padding: 0 clamp(1rem, 4vw, 2rem) clamp(1.5rem, 4vw, 3rem);
 }
 
 .pkm-setup-hero {
-  padding: 3.5rem 0 2.5rem;
+  padding: clamp(2rem, 5vw, 3.5rem) 0 clamp(1.5rem, 4vw, 2.5rem);
   border-bottom: 1px solid var(--border);
-  margin-bottom: 2.5rem;
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+@media (max-width: 768px) {
+  .pkm-setup {
+    padding: 0 1rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pkm-setup {
+    padding: 0 0.75rem 1rem;
+  }
 }
 
 .pkm-setup-eyebrow {
@@ -60,8 +72,17 @@
   margin-bottom: 2.5rem;
 }
 
-@media (max-width: 600px) {
-  .pkm-setup-players { grid-template-columns: 1fr; }
+@media (max-width: 768px) {
+  .pkm-setup-players {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pkm-setup-players {
+    gap: 1rem;
+  }
 }
 
 .pkm-setup-player {
@@ -211,9 +232,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 2.5rem;
+  padding: clamp(0.75rem, 3vw, 1.5rem) clamp(1rem, 4vw, 2.5rem);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .pkm-topbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
 
 .pkm-topbar-back {
@@ -248,12 +276,18 @@
 /* ── Player board ── */
 .pkm-board {
   flex: 1;
-  padding: 2rem 2.5rem;
+  padding: clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 2.5rem);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   border-bottom: 1px solid var(--border);
   transition: opacity 0.2s;
+}
+
+@media (max-width: 768px) {
+  .pkm-board {
+    gap: 1rem;
+  }
 }
 
 .pkm-board--inactive {
@@ -587,6 +621,31 @@
   cursor: grabbing;
   opacity: 0.7;
   transform: scale(0.96);
+}
+
+/* Mobile adjustments for energy pool */
+@media (max-width: 768px) {
+  .pkm-energy-pool {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  
+  .pkm-energy-chip {
+    flex-shrink: 0;
+    min-width: fit-content;
+  }
+}
+
+@media (max-width: 480px) {
+  .pkm-energy-pool {
+    gap: 0.4rem;
+  }
+  
+  .pkm-energy-chip {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.62rem;
+  }
 }
 
 /* Energy type colors */

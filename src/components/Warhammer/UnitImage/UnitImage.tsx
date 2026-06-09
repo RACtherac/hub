@@ -206,7 +206,6 @@ export default function UnitImage({
               opacity: 0.85,
               letterSpacing: "0.05em",
             }}>
-              <span style={{ color: "var(--text-dim)", marginRight: "6px" }}>{label}:</span>
               {credit}
             </div>
           ))}

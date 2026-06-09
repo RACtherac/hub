@@ -11,8 +11,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 2.5rem;
+  padding: clamp(0.75rem, 3vw, 1.5rem) clamp(1rem, 4vw, 2.5rem);
   border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .mg-topbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
 
 .mg-topbar-back {
@@ -39,10 +46,21 @@
 
 /* ── Masthead ── */
 .mg-masthead {
-  padding: 5rem 5vw 3rem;
+  padding: clamp(2.5rem, 8vw, 5rem) clamp(2vw, 5vw, 5vw) clamp(1.5rem, 4vw, 3rem);
   text-align: center;
   border-bottom: 1px solid var(--border);
   overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .mg-masthead {
+    padding: 2rem 1rem 1.5rem;
+  }
+  
+  .mg-masthead-meta {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
 
 .mg-masthead-meta {
@@ -92,6 +110,12 @@ hr.mg-rule {
 .mg-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
+}
+
+@media (max-width: 1024px) {
+  .mg-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Row 1: feature + editor letter */

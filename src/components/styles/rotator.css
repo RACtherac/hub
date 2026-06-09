@@ -1,7 +1,7 @@
 .rotator {
   position: relative;
-  width: 600px;
-  height: 350px;
+  width: min(600px, 95vw);
+  height: clamp(250px, 60vw, 350px);
   margin: 2rem auto;
   overflow: hidden;
   border-radius: 10px;

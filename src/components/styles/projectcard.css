@@ -1,6 +1,6 @@
 .project-card {
   position: relative;
-  padding: 2rem 2rem 2.2rem;
+  padding: clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem) clamp(1.1rem, 4vw, 2.2rem);
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   cursor: pointer;
@@ -9,6 +9,10 @@
   transition: background 0.25s ease;
   opacity: 0;
   animation: cardIn 0.5s ease forwards;
+  min-height: 12rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .project-card:hover {
@@ -41,7 +45,7 @@
   position: absolute;
   top: -0.15em;
   right: -0.08em;
-  font-size: 7rem;
+  font-size: clamp(3rem, 15vw, 7rem);
   font-weight: 800;
   line-height: 1;
   color: var(--text-faint);
@@ -51,12 +55,18 @@
   letter-spacing: -0.04em;
 }
 
+@media (max-width: 480px) {
+  .project-card-bg-num {
+    font-size: 3rem;
+  }
+}
+
 .project-card:hover .project-card-bg-num {
   color: var(--accent-dim);
 }
 
 .project-card h2 {
-  font-size: 1.35rem;
+  font-size: clamp(1rem, 4vw, 1.35rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #f0ece4;
@@ -85,9 +95,23 @@
   z-index: 1;
 }
 
-.project-card:hover .project-card-arrow {
-  color: var(--accent);
-  transform: translate(3px, -3px);
+@media (max-width: 768px) {
+  .project-card-arrow {
+    bottom: 1rem;
+    right: 1rem;
+  }
+  
+  .project-card:active .project-card-arrow {
+    color: var(--accent);
+    transform: translate(3px, -3px);
+  }
+}
+
+@media (hover: hover) {
+  .project-card:hover .project-card-arrow {
+    color: var(--accent);
+    transform: translate(3px, -3px);
+  }
 }
 
 /* Staggered entrance per nth-child */

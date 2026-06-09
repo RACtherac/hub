@@ -112,11 +112,13 @@ function DetailView({
   onBack,
   onEdit,
   onDelete,
+  onDuplicate,
 }: {
   record: MiniatureRecord;
   onBack: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onDuplicate: () => void;
 }) {
   function exportRecord() {
     const data = { version: 1, exportedAt: new Date().toISOString(), records: [record] };
@@ -222,6 +224,9 @@ function DetailView({
           <button className="pt-edit-btn" onClick={onEdit}>
             edit
           </button>
+          <button className="pt-io-btn" onClick={onDuplicate}>
+            duplicate
+          </button>
           <button className="pt-io-btn" onClick={exportRecord}>
             JSON ↓
           </button>
@@ -317,6 +322,7 @@ function EditorForm({
   const fileRef = useRef<HTMLInputElement>(null);
   const dragPaint = useRef<{ collectionId: string; paintId: string } | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
+  const [dropTargetPaint, setDropTargetPaint] = useState<{ collectionId: string; paintId: string } | null>(null);
 
   function handleImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -386,10 +392,35 @@ function EditorForm({
 
   function handleDrop(targetCollectionId: string) {
     setDropTarget(null);
+    setDropTargetPaint(null);
     const src = dragPaint.current;
     if (!src) return;
     dragPaint.current = null;
-    if (src.collectionId === targetCollectionId) return;
+
+    // If same collection, reorder paints
+    if (src.collectionId === targetCollectionId) {
+      if (!dropTargetPaint) return;
+      
+      setCollections((prev) =>
+        prev.map((c) => {
+          if (c.id !== targetCollectionId) return c;
+          
+          const srcIndex = c.paints.findIndex((p) => p.id === src.paintId);
+          const targetIndex = c.paints.findIndex((p) => p.id === dropTargetPaint.paintId);
+          
+          if (srcIndex === -1 || targetIndex === -1) return c;
+          
+          const newPaints = [...c.paints];
+          const [draggedPaint] = newPaints.splice(srcIndex, 1);
+          newPaints.splice(targetIndex, 0, draggedPaint);
+          
+          return { ...c, paints: newPaints };
+        })
+      );
+      return;
+    }
+
+    // Moving between collections
     setCollections((prev) => {
       const paint = prev.find((c) => c.id === src.collectionId)?.paints.find((p) => p.id === src.paintId);
       if (!paint) return prev;
@@ -526,10 +557,22 @@ function EditorForm({
                 {col.paints.map((paint, i) => (
                   <div
                     key={paint.id}
-                    className="pt-paint-entry"
+                    className={`pt-paint-entry${dropTargetPaint?.paintId === paint.id ? " pt-paint-entry--drop-target" : ""}`}
                     draggable
                     onDragStart={() => handleDragStart(col.id, paint.id)}
-                    onDragEnd={() => { dragPaint.current = null; setDropTarget(null); }}
+                    onDragEnd={() => { dragPaint.current = null; setDropTarget(null); setDropTargetPaint(null); }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      if (dragPaint.current?.collectionId === col.id) {
+                        setDropTargetPaint({ collectionId: col.id, paintId: paint.id });
+                      }
+                    }}
+                    onDragLeave={() => {
+                      if (dropTargetPaint?.paintId === paint.id) {
+                        setDropTargetPaint(null);
+                      }
+                    }}
+                    onDrop={() => handleDrop(col.id)}
                   >
                     <span className="pt-entry-num">{String(i + 1).padStart(2, "0")}</span>
                     <input
@@ -662,6 +705,18 @@ export default function PaintTracker() {
     setView({ type: "gallery" });
   }
 
+  function handleDuplicate(id: string) {
+    const recordToDuplicate = records.find((r) => r.id === id);
+    if (!recordToDuplicate) return;
+    const duplicated: MiniatureRecord = {
+      ...recordToDuplicate,
+      id: crypto.randomUUID(),
+      name: `${recordToDuplicate.name} (copy)`,
+    };
+    setRecords((prev) => [duplicated, ...prev]);
+    setView({ type: "detail", id: duplicated.id });
+  }
+
   const currentRecord =
     view.type !== "gallery"
       ? records.find((r) => r.id === (view.type === "detail" ? view.id : view.id))
@@ -759,6 +814,7 @@ export default function PaintTracker() {
           record={currentRecord}
           onBack={() => setView({ type: "gallery" })}
           onEdit={() => setView({ type: "editor", id: currentRecord.id })}
+          onDuplicate={() => handleDuplicate(currentRecord.id)}
           onDelete={() => handleDelete(currentRecord.id)}
         />
       )}
