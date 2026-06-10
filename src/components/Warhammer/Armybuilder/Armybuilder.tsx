@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useWarhammerData } from "../../../hooks/useWarhammerData";
 import UnitCard from "../Unitcard/Unitcard";
 import CharacterCard from "../CharacterCard/CharacterCard";
-import "./armybuilder.css";
 import type { UnitCategory, Faction, SuperFaction, Unit } from "../../../types/warhammer";
 
 interface ArmyUnit {
