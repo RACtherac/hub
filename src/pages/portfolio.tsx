@@ -15,6 +15,7 @@ const projects = [
   { name: "Password Strength Checker", description: "Analyse a password's strength, entropy, and get improvement suggestions.", path: "/password-strength" },
   { name: "Rate Limiter Demo", description: "Fire requests at a live API and watch the rate limiter block you at 5 per 10s.", path: "/rate-limiter" },
   { name: "The Log", description: "A personal blog — project updates, education notes, and hobby dispatches.", path: "/blog" },
+  { name: "Dice Balance Tester", description: "Test the balance of a physical die by entering the counts of each face.", path: "/dice-balance-tester" },
   { name: "Function Reference", description: "A developer index of every project's components and functions.", path: "/function-reference" },
 ];
 

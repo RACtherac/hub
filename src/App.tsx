@@ -10,6 +10,7 @@ import TacticsGame from "./pages/tactics-game";
 import PasswordStrength from "./pages/password-strength";
 import RateLimiter from "./pages/rate-limiter";
 import Magazine from "./pages/magazine";
+import DiceBalanceTester from "./pages/dice-balance-tester";
 import FunctionReference from "./pages/function-reference";
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/password-strength" element={<PasswordStrength />} />
         <Route path="/rate-limiter" element={<RateLimiter />} />
         <Route path="/blog" element={<Magazine />} />
+        <Route path="/dice-balance-tester" element={<DiceBalanceTester />} />
         <Route path="/function-reference" element={<FunctionReference />} />
       </Routes>
     </BrowserRouter>
