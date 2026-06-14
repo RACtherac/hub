@@ -49,6 +49,15 @@ export default function Portfolio() {
               GitHub <span className="link-arrow">↗</span>
             </a>
           </div>
+          <div className="portfolio-links">
+            <a
+            href="https://www.linkedin.com/in/oscar-hugosson-736267341/"
+              target="blank"
+              rel="noopener noreferrer"
+              >
+                Linkedin <span className="link-arrow">↗</span>
+            </a>
+          </div>
         </div>
       </header>
 
