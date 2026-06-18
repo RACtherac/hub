@@ -54,6 +54,11 @@ const projects: Project[] = [
     branch: "magazine",
   },
   {
+    name: "Dice Balance Tester",
+    description: "Test the balance of a physical die by entering the counts of each face.",
+    branch: "dice-balance-tester",
+  },
+  {
     name: "Function Reference",
     description: "A developer index of every project's components and functions.",
     branch: "function-reference",

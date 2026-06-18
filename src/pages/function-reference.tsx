@@ -408,6 +408,109 @@ const PROJECTS: Project[] = [
       },
     ],
   },
+  {
+  id: "dice",
+  label: "Dice Balance Tester",
+  tag: "tool",
+  route: "/dice-balance-tester",
+
+  description:
+    "Statistical dice analysis tool with chi-square testing, bootstrap resampling, fairness scoring, and distribution visualisation.",
+
+  tree: {
+    name: "DiceBalanceTester()",
+    children: [
+      { name: "DiceInput()" },
+      { name: "StatsPanel()" },
+      { name: "BalanceVerdict()" },
+      { name: "DistributionChart()" }
+    ]
+  },
+
+  improvements: [
+    "Support d4, d6, d8, d10, d12 and d20.",
+    "Export results as PDF.",
+    "Import roll logs from CSV.",
+    "Compare multiple dice side-by-side.",
+    "Show bootstrap confidence intervals for each face."
+  ],
+
+  functions: [
+    {
+      name: "DiceBalanceTester()",
+      description:
+        "Main page component managing roll counts, analysis, and visualisation.",
+
+      detail:
+        "Stores face counts in state, allows manual entry and quick-roll recording, calculates fairness metrics, and renders charts and verdicts.",
+
+      file: "src/pages/dice-balance-tester.tsx",
+
+      state: [
+        "counts: number[]",
+        "selectedDie: number"
+      ]
+    },
+
+    {
+      name: "DiceInput()",
+      description:
+        "Input panel for entering roll counts manually or incrementing results.",
+
+      detail:
+        "Provides numeric inputs for each face and quick-add buttons for live recording.",
+
+      file:
+        "src/components/dice-balance/DiceInput.tsx",
+
+      props: [
+        "counts: number[]",
+        "onChange: (index:number,value:number)=>void",
+        "onIncrement: (face:number)=>void"
+      ]
+    },
+
+    {
+      name: "analyzeDice()",
+      description:
+        "Calculates fairness metrics from observed rolls.",
+
+      detail:
+        "Computes expected frequencies, chi-square statistic, bootstrap confidence intervals, fairness score and final rating.",
+
+      file:
+        "src/utils/diceAnalysis.ts"
+    },
+
+    {
+      name: "bootstrapChiSquare()",
+      description:
+        "Performs bootstrap resampling of the observed data.",
+
+      detail:
+        "Expands counts into a roll history, repeatedly samples with replacement, recalculates chi-square, and produces confidence intervals.",
+
+      file:
+        "src/utils/diceAnalysis.ts"
+    },
+
+    {
+      name: "DistributionChart()",
+      description:
+        "Visualises face frequencies as percentage bars.",
+
+      detail:
+        "Displays observed frequencies for each face and highlights deviations from expected values.",
+
+      file:
+        "src/components/dice-balance/DistributionChart.tsx",
+
+      props: [
+        "counts: number[]"
+      ]
+    }
+  ]
+}
 ];
 
 const TAG_COLORS: Record<string, string> = {
