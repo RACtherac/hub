@@ -59,6 +59,11 @@ const projects: Project[] = [
     branch: "dice-balance-tester",
   },
   {
+  name: "Project Tree",
+  description:"A draggable knowledge tree with notes, links, and attachments.",
+  branch: "tree",
+},
+  {
     name: "Function Reference",
     description: "A developer index of every project's components and functions.",
     branch: "function-reference",
