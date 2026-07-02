@@ -53,11 +53,11 @@ const projects: Project[] = [
     description: "A personal blog — project updates, education notes, and hobby dispatches.",
     branch: "magazine",
   },
-  {
-    name: "Dice Balance Tester",
-    description: "Test the balance of a physical die by entering the counts of each face.",
-    branch: "dice-balance-tester",
-  },
+  //{
+   // name: "Dice Balance Tester",
+   // description: "Test the balance of a physical die by entering the counts of each face.",
+   // branch: "dice-balance-tester",
+ // },
   {
   name: "Project Tree",
   description:"A draggable knowledge tree with notes, links, and attachments.",

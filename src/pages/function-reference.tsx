@@ -410,9 +410,9 @@ const PROJECTS: Project[] = [
   },
   {
   id: "dice",
-  label: "Dice Balance Tester",
+  label: "Dice Balance Tester -curently removed-",
   tag: "tool",
-  route: "/dice-balance-tester",
+  route: "",
 
   description:
     "Statistical dice analysis tool with chi-square testing, bootstrap resampling, fairness scoring, and distribution visualisation.",
@@ -444,7 +444,7 @@ const PROJECTS: Project[] = [
       detail:
         "Stores face counts in state, allows manual entry and quick-roll recording, calculates fairness metrics, and renders charts and verdicts.",
 
-      file: "src/pages/dice-balance-tester.tsx",
+      file: "",
 
       state: [
         "counts: number[]",
@@ -510,7 +510,140 @@ const PROJECTS: Project[] = [
       ]
     }
   ]
-}
+},
+{
+  id: "projecttree",
+  label: "Project Tree",
+  tag: "tool",
+  route: "/project-tree",
+  description:
+    "Hierarchical project documentation tool with draggable nodes, rich content blocks, image support, JSON import/export, and a visual knowledge tree.",
+
+  tree: {
+    name: "ProjectTree()",
+    children: [
+      {
+        name: "TreeToolbar()",
+      },
+      {
+        name: "Tree()",
+        children: [
+          {
+            name: "TreeNode()",
+          },
+        ],
+      },
+      {
+        name: "NodeEditor()",
+      },
+    ],
+  },
+
+  improvements: [
+    "Support drag-and-drop reordering of content blocks within a node.",
+    "Add searchable tags and categories for nodes.",
+    "Allow collapsing and expanding all tree branches at once.",
+    "Support Markdown formatting inside text and note blocks.",
+    "Add automatic backlinks between related nodes.",
+    "Add version history so node edits can be restored.",
+    "Export documentation as Markdown, PDF, or HTML.",
+    "Support collaborative editing and cloud synchronization.",
+  ],
+
+  functions: [
+    {
+      name: "ProjectTree()",
+      description:
+        "Main page component managing the entire project tree, node editor, and application state.",
+
+      detail:
+        "Acts as the root component for the application. Stores the complete tree structure, currently selected node, drag-and-drop state, and editing actions. Handles creating, deleting, renaming, moving, importing, and exporting nodes. Passes callbacks to the Tree and NodeEditor components so they can modify the shared tree while keeping all state centralized.",
+
+      file: "src/pages/project-tree.tsx",
+
+      state: [
+        "tree: TreeNodeData",
+        "selectedNodeId: string | null",
+        "imageTarget: string | null",
+      ],
+    },
+
+    {
+      name: "Tree()",
+      description:
+        "Displays the hierarchical node structure with drag-and-drop support.",
+
+      detail:
+        "Wraps the tree inside a DndContext and renders every root node recursively using TreeNode components. Handles drag events and forwards move operations to the parent component when a node is dropped.",
+
+      file: "src/components/Tree/Tree.tsx",
+
+      props: [
+        "tree: TreeNodeData",
+        "selectedId: string | null",
+        "onMove()",
+        "onSelect()",
+      ],
+    },
+
+    {
+      name: "TreeNode()",
+      description:
+        "Renders a single tree node with editing, deletion, child creation, and drag handles.",
+
+      detail:
+        "Represents one item inside the project tree. Supports inline renaming, expanding and collapsing children, adding child nodes, deleting nodes, and dragging to reorder the hierarchy. Recursively renders child TreeNode components to build the full tree.",
+
+      file: "src/components/Tree/TreeNode.tsx",
+
+      props: [
+        "node: TreeNodeData",
+        "selectedId: string | null",
+        "onSelect()",
+        "onDelete()",
+        "onRename()",
+        "onToggle()",
+        "onAddChild()",
+      ],
+    },
+
+    {
+      name: "TreeToolbar()",
+      description:
+        "Toolbar providing project import, export, and root node creation.",
+
+      detail:
+        "Displays dropdown menus for file operations and tree management. Allows importing and exporting the project as JSON and creating new root nodes while keeping the interface minimal.",
+
+      file: "src/components/Tree/TreeToolbar.tsx",
+
+      props: [
+        "onAddRoot()",
+        "onImportJson()",
+        "onExportJson()",
+      ],
+    },
+
+    {
+      name: "NodeEditor()",
+      description:
+        "Editor panel used for modifying the selected node's content blocks.",
+
+      detail:
+        "Displays the selected node's page title and all attached content blocks. Supports text, notes, links, and image blocks with individual editing controls. Allows adding new blocks, deleting blocks, reordering them, and uploading images while updating the shared tree state.",
+
+      file: "src/components/Tree/NodeEditor.tsx",
+
+      props: [
+        "selectedNode: TreeNodeData",
+        "onUpdateBlock()",
+        "onAddBlock()",
+        "onDeleteBlock()",
+        "onMoveBlock()",
+      ],
+    },
+  ],
+},
 ];
 
 const TAG_COLORS: Record<string, string> = {

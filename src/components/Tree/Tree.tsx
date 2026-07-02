@@ -49,6 +49,8 @@ export default function Tree({
 
     if (!over) return;
 
+    if (active.id === over.id) return;
+
     onMove(
       String(active.id),
       String(over.id)
@@ -61,6 +63,12 @@ export default function Tree({
       onDragEnd={handleDragEnd}
     >
       <div className="tree">
+        {tree.children.length === 0 && (
+          <div className="tree-empty">
+            Create your first node.
+          </div>
+        )}
+
         {tree.children.map((child) => (
           <TreeNode
             key={child.id}

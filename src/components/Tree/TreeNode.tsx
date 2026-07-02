@@ -122,23 +122,36 @@ export default function TreeNode({
           </span>
         )}
 
-        <button
-          className="tree-add"
-          onClick={() =>
-            onAddChild(node.id)
-          }
-        >
-          +
-        </button>
+      <div className="tree-actions">
+  <button
+    className="tree-add"
+    title="Add Child"
+    onClick={() =>
+      onAddChild(node.id)
+    }
+  >
+    ＋
+  </button>
 
-        <button
-          className="tree-delete"
-          onClick={() =>
-            onDelete(node.id)
-          }
-        >
-          🗑
-        </button>
+  <button
+    title="Rename"
+    onClick={() =>
+      setEditing(true)
+    }
+  >
+    ✎
+  </button>
+
+  <button
+    className="tree-delete"
+    title="Delete"
+    onClick={() =>
+      onDelete(node.id)
+    }
+  >
+    🗑
+  </button>
+</div>
       </div>
 
       {isActiveOver &&

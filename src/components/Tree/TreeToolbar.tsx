@@ -5,20 +5,18 @@ interface Props {
 
   onImportJson: () => void;
   onExportJson: () => void;
-
-  onImportImages: () => void;
 }
 
 export default function TreeToolbar({
   onAddRoot,
   onImportJson,
   onExportJson,
-  onImportImages,
 }: Props) {
-  const [openMenu, setOpenMenu] =
-    useState<string | null>(null);
+  const [openMenu, setOpenMenu] = useState<
+    "file" | "tree" | null
+  >(null);
 
-  function toggleMenu(menu: string) {
+  function toggle(menu: "file" | "tree") {
     setOpenMenu((prev) =>
       prev === menu ? null : menu
     );
@@ -26,28 +24,16 @@ export default function TreeToolbar({
 
   return (
     <div className="menu-bar">
-      {/* FILE */}
       <div className="menu">
         <button
-          className="menu-trigger"
-          onClick={() =>
-            toggleMenu("file")
-          }
+          className="menu-button"
+          onClick={() => toggle("file")}
         >
-          File ▼
+          File ▾
         </button>
 
         {openMenu === "file" && (
           <div className="menu-dropdown">
-            <button
-              onClick={() => {
-                onAddRoot();
-                setOpenMenu(null);
-              }}
-            >
-              New Node
-            </button>
-
             <button
               onClick={() => {
                 onImportJson();
@@ -69,50 +55,23 @@ export default function TreeToolbar({
         )}
       </div>
 
-      {/* IMAGES */}
       <div className="menu">
         <button
-          className="menu-trigger"
-          onClick={() =>
-            toggleMenu("images")
-          }
+          className="menu-button"
+          onClick={() => toggle("tree")}
         >
-          Images ▼
-        </button>
-
-        {openMenu === "images" && (
-          <div className="menu-dropdown">
-            <button
-              onClick={() => {
-                onImportImages();
-                setOpenMenu(null);
-              }}
-            >
-              Import Images
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* TREE */}
-      <div className="menu">
-        <button
-          className="menu-trigger"
-          onClick={() =>
-            toggleMenu("tree")
-          }
-        >
-          Tree ▼
+          Tree ▾
         </button>
 
         {openMenu === "tree" && (
           <div className="menu-dropdown">
-            <button disabled>
-              Expand All
-            </button>
-
-            <button disabled>
-              Collapse All
+            <button
+              onClick={() => {
+                onAddRoot();
+                setOpenMenu(null);
+              }}
+            >
+              Add Root Node
             </button>
           </div>
         )}
