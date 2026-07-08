@@ -63,6 +63,11 @@ const projects: Project[] = [
   description:"A draggable knowledge tree with notes, links, and attachments.",
   branch: "tree",
 },
+{
+  name: "Family tree",
+  description:"A draggable knowledge tree with notes, links, and attachments.",
+  branch: "tree",
+},
   {
     name: "Function Reference",
     description: "A developer index of every project's components and functions.",

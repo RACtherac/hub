@@ -13,6 +13,8 @@ import Magazine from "./pages/magazine";
 import DiceBalanceTester from "./pages/dice-balance-tester";
 import ProjectTree from "./pages/project-tree";
 import FunctionReference from "./pages/function-reference";
+import FamilyTree from "./pages/FamilyTree";
+
 
 
 export default function App() {
@@ -31,6 +33,7 @@ export default function App() {
         <Route path="/blog" element={<Magazine />} />
         <Route path="/dice-balance-tester" element={<DiceBalanceTester />} />
         <Route path="/project-tree" element={<ProjectTree />} />
+        <Route path="/Familytree" element={<FamilyTree />} />
         <Route path="/function-reference" element={<FunctionReference />} />
       </Routes>
     </BrowserRouter>
