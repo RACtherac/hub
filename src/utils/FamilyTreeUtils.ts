@@ -440,6 +440,48 @@ export function sortPeople(
 }
 
 // =====================================
+// Auto Layout
+// =====================================
+
+export function createAutoLayoutPositions(members: FamilyMember[]): Record<string, { x: number; y: number }> {
+    const positions: Record<string, { x: number; y: number }> = {};
+    const memberMap = new Map(members.map(member => [member.id, member]));
+
+    const computeLevel = (member: FamilyMember, visited = new Set<string>()): number => {
+        if (visited.has(member.id)) return 0;
+        visited.add(member.id);
+
+        if (member.parents.length === 0) return 0;
+
+        const parentLevels = member.parents
+            .map(parentId => memberMap.get(parentId))
+            .filter((parent): parent is FamilyMember => Boolean(parent))
+            .map(parent => computeLevel(parent, visited));
+
+        return parentLevels.length > 0 ? Math.max(...parentLevels) + 1 : 0;
+    };
+
+    const levelMap = new Map<number, FamilyMember[]>();
+    members.forEach(member => {
+        const level = computeLevel(member);
+        const list = levelMap.get(level) ?? [];
+        list.push(member);
+        levelMap.set(level, list);
+    });
+
+    Array.from(levelMap.entries())
+        .sort(([levelA], [levelB]) => levelA - levelB)
+        .forEach(([level, levelMembers]) => {
+            const sorted = [...levelMembers].sort((a, b) => getFullName(a).localeCompare(getFullName(b)));
+            sorted.forEach((member, index) => {
+                positions[member.id] = { x: index, y: level };
+            });
+        });
+
+    return positions;
+}
+
+// =====================================
 // Statistics
 // =====================================
 
@@ -502,22 +544,50 @@ export function importJSON(json: string): FamilyTreeData {
 const STORAGE_KEY = "family-tree-data";
 
 export function saveTree(tree: FamilyTreeData) {
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(tree)
-    );
+    if (typeof window === "undefined") return;
+
+    try {
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(tree)
+        );
+    }
+    catch {
+        // Ignore storage errors so the tree remains usable in the browser.
+    }
 }
 
 export function loadTree(): FamilyTreeData {
-    const saved = localStorage.getItem(STORAGE_KEY);
-
-    if (!saved) {
+    if (typeof window === "undefined") {
         return {
             members: [],
         };
     }
 
-    return JSON.parse(saved);
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if (!saved) {
+            return {
+                members: [],
+            };
+        }
+
+        const parsed = JSON.parse(saved);
+
+        if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.members)) {
+            return {
+                members: [],
+            };
+        }
+
+        return parsed as FamilyTreeData;
+    }
+    catch {
+        return {
+            members: [],
+        };
+    }
 }
 
 // =====================================

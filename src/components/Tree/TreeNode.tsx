@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useDraggable,
   useDroppable,
@@ -35,6 +35,10 @@ export default function TreeNode({
 }: Props) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(node.title);
+
+  useEffect(() => {
+    setValue(node.title);
+  }, [node.title]);
 
   const {
     setNodeRef,
@@ -97,12 +101,28 @@ export default function TreeNode({
               setValue(e.target.value)
             }
             onBlur={() => {
-              onRename(node.id, value);
+              const trimmed = value.trim();
+
+              if (trimmed) {
+                onRename(node.id, trimmed);
+              }
+
               setEditing(false);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                onRename(node.id, value);
+                e.preventDefault();
+                const trimmed = value.trim();
+
+                if (trimmed) {
+                  onRename(node.id, trimmed);
+                }
+
+                setEditing(false);
+              }
+
+              if (e.key === "Escape") {
+                setValue(node.title);
                 setEditing(false);
               }
             }}

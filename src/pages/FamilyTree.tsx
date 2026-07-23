@@ -12,6 +12,7 @@ import {
     connectParentChild,
     connectSiblings,
     connectSpouses,
+    createAutoLayoutPositions,
     createPerson,
     createSampleTree,
     deletePerson,
@@ -45,6 +46,9 @@ const FamilyTree: React.FC = () => {
     const [zoom, setZoom] =
         useState(1);
 
+    const [viewOffset, setViewOffset] =
+        useState({ x: 0, y: 0 });
+
     const [memberPositions, setMemberPositions] =
         useState<Record<string, { x: number; y: number }>>({});
 
@@ -53,6 +57,13 @@ const FamilyTree: React.FC = () => {
 
     const [relationTarget, setRelationTarget] =
         useState("");
+
+    const CARD_WIDTH = 180;
+    const CARD_HEIGHT = 200;
+    const GRID_STEP_X = 240;
+    const GRID_STEP_Y = 260;
+    const NODE_OFFSET_X = 90;
+
 
     const [relationType, setRelationType] =
         useState<"parent" | "child" | "spouse" | "sibling" | "cousin" | "ex-spouse">(
@@ -72,6 +83,8 @@ const FamilyTree: React.FC = () => {
             fromY: number;
             toX: number;
             toY: number;
+            controlX: number;
+            controlY: number;
             type: "parent" | "spouse" | "sibling" | "cousin" | "ex-spouse";
         }[]>([]);
 
@@ -87,18 +100,24 @@ const FamilyTree: React.FC = () => {
 
     useEffect(() => {
 
-        const loaded = loadTree();
+        try {
+            const loaded = loadTree();
 
-        if (loaded.members.length === 0) {
-
+            if (loaded.members.length === 0) {
+                setTree(createSampleTree());
+            }
+            else {
+                setTree(loaded);
+            }
+        }
+        catch {
             setTree(createSampleTree());
-
         }
-        else {
 
-            setTree(loaded);
-
-        }
+        setMemberPositions({});
+        setZoom(1);
+        setViewOffset({ x: 0, y: 0 });
+        setSelected(null);
 
     }, []);
 
@@ -209,34 +228,30 @@ const FamilyTree: React.FC = () => {
 
     useEffect(() => {
         setMemberPositions(prev => {
-            const next = { ...prev };
-            let changed = false;
+            const nextPositions = createAutoLayoutPositions(displayedMembers);
+            const hasChanged = Object.keys(nextPositions).some(id => {
+                const current = prev[id];
+                const next = nextPositions[id];
+                return !current || current.x !== next.x || current.y !== next.y;
+            });
 
-            Array.from(grouped.entries())
-                .sort(([levelA], [levelB]) => levelA - levelB)
-                .forEach(([level, people]) => {
-                    people.forEach((person, index) => {
-                        const current = next[person.id];
-                        if (!current || current.x !== index || current.y !== level) {
-                            next[person.id] = { x: index, y: level };
-                            changed = true;
-                        }
-                    });
-                });
+            if (!hasChanged && Object.keys(prev).length === Object.keys(nextPositions).length) {
+                return prev;
+            }
 
-            return changed ? next : prev;
+            return nextPositions;
         });
-    }, [grouped]);
+    }, [displayedMembers]);
 
     const handleDropOnTree = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         if (!draggedMemberId || !treeRef.current) return;
 
         const rect = treeRef.current.getBoundingClientRect();
-        const gridStepX = 220;
-        const gridStepY = 240;
-        const x = Math.max(0, Math.round((event.clientX - rect.left) / gridStepX));
-        const y = Math.max(0, Math.round((event.clientY - rect.top) / gridStepY));
+        const scaledX = (event.clientX - rect.left) / zoom;
+        const scaledY = (event.clientY - rect.top) / zoom;
+        const x = Math.round(scaledX / GRID_STEP_X);
+        const y = Math.round(scaledY / GRID_STEP_Y);
 
         setMemberPositions(prev => ({
             ...prev,
@@ -246,28 +261,86 @@ const FamilyTree: React.FC = () => {
     };
 
     useLayoutEffect(() => {
-        if (!treeRef.current) return;
+        const maxX = Math.max(
+            1,
+            ...Object.values(memberPositions).map(position => position.x)
+        );
+        const maxY = Math.max(
+            1,
+            ...Object.values(memberPositions).map(position => position.y)
+        );
 
-        const treeRect = treeRef.current.getBoundingClientRect();
         setTreeDimensions({
-            width: Math.max(1200, treeRect.width),
-            height: Math.max(800, treeRect.height),
+            width: Math.max(1200, (maxX + 2) * GRID_STEP_X),
+            height: Math.max(800, (maxY + 2) * GRID_STEP_Y),
         });
 
-        const positions: Record<string, { x: number; yTop: number; yBottom: number; yCenter: number }> = {};
+        const positions: Record<string, { x: number; y: number }> = {};
 
-        Object.entries(cardRefs.current).forEach(([id, node]) => {
-            if (!node) return;
-            const rect = node.getBoundingClientRect();
-            positions[id] = {
-                x: rect.left + rect.width / 2 - treeRect.left,
-                yTop: rect.top - treeRect.top,
-                yBottom: rect.top + rect.height - treeRect.top,
-                yCenter: rect.top + rect.height / 2 - treeRect.top,
-            };
+        Object.entries(memberPositions).forEach(([id, position]) => {
+            positions[id] = position;
         });
+
 
         const lines: typeof connections = [];
+
+        const getConnectionPoints = (
+            fromPosition: { x: number; y: number },
+            toPosition: { x: number; y: number },
+            relationType: "parent" | "spouse" | "sibling" | "cousin" | "ex-spouse"
+        ) => {
+            const fromXBase = fromPosition.x * GRID_STEP_X;
+            const fromYBase = fromPosition.y * GRID_STEP_Y;
+            const toXBase = toPosition.x * GRID_STEP_X;
+            const toYBase = toPosition.y * GRID_STEP_Y;
+            const deltaX = toPosition.x - fromPosition.x;
+            const deltaY = toPosition.y - fromPosition.y;
+
+            if (relationType === "parent") {
+                const fromX = fromXBase + NODE_OFFSET_X;
+                const toX = toXBase + NODE_OFFSET_X;
+                return {
+                    fromX,
+                    fromY: fromYBase + CARD_HEIGHT - 10,
+                    toX,
+                    toY: toYBase + 10,
+                };
+            }
+
+            if (relationType === "spouse") {
+                const fromX = fromXBase + (deltaX >= 0 ? CARD_WIDTH - 20 : 20);
+                const toX = toXBase + (deltaX <= 0 ? CARD_WIDTH - 20 : 20);
+                return {
+                    fromX,
+                    fromY: fromYBase + CARD_HEIGHT / 2,
+                    toX,
+                    toY: toYBase + CARD_HEIGHT / 2,
+                };
+            }
+
+            if (relationType === "sibling") {
+                const fromX = fromXBase + CARD_WIDTH / 2;
+                const toX = toXBase + CARD_WIDTH / 2;
+                return {
+                    fromX,
+                    fromY: fromYBase + CARD_HEIGHT / 2 - 10,
+                    toX,
+                    toY: toYBase + CARD_HEIGHT / 2 - 10,
+                };
+            }
+
+            const fromX = fromXBase + (deltaX >= 0 ? CARD_WIDTH - 30 : 30);
+            const toX = toXBase + (deltaX <= 0 ? CARD_WIDTH - 30 : 30);
+            const fromY = fromYBase + CARD_HEIGHT / 2 + (deltaY >= 0 ? 10 : -10);
+            const toY = toYBase + CARD_HEIGHT / 2 + (deltaY <= 0 ? 10 : -10);
+
+            return {
+                fromX,
+                fromY,
+                toX,
+                toY,
+            };
+        };
 
         tree.members.forEach(member => {
             const memberPos = positions[member.id];
@@ -276,12 +349,17 @@ const FamilyTree: React.FC = () => {
             member.parents.forEach(parentId => {
                 const parentPos = positions[parentId];
                 if (!parentPos) return;
+
+                const { fromX, fromY, toX, toY } = getConnectionPoints(parentPos, memberPos, "parent");
+
                 lines.push({
                     id: `${parentId}-${member.id}`,
-                    fromX: parentPos.x,
-                    fromY: parentPos.yBottom,
-                    toX: memberPos.x,
-                    toY: memberPos.yTop,
+                    fromX,
+                    fromY,
+                    toX,
+                    toY,
+                    controlX: (fromX + toX) / 2,
+                    controlY: Math.min(fromY, toY) - 60,
                     type: "parent",
                 });
             });
@@ -290,12 +368,17 @@ const FamilyTree: React.FC = () => {
                 if (member.id >= spouseId) return;
                 const spousePos = positions[spouseId];
                 if (!spousePos) return;
+
+                const { fromX, fromY, toX, toY } = getConnectionPoints(memberPos, spousePos, "spouse");
+
                 lines.push({
                     id: `${member.id}-spouse-${spouseId}`,
-                    fromX: memberPos.x,
-                    fromY: memberPos.yCenter,
-                    toX: spousePos.x,
-                    toY: spousePos.yCenter,
+                    fromX,
+                    fromY,
+                    toX,
+                    toY,
+                    controlX: (fromX + toX) / 2,
+                    controlY: Math.min(fromY, toY) - 45,
                     type: "spouse",
                 });
             });
@@ -304,12 +387,17 @@ const FamilyTree: React.FC = () => {
                 if (member.id >= spouseId) return;
                 const spousePos = positions[spouseId];
                 if (!spousePos) return;
+
+                const { fromX, fromY, toX, toY } = getConnectionPoints(memberPos, spousePos, "spouse");
+
                 lines.push({
                     id: `${member.id}-ex-spouse-${spouseId}`,
-                    fromX: memberPos.x,
-                    fromY: memberPos.yCenter,
-                    toX: spousePos.x,
-                    toY: spousePos.yCenter,
+                    fromX,
+                    fromY,
+                    toX,
+                    toY,
+                    controlX: (fromX + toX) / 2,
+                    controlY: Math.min(fromY, toY) - 35,
                     type: "ex-spouse",
                 });
             });
@@ -318,12 +406,17 @@ const FamilyTree: React.FC = () => {
                 if (member.id >= siblingId) return;
                 const siblingPos = positions[siblingId];
                 if (!siblingPos) return;
+
+                const { fromX, fromY, toX, toY } = getConnectionPoints(memberPos, siblingPos, "sibling");
+
                 lines.push({
                     id: `${member.id}-sib-${siblingId}`,
-                    fromX: memberPos.x,
-                    fromY: memberPos.yCenter,
-                    toX: siblingPos.x,
-                    toY: siblingPos.yCenter,
+                    fromX,
+                    fromY,
+                    toX,
+                    toY,
+                    controlX: (fromX + toX) / 2,
+                    controlY: Math.min(fromY, toY) - 35,
                     type: "sibling",
                 });
             });
@@ -346,17 +439,21 @@ const FamilyTree: React.FC = () => {
                 if (member.id >= cousinId) return;
                 const cousinPos = positions[cousinId];
                 if (!cousinPos) return;
+
+                const { fromX, fromY, toX, toY } = getConnectionPoints(memberPos, cousinPos, "cousin");
+
                 lines.push({
                     id: `${member.id}-cousin-${cousinId}`,
-                    fromX: memberPos.x,
-                    fromY: memberPos.yCenter,
-                    toX: cousinPos.x,
-                    toY: cousinPos.yCenter,
+                    fromX,
+                    fromY,
+                    toX,
+                    toY,
+                    controlX: (fromX + toX) / 2,
+                    controlY: Math.min(fromY, toY) - 35,
                     type: "cousin",
                 });
             });
         });
-
         setConnections(lines);
     }, [tree, grouped, zoom, displayedMembers]);
 
@@ -380,6 +477,9 @@ const FamilyTree: React.FC = () => {
 
         });
 
+        setMemberPositions({});
+        setZoom(1);
+        setViewOffset({ x: 0, y: 0 });
         setSelected(person);
 
     };
@@ -653,6 +753,9 @@ const FamilyTree: React.FC = () => {
 
                 setTree(imported);
 
+                setMemberPositions({});
+                setZoom(1);
+                setViewOffset({ x: 0, y: 0 });
                 setSelected(null);
 
             }
@@ -674,6 +777,47 @@ const FamilyTree: React.FC = () => {
     // TOOLBAR
     //==========================================================
 
+    const handleResetView = () => {
+        setZoom(1);
+        setViewOffset({ x: 0, y: 0 });
+        setMemberPositions({});
+        setSearch("");
+        setSelected(null);
+        setRelationTarget("");
+        setRelationEditor(null);
+        setRelationReplacementTarget("");
+    };
+
+    const handleFitToView = () => {
+        if (!treeRef.current) return;
+
+        const containerWidth = treeRef.current.clientWidth;
+        const containerHeight = treeRef.current.clientHeight;
+        const neededWidth = Math.max(1200, (Math.max(1, ...Object.values(memberPositions).map(position => position.x)) + 2) * GRID_STEP_X);
+        const neededHeight = Math.max(800, (Math.max(1, ...Object.values(memberPositions).map(position => position.y)) + 2) * GRID_STEP_Y);
+        const widthRatio = containerWidth / neededWidth;
+        const heightRatio = containerHeight / neededHeight;
+        const nextZoom = Math.min(1, Math.max(0.3, Math.min(widthRatio, heightRatio)));
+
+        setZoom(nextZoom);
+        setViewOffset({ x: 0, y: 0 });
+    };
+
+    const handleCenterSelected = () => {
+        if (!selected || !treeRef.current) return;
+
+        const selectedPosition = memberPositions[selected.id] ?? { x: 0, y: 0 };
+        const containerWidth = treeRef.current.clientWidth;
+        const containerHeight = treeRef.current.clientHeight;
+        const scaledCenterX = (selectedPosition.x * GRID_STEP_X + CARD_WIDTH / 2) * zoom;
+        const scaledCenterY = (selectedPosition.y * GRID_STEP_Y + CARD_HEIGHT / 2) * zoom;
+
+        setViewOffset({
+            x: containerWidth / 2 - scaledCenterX,
+            y: containerHeight / 2 - scaledCenterY,
+        });
+    };
+
     const renderToolbar = () => (
         <div className="ft-toolbar">
             <button onClick={handleAddPerson}>➕ Add Person</button>
@@ -684,6 +828,9 @@ const FamilyTree: React.FC = () => {
             </label>
             <button onClick={() => setZoom(z => z + 0.1)}>＋</button>
             <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>－</button>
+            <button onClick={handleFitToView}>🧭 Fit</button>
+            <button onClick={handleCenterSelected}>🎯 Center</button>
+            <button className="ft-toolbar-reset" onClick={handleResetView}>↺ Reset View</button>
         </div>
     );
 
@@ -749,7 +896,7 @@ const FamilyTree: React.FC = () => {
             <div
                 className="ft-tree"
                 ref={treeRef}
-                style={{ transform: `scale(${zoom})` }}
+                style={{ transform: `translate(${viewOffset.x}px, ${viewOffset.y}px) scale(${zoom})` }}
                 onDragOver={event => event.preventDefault()}
                 onDrop={handleDropOnTree}
             >
@@ -759,12 +906,9 @@ const FamilyTree: React.FC = () => {
                     preserveAspectRatio="none"
                 >
                     {connections.map(connection => (
-                        <line
+                        <path
                             key={connection.id}
-                            x1={connection.fromX}
-                            y1={connection.fromY}
-                            x2={connection.toX}
-                            y2={connection.toY}
+                            d={`M ${connection.fromX} ${connection.fromY} Q ${connection.controlX} ${connection.controlY} ${connection.toX} ${connection.toY}`}
                             className={`ft-connection ft-connection--${connection.type}`}
                         />
                     ))}
@@ -778,9 +922,10 @@ const FamilyTree: React.FC = () => {
                             className="ft-card-wrap"
                             style={{
                                 position: "absolute",
-                                left: `${position.x * 220}px`,
-                                top: `${position.y * 240}px`,
+                                left: `${position.x * GRID_STEP_X}px`,
+                                top: `${position.y * GRID_STEP_Y}px`,
                                 cursor: "grab",
+                                zIndex: 2,
                             }}
                             ref={node => {
                                 cardRefs.current[person.id] = node;

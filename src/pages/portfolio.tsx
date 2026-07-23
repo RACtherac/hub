@@ -17,7 +17,7 @@ const projects = [
   { name: "The Log", description: "A personal blog — project updates, education notes, and hobby dispatches.", path: "/blog" },
   //  { name: "Dice Balance Tester", description: "Test the balance of a physical die by entering the counts of each face.", path: "/dice-balance-tester" },
   { name: "Project tree", description: "Visualise your project structure and dependencies.", path: "/project-tree" },
-  { name: "Family tree", description: "Visualise your family structure and relationships.", path: "/Familytree" },
+  { name: "Family tree", description: "STILL IN PROGRESS: Visualise your family structure and relationships.", path: "/Familytree" },
   { name: "Function Reference", description: "A developer index of every project's components and functions.", path: "/function-reference" },
 ];
 

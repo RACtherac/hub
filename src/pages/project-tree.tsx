@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../components/styles/tree.css";
@@ -37,6 +37,8 @@ function createNode(title: string): TreeNodeData {
   };
 }
 
+const STORAGE_KEY = "project-tree-data";
+
 const initialTree: TreeNodeData = {
   id: "root",
 
@@ -50,6 +52,32 @@ const initialTree: TreeNodeData = {
 
   children: [],
 };
+
+function loadTreeFromStorage(): TreeNodeData {
+  if (typeof window === "undefined") {
+    return initialTree;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+
+    if (!raw) return initialTree;
+
+    const parsed = JSON.parse(raw) as TreeNodeData;
+
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      Array.isArray(parsed.children)
+    ) {
+      return parsed;
+    }
+  } catch {
+    // fall back to the default tree
+  }
+
+  return initialTree;
+}
 
 function findNode(
   node: TreeNodeData,
@@ -238,8 +266,12 @@ function moveBlock(
 export default function ProjectTree() {
   const navigate = useNavigate();
 
-  const [tree, setTree] =
-    useState(initialTree);
+  const [tree, setTree] = useState<TreeNodeData>(() =>
+    loadTreeFromStorage()
+  );
+
+  const [history, setHistory] = useState<TreeNodeData[]>([]);
+  const [future, setFuture] = useState<TreeNodeData[]>([]);
 
   const [selectedId, setSelectedId] =
     useState<string | null>(null);
@@ -256,6 +288,52 @@ export default function ProjectTree() {
   const selectedNode = selectedId
     ? findNode(tree, selectedId)
     : null;
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(tree)
+      );
+    }
+  }, [tree]);
+
+  function updateTree(
+    updater: (prev: TreeNodeData) => TreeNodeData
+  ) {
+    setTree((prev) => {
+      const next = updater(prev);
+
+      if (JSON.stringify(prev) !== JSON.stringify(next)) {
+        setHistory((current) => [...current, prev]);
+        setFuture([]);
+      }
+
+      return next;
+    });
+  }
+
+  function undo() {
+    if (history.length === 0) return;
+
+    setTree((prev) => {
+      const previous = history[history.length - 1];
+      setHistory((current) => current.slice(0, -1));
+      setFuture((current) => [prev, ...current]);
+      return previous;
+    });
+  }
+
+  function redo() {
+    if (future.length === 0) return;
+
+    setTree((prev) => {
+      const next = future[0];
+      setFuture((current) => current.slice(1));
+      setHistory((current) => [...current, prev]);
+      return next;
+    });
+  }
 
   function exportJson() {
     const blob = new Blob(
@@ -290,11 +368,19 @@ export default function ProjectTree() {
 
     reader.onload = () => {
       try {
-        setTree(
-          JSON.parse(
-            reader.result as string
-          )
-        );
+        const parsed = JSON.parse(
+          reader.result as string
+        ) as TreeNodeData;
+
+        if (
+          parsed &&
+          typeof parsed === "object" &&
+          Array.isArray(parsed.children)
+        ) {
+          updateTree(() => parsed);
+        } else {
+          throw new Error("Invalid tree structure");
+        }
       } catch {
         alert("Invalid JSON");
       }
@@ -369,7 +455,7 @@ export default function ProjectTree() {
         <aside className="pt-sidebar">
           <TreeToolbar
             onAddRoot={() =>
-              setTree((prev) =>
+              updateTree((prev) =>
                 addNode(
                   prev,
                   "root",
@@ -381,6 +467,10 @@ export default function ProjectTree() {
               jsonInputRef.current?.click()
             }
             onExportJson={exportJson}
+            onUndo={undo}
+            onRedo={redo}
+            canUndo={history.length > 0}
+            canRedo={future.length > 0}
           />
 
           <Tree
@@ -388,7 +478,7 @@ export default function ProjectTree() {
             selectedId={selectedId}
             onSelect={setSelectedId}
             onMove={(activeId, overId) =>
-              setTree((prev) =>
+              updateTree((prev) =>
                 moveTreeNode(
                   prev,
                   activeId,
@@ -397,22 +487,26 @@ export default function ProjectTree() {
               )
             }
             onToggle={(id) =>
-              setTree((prev) =>
+              updateTree((prev) =>
                 toggleNode(prev, id)
               )
             }
-            onDelete={(id) =>
-              setTree((prev) =>
+            onDelete={(id) => {
+              if (selectedId === id) {
+                setSelectedId(null);
+              }
+
+              updateTree((prev) =>
                 deleteNode(prev, id)
-              )
-            }
+              );
+            }}
             onRename={(id, title) =>
-              setTree((prev) =>
+              updateTree((prev) =>
                 renameNode(prev, id, title)
               )
             }
             onAddChild={(parentId) =>
-              setTree((prev) =>
+              updateTree((prev) =>
                 addNode(
                   prev,
                   parentId,
@@ -429,8 +523,8 @@ export default function ProjectTree() {
 <input
     className="page-title-input"
     value={selectedNode.pageTitle}
-    onChange={(e)=>
-        setTree(prev =>
+    onChange={(e) =>
+        updateTree((prev) =>
             updatePageTitle(
                 prev,
                 selectedNode.id,

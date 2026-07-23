@@ -5,12 +5,20 @@ interface Props {
 
   onImportJson: () => void;
   onExportJson: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 export default function TreeToolbar({
   onAddRoot,
   onImportJson,
   onExportJson,
+  onUndo,
+  onRedo,
+  canUndo,
+  canRedo,
 }: Props) {
   const [openMenu, setOpenMenu] = useState<
     "file" | "tree" | null
@@ -53,6 +61,26 @@ export default function TreeToolbar({
             </button>
           </div>
         )}
+      </div>
+
+      <div className="menu">
+        <button
+          className="menu-button"
+          onClick={onUndo}
+          disabled={!canUndo}
+        >
+          ↶ Undo
+        </button>
+      </div>
+
+      <div className="menu">
+        <button
+          className="menu-button"
+          onClick={onRedo}
+          disabled={!canRedo}
+        >
+          ↷ Redo
+        </button>
       </div>
 
       <div className="menu">
