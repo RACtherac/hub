@@ -58,6 +58,21 @@ function newCollection(): PaintCollection {
   return { id: crypto.randomUUID(), name: "", paints: [newPaint()] };
 }
 
+// Inventory helpers (shared with paint-inventory page)
+const INVENTORY_KEY = "paint-inventory";
+
+function loadInventory(): { id: string; brand: string; color: string }[] {
+  try {
+    return JSON.parse(localStorage.getItem(INVENTORY_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveInventory(items: { id: string; brand: string; color: string }[]) {
+  localStorage.setItem(INVENTORY_KEY, JSON.stringify(items));
+}
+
 function totalPaints(record: MiniatureRecord): number {
   return record.collections.reduce(
     (sum, c) => sum + c.paints.filter((p) => p.color).length,
@@ -386,6 +401,29 @@ function EditorForm({
     );
   }
 
+  function handleColorChange(collectionId: string, paintId: string, raw: string) {
+    // If user picked a combined value like "Color — Brand", split it.
+    let color = raw;
+    let brandFromInventory: string | null = null;
+
+    const splitMarker = " — ";
+    if (raw.includes(splitMarker)) {
+      const [c, b] = raw.split(splitMarker);
+      color = c.trim();
+      brandFromInventory = b?.trim() || null;
+    } else {
+      // Try to find inventory entry by color (case-insensitive)
+      const inv = loadInventory();
+      const found = inv.find((it) => it.color.toLowerCase() === raw.trim().toLowerCase());
+      if (found) brandFromInventory = found.brand || null;
+    }
+
+    updatePaint(collectionId, paintId, "color", color);
+    if (brandFromInventory !== null) {
+      updatePaint(collectionId, paintId, "brand", brandFromInventory);
+    }
+  }
+
   function handleDragStart(collectionId: string, paintId: string) {
     dragPaint.current = { collectionId, paintId };
   }
@@ -578,10 +616,9 @@ function EditorForm({
                     <input
                       className="pt-input pt-input-sm"
                       placeholder="Color name"
+                      list="paint-inventory-list"
                       value={paint.color}
-                      onChange={(e) =>
-                        updatePaint(col.id, paint.id, "color", e.target.value)
-                      }
+                      onChange={(e) => handleColorChange(col.id, paint.id, e.target.value)}
                     />
                     <input
                       className="pt-input pt-input-sm"
@@ -739,6 +776,15 @@ export default function PaintTracker() {
         <span className="pt-topbar-title">Paint Tracker</span>
       </div>
 
+      {/* Inventory suggestion list (read from localStorage) */}
+      <datalist id="paint-inventory-list">
+        {loadInventory().map((it) => (
+          <option key={it.id} value={`${it.color}${it.brand ? ' — ' + it.brand : ''}`}>
+            {`${it.color}${it.brand ? ' — ' + it.brand : ''}`}
+          </option>
+        ))}
+      </datalist>
+
       {view.type === "gallery" && (
         <div className="pt-gallery-view">
           <header className="pt-hero">
@@ -765,6 +811,7 @@ export default function PaintTracker() {
               )}
             </div>
             <div className="pt-actions-right">
+              <button className="pt-io-btn" onClick={() => navigate("/paint-inventory")}>Manage Inventory</button>
               <button className="pt-io-btn" onClick={exportAllRecords}>Export ↓</button>
               <input
                 ref={importRef}

@@ -443,40 +443,52 @@ export function sortPeople(
 // Auto Layout
 // =====================================
 
+import dagre from "dagre";
+
 export function createAutoLayoutPositions(members: FamilyMember[]): Record<string, { x: number; y: number }> {
     const positions: Record<string, { x: number; y: number }> = {};
-    const memberMap = new Map(members.map(member => [member.id, member]));
 
-    const computeLevel = (member: FamilyMember, visited = new Set<string>()): number => {
-        if (visited.has(member.id)) return 0;
-        visited.add(member.id);
+    if (!members || members.length === 0) return positions;
 
-        if (member.parents.length === 0) return 0;
+    // dagre works with pixel positions; translate results to grid coordinates
+    const GRID_STEP_X = 240;
+    const GRID_STEP_Y = 260;
+    const NODE_WIDTH = 180;
+    const NODE_HEIGHT = 200;
 
-        const parentLevels = member.parents
-            .map(parentId => memberMap.get(parentId))
-            .filter((parent): parent is FamilyMember => Boolean(parent))
-            .map(parent => computeLevel(parent, visited));
+    const g = new dagre.graphlib.Graph();
+    g.setGraph({ rankdir: "TB", nodesep: 50, ranksep: 120 });
+    g.setDefaultEdgeLabel(() => ({}));
 
-        return parentLevels.length > 0 ? Math.max(...parentLevels) + 1 : 0;
-    };
-
-    const levelMap = new Map<number, FamilyMember[]>();
-    members.forEach(member => {
-        const level = computeLevel(member);
-        const list = levelMap.get(level) ?? [];
-        list.push(member);
-        levelMap.set(level, list);
+    members.forEach((m) => {
+        g.setNode(m.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
     });
 
-    Array.from(levelMap.entries())
-        .sort(([levelA], [levelB]) => levelA - levelB)
-        .forEach(([level, levelMembers]) => {
-            const sorted = [...levelMembers].sort((a, b) => getFullName(a).localeCompare(getFullName(b)));
-            sorted.forEach((member, index) => {
-                positions[member.id] = { x: index, y: level };
-            });
+    // Create edges for parent -> child relationships to form a hierarchical layout
+    members.forEach((m) => {
+        m.parents.forEach((p) => {
+            if (members.find(mm => mm.id === p)) {
+                try { g.setEdge(p, m.id); } catch { /* ignore duplicate edge errors */ }
+            }
         });
+    });
+
+    try {
+        dagre.layout(g);
+
+        members.forEach((m) => {
+            const node = g.node(m.id);
+            if (!node) return;
+            const gx = Math.round(node.x / GRID_STEP_X);
+            const gy = Math.round(node.y / GRID_STEP_Y);
+            positions[m.id] = { x: gx, y: gy };
+        });
+    } catch {
+        // Fallback to simple grid layout
+        members.forEach((m, i) => {
+            positions[m.id] = { x: i, y: 0 };
+        });
+    }
 
     return positions;
 }
