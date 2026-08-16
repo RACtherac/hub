@@ -104,17 +104,20 @@ const FamilyTree: React.FC = () => {
             const loaded = loadTree();
 
             if (loaded.members.length === 0) {
-                setTree(createSampleTree());
+                const sample = createSampleTree();
+                setTree(sample);
+                setMemberPositions(createAutoLayoutPositions(sample.members));
             }
             else {
                 setTree(loaded);
+                setMemberPositions(createAutoLayoutPositions(loaded.members));
             }
         }
         catch {
-            setTree(createSampleTree());
+            const sample = createSampleTree();
+            setTree(sample);
+            setMemberPositions(createAutoLayoutPositions(sample.members));
         }
-
-        setMemberPositions({});
         setZoom(1);
         setViewOffset({ x: 0, y: 0 });
         setSelected(null);
@@ -253,10 +256,14 @@ const FamilyTree: React.FC = () => {
         const x = Math.round(scaledX / GRID_STEP_X);
         const y = Math.round(scaledY / GRID_STEP_Y);
 
-        setMemberPositions(prev => ({
-            ...prev,
-            [draggedMemberId]: { x, y },
-        }));
+        setMemberPositions(prev => {
+            const hasPrev = Object.keys(prev).length > 0;
+            const base = hasPrev ? prev : createAutoLayoutPositions(tree.members);
+            return {
+                ...base,
+                [draggedMemberId]: { x, y },
+            };
+        });
         setDraggedMemberId(null);
     };
 
@@ -476,8 +483,7 @@ const FamilyTree: React.FC = () => {
             ],
 
         });
-
-        setMemberPositions({});
+        setMemberPositions(createAutoLayoutPositions([...tree.members, person]));
         setZoom(1);
         setViewOffset({ x: 0, y: 0 });
         setSelected(person);
@@ -752,8 +758,7 @@ const FamilyTree: React.FC = () => {
                     );
 
                 setTree(imported);
-
-                setMemberPositions({});
+                setMemberPositions(createAutoLayoutPositions(imported.members));
                 setZoom(1);
                 setViewOffset({ x: 0, y: 0 });
                 setSelected(null);
@@ -780,7 +785,7 @@ const FamilyTree: React.FC = () => {
     const handleResetView = () => {
         setZoom(1);
         setViewOffset({ x: 0, y: 0 });
-        setMemberPositions({});
+        setMemberPositions(createAutoLayoutPositions(tree.members));
         setSearch("");
         setSelected(null);
         setRelationTarget("");
@@ -903,7 +908,9 @@ const FamilyTree: React.FC = () => {
                 <svg
                     className="ft-relations-svg"
                     viewBox={`0 0 ${treeDimensions.width} ${treeDimensions.height}`}
-                    preserveAspectRatio="none"
+                    width={treeDimensions.width}
+                    height={treeDimensions.height}
+                    preserveAspectRatio="xMinYMin meet"
                 >
                     {connections.map(connection => (
                         <path

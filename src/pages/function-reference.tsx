@@ -212,6 +212,13 @@ const PROJECTS: Project[] = [
         file: "src/pages/paint-tracker.tsx",
         state: ["view: 'gallery' | 'detail' | 'editor'", "recipes: PaintRecipe[]", "selectedRecipe: PaintRecipe | null"],
       },
+      {
+        name: "PaintInventory()",
+        description: "Inventory manager for commonly used paint brands and colours.",
+        detail: "Maintains a persistent list of paint entries saved to localStorage. Supports adding and removing paints, categorising (base, layer, technical, wash, contrast), searching and filtering, and JSON import/export with duplicate merging. Items provide suggestions to the Paint Tracker editor.",
+        file: "src/pages/paint-inventory.tsx",
+        state: ["items: InventoryEntry[]", "searchQuery: string", "filterCategory: string"],
+      },
     ],
   },
   {

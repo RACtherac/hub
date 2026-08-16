@@ -69,10 +69,6 @@ function loadInventory(): { id: string; brand: string; color: string }[] {
   }
 }
 
-function saveInventory(items: { id: string; brand: string; color: string }[]) {
-  localStorage.setItem(INVENTORY_KEY, JSON.stringify(items));
-}
-
 function totalPaints(record: MiniatureRecord): number {
   return record.collections.reduce(
     (sum, c) => sum + c.paints.filter((p) => p.color).length,

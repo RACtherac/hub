@@ -443,7 +443,7 @@ export function sortPeople(
 // Auto Layout
 // =====================================
 
-import dagre from "dagre";
+import * as dagre from "dagre";
 
 export function createAutoLayoutPositions(members: FamilyMember[]): Record<string, { x: number; y: number }> {
     const positions: Record<string, { x: number; y: number }> = {};
