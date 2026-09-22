@@ -41,8 +41,15 @@ export interface FamilyMember {
     updated: string;
 }
 
+export interface FamilyFolder {
+    id: string;
+    name: string;
+    memberIds: string[];
+}
+
 export interface FamilyTreeData {
     members: FamilyMember[];
+    folders?: FamilyFolder[];
 }
 
 export interface TreeNode {

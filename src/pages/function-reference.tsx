@@ -519,6 +519,110 @@ const PROJECTS: Project[] = [
   ]
 },
 {
+  id: "familytree WIP",
+  label: "Family Tree WIP",
+  tag: "tool",
+  route: "/Familytree",
+  description:
+    "Interactive family graph editor for mapping relatives, folders, and relationship links across generations.",
+
+  tree: {
+    name: "FamilyTree()",
+    children: [
+      { name: "FamilyMemberCard()" },
+      { name: "FolderPanel()" },
+      { name: "RelationEditor()" },
+      { name: "ConnectionLayer()" },
+    ],
+  },
+
+  improvements: [
+    "Fix the lines that connect family members",
+    "Add profile photos and thumbnail avatars for each family member.",
+    "Support drag-and-drop reordering between folders and branches.",
+    "Add a printable PDF export for the current family view.",
+    "Improve relationship validation and conflict warnings when links become inconsistent.",
+    "Add import/export for .ged or CSV family data files.",
+  ],
+
+  functions: [
+    {
+      name: "FamilyTree()",
+      description:
+        "Main page component managing the family graph, selected member, folders, filtering, and relationship editing.",
+
+      detail:
+        "Acts as the root state container for the full family tree. It loads or creates a tree when the page mounts, saves changes back to localStorage, tracks the selected member, active branch focus, and zoomed canvas view, and draws connection lines between related family members. It also controls the search bar, folder filtering, and relationship editor for adding or replacing links such as parent/child, spouse, sibling, and cousin ties.",
+
+      file: "src/pages/FamilyTree.tsx",
+
+      state: [
+        "tree: FamilyTreeData",
+        "selected: FamilyMember | null",
+        "search: string",
+        "activeBranchId: string | null",
+        "zoom: number",
+        "viewOffset: { x: number; y: number }",
+      ],
+    },
+
+    {
+      name: "createPerson()",
+      description:
+        "Creates a new family member record with default fields and empty relationship arrays.",
+
+      detail:
+        "Initialises a member object with the required id, names, dates, notes, and relationship arrays. Used when adding a person to the tree or generating the sample family dataset. The helper keeps relationship data consistent so later connection utilities can safely add parent, child, sibling, spouse, and cousin references.",
+
+      file: "src/utils/FamilyTreeUtils.ts",
+    },
+
+    {
+      name: "connectParentChild()",
+      description:
+        "Links a parent to a child and updates both sides of the relationship graph.",
+
+      detail:
+        "Adds a bidirectional parent/child connection between two members while preserving deduplication and consistent array state. This is the foundation of the generated family model and is used by the relationship editor when creating or replacing connections in the tree.",
+
+      file: "src/utils/FamilyTreeUtils.ts",
+    },
+
+    {
+      name: "connectSpouses()",
+      description:
+        "Creates or updates a spouse link between two members of the tree.",
+
+      detail:
+        "Ensures spouse relationships are stored symmetrically on both records. It can be used when creating a new couple or when updating a relationship after editing. The utility also keeps the broader tree logic consistent with sibling and parent generation flows.",
+
+      file: "src/utils/FamilyTreeUtils.ts",
+    },
+
+    {
+      name: "saveTree()",
+      description:
+        "Persists the current family model into localStorage for reloading later.",
+
+      detail:
+        "Serializes the current family tree and writes it to localStorage under a fixed key so the app keeps the user's relationships between sessions. It is called whenever the tree state changes, allowing the page to restore the exact structure after a refresh.",
+
+      file: "src/utils/FamilyTreeUtils.ts",
+    },
+
+    {
+      name: "searchPeople()",
+      description:
+        "Filters the visible family members by a search term across names, notes, and metadata.",
+
+      detail:
+        "Performs a lightweight text search across the current branch or folder view. It checks the member's display name, custom notes, family role, and general metadata to quickly narrow the view while the user is browsing a large tree.",
+
+      file: "src/utils/FamilyTreeUtils.ts",
+    },
+  ],
+},
+{
   id: "projecttree",
   label: "Project Tree",
   tag: "tool",

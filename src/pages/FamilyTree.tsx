@@ -1,7 +1,9 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../components/styles/FamilyTree.css";
 
 import type {
+    FamilyFolder,
     FamilyMember,
     FamilyTreeData,
 } from "../types/FamilyTreeTypes";
@@ -18,6 +20,7 @@ import {
     deletePerson,
     disconnectRelationship,
     exportJSON,
+    getBranchMembers,
     getFullName,
     importJSON,
     loadTree,
@@ -28,6 +31,7 @@ import {
 } from "../utils/FamilyTreeUtils";
 
 const FamilyTree: React.FC = () => {
+    const navigate = useNavigate();
 
     //==========================================================
     // STATE
@@ -35,6 +39,7 @@ const FamilyTree: React.FC = () => {
 
     const [tree, setTree] = useState<FamilyTreeData>({
         members: [],
+        folders: [],
     });
 
     const [selected, setSelected] =
@@ -42,6 +47,21 @@ const FamilyTree: React.FC = () => {
 
     const [search, setSearch] =
         useState("");
+
+    const [activeBranchId, setActiveBranchId] =
+        useState<string | null>(null);
+
+    const [folderDraft, setFolderDraft] =
+        useState<{ id: string | null; name: string; memberIds: string[] }>({
+            id: null,
+            name: "",
+            memberIds: [],
+        });
+
+    const [expandedFolders, setExpandedFolders] =
+        useState<Record<string, boolean>>({});
+
+    const customFolders = useMemo(() => tree.folders ?? [], [tree.folders]);
 
     const [zoom, setZoom] =
         useState(1);
@@ -53,6 +73,8 @@ const FamilyTree: React.FC = () => {
         useState<Record<string, { x: number; y: number }>>({});
 
     const [draggedMemberId, setDraggedMemberId] =
+        useState<string | null>(null);
+    const [dragOverFolderId, setDragOverFolderId] =
         useState<string | null>(null);
 
     const [relationTarget, setRelationTarget] =
@@ -102,19 +124,29 @@ const FamilyTree: React.FC = () => {
 
         try {
             const loaded = loadTree();
+            const normalizedTree = {
+                members: loaded.members ?? [],
+                folders: Array.isArray(loaded.folders) ? loaded.folders : [],
+            };
 
-            if (loaded.members.length === 0) {
-                const sample = createSampleTree();
+            if (normalizedTree.members.length === 0) {
+                const sample = {
+                    ...createSampleTree(),
+                    folders: [],
+                };
                 setTree(sample);
                 setMemberPositions(createAutoLayoutPositions(sample.members));
             }
             else {
-                setTree(loaded);
-                setMemberPositions(createAutoLayoutPositions(loaded.members));
+                setTree(normalizedTree);
+                setMemberPositions(createAutoLayoutPositions(normalizedTree.members));
             }
         }
         catch {
-            const sample = createSampleTree();
+            const sample = {
+                ...createSampleTree(),
+                folders: [],
+            };
             setTree(sample);
             setMemberPositions(createAutoLayoutPositions(sample.members));
         }
@@ -138,10 +170,16 @@ const FamilyTree: React.FC = () => {
     // SEARCH
     //==========================================================
 
+    const branchRoots = useMemo(() => {
+        return tree.members.filter(member => member.parents.length === 0);
+    }, [tree.members]);
+
     const displayedMembers = useMemo(() => {
-        if (search.trim() === "") return tree.members;
-        return searchPeople(tree.members, search);
-    }, [tree, search]);
+        const sourceMembers = tree.members;
+
+        if (search.trim() === "") return sourceMembers;
+        return searchPeople(sourceMembers, search);
+    }, [tree.members, search]);
 
     const getChildren = (member: FamilyMember) =>
         tree.members.filter(child => child.parents.includes(member.id));
@@ -199,6 +237,12 @@ const FamilyTree: React.FC = () => {
 
         return [...parents, ...children, ...spouses, ...exSpouses, ...siblings, ...cousins];
     }, [selected, tree]);
+
+    useEffect(() => {
+        if (selected && !displayedMembers.some(member => member.id === selected.id)) {
+            setSelected(null);
+        }
+    }, [displayedMembers, selected]);
 
     //==========================================================
     // CALCULATE GENERATIONS
@@ -265,6 +309,34 @@ const FamilyTree: React.FC = () => {
             };
         });
         setDraggedMemberId(null);
+    };
+
+    const handleDropOnFolder = (folderId: string, event: React.DragEvent<HTMLDivElement | HTMLButtonElement>) => {
+        event.preventDefault();
+        if (!draggedMemberId) return;
+
+        setTree(current => {
+            const targetFolder = (current.folders ?? []).find(folder => folder.id === folderId);
+            if (!targetFolder) return current;
+
+            const memberIds = targetFolder.memberIds.includes(draggedMemberId)
+                ? targetFolder.memberIds
+                : [...targetFolder.memberIds, draggedMemberId];
+
+            return {
+                ...current,
+                folders: (current.folders ?? []).map(folder => {
+                    if (folder.id !== folderId) return folder;
+                    return {
+                        ...folder,
+                        memberIds,
+                    };
+                }),
+            };
+        });
+
+        setDraggedMemberId(null);
+        setDragOverFolderId(null);
     };
 
     useLayoutEffect(() => {
@@ -787,6 +859,7 @@ const FamilyTree: React.FC = () => {
         setViewOffset({ x: 0, y: 0 });
         setMemberPositions(createAutoLayoutPositions(tree.members));
         setSearch("");
+        setActiveBranchId(null);
         setSelected(null);
         setRelationTarget("");
         setRelationEditor(null);
@@ -823,6 +896,69 @@ const FamilyTree: React.FC = () => {
         });
     };
 
+    const handleCreateFolder = () => {
+        const trimmedName = folderDraft.name.trim();
+        if (!trimmedName || folderDraft.memberIds.length === 0) {
+            alert("Give the folder a name and choose at least one member.");
+            return;
+        }
+
+        const nextFolder: FamilyFolder = {
+            id: folderDraft.id ?? crypto.randomUUID(),
+            name: trimmedName,
+            memberIds: [...new Set(folderDraft.memberIds)],
+        };
+
+        setTree(current => ({
+            ...current,
+            folders: current.folders?.some(folder => folder.id === nextFolder.id)
+                ? (current.folders ?? []).map(folder => folder.id === nextFolder.id ? nextFolder : folder)
+                : [...(current.folders ?? []), nextFolder],
+        }));
+
+        setExpandedFolders(current => ({
+            ...current,
+            [nextFolder.id]: true,
+        }));
+
+        setFolderDraft({ id: null, name: "", memberIds: [] });
+        setActiveBranchId(nextFolder.id);
+    };
+
+    const handleEditFolder = (folder: FamilyFolder) => {
+        setFolderDraft({
+            id: folder.id,
+            name: folder.name,
+            memberIds: [...folder.memberIds],
+        });
+        setExpandedFolders(current => ({
+            ...current,
+            [folder.id]: true,
+        }));
+        setActiveBranchId(folder.id);
+    };
+
+    const handleDeleteFolder = (folderId: string) => {
+        setTree(current => ({
+            ...current,
+            folders: (current.folders ?? []).filter(folder => folder.id !== folderId),
+        }));
+
+        setExpandedFolders(current => {
+            const next = { ...current };
+            delete next[folderId];
+            return next;
+        });
+
+        if (activeBranchId === folderId) {
+            setActiveBranchId(null);
+        }
+
+        if (folderDraft.id === folderId) {
+            setFolderDraft({ id: null, name: "", memberIds: [] });
+        }
+    };
+
     const renderToolbar = () => (
         <div className="ft-toolbar">
             <button onClick={handleAddPerson}>➕ Add Person</button>
@@ -835,6 +971,7 @@ const FamilyTree: React.FC = () => {
             <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>－</button>
             <button onClick={handleFitToView}>🧭 Fit</button>
             <button onClick={handleCenterSelected}>🎯 Center</button>
+            <button onClick={() => setActiveBranchId(null)}>🗂️ All Branches</button>
             <button className="ft-toolbar-reset" onClick={handleResetView}>↺ Reset View</button>
         </div>
     );
@@ -851,6 +988,192 @@ const FamilyTree: React.FC = () => {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
             />
+
+            <div className="ft-branch-panel">
+                <div className="ft-family-mode-row">
+                    <button
+                        type="button"
+                        className={activeBranchId === null ? "ft-family-mode-button active" : "ft-family-mode-button"}
+                        onClick={() => setActiveBranchId(null)}
+                    >
+                        All People
+                    </button>
+                    <div className="ft-family-mode-divider">/</div>
+                    <span className="ft-family-mode-label">Family Groups</span>
+                </div>
+                <p className="ft-family-mode-help">Groups are just buckets for organizing families — everyone still stays in the main tree.</p>
+
+                <div className="ft-folder-editor">
+                    <input
+                        className="ft-folder-name"
+                        value={folderDraft.name}
+                        onChange={event => setFolderDraft(current => ({ ...current, name: event.target.value }))}
+                        placeholder="Folder name"
+                    />
+
+                    <select
+                        className="ft-folder-member-select"
+                        value=""
+                        onChange={event => {
+                            const selectedId = event.target.value;
+                            if (!selectedId) return;
+                            setFolderDraft(current => ({
+                                ...current,
+                                memberIds: current.memberIds.includes(selectedId)
+                                    ? current.memberIds
+                                    : [...current.memberIds, selectedId],
+                            }));
+                            event.target.value = "";
+                        }}
+                    >
+                        <option value="">Add member</option>
+                        {tree.members.map(member => (
+                            <option key={member.id} value={member.id}>
+                                {getFullName(member)}
+                            </option>
+                        ))}
+                    </select>
+
+                    <div className="ft-folder-member-pills">
+                        {folderDraft.memberIds.length === 0 ? (
+                            <span className="ft-folder-empty">No members selected</span>
+                        ) : (
+                            tree.members
+                                .filter(member => folderDraft.memberIds.includes(member.id))
+                                .map(member => (
+                                    <button
+                                        type="button"
+                                        key={member.id}
+                                        className="ft-folder-pill"
+                                        onClick={() => setFolderDraft(current => ({
+                                            ...current,
+                                            memberIds: current.memberIds.filter(id => id !== member.id),
+                                        }))}
+                                    >
+                                        {getFullName(member)} ×
+                                    </button>
+                                ))
+                        )}
+                    </div>
+
+                    <div className="ft-folder-actions">
+                        <button type="button" className="ft-folder-save" onClick={handleCreateFolder}>
+                            {folderDraft.id ? "Save Folder" : "Create Folder"}
+                        </button>
+                        {folderDraft.id && (
+                            <button type="button" className="ft-folder-cancel" onClick={() => setFolderDraft({ id: null, name: "", memberIds: [] })}>
+                                Clear
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {branchRoots.length === 0 && customFolders.length === 0 ? (
+                    <p className="ft-empty-branches">No family roots yet.</p>
+                ) : (
+                    [...branchRoots.map(root => ({
+                        id: root.id,
+                        label: getFullName(root),
+                        count: getBranchMembers(tree.members, root.id).length,
+                        type: "root" as const,
+                    })), ...customFolders.map(folder => ({
+                        id: folder.id,
+                        label: folder.name,
+                        count: folder.memberIds.length,
+                        type: "folder" as const,
+                        folder,
+                    }))].map(item => {
+                        const isActive = activeBranchId === item.id;
+                        const isExpanded = item.type === "folder" ? expandedFolders[item.id] ?? true : true;
+
+                        return (
+                            <div
+                                key={item.id}
+                                className={isActive ? "ft-branch-wrap active" : "ft-branch-wrap"}
+                                onDragOver={item.type === "folder" ? event => {
+                                    event.preventDefault();
+                                    setDragOverFolderId(item.id);
+                                } : undefined}
+                                onDragLeave={item.type === "folder" ? () => setDragOverFolderId(current => current === item.id ? null : current) : undefined}
+                                onDrop={item.type === "folder" ? event => handleDropOnFolder(item.id, event) : undefined}
+                            >
+                                <div className="ft-branch-main-row">
+                                    <button
+                                        type="button"
+                                        className={isActive ? "ft-branch active" : "ft-branch"}
+                                        onClick={() => setActiveBranchId(isActive ? null : item.id)}
+                                        title={item.type === "folder" ? "Select this folder to manage it; the main tree still shows all people." : "Select this branch to manage it; the main tree still shows all people."}
+                                        onDragOver={item.type === "folder" ? event => { event.preventDefault(); } : undefined}
+                                        onDrop={item.type === "folder" ? event => handleDropOnFolder(item.id, event) : undefined}
+                                    >
+                                        <span className="ft-branch-icon">{item.type === "folder" ? "📁" : "🌳"}</span>
+                                        <span className="ft-branch-label">{item.label}</span>
+                                        <span className="ft-branch-count">{item.count}</span>
+                                    </button>
+
+                                    {item.type === "folder" && (
+                                        <button
+                                            type="button"
+                                            className="ft-folder-toggle"
+                                            onClick={() => setExpandedFolders(current => ({
+                                                ...current,
+                                                [item.id]: !(current[item.id] ?? true),
+                                            }))}
+                                            aria-label={isExpanded ? "Collapse folder" : "Expand folder"}
+                                        >
+                                            {isExpanded ? "▾" : "▸"}
+                                        </button>
+                                    )}
+                                </div>
+
+                                {item.type === "folder" && isExpanded && (
+                                    <div
+                                        className={dragOverFolderId === item.id ? "ft-folder-member-list drag-over" : "ft-folder-member-list"}
+                                        onDragOver={event => {
+                                            event.preventDefault();
+                                            setDragOverFolderId(item.id);
+                                        }}
+                                        onDragLeave={() => setDragOverFolderId(current => current === item.id ? null : current)}
+                                        onDrop={event => handleDropOnFolder(item.id, event)}
+                                    >
+                                        {item.folder.memberIds.length === 0 ? (
+                                            <span className="ft-folder-empty">No members</span>
+                                        ) : (
+                                            item.folder.memberIds.map(memberId => {
+                                                const member = tree.members.find(entry => entry.id === memberId);
+                                                if (!member) return null;
+
+                                                return (
+                                                    <button
+                                                        key={member.id}
+                                                        type="button"
+                                                        className="ft-folder-member-item"
+                                                        onClick={() => setSelected(member)}
+                                                    >
+                                                        {getFullName(member)}
+                                                    </button>
+                                                );
+                                            })
+                                        )}
+                                    </div>
+                                )}
+
+                                {item.type === "folder" && (
+                                    <div className="ft-branch-row-actions">
+                                        <button type="button" onClick={() => {
+                                            const folder = customFolders.find(entry => entry.id === item.id);
+                                            if (folder) handleEditFolder(folder);
+                                        }}>Edit</button>
+                                        <button type="button" onClick={() => setSelected(null)}>View All</button>
+                                        <button type="button" className="danger" onClick={() => handleDeleteFolder(item.id)}>Delete</button>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })
+                )}
+            </div>
+
             <h3>Members ({displayedMembers.length})</h3>
             <div className="ft-member-list">
                 {sortPeople(displayedMembers).map(member => (
@@ -940,6 +1263,7 @@ const FamilyTree: React.FC = () => {
                             draggable
                             onDragStart={event => {
                                 event.dataTransfer.effectAllowed = "move";
+                                event.dataTransfer.setData("text/plain", person.id);
                                 setDraggedMemberId(person.id);
                             }}
                             onDragEnd={() => setDraggedMemberId(null)}
@@ -1158,8 +1482,15 @@ const FamilyTree: React.FC = () => {
 
     return (
         <div className="family-tree-page">
-            <header>
-                <h1>🌳 Family Tree</h1>
+            <header className="ft-topbar">
+                <button
+                    className="ft-topbar-back"
+                    onClick={() => navigate("/")}
+                >
+                    ← OH<span>/</span>Hub
+                </button>
+
+                <span className="ft-topbar-title">Family Tree</span>
             </header>
             {renderToolbar()}
             <div className="ft-layout">

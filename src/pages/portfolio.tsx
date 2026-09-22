@@ -27,12 +27,7 @@ export default function Portfolio() {
   return (
     <main className="portfolio">
 
-      <div className="portfolio-topbar">
-        <span className="portfolio-page-label">Oscar Hugosson</span>
-        <a className="portfolio-download-btn" href={cvPdf} download="Oscar Hugosson CV.pdf">
-          Download CV ↓
-        </a>
-      </div>
+     
 
       <header className="portfolio-hero">
         <div className="portfolio-hero-left">
@@ -54,11 +49,16 @@ export default function Portfolio() {
           </div>
           <div className="portfolio-links">
             <a
-            href="https://www.linkedin.com/in/oscar-hugosson-736267341/"
-              target="blank"
+              href="https://www.linkedin.com/in/oscar-hugosson-736267341/"
+              target="_blank"
               rel="noopener noreferrer"
-              >
-                Linkedin <span className="link-arrow">↗</span>
+            >
+              Linkedin <span className="link-arrow">↗</span>
+            </a>
+          </div>
+          <div className="portfolio-links">
+            <a className="portfolio-download-link" href={cvPdf} download="Oscar Hugosson CV.pdf">
+              Download CV <span className="link-arrow">↓</span>
             </a>
           </div>
         </div>
@@ -79,6 +79,10 @@ export default function Portfolio() {
             <div className="background-item">
               <span className="background-date">2025 – 2026</span>
               <p>6-month internship at Visma Enterprise AB</p>
+            </div>
+              <div className="background-item">
+              <span className="background-date">2026 –</span>
+              <p>FutureGames — Game developer</p>
             </div>
           </div>
         </section>

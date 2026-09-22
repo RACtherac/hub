@@ -1,4 +1,5 @@
 import type {
+    FamilyFolder,
     FamilyMember,
     FamilyTreeData,
     FamilyStatistics,
@@ -425,6 +426,86 @@ export function searchPeople(
     return members.filter((person) =>
         getFullName(person).toLowerCase().includes(search)
     );
+}
+
+export function createFolder(
+    name = "New Folder",
+    memberIds: string[] = []
+): FamilyFolder {
+    return {
+        id: generateId(),
+        name,
+        memberIds: [...new Set(memberIds)],
+    };
+}
+
+export function saveFolder(
+    tree: FamilyTreeData,
+    folder: FamilyFolder
+): FamilyTreeData {
+    const folders = tree.folders ?? [];
+    const nextFolders = folders.some(existing => existing.id === folder.id)
+        ? folders.map(existing => existing.id === folder.id ? folder : existing)
+        : [...folders, folder];
+
+    return {
+        ...tree,
+        folders: nextFolders,
+    };
+}
+
+export function removeFolder(
+    tree: FamilyTreeData,
+    folderId: string
+): FamilyTreeData {
+    return {
+        ...tree,
+        folders: (tree.folders ?? []).filter(folder => folder.id !== folderId),
+    };
+}
+
+export function getFolderMembers(
+    tree: FamilyTreeData,
+    folderId: string
+): FamilyMember[] {
+    const folder = (tree.folders ?? []).find(item => item.id === folderId);
+    if (!folder) return [];
+
+    return tree.members.filter(member => folder.memberIds.includes(member.id));
+}
+
+export function getBranchMembers(
+    members: FamilyMember[],
+    rootId: string
+): FamilyMember[] {
+    const root = members.find((member) => member.id === rootId);
+    if (!root) {
+        return members;
+    }
+
+    const ids = new Set<string>([root.id]);
+    const queue = [root.id];
+
+    while (queue.length > 0) {
+        const currentId = queue.shift()!;
+        const current = members.find((member) => member.id === currentId);
+        if (!current) continue;
+
+        [
+            ...current.parents,
+            ...current.children,
+            ...current.spouses,
+            ...current.exSpouses,
+            ...current.siblings,
+        ].forEach((relatedId) => {
+            if (!ids.has(relatedId)) {
+                ids.add(relatedId);
+                queue.push(relatedId);
+            }
+        });
+    }
+
+    return members.filter((member) => ids.has(member.id));
 }
 
 // =====================================
