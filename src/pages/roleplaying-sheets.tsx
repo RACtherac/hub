@@ -8,6 +8,11 @@ type TemplateId = "dnd-5e" | "cyberpunk-red" | "deathwatch" | "custom" | "shoot-
 type CustomFieldType = "text" | "number" | "textarea" | "list";
 type AbilityKey = "I can" | "Bang" | "Sounds" | "Mek" | "Fighting" | "Curios";
 type ZoneKey = "head" | "chest" | "leftArm" | "rightArm" | "leftLeg" | "rightLeg";
+type SkillKey =
+  | "Acrobatics" | "Animal Handling" | "Arcana" | "Athletics" | "Deception" | "History"
+  | "Insight" | "Intimidation" | "Investigation" | "Medicine" | "Nature" | "Perception"
+  | "Performance" | "Persuasion" | "Religion" | "Sleight of Hand" | "Stealth" | "Survival";
+type SkillProficiency = "none" | "proficient" | "expertise";
 
 type Attack = {
   id: string;
@@ -75,6 +80,7 @@ type CharacterSheet = {
   initiative: string;
   proficiency: string;
   stats: Record<StatKey, number>;
+  skills: Partial<Record<SkillKey, SkillProficiency>>;
   traits: string[];
   attacks: Attack[];
   inventory: string[];
@@ -85,6 +91,31 @@ type CharacterSheet = {
 
 const STORAGE_KEY = "rpg-character-sheets";
 const STAT_KEYS: StatKey[] = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
+const SKILLS: { key: SkillKey; stat: StatKey }[] = [
+  { key: "Acrobatics", stat: "DEX" },
+  { key: "Animal Handling", stat: "WIS" },
+  { key: "Arcana", stat: "INT" },
+  { key: "Athletics", stat: "STR" },
+  { key: "Deception", stat: "CHA" },
+  { key: "History", stat: "INT" },
+  { key: "Insight", stat: "WIS" },
+  { key: "Intimidation", stat: "CHA" },
+  { key: "Investigation", stat: "INT" },
+  { key: "Medicine", stat: "WIS" },
+  { key: "Nature", stat: "INT" },
+  { key: "Perception", stat: "WIS" },
+  { key: "Performance", stat: "CHA" },
+  { key: "Persuasion", stat: "CHA" },
+  { key: "Religion", stat: "INT" },
+  { key: "Sleight of Hand", stat: "DEX" },
+  { key: "Stealth", stat: "DEX" },
+  { key: "Survival", stat: "WIS" },
+];
+const NEXT_PROFICIENCY: Record<SkillProficiency, SkillProficiency> = {
+  none: "proficient",
+  proficient: "expertise",
+  expertise: "none",
+};
 const SHEET_TYPES: { id: SheetType; label: string; description: string }[] = [
   { id: "dnd", label: "D&D Sheets", description: "Classic stats and combat sheet" },
   { id: "custom", label: "Custom Sheets", description: "Worldbuilding and story notes" },
@@ -199,6 +230,7 @@ function createBlankSheet(type: SheetType = "dnd", templateId: TemplateId = type
     initiative: isDndTemplate ? "+2" : isCyberpunk ? "+3" : isDeathwatch ? "+2" : templateId === "shoot-them" ? "+1" : "—",
     proficiency: isDndTemplate ? "+2" : isCyberpunk ? "+2" : isDeathwatch ? "+3" : templateId === "shoot-them" ? "+1" : "—",
     stats: { ...defaultStats },
+    skills: isDndTemplate ? { Nature: "proficient", Perception: "proficient", Survival: "proficient" } : {},
     traits: isDndTemplate
       ? ["Quick thinker", "Wary of ambushes", "Protects allies"]
       : isCyberpunk
@@ -300,6 +332,17 @@ function parseStoredSheets(): CharacterSheet[] {
 
 function modifierFor(score: number) {
   return Math.floor((score - 10) / 2);
+}
+
+function formatModifier(value: number) {
+  return value >= 0 ? `+${value}` : `${value}`;
+}
+
+function skillModifier(sheet: CharacterSheet, skill: { key: SkillKey; stat: StatKey }) {
+  const proficiencyBonus = Number.parseInt(sheet.proficiency, 10) || 0;
+  const level = sheet.skills?.[skill.key] ?? "none";
+  const multiplier = level === "expertise" ? 2 : level === "proficient" ? 1 : 0;
+  return modifierFor(sheet.stats[skill.stat]) + proficiencyBonus * multiplier;
 }
 
 export default function RoleplayingSheets() {
@@ -479,6 +522,17 @@ export default function RoleplayingSheets() {
             weapons: nextShootThem.weapons.filter((weapon) => weapon.id !== weaponId),
           },
         };
+      }),
+    );
+  };
+
+  const cycleSkill = (skill: SkillKey) => {
+    if (!selectedSheet) return;
+    setSheets((current) =>
+      current.map((sheet) => {
+        if (sheet.id !== selectedSheet.id) return sheet;
+        const level = sheet.skills?.[skill] ?? "none";
+        return { ...sheet, skills: { ...sheet.skills, [skill]: NEXT_PROFICIENCY[level] } };
       }),
     );
   };
@@ -847,29 +901,40 @@ export default function RoleplayingSheets() {
               <div className="rpg-core-grid">
                 <div className="rpg-core-box">
                   <p className="rpg-panel-label">// {isDndSheet ? "vitals" : "status"}</p>
-                  <div className="rpg-stat-line">
-                    <label>
+                  <div className="rpg-stat-grid rpg-vitals-grid">
+                    <label className="rpg-score-box">
                       <span>{isDndSheet ? "HP" : "Energy"}</span>
                       <input value={selectedSheet.hp} onChange={(e) => updateSelected({ hp: e.target.value })} />
                     </label>
-                    <label>
+                    <label className="rpg-score-box">
                       <span>{isDndSheet ? "AC" : "Defense"}</span>
                       <input value={selectedSheet.ac} onChange={(e) => updateSelected({ ac: e.target.value })} />
                     </label>
-                  </div>
-                  <div className="rpg-stat-line">
-                    <label>
+                    <label className="rpg-score-box">
                       <span>{isDndSheet ? "Speed" : "Approach"}</span>
                       <input value={selectedSheet.speed} onChange={(e) => updateSelected({ speed: e.target.value })} />
                     </label>
-                    <label>
-                      <span>{isDndSheet ? "Initiative" : "Focus"}</span>
-                      <input value={selectedSheet.initiative} onChange={(e) => updateSelected({ initiative: e.target.value })} />
-                    </label>
-                    <label>
+                    {isDndSheet ? (
+                      <div className="rpg-score-box rpg-score-box--derived" title="DEX modifier">
+                        <span>Initiative</span>
+                        <strong>{formatModifier(modifierFor(selectedSheet.stats.DEX))}</strong>
+                      </div>
+                    ) : (
+                      <label className="rpg-score-box">
+                        <span>Focus</span>
+                        <input value={selectedSheet.initiative} onChange={(e) => updateSelected({ initiative: e.target.value })} />
+                      </label>
+                    )}
+                    <label className="rpg-score-box">
                       <span>{isDndSheet ? "Proficiency" : "Skill"}</span>
                       <input value={selectedSheet.proficiency} onChange={(e) => updateSelected({ proficiency: e.target.value })} />
                     </label>
+                    {isDndSheet && (
+                      <div className="rpg-score-box rpg-score-box--derived" title="10 + Perception modifier">
+                        <span>Passive Perc.</span>
+                        <strong>{10 + skillModifier(selectedSheet, { key: "Perception", stat: "WIS" })}</strong>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -892,6 +957,34 @@ export default function RoleplayingSheets() {
                   </div>
                 )}
               </div>
+
+              {isDndSheet && (
+                <div className="rpg-core-box">
+                  <div className="rpg-section-header">
+                    <p className="rpg-panel-label">// skills</p>
+                    <small className="rpg-skill-hint">Click a dot: proficient → expertise → none</small>
+                  </div>
+                  <div className="rpg-skill-grid">
+                    {SKILLS.map((skill) => {
+                      const level = selectedSheet.skills?.[skill.key] ?? "none";
+                      return (
+                        <div key={skill.key} className="rpg-skill-row">
+                          <button
+                            type="button"
+                            className={`rpg-skill-dot rpg-skill-dot--${level}`}
+                            onClick={() => cycleSkill(skill.key)}
+                            title={level === "none" ? "Not proficient" : level === "proficient" ? "Proficient" : "Expertise"}
+                            aria-label={`${skill.key}: ${level}`}
+                          />
+                          <span className="rpg-skill-mod">{formatModifier(skillModifier(selectedSheet, skill))}</span>
+                          <span className="rpg-skill-name">{skill.key}</span>
+                          <small className="rpg-skill-stat">{skill.stat}</small>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </>
           )}
 
