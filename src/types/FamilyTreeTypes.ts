@@ -31,11 +31,16 @@ export interface FamilyMember {
 
     image?: string;
 
+    // Colour of the line from this person's parents down to them ("#rrggbb").
+    lineColor?: string;
+
     parents: string[];
     children: string[];
     spouses: string[];
     exSpouses: string[];
     siblings: string[];
+    // Cousins added by hand. Cousins through linked parents are derived, not stored.
+    cousins: string[];
 
     created: string;
     updated: string;
@@ -47,9 +52,15 @@ export interface FamilyFolder {
     memberIds: string[];
 }
 
+export interface GridPosition {
+    x: number;
+    y: number;
+}
+
 export interface FamilyTreeData {
     members: FamilyMember[];
     folders?: FamilyFolder[];
+    positions?: Record<string, GridPosition>;
 }
 
 export interface TreeNode {

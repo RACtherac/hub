@@ -524,8 +524,9 @@
 }
 
 .ft-connection {
-    stroke-width: 3px;
+    stroke-width: 2.5px;
     stroke-linecap: round;
+    stroke-linejoin: round;
     fill: none;
     opacity: 0.95;
 }
@@ -536,7 +537,13 @@
 
 .ft-connection--spouse {
     stroke: #c17cff;
-    stroke-dasharray: 6 8;
+    stroke-width: 3px;
+}
+
+.ft-connection--ex-spouse {
+    stroke: #c17cff;
+    stroke-dasharray: 4 6;
+    opacity: 0.7;
 }
 
 .ft-connection--sibling {
@@ -547,6 +554,54 @@
 .ft-connection--cousin {
     stroke: #53dcca;
     stroke-dasharray: 8 8;
+}
+
+.ft-line-color {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(79, 170, 255, 0.08);
+    border: 1px solid rgba(79, 170, 255, 0.18);
+    border-radius: 0.95rem;
+}
+
+.ft-line-color-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.ft-line-color-swatch {
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.ft-line-color-swatch.active {
+    border-color: var(--text);
+    box-shadow: 0 0 0 2px var(--surface) inset;
+}
+
+.ft-line-color-custom {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.ft-line-color-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text);
 }
 
 .ft-relation-list {
