@@ -6,9 +6,13 @@ import type {
     FamilyFolder,
     FamilyMember,
     FamilyTreeData,
+    GridPosition,
 } from "../types/FamilyTreeTypes";
 
 import {
+    GRID_STEP_X,
+    GRID_STEP_Y,
+    addPerson,
     connectCousins,
     connectExSpouses,
     connectParentChild,
@@ -20,7 +24,9 @@ import {
     deletePerson,
     disconnectRelationship,
     exportJSON,
+    fillMissingPositions,
     getBranchMembers,
+    getDerivedCousinIds,
     getFullName,
     importJSON,
     loadTree,
@@ -29,6 +35,37 @@ import {
     sortPeople,
     updatePerson,
 } from "../utils/FamilyTreeUtils";
+import {
+    buildConnectionPaths,
+    type CardBox,
+    type ConnectionPath,
+} from "../utils/familyTreeLines";
+
+const LINE_COLOR_PRESETS = ["#ff6b6b", "#ffa94d", "#ffd43b", "#69db7c", "#38d9a9", "#da77f2", "#f783ac"];
+
+type RelationItem = {
+    relation: string;
+    member: FamilyMember;
+    className: string;
+    derived?: boolean;
+};
+
+function loadInitialTree(): { tree: FamilyTreeData; positions: Record<string, GridPosition> } {
+    const loaded = loadTree();
+
+    if (loaded.members.length === 0) {
+        const sample = createSampleTree();
+        return {
+            tree: { members: sample.members, folders: [] },
+            positions: createAutoLayoutPositions(sample.members),
+        };
+    }
+
+    return {
+        tree: { members: loaded.members, folders: loaded.folders ?? [] },
+        positions: fillMissingPositions(loaded.members, loaded.positions ?? {}),
+    };
+}
 
 const FamilyTree: React.FC = () => {
     const navigate = useNavigate();
@@ -37,10 +74,9 @@ const FamilyTree: React.FC = () => {
     // STATE
     //==========================================================
 
-    const [tree, setTree] = useState<FamilyTreeData>({
-        members: [],
-        folders: [],
-    });
+    const [initial] = useState(loadInitialTree);
+
+    const [tree, setTree] = useState<FamilyTreeData>(initial.tree);
 
     const [selected, setSelected] =
         useState<FamilyMember | null>(null);
@@ -70,7 +106,7 @@ const FamilyTree: React.FC = () => {
         useState({ x: 0, y: 0 });
 
     const [memberPositions, setMemberPositions] =
-        useState<Record<string, { x: number; y: number }>>({});
+        useState<Record<string, GridPosition>>(initial.positions);
 
     const [draggedMemberId, setDraggedMemberId] =
         useState<string | null>(null);
@@ -82,9 +118,6 @@ const FamilyTree: React.FC = () => {
 
     const CARD_WIDTH = 180;
     const CARD_HEIGHT = 200;
-    const GRID_STEP_X = 240;
-    const GRID_STEP_Y = 260;
-    const NODE_OFFSET_X = 90;
 
 
     const [relationType, setRelationType] =
@@ -99,16 +132,7 @@ const FamilyTree: React.FC = () => {
         useState("");
 
     const [connections, setConnections] =
-        useState<{
-            id: string;
-            fromX: number;
-            fromY: number;
-            toX: number;
-            toY: number;
-            controlX: number;
-            controlY: number;
-            type: "parent" | "spouse" | "sibling" | "cousin" | "ex-spouse";
-        }[]>([]);
+        useState<ConnectionPath[]>([]);
 
     const [treeDimensions, setTreeDimensions] =
         useState({ width: 1200, height: 800 });
@@ -120,41 +144,9 @@ const FamilyTree: React.FC = () => {
     // LOAD TREE
     //==========================================================
 
-    useEffect(() => {
-
-        try {
-            const loaded = loadTree();
-            const normalizedTree = {
-                members: loaded.members ?? [],
-                folders: Array.isArray(loaded.folders) ? loaded.folders : [],
-            };
-
-            if (normalizedTree.members.length === 0) {
-                const sample = {
-                    ...createSampleTree(),
-                    folders: [],
-                };
-                setTree(sample);
-                setMemberPositions(createAutoLayoutPositions(sample.members));
-            }
-            else {
-                setTree(normalizedTree);
-                setMemberPositions(createAutoLayoutPositions(normalizedTree.members));
-            }
-        }
-        catch {
-            const sample = {
-                ...createSampleTree(),
-                folders: [],
-            };
-            setTree(sample);
-            setMemberPositions(createAutoLayoutPositions(sample.members));
-        }
-        setZoom(1);
-        setViewOffset({ x: 0, y: 0 });
-        setSelected(null);
-
-    }, []);
+    // Loaded while creating state (see loadInitialTree) rather than in an
+    // effect, so the save effect can never write an empty tree over the
+    // saved one before it has been read.
 
     //==========================================================
     // SAVE
@@ -162,9 +154,9 @@ const FamilyTree: React.FC = () => {
 
     useEffect(() => {
 
-        saveTree(tree);
+        saveTree({ ...tree, positions: memberPositions });
 
-    }, [tree]);
+    }, [tree, memberPositions]);
 
     //==========================================================
     // SEARCH
@@ -181,43 +173,15 @@ const FamilyTree: React.FC = () => {
         return searchPeople(sourceMembers, search);
     }, [tree.members, search]);
 
-    const getChildren = (member: FamilyMember) =>
-        tree.members.filter(child => child.parents.includes(member.id));
-
-    const getCousins = (member: FamilyMember) => {
-        const parentSiblings = tree.members
-            .filter(parent => member.parents.includes(parent.id))
-            .flatMap(parent =>
-                tree.members.filter(
-                    sibling => parent.siblings.includes(sibling.id) && sibling.id !== member.id
-                )
-            );
-
-        const cousins = new Map<string, FamilyMember>();
-
-        parentSiblings.forEach(auntUncle => {
-            tree.members.forEach(child => {
-                if (child.parents.includes(auntUncle.id) && child.id !== member.id) {
-                    cousins.set(child.id, child);
-                }
-            });
-        });
-
-        return Array.from(cousins.values());
-    };
-
-    const selectedRelations = useMemo(() => {
-        if (!selected) return [] as {
-            relation: string;
-            member: FamilyMember;
-            className: string;
-        }[];
+    const selectedRelations = useMemo<RelationItem[]>(() => {
+        if (!selected) return [];
 
         const parents = tree.members
             .filter(member => selected.parents.includes(member.id))
             .map(member => ({ relation: "Parent", member, className: "relation--parent" }));
 
-        const children = getChildren(selected)
+        const children = tree.members
+            .filter(child => child.parents.includes(selected.id))
             .map(member => ({ relation: "Child", member, className: "relation--parent" }));
 
         const spouses = tree.members
@@ -232,8 +196,17 @@ const FamilyTree: React.FC = () => {
             .filter(member => selected.siblings.includes(member.id))
             .map(member => ({ relation: "Sibling", member, className: "relation--sibling" }));
 
-        const cousins = getCousins(selected)
-            .map(member => ({ relation: "Cousin", member, className: "relation--cousin" }));
+        // Cousins through linked parents can't be removed here, only by
+        // changing the parent or sibling links they come from.
+        const derivedCousinIds = getDerivedCousinIds(tree.members, selected);
+        const cousins = tree.members
+            .filter(member => selected.cousins.includes(member.id) || derivedCousinIds.includes(member.id))
+            .map(member => ({
+                relation: "Cousin",
+                member,
+                className: "relation--cousin",
+                derived: !selected.cousins.includes(member.id),
+            }));
 
         return [...parents, ...children, ...spouses, ...exSpouses, ...siblings, ...cousins];
     }, [selected, tree]);
@@ -243,52 +216,6 @@ const FamilyTree: React.FC = () => {
             setSelected(null);
         }
     }, [displayedMembers, selected]);
-
-    //==========================================================
-    // CALCULATE GENERATIONS
-    //==========================================================
-
-    const calculateLevel = (member: FamilyMember, visited = new Set<string>()): number => {
-        if (visited.has(member.id)) return 0;
-        visited.add(member.id);
-
-        if (member.parents.length === 0) return 0;
-
-        const parentLevels = member.parents
-            .map(parentId => {
-                const parent = tree.members.find(m => m.id === parentId);
-                return parent ? calculateLevel(parent, visited) : 0;
-            });
-
-        return Math.max(...parentLevels) + 1;
-    };
-
-    const grouped = useMemo(() => {
-        const map = new Map<number, FamilyMember[]>();
-        displayedMembers.forEach(member => {
-            const level = calculateLevel(member);
-            if (!map.has(level)) map.set(level, []);
-            map.get(level)!.push(member);
-        });
-        return map;
-    }, [displayedMembers, tree]);
-
-    useEffect(() => {
-        setMemberPositions(prev => {
-            const nextPositions = createAutoLayoutPositions(displayedMembers);
-            const hasChanged = Object.keys(nextPositions).some(id => {
-                const current = prev[id];
-                const next = nextPositions[id];
-                return !current || current.x !== next.x || current.y !== next.y;
-            });
-
-            if (!hasChanged && Object.keys(prev).length === Object.keys(nextPositions).length) {
-                return prev;
-            }
-
-            return nextPositions;
-        });
-    }, [displayedMembers]);
 
     const handleDropOnTree = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
@@ -354,187 +281,26 @@ const FamilyTree: React.FC = () => {
             height: Math.max(800, (maxY + 2) * GRID_STEP_Y),
         });
 
-        const positions: Record<string, { x: number; y: number }> = {};
+        // Lines are routed from each card's real size, which depends on what
+        // is filled in, so measure the rendered cards.
+        // Only visible people get a box (search hides some).
+        const boxes: Record<string, CardBox> = {};
 
-        Object.entries(memberPositions).forEach(([id, position]) => {
-            positions[id] = position;
-        });
+        displayedMembers.forEach(member => {
+            const position = memberPositions[member.id];
+            if (!position) return;
 
-
-        const lines: typeof connections = [];
-
-        const getConnectionPoints = (
-            fromPosition: { x: number; y: number },
-            toPosition: { x: number; y: number },
-            relationType: "parent" | "spouse" | "sibling" | "cousin" | "ex-spouse"
-        ) => {
-            const fromXBase = fromPosition.x * GRID_STEP_X;
-            const fromYBase = fromPosition.y * GRID_STEP_Y;
-            const toXBase = toPosition.x * GRID_STEP_X;
-            const toYBase = toPosition.y * GRID_STEP_Y;
-            const deltaX = toPosition.x - fromPosition.x;
-            const deltaY = toPosition.y - fromPosition.y;
-
-            if (relationType === "parent") {
-                const fromX = fromXBase + NODE_OFFSET_X;
-                const toX = toXBase + NODE_OFFSET_X;
-                return {
-                    fromX,
-                    fromY: fromYBase + CARD_HEIGHT - 10,
-                    toX,
-                    toY: toYBase + 10,
-                };
-            }
-
-            if (relationType === "spouse") {
-                const fromX = fromXBase + (deltaX >= 0 ? CARD_WIDTH - 20 : 20);
-                const toX = toXBase + (deltaX <= 0 ? CARD_WIDTH - 20 : 20);
-                return {
-                    fromX,
-                    fromY: fromYBase + CARD_HEIGHT / 2,
-                    toX,
-                    toY: toYBase + CARD_HEIGHT / 2,
-                };
-            }
-
-            if (relationType === "sibling") {
-                const fromX = fromXBase + CARD_WIDTH / 2;
-                const toX = toXBase + CARD_WIDTH / 2;
-                return {
-                    fromX,
-                    fromY: fromYBase + CARD_HEIGHT / 2 - 10,
-                    toX,
-                    toY: toYBase + CARD_HEIGHT / 2 - 10,
-                };
-            }
-
-            const fromX = fromXBase + (deltaX >= 0 ? CARD_WIDTH - 30 : 30);
-            const toX = toXBase + (deltaX <= 0 ? CARD_WIDTH - 30 : 30);
-            const fromY = fromYBase + CARD_HEIGHT / 2 + (deltaY >= 0 ? 10 : -10);
-            const toY = toYBase + CARD_HEIGHT / 2 + (deltaY <= 0 ? 10 : -10);
-
-            return {
-                fromX,
-                fromY,
-                toX,
-                toY,
+            const card = cardRefs.current[member.id]?.firstElementChild as HTMLElement | null | undefined;
+            boxes[member.id] = {
+                left: position.x * GRID_STEP_X,
+                top: position.y * GRID_STEP_Y,
+                width: card?.offsetWidth || CARD_WIDTH,
+                height: card?.offsetHeight || CARD_HEIGHT,
             };
-        };
-
-        tree.members.forEach(member => {
-            const memberPos = positions[member.id];
-            if (!memberPos) return;
-
-            member.parents.forEach(parentId => {
-                const parentPos = positions[parentId];
-                if (!parentPos) return;
-
-                const { fromX, fromY, toX, toY } = getConnectionPoints(parentPos, memberPos, "parent");
-
-                lines.push({
-                    id: `${parentId}-${member.id}`,
-                    fromX,
-                    fromY,
-                    toX,
-                    toY,
-                    controlX: (fromX + toX) / 2,
-                    controlY: Math.min(fromY, toY) - 60,
-                    type: "parent",
-                });
-            });
-
-            member.spouses.forEach(spouseId => {
-                if (member.id >= spouseId) return;
-                const spousePos = positions[spouseId];
-                if (!spousePos) return;
-
-                const { fromX, fromY, toX, toY } = getConnectionPoints(memberPos, spousePos, "spouse");
-
-                lines.push({
-                    id: `${member.id}-spouse-${spouseId}`,
-                    fromX,
-                    fromY,
-                    toX,
-                    toY,
-                    controlX: (fromX + toX) / 2,
-                    controlY: Math.min(fromY, toY) - 45,
-                    type: "spouse",
-                });
-            });
-
-            member.exSpouses.forEach(spouseId => {
-                if (member.id >= spouseId) return;
-                const spousePos = positions[spouseId];
-                if (!spousePos) return;
-
-                const { fromX, fromY, toX, toY } = getConnectionPoints(memberPos, spousePos, "spouse");
-
-                lines.push({
-                    id: `${member.id}-ex-spouse-${spouseId}`,
-                    fromX,
-                    fromY,
-                    toX,
-                    toY,
-                    controlX: (fromX + toX) / 2,
-                    controlY: Math.min(fromY, toY) - 35,
-                    type: "ex-spouse",
-                });
-            });
-
-            member.siblings.forEach(siblingId => {
-                if (member.id >= siblingId) return;
-                const siblingPos = positions[siblingId];
-                if (!siblingPos) return;
-
-                const { fromX, fromY, toX, toY } = getConnectionPoints(memberPos, siblingPos, "sibling");
-
-                lines.push({
-                    id: `${member.id}-sib-${siblingId}`,
-                    fromX,
-                    fromY,
-                    toX,
-                    toY,
-                    controlX: (fromX + toX) / 2,
-                    controlY: Math.min(fromY, toY) - 35,
-                    type: "sibling",
-                });
-            });
-
-            const parents = tree.members.filter(parent => member.parents.includes(parent.id));
-            const auntUncles = parents.flatMap(parent =>
-                tree.members.filter(a => parent.siblings.includes(a.id))
-            );
-
-            const cousinSet = new Set<string>();
-            auntUncles.forEach(auntUncle => {
-                tree.members.forEach(child => {
-                    if (child.parents.includes(auntUncle.id) && child.id !== member.id) {
-                        cousinSet.add(child.id);
-                    }
-                });
-            });
-
-            cousinSet.forEach(cousinId => {
-                if (member.id >= cousinId) return;
-                const cousinPos = positions[cousinId];
-                if (!cousinPos) return;
-
-                const { fromX, fromY, toX, toY } = getConnectionPoints(memberPos, cousinPos, "cousin");
-
-                lines.push({
-                    id: `${member.id}-cousin-${cousinId}`,
-                    fromX,
-                    fromY,
-                    toX,
-                    toY,
-                    controlX: (fromX + toX) / 2,
-                    controlY: Math.min(fromY, toY) - 35,
-                    type: "cousin",
-                });
-            });
         });
-        setConnections(lines);
-    }, [tree, grouped, zoom, displayedMembers]);
+
+        setConnections(buildConnectionPaths(tree.members, boxes));
+    }, [tree, memberPositions, displayedMembers]);
 
     //==========================================================
     // ADD PERSON
@@ -547,17 +313,11 @@ const FamilyTree: React.FC = () => {
         person.firstName = "New";
         person.lastName = "Person";
 
-        setTree({
-
-            members: [
-                ...tree.members,
-                person,
-            ],
-
-        });
-        setMemberPositions(createAutoLayoutPositions([...tree.members, person]));
-        setZoom(1);
-        setViewOffset({ x: 0, y: 0 });
+        // Only the new person gets a spot; everyone else stays where they are.
+        // A full re-layout only happens on Reset View.
+        const updated = addPerson(tree, person);
+        setTree(updated);
+        setMemberPositions(prev => fillMissingPositions(updated.members, prev));
         setSelected(person);
 
     };
@@ -584,6 +344,7 @@ const FamilyTree: React.FC = () => {
             );
 
         setTree(updated);
+        setMemberPositions(prev => fillMissingPositions(updated.members, prev));
 
         if (
             selected?.id === id
@@ -688,7 +449,7 @@ const FamilyTree: React.FC = () => {
         );
     };
 
-    const handleRemoveConnection = (item: { relation: string; member: FamilyMember; className: string }) => {
+    const handleRemoveConnection = (item: RelationItem) => {
         if (!selected) return;
 
         const relationTypeMap: Record<string, "parent" | "child" | "spouse" | "ex-spouse" | "sibling" | "cousin"> = {
@@ -716,12 +477,12 @@ const FamilyTree: React.FC = () => {
         setRelationReplacementTarget("");
     };
 
-    const handleStartConnectionChange = (item: { relation: string; member: FamilyMember; className: string }) => {
+    const handleStartConnectionChange = (item: RelationItem) => {
         setRelationEditor({ memberId: item.member.id, relation: item.relation });
         setRelationReplacementTarget("");
     };
 
-    const handleSaveConnectionChange = (item: { relation: string; member: FamilyMember; className: string }) => {
+    const handleSaveConnectionChange = (item: RelationItem) => {
         if (!selected || !relationReplacementTarget || relationReplacementTarget === item.member.id) return;
 
         const relationTypeMap: Record<string, "parent" | "child" | "spouse" | "ex-spouse" | "sibling" | "cousin"> = {
@@ -770,7 +531,7 @@ const FamilyTree: React.FC = () => {
     const handleExport = () => {
 
         const json =
-            exportJSON(tree);
+            exportJSON({ ...tree, positions: memberPositions });
 
         const blob =
             new Blob(
@@ -829,8 +590,8 @@ const FamilyTree: React.FC = () => {
                         reader.result as string
                     );
 
-                setTree(imported);
-                setMemberPositions(createAutoLayoutPositions(imported.members));
+                setTree({ members: imported.members, folders: imported.folders ?? [] });
+                setMemberPositions(fillMissingPositions(imported.members, imported.positions ?? {}));
                 setZoom(1);
                 setViewOffset({ x: 0, y: 0 });
                 setSelected(null);
@@ -839,7 +600,7 @@ const FamilyTree: React.FC = () => {
             catch {
 
                 alert(
-                    "Invalid JSON."
+                    "That file isn't a valid family tree export."
                 );
 
             }
@@ -1201,7 +962,10 @@ const FamilyTree: React.FC = () => {
                 className={`ft-card ${isDeceased ? "deceased" : ""}`}
                 key={person.id}
                 onClick={() => setSelected(person)}
-                style={{ opacity: isDeceased ? 0.7 : 1 }}
+                style={{
+                    opacity: isDeceased ? 0.7 : 1,
+                    borderTop: person.lineColor ? `4px solid ${person.lineColor}` : undefined,
+                }}
             >
                 <div className="ft-photo">
                     {person.image ? <img src={person.image} alt={getFullName(person)} /> : "👤"}
@@ -1238,8 +1002,9 @@ const FamilyTree: React.FC = () => {
                     {connections.map(connection => (
                         <path
                             key={connection.id}
-                            d={`M ${connection.fromX} ${connection.fromY} Q ${connection.controlX} ${connection.controlY} ${connection.toX} ${connection.toY}`}
+                            d={connection.d}
                             className={`ft-connection ft-connection--${connection.type}`}
+                            style={connection.color ? { stroke: connection.color } : undefined}
                         />
                     ))}
                 </svg>
@@ -1367,6 +1132,43 @@ const FamilyTree: React.FC = () => {
                         onChange={e => updateSelected("notes", e.target.value)}
                     />
                 </label>
+                {selected.parents.length > 0 && (
+                    <div className="ft-line-color">
+                        <p className="ft-connection-label">Line from parents</p>
+                        <div className="ft-line-color-swatches">
+                            {LINE_COLOR_PRESETS.map(color => (
+                                <button
+                                    key={color}
+                                    type="button"
+                                    className={selected.lineColor === color ? "ft-line-color-swatch active" : "ft-line-color-swatch"}
+                                    style={{ background: color }}
+                                    onClick={() => updateSelected("lineColor", color)}
+                                    aria-label={`Use ${color}`}
+                                    title={color}
+                                />
+                            ))}
+                            <input
+                                type="color"
+                                className="ft-line-color-custom"
+                                value={selected.lineColor ?? "#4faaff"}
+                                onChange={e => updateSelected("lineColor", e.target.value)}
+                                title="Pick any colour"
+                            />
+                        </div>
+                        <div className="ft-line-color-footer">
+                            <span>{selected.lineColor ? selected.lineColor : "Default (shared blue line)"}</span>
+                            {selected.lineColor && (
+                                <button
+                                    type="button"
+                                    className="ft-relation-action-button"
+                                    onClick={() => updateSelected("lineColor", undefined)}
+                                >
+                                    Reset
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
                 <div className="ft-connection-panel">
                     <p className="ft-connection-label">Connect selected member</p>
                     <div className="ft-connection-controls">
@@ -1414,22 +1216,28 @@ const FamilyTree: React.FC = () => {
                                             <span className="ft-relation-label">{item.relation}</span>
                                             <span>{getFullName(item.member)}</span>
                                         </div>
-                                        <div className="ft-relation-actions">
-                                            <button
-                                                type="button"
-                                                className="ft-relation-action-button"
-                                                onClick={() => handleStartConnectionChange(item)}
-                                            >
-                                                Change
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="ft-relation-action-button ft-relation-action-button--danger"
-                                                onClick={() => handleRemoveConnection(item)}
-                                            >
-                                                Remove
-                                            </button>
-                                        </div>
+                                        {item.derived ? (
+                                            <div className="ft-relation-actions" title="Comes from the parent and sibling links">
+                                                <span className="ft-no-relations">via parents</span>
+                                            </div>
+                                        ) : (
+                                            <div className="ft-relation-actions">
+                                                <button
+                                                    type="button"
+                                                    className="ft-relation-action-button"
+                                                    onClick={() => handleStartConnectionChange(item)}
+                                                >
+                                                    Change
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="ft-relation-action-button ft-relation-action-button--danger"
+                                                    onClick={() => handleRemoveConnection(item)}
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        )}
                                         {isEditing && selected && (
                                             <div className="ft-relation-edit">
                                                 <select
