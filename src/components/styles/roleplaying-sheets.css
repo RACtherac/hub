@@ -466,6 +466,51 @@
   color: var(--accent);
 }
 
+.rpg-armour-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rpg-armour-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.rpg-armour-tag:hover {
+  border-color: var(--accent);
+}
+
+.rpg-armour-tag--active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.rpg-armour-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.rpg-armour-stats {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+.rpg-armour-tag--active .rpg-armour-stats {
+  color: var(--accent);
+}
+
 .rpg-skill-hint {
   font-family: var(--font-mono);
   font-size: 0.6rem;

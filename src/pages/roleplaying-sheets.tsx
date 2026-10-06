@@ -14,6 +14,7 @@ type SkillKey =
   | "Performance" | "Persuasion" | "Religion" | "Sleight of Hand" | "Stealth" | "Survival";
 type SkillProficiency = "none" | "proficient" | "expertise";
 type CharacteristicKey = "WS" | "BS" | "S" | "T" | "Ag" | "Int" | "WP" | "Fel";
+type ArmourId = "tactical" | "terminator" | "gravis" | "phobos" | "jump-pack";
 
 type Attack = {
   id: string;
@@ -83,6 +84,7 @@ type CharacterSheet = {
   stats: Record<StatKey, number>;
   skills: Partial<Record<SkillKey, SkillProficiency>>;
   characteristics?: Record<CharacteristicKey, number>;
+  armour?: ArmourId;
   traits: string[];
   attacks: Attack[];
   inventory: string[];
@@ -138,6 +140,13 @@ const DEFAULT_CHARACTERISTICS: Record<CharacteristicKey, number> = {
   WP: 40,
   Fel: 32,
 };
+const ARMOURS: { id: ArmourId; label: string; as: number; m: number }[] = [
+  { id: "tactical", label: "Tactical", as: 5, m: 25 },
+  { id: "terminator", label: "Terminator", as: 7, m: 10 },
+  { id: "gravis", label: "Gravis", as: 6, m: 15 },
+  { id: "phobos", label: "Phobos / Reiver", as: 4, m: 35 },
+  { id: "jump-pack", label: "Jump pack", as: 5, m: 30 },
+];
 const SHEET_TYPES: { id: SheetType; label: string; description: string }[] = [
   { id: "dnd", label: "D&D Sheets", description: "Classic stats and combat sheet" },
   { id: "custom", label: "Custom Sheets", description: "Worldbuilding and story notes" },
@@ -254,6 +263,7 @@ function createBlankSheet(type: SheetType = "dnd", templateId: TemplateId = type
     stats: { ...defaultStats },
     skills: isDndTemplate ? { Nature: "proficient", Perception: "proficient", Survival: "proficient" } : {},
     characteristics: isDeathwatch ? { ...DEFAULT_CHARACTERISTICS } : undefined,
+    armour: isDeathwatch ? "tactical" : undefined,
     traits: isDndTemplate
       ? ["Quick thinker", "Wary of ambushes", "Protects allies"]
       : isCyberpunk
@@ -843,6 +853,7 @@ export default function RoleplayingSheets() {
   const shootThem = selectedSheet.shootThem ?? createDefaultShootThem();
   const isDeathwatch = selectedSheet.templateId === "deathwatch";
   const characteristics = selectedSheet.characteristics ?? DEFAULT_CHARACTERISTICS;
+  const armour = ARMOURS.find((option) => option.id === selectedSheet.armour) ?? ARMOURS[0];
 
   const customFieldsPanel = (
     <div className="rpg-core-box">
@@ -964,14 +975,29 @@ export default function RoleplayingSheets() {
                       <span>{isDndSheet ? "HP" : "Energy"}</span>
                       <input value={selectedSheet.hp} onChange={(e) => updateSelected({ hp: e.target.value })} />
                     </label>
-                    <label className="rpg-score-box">
-                      <span>{isDndSheet ? "AC" : "Defense"}</span>
-                      <input value={selectedSheet.ac} onChange={(e) => updateSelected({ ac: e.target.value })} />
-                    </label>
-                    <label className="rpg-score-box">
-                      <span>{isDndSheet ? "Speed" : "Approach"}</span>
-                      <input value={selectedSheet.speed} onChange={(e) => updateSelected({ speed: e.target.value })} />
-                    </label>
+                    {isDeathwatch ? (
+                      <>
+                        <div className="rpg-score-box rpg-score-box--derived" title={`From ${armour.label} armour`}>
+                          <span>Defense</span>
+                          <strong>{armour.as}</strong>
+                        </div>
+                        <div className="rpg-score-box rpg-score-box--derived" title={`From ${armour.label} armour`}>
+                          <span>Movement</span>
+                          <strong>{armour.m}</strong>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <label className="rpg-score-box">
+                          <span>{isDndSheet ? "AC" : "Defense"}</span>
+                          <input value={selectedSheet.ac} onChange={(e) => updateSelected({ ac: e.target.value })} />
+                        </label>
+                        <label className="rpg-score-box">
+                          <span>{isDndSheet ? "Speed" : "Approach"}</span>
+                          <input value={selectedSheet.speed} onChange={(e) => updateSelected({ speed: e.target.value })} />
+                        </label>
+                      </>
+                    )}
                     {isDndSheet ? (
                       <div className="rpg-score-box rpg-score-box--derived" title="DEX modifier">
                         <span>Initiative</span>
@@ -1066,6 +1092,26 @@ export default function RoleplayingSheets() {
                 </div>
               )}
             </>
+          )}
+
+          {isDeathwatch && (
+            <div className="rpg-core-box">
+              <p className="rpg-panel-label">// armour</p>
+              <div className="rpg-armour-tags">
+                {ARMOURS.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    className={`rpg-armour-tag ${armour.id === option.id ? "rpg-armour-tag--active" : ""}`}
+                    onClick={() => updateSelected({ armour: option.id })}
+                    aria-pressed={armour.id === option.id}
+                  >
+                    <span className="rpg-armour-name">{option.label}</span>
+                    <span className="rpg-armour-stats">Defense {option.as} · Movement {option.m}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
 
           {isDeathwatch && customFieldsPanel}
