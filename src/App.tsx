@@ -15,6 +15,7 @@ import DiceBalanceTester from "./pages/dice-balance-tester";
 import ProjectTree from "./pages/project-tree";
 import FunctionReference from "./pages/function-reference";
 import FamilyTree from "./pages/FamilyTree";
+import WarhammerToolkit from "./pages/warhammer-toolkit";
 import RoleplayingSheets from "./pages/roleplaying-sheets";
 
 
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/dice-balance-tester" element={<DiceBalanceTester />} />
         <Route path="/project-tree" element={<ProjectTree />} />
         <Route path="/Familytree" element={<FamilyTree />} />
+        <Route path="/warhammer-toolkit" element={<WarhammerToolkit />} />
         <Route path="/function-reference" element={<FunctionReference />} />
         <Route path="/roleplaying-sheets" element={<RoleplayingSheets />} />
       </Routes>
