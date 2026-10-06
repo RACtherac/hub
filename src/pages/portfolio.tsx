@@ -20,6 +20,7 @@ const projects = [
   { name: "Project tree", description: "Visualise your project structure and dependencies.", path: "/project-tree" },
   { name: "Family tree", description: "STILL IN PROGRESS: Visualise your family structure and relationships.", path: "/Familytree" },
   { name: "Function Reference", description: "A developer index of every project's components and functions.", path: "/function-reference" },
+  { name: "Roleplaying Sheets", description: "Manage party characters, stats, inventory, attacks, and notes for tabletop sessions.", path: "/roleplaying-sheets" },
 ];
 
 export default function Portfolio() {
