@@ -1,0 +1,831 @@
+/* ===================================
+   WARHAMMER TOOLKIT
+   =================================== */
+
+.whk-page {
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    padding-bottom: 3rem;
+}
+
+.whk-page small {
+    color: var(--text-dim);
+    font-weight: 400;
+}
+
+/* ---------- Top bar & hero ---------- */
+
+.whk-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: clamp(0.75rem, 3vw, 1.5rem) clamp(1rem, 4vw, 2.5rem);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.whk-topbar-back {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.whk-topbar-back span {
+    color: var(--accent);
+}
+
+.whk-topbar-title {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+
+.whk-hero {
+    padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem) 1rem;
+    margin: 0 auto;
+}
+
+.whk-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+}
+
+.whk-title {
+    font-size: clamp(2rem, 6vw, 3.25rem);
+    line-height: 1.05;
+}
+
+.whk-title em {
+    color: var(--accent);
+    font-style: normal;
+}
+
+.whk-subtitle-text {
+    margin-top: 0.75rem;
+    color: var(--text-dim);
+}
+
+/* ---------- Tabs ---------- */
+
+.whk-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+    border-bottom: 1px solid var(--border);
+}
+
+.whk-tab {
+    padding: 0.75rem 1.1rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-dim);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: -1px;
+}
+
+.whk-tab:hover {
+    color: var(--text);
+}
+
+.whk-tab.active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+}
+
+.whk-content {
+    margin: 0 auto;
+    padding: 1.5rem clamp(1rem, 4vw, 2.5rem);
+}
+
+/* ---------- Panels & layout ---------- */
+
+.whk-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.whk-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    min-width: 0;
+}
+
+.whk-columns > .whk-panel {
+    margin-bottom: 0;
+}
+
+.whk-panel-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.whk-subtitle {
+    font-size: 0.95rem;
+    margin: 1.25rem 0 0.6rem;
+}
+
+.whk-hint {
+    margin-top: 0.6rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+/* ---------- Form controls ---------- */
+
+.whk-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border: none;
+}
+
+.whk-field--wide {
+    margin-top: 0.75rem;
+}
+
+.whk-field input,
+.whk-field select,
+.whk-picker select {
+    width: 100%;
+    padding: 0.55rem 0.65rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-radius: 0.5rem;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.whk-field input:focus-visible,
+.whk-field select:focus-visible,
+.whk-picker select:focus-visible,
+.whk-button:focus-visible,
+.whk-chip:focus-visible,
+.whk-unit:focus-visible,
+.whk-tab:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.whk-picker select:disabled {
+    opacity: 0.5;
+}
+
+.whk-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.whk-check input {
+    accent-color: var(--accent);
+    width: 1rem;
+    height: 1rem;
+}
+
+.whk-toggles {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.whk-button {
+    padding: 0.65rem 1.1rem;
+    border-radius: 0.65rem;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.whk-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.whk-button--ghost {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border-2);
+}
+
+.whk-link-button {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    text-decoration: underline;
+}
+
+.whk-link-button:hover {
+    color: var(--text);
+}
+
+.whk-error {
+    padding: 0.75rem 1rem;
+    border-radius: 0.65rem;
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.35);
+    color: var(--text);
+}
+
+/* ---------- Mathhammer ---------- */
+
+.whk-profile {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+}
+
+.whk-profile .whk-field input,
+.whk-profile .whk-field select,
+.whk-profile .whk-picker select {
+    background: var(--surface);
+}
+
+.whk-profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+}
+
+.whk-profile-index {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+}
+
+.whk-picker {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.whk-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.whk-modifier-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+.whk-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.whk-chip {
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+}
+
+.whk-chip.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--text);
+}
+
+.whk-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.whk-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+}
+
+.whk-tile-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.whk-tile-value {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--text);
+}
+
+/* ---------- Chart ---------- */
+
+.whk-chart {
+    margin: 0 0 1.25rem;
+}
+
+.whk-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+}
+
+.whk-chart-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.whk-chart-plot {
+    position: relative;
+}
+
+.whk-chart-plot svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.whk-chart-bar {
+    fill: var(--accent);
+}
+
+.whk-chart-bar.active {
+    fill: #f2d877;
+}
+
+.whk-chart-grid {
+    stroke: var(--border);
+    stroke-width: 1;
+}
+
+.whk-chart-baseline {
+    stroke: var(--border-2);
+    stroke-width: 1;
+}
+
+.whk-chart-axis {
+    fill: var(--text-dim);
+    font-size: 11px;
+    font-family: var(--font-mono);
+}
+
+.whk-chart-value {
+    fill: var(--text);
+    font-size: 11px;
+    font-family: var(--font-mono);
+}
+
+.whk-chart-hit {
+    fill: transparent;
+    cursor: crosshair;
+}
+
+.whk-chart-hit:focus {
+    outline: none;
+}
+
+.whk-chart-tooltip {
+    position: absolute;
+    transform: translate(-50%, calc(-100% - 10px));
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.5rem 0.7rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* ---------- Tables ---------- */
+
+.whk-table-wrap {
+    overflow-x: auto;
+}
+
+.whk-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.whk-table caption {
+    text-align: left;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+}
+
+.whk-table th,
+.whk-table td {
+    padding: 0.55rem 0.6rem;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.whk-table th:first-child {
+    text-align: left;
+    white-space: normal;
+}
+
+.whk-table thead th {
+    color: var(--text-dim);
+    font-weight: 600;
+    font-size: 0.78rem;
+}
+
+.whk-table thead th.current {
+    color: var(--accent);
+}
+
+.whk-table--compact {
+    max-width: 360px;
+}
+
+/* ---------- Game tracker ---------- */
+
+.whk-turnbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.whk-turnbar-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.whk-round {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+}
+
+.whk-active-player {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.whk-mission {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+
+.whk-phases {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    list-style: none;
+}
+
+.whk-phase {
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    color: var(--text-dim);
+    font-size: 0.8rem;
+}
+
+.whk-phase.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--text);
+    font-weight: 700;
+}
+
+.whk-turnbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.whk-result-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    border-radius: 1rem;
+    border: 1px solid var(--accent);
+    background: var(--accent-dim);
+}
+
+.whk-result-banner strong {
+    font-size: 1.3rem;
+}
+
+.whk-result-banner .whk-button {
+    margin-left: auto;
+}
+
+.whk-player.active {
+    border-color: var(--accent);
+}
+
+.whk-player-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.whk-player-header .whk-panel-title {
+    margin-bottom: 0.2rem;
+}
+
+.whk-player-meta {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+}
+
+.whk-vp {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+}
+
+.whk-vp-value {
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.whk-vp-label {
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+}
+
+.whk-vp-breakdown {
+    margin: 0.6rem 0 1rem;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+}
+
+.whk-score-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--border);
+}
+
+.whk-score-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.whk-score-buttons,
+.whk-cp {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.whk-score-buttons button,
+.whk-cp button {
+    min-width: 2.6rem;
+    padding: 0.45rem 0.55rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-2);
+    background: var(--surface-2);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+.whk-score-buttons button:disabled,
+.whk-cp button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.whk-cp-value {
+    min-width: 2rem;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.whk-player > .whk-check {
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+}
+
+.whk-units ul {
+    list-style: none;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.whk-unit {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.whk-unit.destroyed {
+    opacity: 0.55;
+    text-decoration: line-through;
+}
+
+.whk-unit-points {
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    white-space: nowrap;
+}
+
+.whk-log {
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+    max-height: 320px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+}
+
+.whk-log li {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.whk-log-when {
+    flex-shrink: 0;
+    min-width: 7.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.whk-abandon {
+    display: block;
+    margin: 0 auto;
+}
+
+.whk-setup-player {
+    min-width: 0;
+}
+
+.whk-setup-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.whk-radio-group {
+    gap: 0.5rem;
+}
+
+.whk-radio-group legend {
+    margin-bottom: 0.4rem;
+}
+
+.whk-history {
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.whk-history li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    background: var(--surface-2);
+}
+
+.whk-tracker-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+    margin-bottom: 1.25rem;
+}
+
+.whk-tracker-bottom > .whk-panel {
+    margin-bottom: 0;
+}
+
+/* ---------- Wide screens ---------- */
+
+@media (min-width: 1400px) {
+    /* Attacker | Target | Results side by side, results stay in view. */
+    .whk-mathhammer {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr) minmax(0, 1.2fr);
+        gap: 1.25rem;
+        align-items: start;
+    }
+
+    .whk-mathhammer > .whk-columns {
+        display: contents;
+    }
+
+    .whk-mathhammer > .whk-results {
+        position: sticky;
+        top: 1rem;
+        margin-bottom: 0;
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+    }
+
+    .whk-mathhammer .whk-tiles {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .whk-mathhammer .whk-tile {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+
+    .whk-mathhammer .whk-tile-value {
+        font-size: 1.6rem;
+    }
+
+    .whk-tracker-bottom {
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    }
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+    .whk-columns,
+    .whk-setup-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .whk-stat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .whk-tiles {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    .whk-picker {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .whk-result-banner .whk-button {
+        margin-left: 0;
+    }
+}

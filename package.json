@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "tsx server/index.ts",
-    "server:dev": "tsx watch server/index.ts"
+    "server:dev": "tsx watch server/index.ts",
+    "test": "node --import tsx --test src/utils/*.test.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
