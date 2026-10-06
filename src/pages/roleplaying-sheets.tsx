@@ -13,6 +13,7 @@ type SkillKey =
   | "Insight" | "Intimidation" | "Investigation" | "Medicine" | "Nature" | "Perception"
   | "Performance" | "Persuasion" | "Religion" | "Sleight of Hand" | "Stealth" | "Survival";
 type SkillProficiency = "none" | "proficient" | "expertise";
+type CharacteristicKey = "WS" | "BS" | "S" | "T" | "Ag" | "Int" | "WP" | "Fel";
 
 type Attack = {
   id: string;
@@ -81,6 +82,7 @@ type CharacterSheet = {
   proficiency: string;
   stats: Record<StatKey, number>;
   skills: Partial<Record<SkillKey, SkillProficiency>>;
+  characteristics?: Record<CharacteristicKey, number>;
   traits: string[];
   attacks: Attack[];
   inventory: string[];
@@ -115,6 +117,26 @@ const NEXT_PROFICIENCY: Record<SkillProficiency, SkillProficiency> = {
   none: "proficient",
   proficient: "expertise",
   expertise: "none",
+};
+const CHARACTERISTICS: { key: CharacteristicKey; label: string }[] = [
+  { key: "WS", label: "Weapon Skill" },
+  { key: "BS", label: "Ballistic Skill" },
+  { key: "S", label: "Strength" },
+  { key: "T", label: "Toughness" },
+  { key: "Ag", label: "Agility" },
+  { key: "Int", label: "Intelligence" },
+  { key: "WP", label: "Willpower" },
+  { key: "Fel", label: "Fellowship" },
+];
+const DEFAULT_CHARACTERISTICS: Record<CharacteristicKey, number> = {
+  WS: 42,
+  BS: 40,
+  S: 41,
+  T: 43,
+  Ag: 38,
+  Int: 35,
+  WP: 40,
+  Fel: 32,
 };
 const SHEET_TYPES: { id: SheetType; label: string; description: string }[] = [
   { id: "dnd", label: "D&D Sheets", description: "Classic stats and combat sheet" },
@@ -231,6 +253,7 @@ function createBlankSheet(type: SheetType = "dnd", templateId: TemplateId = type
     proficiency: isDndTemplate ? "+2" : isCyberpunk ? "+2" : isDeathwatch ? "+3" : templateId === "shoot-them" ? "+1" : "—",
     stats: { ...defaultStats },
     skills: isDndTemplate ? { Nature: "proficient", Perception: "proficient", Survival: "proficient" } : {},
+    characteristics: isDeathwatch ? { ...DEFAULT_CHARACTERISTICS } : undefined,
     traits: isDndTemplate
       ? ["Quick thinker", "Wary of ambushes", "Protects allies"]
       : isCyberpunk
@@ -537,6 +560,17 @@ export default function RoleplayingSheets() {
     );
   };
 
+  const updateCharacteristic = (key: CharacteristicKey, value: number) => {
+    if (!selectedSheet) return;
+    setSheets((current) =>
+      current.map((sheet) =>
+        sheet.id === selectedSheet.id
+          ? { ...sheet, characteristics: { ...(sheet.characteristics ?? DEFAULT_CHARACTERISTICS), [key]: value } }
+          : sheet,
+      ),
+    );
+  };
+
   const updateStat = (stat: StatKey, value: number) => {
     if (!selectedSheet) return;
     setSheets((current) =>
@@ -807,6 +841,30 @@ export default function RoleplayingSheets() {
   const isDndSheet = selectedSheet.sheetType === "dnd";
   const isShootThem = selectedSheet.templateId === "shoot-them";
   const shootThem = selectedSheet.shootThem ?? createDefaultShootThem();
+  const isDeathwatch = selectedSheet.templateId === "deathwatch";
+  const characteristics = selectedSheet.characteristics ?? DEFAULT_CHARACTERISTICS;
+
+  const customFieldsPanel = (
+    <div className="rpg-core-box">
+      <p className="rpg-panel-label">// custom fields</p>
+      <div className="rpg-custom-display">
+        {selectedSheet.customFields.map((field) => (
+          <div key={field.id} className="rpg-custom-item">
+            <span className="rpg-custom-label">{field.label || "Field"}</span>
+            {field.type === "list" ? (
+              <ul>
+                {field.value.split("\n").filter(Boolean).map((line, index) => (
+                  <li key={`${field.id}-${index}`}>{line}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>{field.value || "Empty field"}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="rpg-page">
@@ -956,6 +1014,28 @@ export default function RoleplayingSheets() {
                     </div>
                   </div>
                 )}
+
+                {isDeathwatch && (
+                  <div className="rpg-core-box">
+                    <p className="rpg-panel-label">// characteristics</p>
+                    <div className="rpg-stat-grid rpg-characteristic-grid">
+                      {CHARACTERISTICS.map(({ key, label }) => {
+                        const value = characteristics[key];
+                        return (
+                          <div key={key} className="rpg-score-box" title={`${label} (${key})`}>
+                            <span>{label}</span>
+                            <input
+                              type="number"
+                              value={value}
+                              onChange={(e) => updateCharacteristic(key, Number(e.target.value) || 0)}
+                            />
+                            <small>Bonus {Math.floor(value / 10)}</small>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {isDndSheet && (
@@ -987,6 +1067,8 @@ export default function RoleplayingSheets() {
               )}
             </>
           )}
+
+          {isDeathwatch && customFieldsPanel}
 
           {!isDndSheet && !isShootThem && (
             <div className="rpg-core-box rpg-builder-box">
@@ -1210,27 +1292,7 @@ export default function RoleplayingSheets() {
             </div>
           )}
 
-          {!isDndSheet && (
-            <div className="rpg-core-box">
-              <p className="rpg-panel-label">// custom fields</p>
-              <div className="rpg-custom-display">
-                {selectedSheet.customFields.map((field) => (
-                  <div key={field.id} className="rpg-custom-item">
-                    <span className="rpg-custom-label">{field.label || "Field"}</span>
-                    {field.type === "list" ? (
-                      <ul>
-                        {field.value.split("\n").filter(Boolean).map((line, index) => (
-                          <li key={`${field.id}-${index}`}>{line}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p>{field.value || "Empty field"}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {!isDndSheet && !isDeathwatch && customFieldsPanel}
 
           <div className="rpg-core-box">
             <p className="rpg-panel-label">// adventure notes</p>
