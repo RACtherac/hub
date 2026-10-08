@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles/roleplaying-sheets.css";
+import { enterPrintMode, exportSheetPdf } from "../utils/exportSheetPdf";
 import DeathwatchRealSheet from "../components/DeathwatchReal/DeathwatchRealSheet";
 import { createDefaultDwReal, normalizeDwReal, type DwRealData } from "../components/DeathwatchReal/dwRealData";
 
@@ -810,6 +811,26 @@ export default function RoleplayingSheets() {
   };
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const sheetPanelRef = useRef<HTMLElement | null>(null);
+  const [exportingPdf, setExportingPdf] = useState(false);
+
+  useEffect(() => {
+    let exitPrintMode: (() => void) | null = null;
+    const handleBeforePrint = () => {
+      exitPrintMode = enterPrintMode();
+    };
+    const handleAfterPrint = () => {
+      exitPrintMode?.();
+      exitPrintMode = null;
+    };
+    window.addEventListener("beforeprint", handleBeforePrint);
+    window.addEventListener("afterprint", handleAfterPrint);
+    return () => {
+      window.removeEventListener("beforeprint", handleBeforePrint);
+      window.removeEventListener("afterprint", handleAfterPrint);
+      handleAfterPrint();
+    };
+  }, []);
 
   const handleExportJson = () => {
     const payload = JSON.stringify(selectedSheet, null, 2);
@@ -857,11 +878,17 @@ export default function RoleplayingSheets() {
     }
   };
 
-  const handleExportPdf = () => {
-    const previousTitle = document.title;
-    document.title = `${selectedSheet?.name || "Character"} - character sheet`;
-    window.print();
-    document.title = previousTitle;
+  const handleExportPdf = async () => {
+    if (!sheetPanelRef.current || exportingPdf) return;
+    setExportingPdf(true);
+    try {
+      await exportSheetPdf(sheetPanelRef.current, `${selectedSheet?.name || "Character"} - character sheet.pdf`);
+    } catch (error) {
+      console.error("PDF export failed", error);
+      alert("Sorry, the PDF could not be created.");
+    } finally {
+      setExportingPdf(false);
+    }
   };
 
   if (templateScreen) {
@@ -989,7 +1016,9 @@ export default function RoleplayingSheets() {
           </div>
           <button className="rpg-export-btn" onClick={() => setTemplateScreen(true)}>Main menu</button>
           <button className="rpg-export-btn" onClick={handleExportJson}>Export JSON</button>
-          <button className="rpg-export-btn" onClick={handleExportPdf}>Export PDF</button>
+          <button className="rpg-export-btn" onClick={handleExportPdf} disabled={exportingPdf}>
+            {exportingPdf ? "Exporting…" : "Export PDF"}
+          </button>
           <button className="rpg-export-btn" onClick={() => fileInputRef.current?.click()}>Import JSON</button>
           <input
             ref={fileInputRef}
@@ -1021,7 +1050,7 @@ export default function RoleplayingSheets() {
           ))}
         </aside>
 
-        <section className="rpg-sheet-panel">
+        <section className="rpg-sheet-panel" ref={sheetPanelRef}>
           {isDwReal && (
             <DeathwatchRealSheet
               name={selectedSheet.name}
