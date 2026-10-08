@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/styles/roleplaying-sheets.css";
+import DeathwatchRealSheet from "../components/DeathwatchReal/DeathwatchRealSheet";
+import { createDefaultDwReal, normalizeDwReal, type DwRealData } from "../components/DeathwatchReal/dwRealData";
 
 type StatKey = "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
 type SheetType = "dnd" | "custom";
-type TemplateId = "dnd-5e" | "cyberpunk-red" | "deathwatch" | "custom" | "shoot-them";
+type TemplateId = "dnd-5e" | "cyberpunk-red" | "deathwatch" | "deathwatch-real" | "custom" | "shoot-them";
 type CustomFieldType = "text" | "number" | "textarea" | "list";
 type AbilityKey = "I can" | "Bang" | "Sounds" | "Mek" | "Fighting" | "Curios";
 type ZoneKey = "head" | "chest" | "leftArm" | "rightArm" | "leftLeg" | "rightLeg";
@@ -98,6 +100,7 @@ type CharacterSheet = {
   notes: string;
   customFields: CustomField[];
   shootThem?: ShootThemExtras;
+  dwReal?: DwRealData;
 };
 
 const STORAGE_KEY = "rpg-character-sheets";
@@ -206,6 +209,7 @@ const TEMPLATE_LIBRARY: { id: TemplateId; label: string; description: string; sh
   { id: "dnd-5e", label: "D&D 5e", description: "Classic fantasy adventurer sheet", sheetType: "dnd", tag: "Fantasy", themeClass: "rpg-template-card--dnd" },
   { id: "cyberpunk-red", label: "Cyberpunk RED", description: "Street-level operative and gear tracker", sheetType: "custom", tag: "Sci-fi", themeClass: "rpg-template-card--cyberpunk" },
   { id: "deathwatch", label: "Deathwatch", description: "Adeptus Astartes field dossier", sheetType: "custom", tag: "Warhammer", themeClass: "rpg-template-card--deathwatch" },
+  { id: "deathwatch-real", label: "Deathwatch Real", description: "The full FFG Deathwatch RPG Battle-Brother sheet", sheetType: "custom", tag: "Warhammer", themeClass: "rpg-template-card--deathwatch-real" },
   { id: "shoot-them", label: "Shoot Them", description: "Fast, gritty action sheet for hard choices and gunfire.", sheetType: "custom", tag: "Action", themeClass: "rpg-template-card--shoot" },
   { id: "custom", label: "Blank custom", description: "Build your own sheet from blocks", sheetType: "custom", tag: "Flexible", themeClass: "rpg-template-card--custom" },
 ];
@@ -384,6 +388,15 @@ function createBlankSheet(type: SheetType = "dnd", templateId: TemplateId = type
       { id: makeId(), type: "textarea", label: "Notes", value: "Describe the current trouble or job." },
     ];
     base.shootThem = createDefaultShootThem();
+  }
+
+  if (templateId === "deathwatch-real") {
+    base.dwReal = createDefaultDwReal();
+    base.name = "New Battle-Brother";
+    base.className = base.dwReal.speciality;
+    base.level = base.dwReal.rank;
+    base.customFields = [];
+    base.notes = "Mission briefings, objectives and kill-markers.";
   }
 
   return base;
@@ -917,6 +930,7 @@ export default function RoleplayingSheets() {
 
   const isDndSheet = selectedSheet.sheetType === "dnd";
   const isShootThem = selectedSheet.templateId === "shoot-them";
+  const isDwReal = selectedSheet.templateId === "deathwatch-real";
   const shootThem = selectedSheet.shootThem ?? createDefaultShootThem();
   const isDeathwatch = selectedSheet.templateId === "deathwatch";
   const characteristics = selectedSheet.characteristics ?? DEFAULT_CHARACTERISTICS;
@@ -1005,7 +1019,16 @@ export default function RoleplayingSheets() {
         </aside>
 
         <section className="rpg-sheet-panel">
-          {!isShootThem && (
+          {isDwReal && (
+            <DeathwatchRealSheet
+              name={selectedSheet.name}
+              data={normalizeDwReal(selectedSheet.dwReal)}
+              onNameChange={(name) => updateSelected({ name })}
+              onChange={(dwReal) => updateSelected({ dwReal, className: dwReal.speciality, level: dwReal.rank })}
+            />
+          )}
+
+          {!isShootThem && !isDwReal && (
             <>
               <div className="rpg-meta-grid">
                 <label className="rpg-field">
@@ -1241,7 +1264,7 @@ export default function RoleplayingSheets() {
 
           {isDeathwatch && customFieldsPanel}
 
-          {!isDndSheet && !isShootThem && (
+          {!isDndSheet && !isShootThem && !isDwReal && (
             <div className="rpg-core-box rpg-builder-box">
               <div className="rpg-section-header">
                 <p className="rpg-panel-label">// sheet builder</p>
@@ -1463,7 +1486,7 @@ export default function RoleplayingSheets() {
             </div>
           )}
 
-          {!isDndSheet && !isDeathwatch && customFieldsPanel}
+          {!isDndSheet && !isDeathwatch && !isDwReal && customFieldsPanel}
 
           <div className="rpg-core-box">
             <p className="rpg-panel-label">// adventure notes</p>
