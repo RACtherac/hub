@@ -15,6 +15,11 @@ type SkillKey =
 type SkillProficiency = "none" | "proficient" | "expertise";
 type CharacteristicKey = "WS" | "BS" | "S" | "T" | "Ag" | "Int" | "WP" | "Fel";
 type ArmourId = "tactical" | "terminator" | "gravis" | "phobos" | "jump-pack";
+type DwSkillKey =
+  | "Acrobatics" | "Charm" | "Climb" | "Command" | "Corruption" | "Courage" | "Deceive" | "Demolition"
+  | "Dodge" | "Evaluate" | "Inquiry" | "Interrogation" | "Intimidate" | "Literacy" | "Logic" | "Medicae"
+  | "Shadowing" | "Sleight of Hand" | "Survival" | "Swim" | "Tech-Use" | "Tracking";
+type DwSkillLevel = "untrained" | "trained" | "plus10" | "plus20";
 
 type Attack = {
   id: string;
@@ -77,6 +82,7 @@ type CharacterSheet = {
   background: string;
   alignment: string;
   hp: string;
+  health?: string;
   ac: string;
   speed: string;
   initiative: string;
@@ -85,6 +91,7 @@ type CharacterSheet = {
   skills: Partial<Record<SkillKey, SkillProficiency>>;
   characteristics?: Record<CharacteristicKey, number>;
   armour?: ArmourId;
+  dwSkills?: Partial<Record<DwSkillKey, DwSkillLevel>>;
   traits: string[];
   attacks: Attack[];
   inventory: string[];
@@ -140,6 +147,50 @@ const DEFAULT_CHARACTERISTICS: Record<CharacteristicKey, number> = {
   WP: 40,
   Fel: 32,
 };
+const DW_SKILLS: { key: DwSkillKey; stat: CharacteristicKey }[] = [
+  { key: "Acrobatics", stat: "Ag" },
+  { key: "Charm", stat: "Fel" },
+  { key: "Climb", stat: "S" },
+  { key: "Command", stat: "Fel" },
+  { key: "Corruption", stat: "WP" },
+  { key: "Courage", stat: "T" },
+  { key: "Deceive", stat: "Fel" },
+  { key: "Demolition", stat: "Ag" },
+  { key: "Dodge", stat: "Ag" },
+  { key: "Evaluate", stat: "Int" },
+  { key: "Inquiry", stat: "Fel" },
+  { key: "Interrogation", stat: "WP" },
+  { key: "Intimidate", stat: "S" },
+  { key: "Literacy", stat: "Int" },
+  { key: "Logic", stat: "Int" },
+  { key: "Medicae", stat: "Int" },
+  { key: "Shadowing", stat: "Ag" },
+  { key: "Sleight of Hand", stat: "Ag" },
+  { key: "Survival", stat: "Int" },
+  { key: "Swim", stat: "S" },
+  { key: "Tech-Use", stat: "Int" },
+  { key: "Tracking", stat: "Int" },
+];
+const NEXT_DW_SKILL_LEVEL: Record<DwSkillLevel, DwSkillLevel> = {
+  untrained: "trained",
+  trained: "plus10",
+  plus10: "plus20",
+  plus20: "untrained",
+};
+const DW_SKILL_LABEL: Record<DwSkillLevel, string> = {
+  untrained: "Untrained (half)",
+  trained: "Trained",
+  plus10: "Trained +10",
+  plus20: "Trained +20",
+};
+const DW_SKILL_DOT: Record<DwSkillLevel, string> = {
+  untrained: "none",
+  trained: "proficient",
+  plus10: "expertise",
+  plus20: "master",
+};
+const DW_SPECIALISMS = ["Infiltrator", "Assault", "Gunner", "Sergeant"];
+const DW_MOODS = ["Gene mutation", "Corruption", "Rage", "Vigilant", "Suspicion", "Dead"];
 const ARMOURS: { id: ArmourId; label: string; as: number; m: number }[] = [
   { id: "tactical", label: "Tactical", as: 5, m: 25 },
   { id: "terminator", label: "Terminator", as: 7, m: 10 },
@@ -250,12 +301,12 @@ function createBlankSheet(type: SheetType = "dnd", templateId: TemplateId = type
     sheetType: type,
     templateId,
     name: isDndTemplate ? "New Hero" : isCyberpunk ? "New Operative" : isDeathwatch ? "New Deathwatch Marine" : templateId === "shoot-them" ? "New shooter" : "New Character",
-    className: isDndTemplate ? "Ranger" : isCyberpunk ? "Nomad" : isDeathwatch ? "Deathwatch Marine" : templateId === "shoot-them" ? "Stereotype" : "Role",
+    className: isDndTemplate ? "Ranger" : isCyberpunk ? "Nomad" : isDeathwatch ? "Infiltrator" : templateId === "shoot-them" ? "Stereotype" : "Role",
     level: isDndTemplate ? "3" : isCyberpunk ? "1" : isDeathwatch ? "3" : templateId === "shoot-them" ? "1" : "1",
     race: isDndTemplate ? "Human" : isCyberpunk ? "Street kid" : isDeathwatch ? "Adeptus Astartes" : templateId === "shoot-them" ? "Scavenger" : "Realm",
     background: isDndTemplate ? "Explorer" : isCyberpunk ? "Fixer network" : isDeathwatch ? "Chapter doctrine" : templateId === "shoot-them" ? "Street survivor" : "Backstory",
     alignment: isDndTemplate ? "Neutral Good" : isCyberpunk ? "Driven" : isDeathwatch ? "Vigilant" : templateId === "shoot-them" ? "Hard-edged" : "Driven",
-    hp: isDndTemplate ? "23" : isCyberpunk ? "14" : isDeathwatch ? "32" : templateId === "shoot-them" ? "10" : "12",
+    hp: isDndTemplate ? "23" : isCyberpunk ? "14" : isDeathwatch ? "100" : templateId === "shoot-them" ? "10" : "12",
     ac: isDndTemplate ? "15" : isCyberpunk ? "11" : isDeathwatch ? "16" : templateId === "shoot-them" ? "0" : "—",
     speed: isDndTemplate ? "30 ft." : isCyberpunk ? "Fast" : isDeathwatch ? "10 ft." : templateId === "shoot-them" ? "Quick" : "Flexible",
     initiative: isDndTemplate ? "+2" : isCyberpunk ? "+3" : isDeathwatch ? "+2" : templateId === "shoot-them" ? "+1" : "—",
@@ -264,6 +315,7 @@ function createBlankSheet(type: SheetType = "dnd", templateId: TemplateId = type
     skills: isDndTemplate ? { Nature: "proficient", Perception: "proficient", Survival: "proficient" } : {},
     characteristics: isDeathwatch ? { ...DEFAULT_CHARACTERISTICS } : undefined,
     armour: isDeathwatch ? "tactical" : undefined,
+    health: isDeathwatch ? "20" : undefined,
     traits: isDndTemplate
       ? ["Quick thinker", "Wary of ambushes", "Protects allies"]
       : isCyberpunk
@@ -318,7 +370,6 @@ function createBlankSheet(type: SheetType = "dnd", templateId: TemplateId = type
   if (templateId === "deathwatch") {
     base.customFields = [
       { id: makeId(), type: "text", label: "Chapter", value: "Black Templar / Unknown" },
-      { id: makeId(), type: "text", label: "Specialism", value: "Vanguard / Assault / Fire Support" },
       { id: makeId(), type: "list", label: "Oath", value: "Protect the innocent\nExterminate corruption\nNever falter" },
       { id: makeId(), type: "textarea", label: "War gear", value: "Bolter, power sword, combat shield, purity seals." },
       { id: makeId(), type: "textarea", label: "Mission log", value: "Track the next deployment and any enemies that must be purged." },
@@ -365,6 +416,11 @@ function parseStoredSheets(): CharacterSheet[] {
 
 function modifierFor(score: number) {
   return Math.floor((score - 10) / 2);
+}
+
+function dwSkillTarget(characteristic: number, level: DwSkillLevel) {
+  if (level === "untrained") return Math.floor(characteristic / 2);
+  return characteristic + (level === "plus20" ? 20 : level === "plus10" ? 10 : 0);
 }
 
 function formatModifier(value: number) {
@@ -555,6 +611,17 @@ export default function RoleplayingSheets() {
             weapons: nextShootThem.weapons.filter((weapon) => weapon.id !== weaponId),
           },
         };
+      }),
+    );
+  };
+
+  const cycleDwSkill = (skill: DwSkillKey) => {
+    if (!selectedSheet) return;
+    setSheets((current) =>
+      current.map((sheet) => {
+        if (sheet.id !== selectedSheet.id) return sheet;
+        const level = sheet.dwSkills?.[skill] ?? "untrained";
+        return { ...sheet, dwSkills: { ...sheet.dwSkills, [skill]: NEXT_DW_SKILL_LEVEL[level] } };
       }),
     );
   };
@@ -942,28 +1009,52 @@ export default function RoleplayingSheets() {
             <>
               <div className="rpg-meta-grid">
                 <label className="rpg-field">
-                  <span>{isDndSheet ? "Character name" : "Sheet name"}</span>
+                  <span>{isDndSheet || isDeathwatch ? "Character name" : "Sheet name"}</span>
                   <input value={selectedSheet.name} onChange={(e) => updateSelected({ name: e.target.value })} />
                 </label>
                 <label className="rpg-field">
-                  <span>{isDndSheet ? "Class" : "Role"}</span>
-                  <input value={selectedSheet.className} onChange={(e) => updateSelected({ className: e.target.value })} />
+                  <span>{isDndSheet ? "Class" : isDeathwatch ? "Specialism" : "Role"}</span>
+                  {isDeathwatch ? (
+                    <select value={selectedSheet.className} onChange={(e) => updateSelected({ className: e.target.value })}>
+                      {!DW_SPECIALISMS.includes(selectedSheet.className) && (
+                        <option value={selectedSheet.className}>{selectedSheet.className || "—"}</option>
+                      )}
+                      {DW_SPECIALISMS.map((specialism) => (
+                        <option key={specialism} value={specialism}>{specialism}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input value={selectedSheet.className} onChange={(e) => updateSelected({ className: e.target.value })} />
+                  )}
                 </label>
                 <label className="rpg-field">
-                  <span>{isDndSheet ? "Level" : "Tier"}</span>
+                  <span>{isDndSheet || isDeathwatch ? "Level" : "Tier"}</span>
                   <input value={selectedSheet.level} onChange={(e) => updateSelected({ level: e.target.value })} />
                 </label>
                 <label className="rpg-field">
                   <span>{isDndSheet ? "Race" : "World"}</span>
                   <input value={selectedSheet.race} onChange={(e) => updateSelected({ race: e.target.value })} />
                 </label>
-                <label className="rpg-field">
-                  <span>{isDndSheet ? "Background" : "Motivation"}</span>
-                  <input value={selectedSheet.background} onChange={(e) => updateSelected({ background: e.target.value })} />
-                </label>
+                {!isDeathwatch && (
+                  <label className="rpg-field">
+                    <span>{isDndSheet ? "Background" : "Motivation"}</span>
+                    <input value={selectedSheet.background} onChange={(e) => updateSelected({ background: e.target.value })} />
+                  </label>
+                )}
                 <label className="rpg-field">
                   <span>{isDndSheet ? "Alignment" : "Mood"}</span>
-                  <input value={selectedSheet.alignment} onChange={(e) => updateSelected({ alignment: e.target.value })} />
+                  {isDeathwatch ? (
+                    <select value={selectedSheet.alignment} onChange={(e) => updateSelected({ alignment: e.target.value })}>
+                      {!DW_MOODS.includes(selectedSheet.alignment) && (
+                        <option value={selectedSheet.alignment}>{selectedSheet.alignment || "—"}</option>
+                      )}
+                      {DW_MOODS.map((mood) => (
+                        <option key={mood} value={mood}>{mood}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input value={selectedSheet.alignment} onChange={(e) => updateSelected({ alignment: e.target.value })} />
+                  )}
                 </label>
               </div>
 
@@ -975,6 +1066,12 @@ export default function RoleplayingSheets() {
                       <span>{isDndSheet ? "HP" : "Energy"}</span>
                       <input value={selectedSheet.hp} onChange={(e) => updateSelected({ hp: e.target.value })} />
                     </label>
+                    {isDeathwatch && (
+                      <label className="rpg-score-box">
+                        <span>Health</span>
+                        <input value={selectedSheet.health ?? "20"} onChange={(e) => updateSelected({ health: e.target.value })} />
+                      </label>
+                    )}
                     {isDeathwatch ? (
                       <>
                         <div className="rpg-score-box rpg-score-box--derived" title={`From ${armour.label} armour`}>
@@ -1083,6 +1180,34 @@ export default function RoleplayingSheets() {
                             aria-label={`${skill.key}: ${level}`}
                           />
                           <span className="rpg-skill-mod">{formatModifier(skillModifier(selectedSheet, skill))}</span>
+                          <span className="rpg-skill-name">{skill.key}</span>
+                          <small className="rpg-skill-stat">{skill.stat}</small>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {isDeathwatch && (
+                <div className="rpg-core-box">
+                  <div className="rpg-section-header">
+                    <p className="rpg-panel-label">// skills</p>
+                    <small className="rpg-skill-hint">Click a dot: trained → +10 → +20 → untrained</small>
+                  </div>
+                  <div className="rpg-skill-grid">
+                    {DW_SKILLS.map((skill) => {
+                      const level = selectedSheet.dwSkills?.[skill.key] ?? "untrained";
+                      return (
+                        <div key={skill.key} className="rpg-skill-row">
+                          <button
+                            type="button"
+                            className={`rpg-skill-dot rpg-skill-dot--${DW_SKILL_DOT[level]}`}
+                            onClick={() => cycleDwSkill(skill.key)}
+                            title={DW_SKILL_LABEL[level]}
+                            aria-label={`${skill.key}: ${DW_SKILL_LABEL[level]}`}
+                          />
+                          <span className="rpg-skill-mod">{dwSkillTarget(characteristics[skill.stat], level)}</span>
                           <span className="rpg-skill-name">{skill.key}</span>
                           <small className="rpg-skill-stat">{skill.stat}</small>
                         </div>

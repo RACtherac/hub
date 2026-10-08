@@ -382,6 +382,7 @@
 }
 
 .rpg-field input,
+.rpg-field select,
 .rpg-score-box input,
 .rpg-attack-row input,
 .rpg-block-row input,
@@ -552,6 +553,12 @@
   background: var(--accent);
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--accent);
+}
+
+.rpg-skill-dot--master {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--accent), 0 0 0 5px var(--surface), 0 0 0 6px var(--accent);
 }
 
 .rpg-skill-mod {
