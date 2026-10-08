@@ -858,7 +858,10 @@ export default function RoleplayingSheets() {
   };
 
   const handleExportPdf = () => {
+    const previousTitle = document.title;
+    document.title = `${selectedSheet?.name || "Character"} - character sheet`;
     window.print();
+    document.title = previousTitle;
   };
 
   if (templateScreen) {
