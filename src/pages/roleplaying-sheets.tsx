@@ -3,460 +3,80 @@ import { useNavigate } from "react-router-dom";
 import "../components/styles/roleplaying-sheets.css";
 import { enterPrintMode, exportSheetPdf } from "../utils/exportSheetPdf";
 import DeathwatchRealSheet from "../components/DeathwatchReal/DeathwatchRealSheet";
-import { createDefaultDwReal, normalizeDwReal, type DwRealData } from "../components/DeathwatchReal/dwRealData";
+import { normalizeDwReal } from "../components/DeathwatchReal/dwRealData";
+import {
+  ARMOURS,
+  CHARACTERISTICS,
+  CUSTOM_FIELD_OPTIONS,
+  DEFAULT_CHARACTERISTICS,
+  DW_MOODS,
+  DW_SKILLS,
+  DW_SKILL_DOT,
+  DW_SKILL_LABEL,
+  DW_SPECIALISMS,
+  NEXT_DW_SKILL_LEVEL,
+  NEXT_PROFICIENCY,
+  PROFICIENCY_LABEL,
+  SHEET_TYPES,
+  SHOOT_THEM_ABILITIES,
+  SHOOT_THEM_STAT_LABEL,
+  SHOOT_THEM_ZONES,
+  SKILLS,
+  STAT_KEYS,
+  STORAGE_KEY,
+  TEMPLATE_LIBRARY,
+  blankAttack,
+  blankCustomField,
+  blankShootThemWeapon,
+  createBackup,
+  createBlankSheet,
+  createDefaultShootThem,
+  dwSkillTarget,
+  fileSlug,
+  formatModifier,
+  loadStoredSheets,
+  mergeImported,
+  modifierFor,
+  parseImport,
+  skillModifier,
+  templateFor,
+  type Attack,
+  type CharacterSheet,
+  type CharacteristicKey,
+  type CustomFieldType,
+  type DwSkillKey,
+  type SheetType,
+  type ShootThemExtras,
+  type SkillKey,
+  type StatKey,
+  type TemplateId,
+  type Weapon,
+} from "../utils/rpgSheets";
 
-type StatKey = "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
-type SheetType = "dnd" | "custom";
-type TemplateId = "dnd-5e" | "cyberpunk-red" | "deathwatch" | "deathwatch-real" | "custom" | "shoot-them";
-type CustomFieldType = "text" | "number" | "textarea" | "list";
-type AbilityKey = "I can" | "Bang" | "Sounds" | "Mek" | "Fighting" | "Curios";
-type ZoneKey = "head" | "chest" | "leftArm" | "rightArm" | "leftLeg" | "rightLeg";
-type SkillKey =
-  | "Acrobatics" | "Animal Handling" | "Arcana" | "Athletics" | "Deception" | "History"
-  | "Insight" | "Intimidation" | "Investigation" | "Medicine" | "Nature" | "Perception"
-  | "Performance" | "Persuasion" | "Religion" | "Sleight of Hand" | "Stealth" | "Survival";
-type SkillProficiency = "none" | "proficient" | "expertise";
-type CharacteristicKey = "WS" | "BS" | "S" | "T" | "Ag" | "Int" | "WP" | "Fel";
-type ArmourId = "tactical" | "terminator" | "gravis" | "phobos" | "jump-pack";
-type DwSkillKey =
-  | "Acrobatics" | "Charm" | "Climb" | "Command" | "Corruption" | "Courage" | "Deceive" | "Demolition"
-  | "Dodge" | "Evaluate" | "Inquiry" | "Interrogation" | "Intimidate" | "Literacy" | "Logic" | "Medicae"
-  | "Shadowing" | "Sleight of Hand" | "Survival" | "Swim" | "Tech-Use" | "Tracking";
-type DwSkillLevel = "untrained" | "trained" | "plus10" | "plus20";
+const DEFAULT_TEMPLATE: Record<SheetType, TemplateId> = { dnd: "dnd-5e", custom: "custom" };
 
-type Attack = {
-  id: string;
-  name: string;
-  bonus: string;
-  damage: string;
-  notes: string;
-};
-
-type CustomField = {
-  id: string;
-  type: CustomFieldType;
-  label: string;
-  value: string;
-};
-
-type Weapon = {
-  id: string;
-  name: string;
-  damage: string;
-  ammo: string;
-  magazine: string;
-  effect: string;
-  sound: string;
-  range: string;
-};
-
-type ShootThemExtras = {
-  stereotype: string;
-  experience: string;
-  morale: string;
-  ammo: string;
-  resources: string;
-  stamina: string;
-  stability: string;
-  xp: string;
-  permanentDamage: string;
-  armor: string;
-  bodyZones: Record<ZoneKey, string>;
-  abilities: Record<AbilityKey, string>;
-  mainStats: {
-    physical: string;
-    agility: string;
-    psychic: string;
-    creativity: string;
-    commonKnowledge: string;
-    weapon: string;
-  };
-  weapons: Weapon[];
-};
-
-type CharacterSheet = {
-  id: string;
-  sheetType: SheetType;
-  templateId: TemplateId;
-  name: string;
-  className: string;
-  level: string;
-  race: string;
-  background: string;
-  alignment: string;
-  hp: string;
-  health?: string;
-  ac: string;
-  speed: string;
-  initiative: string;
-  proficiency: string;
-  stats: Record<StatKey, number>;
-  skills: Partial<Record<SkillKey, SkillProficiency>>;
-  characteristics?: Record<CharacteristicKey, number>;
-  armour?: ArmourId;
-  dwSkills?: Partial<Record<DwSkillKey, DwSkillLevel>>;
-  traits: string[];
-  attacks: Attack[];
-  inventory: string[];
-  notes: string;
-  customFields: CustomField[];
-  shootThem?: ShootThemExtras;
-  dwReal?: DwRealData;
-};
-
-const STORAGE_KEY = "rpg-character-sheets";
-const STAT_KEYS: StatKey[] = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
-const SKILLS: { key: SkillKey; stat: StatKey }[] = [
-  { key: "Acrobatics", stat: "DEX" },
-  { key: "Animal Handling", stat: "WIS" },
-  { key: "Arcana", stat: "INT" },
-  { key: "Athletics", stat: "STR" },
-  { key: "Deception", stat: "CHA" },
-  { key: "History", stat: "INT" },
-  { key: "Insight", stat: "WIS" },
-  { key: "Intimidation", stat: "CHA" },
-  { key: "Investigation", stat: "INT" },
-  { key: "Medicine", stat: "WIS" },
-  { key: "Nature", stat: "INT" },
-  { key: "Perception", stat: "WIS" },
-  { key: "Performance", stat: "CHA" },
-  { key: "Persuasion", stat: "CHA" },
-  { key: "Religion", stat: "INT" },
-  { key: "Sleight of Hand", stat: "DEX" },
-  { key: "Stealth", stat: "DEX" },
-  { key: "Survival", stat: "WIS" },
-];
-const NEXT_PROFICIENCY: Record<SkillProficiency, SkillProficiency> = {
-  none: "proficient",
-  proficient: "expertise",
-  expertise: "none",
-};
-const CHARACTERISTICS: { key: CharacteristicKey; label: string }[] = [
-  { key: "WS", label: "Weapon Skill" },
-  { key: "BS", label: "Ballistic Skill" },
-  { key: "S", label: "Strength" },
-  { key: "T", label: "Toughness" },
-  { key: "Ag", label: "Agility" },
-  { key: "Int", label: "Intelligence" },
-  { key: "WP", label: "Willpower" },
-  { key: "Fel", label: "Fellowship" },
-];
-const DEFAULT_CHARACTERISTICS: Record<CharacteristicKey, number> = {
-  WS: 42,
-  BS: 40,
-  S: 41,
-  T: 43,
-  Ag: 38,
-  Int: 35,
-  WP: 40,
-  Fel: 32,
-};
-const DW_SKILLS: { key: DwSkillKey; stat: CharacteristicKey }[] = [
-  { key: "Acrobatics", stat: "Ag" },
-  { key: "Charm", stat: "Fel" },
-  { key: "Climb", stat: "S" },
-  { key: "Command", stat: "Fel" },
-  { key: "Corruption", stat: "WP" },
-  { key: "Courage", stat: "T" },
-  { key: "Deceive", stat: "Fel" },
-  { key: "Demolition", stat: "Ag" },
-  { key: "Dodge", stat: "Ag" },
-  { key: "Evaluate", stat: "Int" },
-  { key: "Inquiry", stat: "Fel" },
-  { key: "Interrogation", stat: "WP" },
-  { key: "Intimidate", stat: "S" },
-  { key: "Literacy", stat: "Int" },
-  { key: "Logic", stat: "Int" },
-  { key: "Medicae", stat: "Int" },
-  { key: "Shadowing", stat: "Ag" },
-  { key: "Sleight of Hand", stat: "Ag" },
-  { key: "Survival", stat: "Int" },
-  { key: "Swim", stat: "S" },
-  { key: "Tech-Use", stat: "Int" },
-  { key: "Tracking", stat: "Int" },
-];
-const NEXT_DW_SKILL_LEVEL: Record<DwSkillLevel, DwSkillLevel> = {
-  untrained: "trained",
-  trained: "plus10",
-  plus10: "plus20",
-  plus20: "untrained",
-};
-const DW_SKILL_LABEL: Record<DwSkillLevel, string> = {
-  untrained: "Untrained (half)",
-  trained: "Trained",
-  plus10: "Trained +10",
-  plus20: "Trained +20",
-};
-const DW_SKILL_DOT: Record<DwSkillLevel, string> = {
-  untrained: "none",
-  trained: "proficient",
-  plus10: "expertise",
-  plus20: "master",
-};
-const DW_SPECIALISMS = ["Infiltrator", "Assault", "Gunner", "Sergeant"];
-const DW_MOODS = ["Gene mutation", "Corruption", "Rage", "Vigilant", "Suspicion", "Dead"];
-const ARMOURS: { id: ArmourId; label: string; as: number; m: number }[] = [
-  { id: "tactical", label: "Tactical", as: 5, m: 25 },
-  { id: "terminator", label: "Terminator", as: 7, m: 10 },
-  { id: "gravis", label: "Gravis", as: 6, m: 15 },
-  { id: "phobos", label: "Phobos / Reiver", as: 4, m: 35 },
-  { id: "jump-pack", label: "Jump pack", as: 5, m: 30 },
-];
-const SHEET_TYPES: { id: SheetType; label: string; description: string }[] = [
-  { id: "dnd", label: "D&D Sheets", description: "Classic stats and combat sheet" },
-  { id: "custom", label: "Custom Sheets", description: "Worldbuilding and story notes" },
-];
-const TEMPLATE_LIBRARY: { id: TemplateId; label: string; description: string; sheetType: SheetType; tag: string; themeClass: string }[] = [
-  { id: "dnd-5e", label: "D&D 5e", description: "Classic fantasy adventurer sheet", sheetType: "dnd", tag: "Fantasy", themeClass: "rpg-template-card--dnd" },
-  { id: "cyberpunk-red", label: "Cyberpunk RED", description: "Street-level operative and gear tracker", sheetType: "custom", tag: "Sci-fi", themeClass: "rpg-template-card--cyberpunk" },
-  { id: "deathwatch", label: "Deathwatch", description: "Adeptus Astartes field dossier", sheetType: "custom", tag: "Warhammer", themeClass: "rpg-template-card--deathwatch" },
-  { id: "deathwatch-real", label: "Deathwatch Real", description: "The full FFG Deathwatch RPG Battle-Brother sheet", sheetType: "custom", tag: "Warhammer", themeClass: "rpg-template-card--deathwatch-real" },
-  { id: "shoot-them", label: "Shoot Them", description: "Fast, gritty action sheet for hard choices and gunfire.", sheetType: "custom", tag: "Action", themeClass: "rpg-template-card--shoot" },
-  { id: "custom", label: "Blank custom", description: "Build your own sheet from blocks", sheetType: "custom", tag: "Flexible", themeClass: "rpg-template-card--custom" },
-];
-const CUSTOM_FIELD_OPTIONS: { type: CustomFieldType; label: string }[] = [
-  { type: "text", label: "Text" },
-  { type: "number", label: "Number" },
-  { type: "textarea", label: "Long text" },
-  { type: "list", label: "List" },
-];
-
-const defaultStats: Record<StatKey, number> = {
-  STR: 14,
-  DEX: 12,
-  CON: 13,
-  INT: 10,
-  WIS: 15,
-  CHA: 16,
-};
-
-function makeId() {
-  return `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
-}
-
-function buildDefaultCustomFields(): CustomField[] {
-  return [
-    { id: makeId(), type: "text", label: "Title", value: "Main goal" },
-    { id: makeId(), type: "textarea", label: "Description", value: "Describe the character or scene here." },
-    { id: makeId(), type: "list", label: "Traits", value: "Quick\nDriven\nObservant" },
-  ];
-}
-
-const SHOOT_THEM_ABILITIES: AbilityKey[] = ["I can", "Bang", "Sounds", "Mek", "Fighting", "Curios"];
-const SHOOT_THEM_ZONES: ZoneKey[] = ["head", "chest", "leftArm", "rightArm", "leftLeg", "rightLeg"];
-
-function createDefaultShootThem(): ShootThemExtras {
-  return {
-    stereotype: "Rookie",
-    experience: "0",
-    morale: "Steady",
-    ammo: "12",
-    resources: "Light",
-    stamina: "10",
-    stability: "10",
-    xp: "0",
-    permanentDamage: "0",
-    armor: "0",
-    bodyZones: {
-      head: "0",
-      chest: "0",
-      leftArm: "0",
-      rightArm: "0",
-      leftLeg: "0",
-      rightLeg: "0",
-    },
-    abilities: {
-      "I can": "I can handle the pressure when things go wrong.",
-      Bang: "I can shoot fast and keep moving.",
-      Sounds: "I can read a room by the noise around it.",
-      Mek: "I can repair the little things before they fail.",
-      Fighting: "I can hold my own in a close scramble.",
-      Curios: "I can follow the strange clue no one else notices.",
-    },
-    mainStats: {
-      physical: "2",
-      agility: "2",
-      psychic: "0",
-      creativity: "2",
-      commonKnowledge: "1",
-      weapon: "2",
-    },
-    weapons: [
-      {
-        id: makeId(),
-        name: "Sidearm",
-        damage: "2",
-        ammo: "8",
-        magazine: "8",
-        effect: "Reliable",
-        sound: "Loud",
-        range: "Medium",
-      },
-    ],
-  };
-}
-
-function createBlankSheet(type: SheetType = "dnd", templateId: TemplateId = type === "dnd" ? "dnd-5e" : "custom"): CharacterSheet {
-  const isDndTemplate = templateId === "dnd-5e";
-  const isCyberpunk = templateId === "cyberpunk-red";
-  const isDeathwatch = templateId === "deathwatch";
-
-  const base: CharacterSheet = {
-    id: makeId(),
-    sheetType: type,
-    templateId,
-    name: isDndTemplate ? "New Hero" : isCyberpunk ? "New Operative" : isDeathwatch ? "New Deathwatch Marine" : templateId === "shoot-them" ? "New shooter" : "New Character",
-    className: isDndTemplate ? "Ranger" : isCyberpunk ? "Nomad" : isDeathwatch ? "Infiltrator" : templateId === "shoot-them" ? "Stereotype" : "Role",
-    level: isDndTemplate ? "3" : isCyberpunk ? "1" : isDeathwatch ? "3" : templateId === "shoot-them" ? "1" : "1",
-    race: isDndTemplate ? "Human" : isCyberpunk ? "Street kid" : isDeathwatch ? "Adeptus Astartes" : templateId === "shoot-them" ? "Scavenger" : "Realm",
-    background: isDndTemplate ? "Explorer" : isCyberpunk ? "Fixer network" : isDeathwatch ? "Chapter doctrine" : templateId === "shoot-them" ? "Street survivor" : "Backstory",
-    alignment: isDndTemplate ? "Neutral Good" : isCyberpunk ? "Driven" : isDeathwatch ? "Vigilant" : templateId === "shoot-them" ? "Hard-edged" : "Driven",
-    hp: isDndTemplate ? "23" : isCyberpunk ? "14" : isDeathwatch ? "100" : templateId === "shoot-them" ? "10" : "12",
-    ac: isDndTemplate ? "15" : isCyberpunk ? "11" : isDeathwatch ? "16" : templateId === "shoot-them" ? "0" : "—",
-    speed: isDndTemplate ? "30 ft." : isCyberpunk ? "Fast" : isDeathwatch ? "10 ft." : templateId === "shoot-them" ? "Quick" : "Flexible",
-    initiative: isDndTemplate ? "+2" : isCyberpunk ? "+3" : isDeathwatch ? "+2" : templateId === "shoot-them" ? "+1" : "—",
-    proficiency: isDndTemplate ? "+2" : isCyberpunk ? "+2" : isDeathwatch ? "+3" : templateId === "shoot-them" ? "+1" : "—",
-    stats: { ...defaultStats },
-    skills: isDndTemplate ? { Nature: "proficient", Perception: "proficient", Survival: "proficient" } : {},
-    characteristics: isDeathwatch ? { ...DEFAULT_CHARACTERISTICS } : undefined,
-    armour: isDeathwatch ? "tactical" : undefined,
-    health: isDeathwatch ? "20" : undefined,
-    traits: isDndTemplate
-      ? ["Quick thinker", "Wary of ambushes", "Protects allies"]
-      : isCyberpunk
-        ? ["Street-smart", "Hard to read", "Always has a plan"]
-        : isDeathwatch
-          ? ["Stoic", "Relentless", "Guardian of the Imperium"]
-          : ["Driven", "Observant", "Adaptable"],
-    attacks: isDndTemplate
-      ? [
-          { id: makeId(), name: "Longbow", bonus: "+5", damage: "1d8 + 3", notes: "Ranged attack" },
-          { id: makeId(), name: "Dagger", bonus: "+4", damage: "1d4 + 2", notes: "Versatile melee" },
-        ]
-      : isCyberpunk || isDeathwatch
-        ? [
-            { id: makeId(), name: "Signature Weapon", bonus: "+0", damage: "Custom", notes: "Weapon profile" },
-          ]
-        : [
-            { id: makeId(), name: "Signature Move", bonus: "—", damage: "Scene-based", notes: "Custom action" },
-          ],
-    inventory: isDndTemplate
-      ? ["Longbow", "10 arrows", "Explorer's pack", "Potion of healing"]
-      : isCyberpunk
-        ? ["Crowbar", "Smartlink", "Urban disguise", "Ammo pack"]
-        : isDeathwatch
-          ? ["Bolter", "Power armor seals", "Combat rations", "Sanctified relic"]
-          : templateId === "shoot-them"
-            ? ["Backup mag", "Patch kit", "Mug of tea", "Pack of smokes"]
-            : ["Notebook", "Tool kit", "Travel gear", "Important keepsake"],
-    notes: isDndTemplate
-      ? "Tactical and observant. Keeps a calm head in danger."
-      : isCyberpunk
-        ? "A runner with grit, instinct, and too much history for comfort."
-        : isDeathwatch
-          ? "A battle-brother sworn to purge the unclean and carry the Emperor's wrath."
-          : templateId === "shoot-them"
-            ? "The city is loud, the danger is real, and every bad decision adds up."
-            : "A person with a sharp sense of purpose and a story worth telling.",
-    customFields: isDndTemplate ? [] : buildDefaultCustomFields(),
-    shootThem: templateId === "shoot-them" ? createDefaultShootThem() : undefined,
-  };
-
-  if (templateId === "cyberpunk-red") {
-    base.customFields = [
-      { id: makeId(), type: "text", label: "Handle", value: "Nexus" },
-      { id: makeId(), type: "text", label: "Role", value: "Solo / Netrunner / Fixer" },
-      { id: makeId(), type: "list", label: "Skills", value: "Streetwise\nHacking\nCombat\nNegotiation" },
-      { id: makeId(), type: "textarea", label: "Cyberware", value: "Neural connector, targeting optics, smartlink, skinweave plating." },
-      { id: makeId(), type: "textarea", label: "Notes", value: "Good at surviving bad nights and worse deals." },
-    ];
-  }
-
-  if (templateId === "deathwatch") {
-    base.customFields = [
-      { id: makeId(), type: "text", label: "Chapter", value: "Black Templar / Unknown" },
-      { id: makeId(), type: "list", label: "Oath", value: "Protect the innocent\nExterminate corruption\nNever falter" },
-      { id: makeId(), type: "textarea", label: "War gear", value: "Bolter, power sword, combat shield, purity seals." },
-      { id: makeId(), type: "textarea", label: "Mission log", value: "Track the next deployment and any enemies that must be purged." },
-    ];
-  }
-
-  if (templateId === "shoot-them") {
-    base.customFields = [
-      { id: makeId(), type: "text", label: "Stereotype", value: "Rookie" },
-      { id: makeId(), type: "text", label: "Morale", value: "Steady" },
-      { id: makeId(), type: "list", label: "Abilities", value: "I can\nBang\nSounds\nMek\nFighting\nCurios" },
-      { id: makeId(), type: "textarea", label: "Notes", value: "Describe the current trouble or job." },
-    ];
-    base.shootThem = createDefaultShootThem();
-  }
-
-  if (templateId === "deathwatch-real") {
-    base.dwReal = createDefaultDwReal();
-    base.name = "New Battle-Brother";
-    base.className = base.dwReal.speciality;
-    base.level = base.dwReal.rank;
-    base.customFields = [];
-    base.notes = "Mission briefings, objectives and kill-markers.";
-  }
-
-  return base;
-}
-
-function parseStoredSheets(): CharacterSheet[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [createBlankSheet("dnd")];
-    const parsed = JSON.parse(raw) as CharacterSheet[];
-    return parsed.length
-      ? parsed.map((sheet) => ({
-          ...createBlankSheet(sheet.sheetType ?? "dnd"),
-          ...sheet,
-          sheetType: sheet.sheetType ?? "dnd",
-          customFields: Array.isArray(sheet.customFields) && sheet.customFields.length > 0
-            ? sheet.customFields.map((field: CustomField) => ({
-                id: field.id ?? makeId(),
-                type: field.type ?? "text",
-                label: field.label ?? "Field",
-                value: field.value ?? "",
-              }))
-            : createBlankSheet(sheet.sheetType ?? "dnd").customFields,
-        }))
-      : [createBlankSheet("dnd")];
-  } catch {
-    return [createBlankSheet("dnd")];
-  }
-}
-
-function modifierFor(score: number) {
-  return Math.floor((score - 10) / 2);
-}
-
-function dwSkillTarget(characteristic: number, level: DwSkillLevel) {
-  if (level === "untrained") return Math.floor(characteristic / 2);
-  return characteristic + (level === "plus20" ? 20 : level === "plus10" ? 10 : 0);
-}
-
-function formatModifier(value: number) {
-  return value >= 0 ? `+${value}` : `${value}`;
-}
-
-function skillModifier(sheet: CharacterSheet, skill: { key: SkillKey; stat: StatKey }) {
-  const proficiencyBonus = Number.parseInt(sheet.proficiency, 10) || 0;
-  const level = sheet.skills?.[skill.key] ?? "none";
-  const multiplier = level === "expertise" ? 2 : level === "proficient" ? 1 : 0;
-  return modifierFor(sheet.stats[skill.stat]) + proficiencyBonus * multiplier;
+function downloadJson(data: unknown, filename: string) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 }
 
 export default function RoleplayingSheets() {
   const navigate = useNavigate();
-  const [sheets, setSheets] = useState<CharacterSheet[]>(() => parseStoredSheets());
+  const [sheets, setSheets] = useState<CharacterSheet[]>(() => loadStoredSheets());
   const [sheetMode, setSheetMode] = useState<SheetType>("dnd");
   const [templateScreen, setTemplateScreen] = useState(true);
-  const [selectedId, setSelectedId] = useState<string>(() => {
-    const initial = parseStoredSheets();
-    return initial[0]?.id ?? "";
-  });
+  const [selectedId, setSelectedId] = useState<string>(() => sheets[0]?.id ?? "");
+  const [importMessage, setImportMessage] = useState("");
+  const [exportingPdf, setExportingPdf] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const sheetPanelRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sheets));
@@ -468,8 +88,9 @@ export default function RoleplayingSheets() {
   );
 
   useEffect(() => {
+    if (templateScreen) return;
     if (visibleSheets.length === 0) {
-      const newSheet = createBlankSheet(sheetMode);
+      const newSheet = createBlankSheet(DEFAULT_TEMPLATE[sheetMode]);
       setSheets((current) => [...current, newSheet]);
       setSelectedId(newSheet.id);
       return;
@@ -478,341 +99,7 @@ export default function RoleplayingSheets() {
     if (!visibleSheets.some((sheet) => sheet.id === selectedId)) {
       setSelectedId(visibleSheets[0].id);
     }
-  }, [visibleSheets, selectedId, sheetMode]);
-
-  const selectedSheet = useMemo(
-    () => visibleSheets.find((sheet) => sheet.id === selectedId) ?? visibleSheets[0] ?? null,
-    [selectedId, visibleSheets],
-  );
-
-  const updateSelected = (updates: Partial<CharacterSheet>) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) =>
-        sheet.id === selectedSheet.id ? { ...sheet, ...updates } : sheet,
-      ),
-    );
-  };
-
-  const updateShootThemField = <K extends keyof ShootThemExtras>(field: K, value: ShootThemExtras[K]) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) => {
-        if (sheet.id !== selectedSheet.id) return sheet;
-        const nextShootThem = sheet.shootThem ?? createDefaultShootThem();
-        return {
-          ...sheet,
-          shootThem: {
-            ...nextShootThem,
-            [field]: value,
-          },
-        };
-      }),
-    );
-  };
-
-  const updateShootThemBodyZone = (zone: ZoneKey, value: string) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) => {
-        if (sheet.id !== selectedSheet.id) return sheet;
-        const nextShootThem = sheet.shootThem ?? createDefaultShootThem();
-        return {
-          ...sheet,
-          shootThem: {
-            ...nextShootThem,
-            bodyZones: { ...nextShootThem.bodyZones, [zone]: value },
-          },
-        };
-      }),
-    );
-  };
-
-  const updateShootThemAbility = (ability: AbilityKey, value: string) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) => {
-        if (sheet.id !== selectedSheet.id) return sheet;
-        const nextShootThem = sheet.shootThem ?? createDefaultShootThem();
-        return {
-          ...sheet,
-          shootThem: {
-            ...nextShootThem,
-            abilities: { ...nextShootThem.abilities, [ability]: value },
-          },
-        };
-      }),
-    );
-  };
-
-  const updateShootThemMainStat = (stat: keyof ShootThemExtras["mainStats"], value: string) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) => {
-        if (sheet.id !== selectedSheet.id) return sheet;
-        const nextShootThem = sheet.shootThem ?? createDefaultShootThem();
-        return {
-          ...sheet,
-          shootThem: {
-            ...nextShootThem,
-            mainStats: {
-              ...nextShootThem.mainStats,
-              [stat]: value,
-            },
-          },
-        };
-      }),
-    );
-  };
-
-  const addShootThemWeapon = () => {
-    if (!selectedSheet) return;
-    const newWeapon: Weapon = {
-      id: makeId(),
-      name: "New Weapon",
-      damage: "2",
-      ammo: "6",
-      magazine: "6",
-      effect: "Simple",
-      sound: "Loud",
-      range: "Medium",
-    };
-
-    setSheets((current) =>
-      current.map((sheet) => {
-        if (sheet.id !== selectedSheet.id) return sheet;
-        const nextShootThem = sheet.shootThem ?? createDefaultShootThem();
-        return {
-          ...sheet,
-          shootThem: {
-            ...nextShootThem,
-            weapons: [...nextShootThem.weapons, newWeapon],
-          },
-        };
-      }),
-    );
-  };
-
-  const updateShootThemWeapon = (weaponId: string, field: keyof Weapon, value: string) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) => {
-        if (sheet.id !== selectedSheet.id) return sheet;
-        const nextShootThem = sheet.shootThem ?? createDefaultShootThem();
-        return {
-          ...sheet,
-          shootThem: {
-            ...nextShootThem,
-            weapons: nextShootThem.weapons.map((weapon) =>
-              weapon.id === weaponId ? { ...weapon, [field]: value } : weapon,
-            ),
-          },
-        };
-      }),
-    );
-  };
-
-  const removeShootThemWeapon = (weaponId: string) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) => {
-        if (sheet.id !== selectedSheet.id) return sheet;
-        const nextShootThem = sheet.shootThem ?? createDefaultShootThem();
-        return {
-          ...sheet,
-          shootThem: {
-            ...nextShootThem,
-            weapons: nextShootThem.weapons.filter((weapon) => weapon.id !== weaponId),
-          },
-        };
-      }),
-    );
-  };
-
-  const cycleDwSkill = (skill: DwSkillKey) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) => {
-        if (sheet.id !== selectedSheet.id) return sheet;
-        const level = sheet.dwSkills?.[skill] ?? "untrained";
-        return { ...sheet, dwSkills: { ...sheet.dwSkills, [skill]: NEXT_DW_SKILL_LEVEL[level] } };
-      }),
-    );
-  };
-
-  const cycleSkill = (skill: SkillKey) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) => {
-        if (sheet.id !== selectedSheet.id) return sheet;
-        const level = sheet.skills?.[skill] ?? "none";
-        return { ...sheet, skills: { ...sheet.skills, [skill]: NEXT_PROFICIENCY[level] } };
-      }),
-    );
-  };
-
-  const updateCharacteristic = (key: CharacteristicKey, value: number) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) =>
-        sheet.id === selectedSheet.id
-          ? { ...sheet, characteristics: { ...(sheet.characteristics ?? DEFAULT_CHARACTERISTICS), [key]: value } }
-          : sheet,
-      ),
-    );
-  };
-
-  const updateStat = (stat: StatKey, value: number) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) =>
-        sheet.id === selectedSheet.id
-          ? { ...sheet, stats: { ...sheet.stats, [stat]: value } }
-          : sheet,
-      ),
-    );
-  };
-
-  const updateList = (key: "traits" | "inventory", value: string) => {
-    const items = value
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
-    updateSelected({ [key]: items } as Partial<CharacterSheet>);
-  };
-
-  const addAttack = () => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) =>
-        sheet.id === selectedSheet.id
-          ? {
-              ...sheet,
-              attacks: [
-                ...sheet.attacks,
-                { id: makeId(), name: "New Attack", bonus: "+0", damage: "1d6", notes: "" },
-              ],
-            }
-          : sheet,
-      ),
-    );
-  };
-
-  const addCustomField = (type: CustomFieldType) => {
-    if (!selectedSheet) return;
-    const label = `${type.charAt(0).toUpperCase()}${type.slice(1)} block`;
-    const newField: CustomField = {
-      id: makeId(),
-      type,
-      label,
-      value: type === "list" ? "One\nTwo\nThree" : "",
-    };
-
-    setSheets((current) =>
-      current.map((sheet) =>
-        sheet.id === selectedSheet.id
-          ? { ...sheet, customFields: [...sheet.customFields, newField] }
-          : sheet,
-      ),
-    );
-  };
-
-  const updateCustomField = (id: string, field: "label" | "value", value: string) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) =>
-        sheet.id === selectedSheet.id
-          ? {
-              ...sheet,
-              customFields: sheet.customFields.map((item) =>
-                item.id === id ? { ...item, [field]: value } : item,
-              ),
-            }
-          : sheet,
-      ),
-    );
-  };
-
-  const removeCustomField = (id: string) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) =>
-        sheet.id === selectedSheet.id
-          ? { ...sheet, customFields: sheet.customFields.filter((item) => item.id !== id) }
-          : sheet,
-      ),
-    );
-  };
-
-  const updateAttack = (id: string, field: keyof Attack, value: string) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) =>
-        sheet.id === selectedSheet.id
-          ? {
-              ...sheet,
-              attacks: sheet.attacks.map((attack) =>
-                attack.id === id ? { ...attack, [field]: value } : attack,
-              ),
-            }
-          : sheet,
-      ),
-    );
-  };
-
-  const removeAttack = (id: string) => {
-    if (!selectedSheet) return;
-    setSheets((current) =>
-      current.map((sheet) =>
-        sheet.id === selectedSheet.id
-          ? { ...sheet, attacks: sheet.attacks.filter((attack) => attack.id !== id) }
-          : sheet,
-      ),
-    );
-  };
-
-  const createNewSheet = (type: SheetType = sheetMode, templateId: TemplateId = type === "dnd" ? "dnd-5e" : "custom") => {
-    const newSheet = createBlankSheet(type, templateId);
-    setSheets((current) => [newSheet, ...current]);
-    setSelectedId(newSheet.id);
-    setSheetMode(type);
-    setTemplateScreen(false);
-  };
-
-  const openSheet = (sheetId: string) => {
-    const match = sheets.find((sheet) => sheet.id === sheetId);
-    if (!match) return;
-    setSelectedId(match.id);
-    setSheetMode(match.sheetType);
-    setTemplateScreen(false);
-  };
-
-  const deleteSheet = (sheetId: string) => {
-    setSheets((current) => {
-      const remaining = current.filter((sheet) => sheet.id !== sheetId);
-      if (remaining.length === 0) {
-        const fresh = createBlankSheet(sheetMode);
-        setSelectedId(fresh.id);
-        setTemplateScreen(false);
-        return [fresh];
-      }
-
-      const nextSelected = remaining.find((sheet) => sheet.id === selectedId) ?? remaining[0];
-      if (nextSelected) {
-        setSelectedId(nextSelected.id);
-      }
-      return remaining;
-    });
-  };
-
-  const handleTemplatePick = (templateId: TemplateId) => {
-    const template = TEMPLATE_LIBRARY.find((item) => item.id === templateId) ?? TEMPLATE_LIBRARY[0];
-    createNewSheet(template.sheetType, template.id);
-  };
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const sheetPanelRef = useRef<HTMLElement | null>(null);
-  const [exportingPdf, setExportingPdf] = useState(false);
+  }, [visibleSheets, selectedId, sheetMode, templateScreen]);
 
   useEffect(() => {
     let exitPrintMode: (() => void) | null = null;
@@ -832,49 +119,136 @@ export default function RoleplayingSheets() {
     };
   }, []);
 
-  const handleExportJson = () => {
-    const payload = JSON.stringify(selectedSheet, null, 2);
-    const blob = new Blob([payload], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${(selectedSheet.name || "sheet").toLowerCase().replace(/\s+/g, "-")}.json`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
+  const selectedSheet = useMemo(
+    () => visibleSheets.find((sheet) => sheet.id === selectedId) ?? visibleSheets[0] ?? null,
+    [selectedId, visibleSheets],
+  );
+
+  /** Applies `change` to the sheet currently open in the editor. */
+  const editSelected = (change: (sheet: CharacterSheet) => CharacterSheet) => {
+    if (!selectedSheet) return;
+    setSheets((current) => current.map((sheet) => (sheet.id === selectedSheet.id ? change(sheet) : sheet)));
+  };
+
+  const updateSelected = (updates: Partial<CharacterSheet>) => editSelected((sheet) => ({ ...sheet, ...updates }));
+
+  const editShootThem = (change: (extras: ShootThemExtras) => Partial<ShootThemExtras>) =>
+    editSelected((sheet) => {
+      const extras = sheet.shootThem ?? createDefaultShootThem();
+      return { ...sheet, shootThem: { ...extras, ...change(extras) } };
+    });
+
+  const updateShootThemField = <K extends keyof ShootThemExtras>(field: K, value: ShootThemExtras[K]) =>
+    editShootThem(() => ({ [field]: value }));
+
+  const updateShootThemWeapon = (weaponId: string, field: keyof Weapon, value: string) =>
+    editShootThem((extras) => ({
+      weapons: extras.weapons.map((weapon) => (weapon.id === weaponId ? { ...weapon, [field]: value } : weapon)),
+    }));
+
+  const cycleSkill = (skill: SkillKey) =>
+    editSelected((sheet) => ({ ...sheet, skills: { ...sheet.skills, [skill]: NEXT_PROFICIENCY[sheet.skills[skill] ?? "none"] } }));
+
+  const cycleDwSkill = (skill: DwSkillKey) =>
+    editSelected((sheet) => ({
+      ...sheet,
+      dwSkills: { ...sheet.dwSkills, [skill]: NEXT_DW_SKILL_LEVEL[sheet.dwSkills?.[skill] ?? "untrained"] },
+    }));
+
+  const updateStat = (stat: StatKey, value: number) =>
+    editSelected((sheet) => ({ ...sheet, stats: { ...sheet.stats, [stat]: value } }));
+
+  const updateCharacteristic = (key: CharacteristicKey, value: number) =>
+    editSelected((sheet) => ({
+      ...sheet,
+      characteristics: { ...(sheet.characteristics ?? DEFAULT_CHARACTERISTICS), [key]: value },
+    }));
+
+  const updateList = (key: "traits" | "inventory", value: string) =>
+    updateSelected({ [key]: value.split("\n").map((line) => line.trim()).filter(Boolean) });
+
+  const addAttack = () => editSelected((sheet) => ({ ...sheet, attacks: [...sheet.attacks, blankAttack()] }));
+
+  const updateAttack = (id: string, field: keyof Attack, value: string) =>
+    editSelected((sheet) => ({
+      ...sheet,
+      attacks: sheet.attacks.map((attack) => (attack.id === id ? { ...attack, [field]: value } : attack)),
+    }));
+
+  const removeAttack = (id: string) =>
+    editSelected((sheet) => ({ ...sheet, attacks: sheet.attacks.filter((attack) => attack.id !== id) }));
+
+  const addCustomField = (type: CustomFieldType) =>
+    editSelected((sheet) => ({ ...sheet, customFields: [...sheet.customFields, blankCustomField(type)] }));
+
+  const updateCustomField = (id: string, field: "label" | "value", value: string) =>
+    editSelected((sheet) => ({
+      ...sheet,
+      customFields: sheet.customFields.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
+    }));
+
+  const removeCustomField = (id: string) =>
+    editSelected((sheet) => ({ ...sheet, customFields: sheet.customFields.filter((item) => item.id !== id) }));
+
+  const createNewSheet = (templateId: TemplateId) => {
+    const newSheet = createBlankSheet(templateId);
+    setSheets((current) => [newSheet, ...current]);
+    setSelectedId(newSheet.id);
+    setSheetMode(newSheet.sheetType);
+    setTemplateScreen(false);
+  };
+
+  const openSheet = (sheet: CharacterSheet) => {
+    setSelectedId(sheet.id);
+    setSheetMode(sheet.sheetType);
+    setTemplateScreen(false);
+  };
+
+  const deleteSheet = (sheetId: string) => {
+    const remaining = sheets.filter((sheet) => sheet.id !== sheetId);
+    if (remaining.length === 0) {
+      const fresh = createBlankSheet(DEFAULT_TEMPLATE[sheetMode]);
+      setSheets([fresh]);
+      setSelectedId(fresh.id);
+      return;
+    }
+    setSheets(remaining);
+    if (sheetId === selectedId) {
+      setSelectedId((remaining.find((sheet) => sheet.sheetType === sheetMode) ?? remaining[0]).id);
+    }
+  };
+
+  const handleExportSheet = () => {
+    if (!selectedSheet) return;
+    downloadJson(createBackup([selectedSheet]), `${fileSlug(selectedSheet.name)}.json`);
+  };
+
+  const handleExportAll = () => {
+    const date = new Date().toISOString().slice(0, 10);
+    downloadJson(createBackup(sheets), `rpg-sheets-backup-${date}.json`);
   };
 
   const handleImportJson = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
 
     try {
-      const text = await file.text();
-      const importedSheet = JSON.parse(text) as CharacterSheet;
-      const normalizedSheet = {
-        ...createBlankSheet(importedSheet.sheetType ?? "custom"),
-        ...importedSheet,
-        id: importedSheet.id ?? makeId(),
-        sheetType: importedSheet.sheetType ?? "custom",
-        customFields: Array.isArray(importedSheet.customFields) ? importedSheet.customFields : [],
-      };
-
-      setSheets((current) => {
-        const existingIndex = current.findIndex((sheet) => sheet.id === normalizedSheet.id);
-        if (existingIndex >= 0) {
-          const updated = [...current];
-          updated[existingIndex] = normalizedSheet;
-          return updated;
-        }
-        return [normalizedSheet, ...current];
-      });
-      setSelectedId(normalizedSheet.id);
-      setSheetMode(normalizedSheet.sheetType);
+      const imported = parseImport(await file.text());
+      const existingIds = new Set(sheets.map((sheet) => sheet.id));
+      const replacedCount = imported.filter((sheet) => existingIds.has(sheet.id)).length;
+      setSheets((current) => mergeImported(current, imported));
+      const added = imported.length - replacedCount;
+      setImportMessage(
+        `Imported ${imported.length} sheet${imported.length === 1 ? "" : "s"}` +
+          (replacedCount ? ` (${added} new, ${replacedCount} updated)` : "") +
+          ".",
+      );
+      if (imported.length === 1 && !templateScreen) {
+        openSheet(imported[0]);
+      }
     } catch {
-      alert("That file was not a valid RPG sheet JSON export.");
-    } finally {
-      event.target.value = "";
+      setImportMessage("That file is not a character sheet export.");
     }
   };
 
@@ -890,6 +264,16 @@ export default function RoleplayingSheets() {
       setExportingPdf(false);
     }
   };
+
+  const importInput = (
+    <input ref={fileInputRef} type="file" accept=".json,application/json" hidden onChange={handleImportJson} />
+  );
+  const importStatus = importMessage && (
+    <p className="rpg-import-status" role="status">
+      {importMessage}
+      <button type="button" onClick={() => setImportMessage("")} aria-label="Dismiss">×</button>
+    </p>
+  );
 
   if (templateScreen) {
     return (
@@ -910,18 +294,26 @@ export default function RoleplayingSheets() {
 
         <main className="rpg-template-wrap">
           <section className="rpg-menu-section">
-            <p className="rpg-panel-label">// saved sheets</p>
+            <div className="rpg-section-header">
+              <p className="rpg-panel-label">// saved sheets</p>
+              <div className="rpg-builder-actions">
+                <button className="rpg-inline-btn" onClick={handleExportAll}>Export all (JSON)</button>
+                <button className="rpg-inline-btn" onClick={() => fileInputRef.current?.click()}>Import JSON</button>
+                {importInput}
+              </div>
+            </div>
+            {importStatus}
             <div className="rpg-menu-list">
               {sheets.map((sheet) => (
                 <div key={sheet.id} className="rpg-menu-item">
                   <div className="rpg-menu-copy">
                     <strong>{sheet.name || "Unnamed Character"}</strong>
                     <span>
-                      {sheet.className || "No role"} · {sheet.sheetType === "dnd" ? "D&D" : "Custom"}
+                      {sheet.className || "No role"} · {templateFor(sheet.templateId).label}
                     </span>
                   </div>
                   <div className="rpg-menu-actions">
-                    <button className="rpg-inline-btn" onClick={() => openSheet(sheet.id)}>
+                    <button className="rpg-inline-btn" onClick={() => openSheet(sheet)}>
                       Open
                     </button>
                     <button className="rpg-remove-btn" onClick={() => deleteSheet(sheet.id)}>
@@ -940,7 +332,7 @@ export default function RoleplayingSheets() {
                 <button
                   key={template.id}
                   className={`rpg-template-card ${template.themeClass}`}
-                  onClick={() => handleTemplatePick(template.id)}
+                  onClick={() => createNewSheet(template.id)}
                 >
                   <span className="rpg-template-tag">{template.tag}</span>
                   <h2>{template.label}</h2>
@@ -1015,21 +407,16 @@ export default function RoleplayingSheets() {
             ))}
           </div>
           <button className="rpg-export-btn" onClick={() => setTemplateScreen(true)}>Main menu</button>
-          <button className="rpg-export-btn" onClick={handleExportJson}>Export JSON</button>
+          <button className="rpg-export-btn" onClick={handleExportSheet}>Export JSON</button>
           <button className="rpg-export-btn" onClick={handleExportPdf} disabled={exportingPdf}>
             {exportingPdf ? "Exporting…" : "Export PDF"}
           </button>
           <button className="rpg-export-btn" onClick={() => fileInputRef.current?.click()}>Import JSON</button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json,application/json"
-            hidden
-            onChange={handleImportJson}
-          />
-          <button className="rpg-new-btn" onClick={() => createNewSheet(sheetMode)}>+ New Sheet</button>
+          {importInput}
+          <button className="rpg-new-btn" onClick={() => createNewSheet(DEFAULT_TEMPLATE[sheetMode])}>+ New Sheet</button>
         </div>
       </header>
+      {importStatus}
 
       <main className="rpg-layout">
         <aside className="rpg-sidebar">
@@ -1231,7 +618,7 @@ export default function RoleplayingSheets() {
                             type="button"
                             className={`rpg-skill-dot rpg-skill-dot--${level}`}
                             onClick={() => cycleSkill(skill.key)}
-                            title={level === "none" ? "Not proficient" : level === "proficient" ? "Proficient" : "Expertise"}
+                            title={PROFICIENCY_LABEL[level]}
                             aria-label={`${skill.key}: ${level}`}
                           />
                           <span className="rpg-skill-mod">{formatModifier(skillModifier(selectedSheet, skill))}</span>
@@ -1338,7 +725,7 @@ export default function RoleplayingSheets() {
             </div>
           )}
 
-          {isShootThem && selectedSheet.shootThem && (
+          {isShootThem && (
             <div className="rpg-core-box rpg-shoot-sheet">
               <div className="rpg-section-header">
                 <p className="rpg-panel-label">// Shoot Them</p>
@@ -1396,7 +783,7 @@ export default function RoleplayingSheets() {
                         <span>{zone.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())}</span>
                         <input
                           value={shootThem.bodyZones[zone]}
-                          onChange={(e) => updateShootThemBodyZone(zone, e.target.value)}
+                          onChange={(e) => editShootThem((extras) => ({ bodyZones: { ...extras.bodyZones, [zone]: e.target.value } }))}
                         />
                       </label>
                     ))}
@@ -1414,7 +801,7 @@ export default function RoleplayingSheets() {
                           min={-6}
                           max={6}
                           value={shootThem.abilities[ability]}
-                          onChange={(e) => updateShootThemAbility(ability, e.target.value)}
+                          onChange={(e) => editShootThem((extras) => ({ abilities: { ...extras.abilities, [ability]: e.target.value } }))}
                         />
                       </label>
                     ))}
@@ -1424,12 +811,12 @@ export default function RoleplayingSheets() {
                 <div>
                   <p className="rpg-panel-label">// Main stats</p>
                   <div className="rpg-shoot-stat-grid">
-                    {Object.entries(shootThem.mainStats).map(([stat, value]) => (
+                    {(Object.keys(SHOOT_THEM_STAT_LABEL) as (keyof ShootThemExtras["mainStats"])[]).map((stat) => (
                       <label key={stat} className="rpg-field">
-                        <span>{stat === "commonKnowledge" ? "Common knowledge" : stat === "physical" ? "Physical" : stat === "agility" ? "Agility" : stat === "psychic" ? "Psychic" : stat === "creativity" ? "Creativity" : "Weapon"}</span>
+                        <span>{SHOOT_THEM_STAT_LABEL[stat]}</span>
                         <input
-                          value={value}
-                          onChange={(e) => updateShootThemMainStat(stat as keyof ShootThemExtras["mainStats"], e.target.value)}
+                          value={shootThem.mainStats[stat]}
+                          onChange={(e) => editShootThem((extras) => ({ mainStats: { ...extras.mainStats, [stat]: e.target.value } }))}
                         />
                       </label>
                     ))}
@@ -1439,7 +826,7 @@ export default function RoleplayingSheets() {
                 <div>
                   <div className="rpg-section-header">
                     <p className="rpg-panel-label">// Weapons</p>
-                    <button className="rpg-inline-btn" onClick={addShootThemWeapon}>+ Add</button>
+                    <button className="rpg-inline-btn" onClick={() => editShootThem((extras) => ({ weapons: [...extras.weapons, blankShootThemWeapon()] }))}>+ Add</button>
                   </div>
 
                   <div className="rpg-weapon-list">
@@ -1447,12 +834,12 @@ export default function RoleplayingSheets() {
                       <div key={weapon.id} className="rpg-weapon-row">
                         <input value={weapon.name} onChange={(e) => updateShootThemWeapon(weapon.id, "name", e.target.value)} placeholder="Weapon" />
                         <input className="rpg-number-input" type="number" value={weapon.damage} onChange={(e) => updateShootThemWeapon(weapon.id, "damage", e.target.value)} placeholder="Damage" />
-                        <input className="rpg-number-input" type="number" value={weapon.ammo ?? ""} onChange={(e) => updateShootThemWeapon(weapon.id, "ammo" as keyof Weapon, e.target.value)} placeholder="Ammo" />
+                        <input className="rpg-number-input" type="number" value={weapon.ammo} onChange={(e) => updateShootThemWeapon(weapon.id, "ammo", e.target.value)} placeholder="Ammo" />
                         <input className="rpg-number-input" type="number" value={weapon.magazine} onChange={(e) => updateShootThemWeapon(weapon.id, "magazine", e.target.value)} placeholder="Mag" />
                         <input value={weapon.effect} onChange={(e) => updateShootThemWeapon(weapon.id, "effect", e.target.value)} placeholder="Effect" />
                         <input value={weapon.sound} onChange={(e) => updateShootThemWeapon(weapon.id, "sound", e.target.value)} placeholder="Sound" />
                         <input value={weapon.range} onChange={(e) => updateShootThemWeapon(weapon.id, "range", e.target.value)} placeholder="Range" />
-                        <button className="rpg-remove-btn" onClick={() => removeShootThemWeapon(weapon.id)}>Remove</button>
+                        <button className="rpg-remove-btn" onClick={() => editShootThem((extras) => ({ weapons: extras.weapons.filter((item) => item.id !== weapon.id) }))}>Remove</button>
                       </div>
                     ))}
                   </div>

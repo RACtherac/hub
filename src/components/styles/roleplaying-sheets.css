@@ -1097,3 +1097,29 @@ html.rpg-print-mode,
     align-items: flex-start;
   }
 }
+
+.rpg-import-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 clamp(1rem, 4vw, 2.5rem) 1rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.rpg-menu-section .rpg-import-status {
+  margin: 0;
+}
+
+.rpg-import-status button {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1rem;
+  cursor: pointer;
+}
