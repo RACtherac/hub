@@ -4,6 +4,12 @@ import "../components/styles/roleplaying-sheets.css";
 import { enterPrintMode, exportSheetPdf } from "../utils/exportSheetPdf";
 import DeathwatchRealSheet from "../components/DeathwatchReal/DeathwatchRealSheet";
 import { normalizeDwReal } from "../components/DeathwatchReal/dwRealData";
+import WrathGlorySheet from "../components/WrathGlory/WrathGlorySheet";
+import { normalizeWrathGlory } from "../components/WrathGlory/wrathGloryData";
+import DragonbaneSheet from "../components/Dragonbane/DragonbaneSheet";
+import { normalizeDragonbane } from "../components/Dragonbane/dragonbaneData";
+import CallOfCthulhuSheet from "../components/CallOfCthulhu/CallOfCthulhuSheet";
+import { normalizeCoc } from "../components/CallOfCthulhu/cocData";
 import {
   ARMOURS,
   CHARACTERISTICS,
@@ -54,6 +60,8 @@ import {
 } from "../utils/rpgSheets";
 
 const DEFAULT_TEMPLATE: Record<SheetType, TemplateId> = { dnd: "dnd-5e", custom: "custom" };
+/** Templates that render their own full game sheet instead of the generic fields. */
+const FULL_SHEET_TEMPLATES = new Set<TemplateId>(["deathwatch-real", "wrath-glory", "dragonbane", "call-of-cthulhu"]);
 
 function downloadJson(data: unknown, filename: string) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -352,7 +360,7 @@ export default function RoleplayingSheets() {
 
   const isDndSheet = selectedSheet.sheetType === "dnd";
   const isShootThem = selectedSheet.templateId === "shoot-them";
-  const isDwReal = selectedSheet.templateId === "deathwatch-real";
+  const hasFullSheet = FULL_SHEET_TEMPLATES.has(selectedSheet.templateId);
   const shootThem = selectedSheet.shootThem ?? createDefaultShootThem();
   const isDeathwatch = selectedSheet.templateId === "deathwatch";
   const characteristics = selectedSheet.characteristics ?? DEFAULT_CHARACTERISTICS;
@@ -428,7 +436,7 @@ export default function RoleplayingSheets() {
                 onClick={() => setSelectedId(sheet.id)}
               >
                 <span className="rpg-sheet-name">{sheet.name || "Unnamed Character"}</span>
-                <span className="rpg-sheet-meta">{sheet.className} • {sheetMode === "dnd" ? `Lvl ${sheet.level}` : `Role: ${sheet.level}`}</span>
+                <span className="rpg-sheet-meta">{sheet.className} • {sheetMode === "dnd" ? `Lvl ${sheet.level}` : templateFor(sheet.templateId).label}</span>
               </button>
               <button className="rpg-sheet-delete" onClick={() => deleteSheet(sheet.id)} aria-label={`Delete ${sheet.name || "sheet"}`}>
                 Delete
@@ -438,7 +446,7 @@ export default function RoleplayingSheets() {
         </aside>
 
         <section className="rpg-sheet-panel" ref={sheetPanelRef}>
-          {isDwReal && (
+          {selectedSheet.templateId === "deathwatch-real" && (
             <DeathwatchRealSheet
               name={selectedSheet.name}
               data={normalizeDwReal(selectedSheet.dwReal)}
@@ -446,8 +454,32 @@ export default function RoleplayingSheets() {
               onChange={(dwReal) => updateSelected({ dwReal, className: dwReal.speciality, level: dwReal.rank })}
             />
           )}
+          {selectedSheet.templateId === "wrath-glory" && (
+            <WrathGlorySheet
+              name={selectedSheet.name}
+              data={normalizeWrathGlory(selectedSheet.wrathGlory)}
+              onNameChange={(name) => updateSelected({ name })}
+              onChange={(wrathGlory) => updateSelected({ wrathGlory, className: wrathGlory.archetype, level: wrathGlory.tier })}
+            />
+          )}
+          {selectedSheet.templateId === "dragonbane" && (
+            <DragonbaneSheet
+              name={selectedSheet.name}
+              data={normalizeDragonbane(selectedSheet.dragonbane)}
+              onNameChange={(name) => updateSelected({ name })}
+              onChange={(dragonbane) => updateSelected({ dragonbane, className: dragonbane.profession, level: dragonbane.kin })}
+            />
+          )}
+          {selectedSheet.templateId === "call-of-cthulhu" && (
+            <CallOfCthulhuSheet
+              name={selectedSheet.name}
+              data={normalizeCoc(selectedSheet.coc)}
+              onNameChange={(name) => updateSelected({ name })}
+              onChange={(coc) => updateSelected({ coc, className: coc.occupation, level: coc.age })}
+            />
+          )}
 
-          {!isShootThem && !isDwReal && (
+          {!isShootThem && !hasFullSheet && (
             <>
               <div className="rpg-meta-grid">
                 <label className="rpg-field">
@@ -683,7 +715,7 @@ export default function RoleplayingSheets() {
 
           {isDeathwatch && customFieldsPanel}
 
-          {!isDndSheet && !isShootThem && !isDwReal && (
+          {!isDndSheet && !isShootThem && !hasFullSheet && (
             <div className="rpg-core-box rpg-builder-box">
               <div className="rpg-section-header">
                 <p className="rpg-panel-label">// sheet builder</p>
@@ -905,7 +937,7 @@ export default function RoleplayingSheets() {
             </div>
           )}
 
-          {!isDndSheet && !isDeathwatch && !isDwReal && customFieldsPanel}
+          {!isDndSheet && !isDeathwatch && !hasFullSheet && customFieldsPanel}
 
           <div className="rpg-core-box">
             <p className="rpg-panel-label">// adventure notes</p>

@@ -1,8 +1,16 @@
 import { createDefaultDwReal, normalizeDwReal, type DwRealData } from "../components/DeathwatchReal/dwRealData";
+import { createDefaultWrathGlory, normalizeWrathGlory, type WgData } from "../components/WrathGlory/wrathGloryData";
+import { createDefaultDragonbane, normalizeDragonbane, type DbData } from "../components/Dragonbane/dragonbaneData";
+import { createDefaultCoc, normalizeCoc, type CocData } from "../components/CallOfCthulhu/cocData";
+import { makeId } from "./makeId";
+
+export { makeId };
 
 export type StatKey = "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
 export type SheetType = "dnd" | "custom";
-export type TemplateId = "dnd-5e" | "cyberpunk-red" | "deathwatch" | "deathwatch-real" | "custom" | "shoot-them";
+export type TemplateId =
+  | "dnd-5e" | "cyberpunk-red" | "deathwatch" | "deathwatch-real" | "wrath-glory" | "dragonbane" | "call-of-cthulhu"
+  | "custom" | "shoot-them";
 export type CustomFieldType = "text" | "number" | "textarea" | "list";
 export type AbilityKey = "I can" | "Bang" | "Sounds" | "Mek" | "Fighting" | "Curios";
 export type ZoneKey = "head" | "chest" | "leftArm" | "rightArm" | "leftLeg" | "rightLeg";
@@ -97,6 +105,9 @@ export type CharacterSheet = {
   customFields: CustomField[];
   shootThem?: ShootThemExtras;
   dwReal?: DwRealData;
+  wrathGlory?: WgData;
+  dragonbane?: DbData;
+  coc?: CocData;
 };
 
 export const STORAGE_KEY = "rpg-character-sheets";
@@ -211,6 +222,9 @@ export const TEMPLATE_LIBRARY: { id: TemplateId; label: string; description: str
   { id: "cyberpunk-red", label: "Cyberpunk RED", description: "Street-level operative and gear tracker", sheetType: "custom", tag: "Sci-fi", themeClass: "rpg-template-card--cyberpunk" },
   { id: "deathwatch", label: "Deathwatch", description: "Adeptus Astartes field dossier", sheetType: "custom", tag: "Warhammer", themeClass: "rpg-template-card--deathwatch" },
   { id: "deathwatch-real", label: "Deathwatch Real", description: "The full FFG Deathwatch RPG Battle-Brother sheet", sheetType: "custom", tag: "Warhammer", themeClass: "rpg-template-card--deathwatch-real" },
+  { id: "wrath-glory", label: "Wrath & Glory", description: "Cubicle 7's 40k RPG: dice pools, Wrath and Glory", sheetType: "custom", tag: "Warhammer", themeClass: "rpg-template-card--wrath-glory" },
+  { id: "dragonbane", label: "Drakar och Demoner", description: "Dragonbane: kin, conditions and death rolls", sheetType: "custom", tag: "Fantasy", themeClass: "rpg-template-card--dragonbane" },
+  { id: "call-of-cthulhu", label: "Call of Cthulhu", description: "7th edition investigator with sanity and skill checks", sheetType: "custom", tag: "Horror", themeClass: "rpg-template-card--coc" },
   { id: "shoot-them", label: "Shoot Them", description: "Fast, gritty action sheet for hard choices and gunfire.", sheetType: "custom", tag: "Action", themeClass: "rpg-template-card--shoot" },
   { id: "custom", label: "Blank custom", description: "Build your own sheet from blocks", sheetType: "custom", tag: "Flexible", themeClass: "rpg-template-card--custom" },
 ];
@@ -242,10 +256,6 @@ const DEFAULT_STATS: Record<StatKey, number> = {
 
 const TEMPLATE_IDS = new Set<string>(TEMPLATE_LIBRARY.map((template) => template.id));
 const CUSTOM_FIELD_TYPES = new Set<string>(CUSTOM_FIELD_OPTIONS.map((option) => option.type));
-
-export function makeId() {
-  return `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
-}
 
 function field(type: CustomFieldType, label: string, value: string): CustomField {
   return { id: makeId(), type, label, value };
@@ -298,6 +308,17 @@ const GENERIC_CUSTOM_FIELDS = () => [
   field("textarea", "Description", "Describe the character or scene here."),
   field("list", "Traits", "Quick\nDriven\nObservant"),
 ];
+
+/** Full game sheets keep their data in their own field, so the generic fields only need placeholders. */
+const SYSTEM_SHEET_DEFAULTS: TemplateDefaults = {
+  name: "New Character", className: "", level: "", race: "", background: "", alignment: "",
+  hp: "", ac: "", speed: "", initiative: "", proficiency: "",
+  traits: [],
+  inventory: [],
+  notes: "",
+  attacks: () => [],
+  customFields: () => [],
+};
 
 const TEMPLATE_DEFAULTS: Record<TemplateId, TemplateDefaults> = {
   "dnd-5e": {
@@ -354,6 +375,33 @@ const TEMPLATE_DEFAULTS: Record<TemplateId, TemplateDefaults> = {
     extras: () => {
       const dwReal = createDefaultDwReal();
       return { dwReal, className: dwReal.speciality, level: dwReal.rank };
+    },
+  },
+  "wrath-glory": {
+    ...SYSTEM_SHEET_DEFAULTS,
+    name: "New Agent of the Throne",
+    notes: "Mission briefing, contacts and the Wrath you owe the GM.",
+    extras: () => {
+      const wrathGlory = createDefaultWrathGlory();
+      return { wrathGlory, className: wrathGlory.archetype, level: wrathGlory.tier };
+    },
+  },
+  dragonbane: {
+    ...SYSTEM_SHEET_DEFAULTS,
+    name: "New Adventurer",
+    notes: "Where you've been, who owes you money, and which dragon you're avoiding.",
+    extras: () => {
+      const dragonbane = createDefaultDragonbane();
+      return { dragonbane, className: dragonbane.profession, level: dragonbane.kin };
+    },
+  },
+  "call-of-cthulhu": {
+    ...SYSTEM_SHEET_DEFAULTS,
+    name: "New Investigator",
+    notes: "Clues, leads and things best left unread.",
+    extras: () => {
+      const coc = createDefaultCoc();
+      return { coc, className: coc.occupation, level: coc.age };
     },
   },
   "shoot-them": {
@@ -459,6 +507,15 @@ export function normalizeSheet(raw: Partial<CharacterSheet>): CharacterSheet {
   }
   if (templateId === "deathwatch-real") {
     sheet.dwReal = normalizeDwReal(raw.dwReal);
+  }
+  if (templateId === "wrath-glory") {
+    sheet.wrathGlory = normalizeWrathGlory(raw.wrathGlory);
+  }
+  if (templateId === "dragonbane") {
+    sheet.dragonbane = normalizeDragonbane(raw.dragonbane);
+  }
+  if (templateId === "call-of-cthulhu") {
+    sheet.coc = normalizeCoc(raw.coc);
   }
   return sheet;
 }

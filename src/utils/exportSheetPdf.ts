@@ -11,6 +11,7 @@ const BREAK_SELECTORS = [
   ".rpg-attack-row",
   ".rpg-weapon-row",
   ".rpg-dw-weapon-row",
+  ".rpg-row-table",
   ".rpg-custom-item",
 ].join(",");
 
@@ -60,7 +61,7 @@ export async function exportSheetPdf(element: HTMLElement, fileName: string) {
       useCORS: true,
       // html2canvas ignores text-align inside form controls, so tile values are swapped for plain text in the capture copy.
       onclone: (doc) => {
-        doc.querySelectorAll<HTMLInputElement | HTMLSelectElement>(".rpg-score-box input, .rpg-score-box select").forEach((control) => {
+        doc.querySelectorAll<HTMLInputElement | HTMLSelectElement>(".rpg-score-box input:not([type=checkbox]), .rpg-score-box select").forEach((control) => {
           const value = doc.createElement("span");
           const isSelect = control.tagName === "SELECT";
           value.className = isSelect ? "rpg-print-value rpg-print-value--small" : "rpg-print-value";
