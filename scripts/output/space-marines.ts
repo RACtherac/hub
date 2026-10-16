@@ -41,17 +41,24 @@ export const spaceMarinesUnits: Unit[] = [
     imageCredit: "Oscar Hugosson",
     abilities: [
       {
-        name: "Thunderous Impact",
-        description: "Each time a model in this unit makes a melee attack, if this unit made a Charge move this turn, improve the Strength and Damage characteristics of that attack by 1.",
+        name: "Full-throttle Assault",
+        description: "If this unit made a charge move this turn, this unit’s: Thunder Hammer weapons have +1 to hit rolls and [SUSTAINED HITS 1]. Other melee weapons have +1 D and [SUSTAINED HITS 1].",
       },
     ],
     defaultWargear: [
-      { id: "heavy-bolt-pistol", name: "Heavy bolt pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "twin-bolt-rifle", name: "Twin bolt rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["TWIN-LINKED"] }] },
-      { id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }] },
+      { id: "heavy-bolt-pistol", name: "Heavy Bolt Pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["CLOSE-QUARTERS"] }] },
+      { id: "twin-bolt-rifle", name: "Twin Bolt Rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "5", ap: "-1", damage: "1", keywords: ["TWIN-LINKED", "ASSAULT", "RAPID FIRE 2"] }] },
+      { id: "astartes-chainsword", name: "Chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-1", damage: "1" }] },
     ],
-    wargear: [],
-    ledBy: ["chaplain-on-bike","suboden-khan"],
+    wargearGroups: [
+      ["power-weapon", "thunder-hammer"],
+    ],
+    wargear: [
+      { id: "plasma-pistol", name: "► Plasma Pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", replacesDefaultWargear: ["heavy-bolt-pistol"], countable: true, maxCountByModelCount: { 3: 1, 6: 2 }, profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["CLOSE-QUARTERS"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["CLOSE-QUARTERS", "HAZARDOUS"] }] },
+      { id: "power-weapon", name: "Power Weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", sergeantOnly: true, replacesDefaultWargear: ["astartes-chainsword"], profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "thunder-hammer", name: "Thunder Hammer", image: "", sergeantOnly: true, replacesDefaultWargear: ["astartes-chainsword"], profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "3", keywords: ["DEVASTATING WOUNDS"] }] },
+    ],
+    ledBy: ["captain-on-bike","chaplain-on-bike","suboden-khan"],
   },
 
   {
@@ -153,13 +160,13 @@ export const spaceMarinesUnits: Unit[] = [
     category: "battleline",
     image5: "/Warhammerimages/SpaceMarine/intercessor5.png",
     image10: "/Warhammerimages/SpaceMarine/intercessor10.png",
-    points: 80,
-    pointsByModelCount: { 5: 80, 10: 160 },
+    points: 85,
+    pointsByModelCount: { 5: 85, 10: 170 },
     notes: [
       {
         id: "grenade-launcher-swap",
-        text: "One out of five models' bolt rifle can be swapped for an Astartes grenade launcher",
-        textByModelCount: { 10: "2 out of 10 models' bolt rifle can be swapped for an Astartes grenade launcher" },
+        text: "1 Intercessor model can be equipped with 1 Grenade Launcher",
+        textByModelCount: { 10: "2 Intercessor models can be equipped with 1 Grenade Launcher each" },
         checkbox: true,
         image: "/Warhammerimages/SpaceMarine/Intercessor-granade.png",
         triggersWargear: ["astartes-grenade-launcher"],
@@ -167,80 +174,79 @@ export const spaceMarinesUnits: Unit[] = [
     ],
     abilities: [
       {
-        name: "Objective Secured",
-        description: "If you control an objective marker at the end of your Command phase and this unit is within range of that objective marker, that objective marker remains under your control, even if you have no models within range of it, until your opponent controls it at the start or end of any turn.",
+        name: "Bolter Discipline",
+        description: "In your Shooting phase, if any of the following apply, this unit’s ranged attacks have +1 to hit rolls: This unit is within range of an objective. The target of that attack is within range of an objective.",
       },
       {
-        name: "Target Elimination",
-        description: "Each time this unit is selected to shoot, it can use this ability. If it does, until the end of the phase, add 2 to the Attacks characteristic of bolt rifles equipped by models in this unit and you can only select one enemy unit as the target of all of this unit's attacks.",
+        name: "Tactical Mainstay",
+        description: "Being engaged/battle-shocked does not prevent this unit from being eligible to start an action. When this unit starts an action, that action does not prevent this unit from being eligible to shoot.",
       },
     ],
     defaultWargear: [
       {
-        id: "bolt-pistol", name: "Bolt pistol", image: "",
-        profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }],
+        id: "bolt-pistol", name: "Bolt Pistol", image: "",
+        profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["CLOSE-QUARTERS"] }],
       },
       {
-        id: "bolt-rifle", name: "Bolt rifle", image: "",
-        profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["RAPID FIRE 1"] }],
+        id: "bolt-rifle", name: "► Bolt Rifle", image: "",
+        profiles: [
+          { profileName: "focused fire", range: '24"', attacks: "1", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["RAPID FIRE 1", "HEAVY"] },
+          { profileName: "saturation", range: '24"', attacks: "2", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["ASSAULT", "RAPID FIRE 1"] },
+        ],
       },
       {
-        id: "close-combat-weapon", name: "Close combat weapon", image: "",
-        profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "4", ap: "0", damage: "1" }],
+        id: "knives-and-fists", name: "Knives and Fists", image: "",
+        profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "0", damage: "1" }],
       },
     ],
     wargearGroups: [
-      ["hand-flamer", "plasma-pistol", "bolt-rifle-wargear", "grenade-bolt-rifle"],
+      ["rifle-swap-chainsword", "hand-flamer", "plasma-pistol", "rifle-swap-power-weapon"],
       ["astartes-chainsword", "power-fist", "power-weapon", "thunder-hammer"],
     ],
     wargear: [
       {
-        id: "astartes-grenade-launcher", name: "Astartes grenade launcher", image: "",
+        id: "astartes-grenade-launcher", name: "► Grenade Launcher", image: "",
         countable: true,
         maxCountByModelCount: { 5: 1, 10: 2 },
         profiles: [
-          { profileName: "Frag", range: '30"', attacks: "D3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] },
-          { profileName: "Krak", range: '30"', attacks: "1", skill: "3+", strength: "9", ap: "-2", damage: "D3" },
+          { profileName: "frag", range: '24"', attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["BLAST 1"] },
+          { profileName: "krak", range: '24"', attacks: "1", skill: "3+", strength: "10", ap: "-2", damage: "3", keywords: ["RAPID FIRE 1"] },
         ],
       },
       {
-        id: "bolt-rifle-wargear", name: "Bolt rifle", image: "", sergeantOnly: true,
-        profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["RAPID FIRE 1"] }],
+        id: "rifle-swap-chainsword", name: "Chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png", sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "5", ap: "-1", damage: "1" }],
       },
       {
-        id: "grenade-bolt-rifle", name: "Grenade bolt rifle", image: "", sergeantOnly: true,
-        consumesNoteWargear: { noteId: "grenade-launcher-swap", wargearId: "astartes-grenade-launcher" },
+        id: "hand-flamer", name: "Hand Flamer", image: "", sergeantOnly: true,
+        profiles: [{ range: '9"', attacks: "3", skill: "N/A", strength: "4", ap: "0", damage: "1", keywords: ["CLOSE-QUARTERS", "TORRENT"] }],
+      },
+      {
+        id: "plasma-pistol", name: "► Plasma Pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", sergeantOnly: true,
         profiles: [
-          { profileName: "Frag", range: '30"', attacks: "D3", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["BLAST"] },
-          { profileName: "Krak", range: '30"', attacks: "1", skill: "3+", strength: "9", ap: "-2", damage: "D3" },
+          { profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["CLOSE-QUARTERS"] },
+          { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["CLOSE-QUARTERS", "HAZARDOUS"] },
         ],
       },
       {
-        id: "hand-flamer", name: "Hand flamer", image: "", sergeantOnly: true,
-        profiles: [{ range: '12"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }],
+        id: "rifle-swap-power-weapon", name: "Power Weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }],
       },
       {
-        id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", sergeantOnly: true,
-        profiles: [
-          { profileName: "Standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] },
-          { profileName: "Supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["HAZARDOUS", "PISTOL"] },
-        ],
+        id: "astartes-chainsword", name: "Chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png", sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "5", ap: "-1", damage: "1" }],
       },
       {
-        id: "astartes-chainsword", name: "Astartes chainsword", image: "/Warhammerimages/SpaceMarine/Space marine chainsword.png", sergeantOnly: true,
-        profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-1", damage: "1" }],
-      },
-      {
-        id: "power-fist", name: "Power fist", image: "", sergeantOnly: true,
+        id: "power-fist", name: "Power Fist", image: "", sergeantOnly: true,
         profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }],
       },
       {
-        id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", sergeantOnly: true,
-        profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "4", ap: "-2", damage: "1" }],
+        id: "power-weapon", name: "Power Weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "-2", damage: "1" }],
       },
       {
-        id: "thunder-hammer", name: "Thunder hammer", image: "", sergeantOnly: true,
-        profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "2", keywords: ["DEVASTATING WOUNDS"] }],
+        id: "thunder-hammer", name: "Thunder Hammer", image: "", sergeantOnly: true,
+        profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "3", keywords: ["DEVASTATING WOUNDS"] }],
       },
     ],
     ledBy: ["ancient","apothecary","captain","chaplain","judiciar","korsarro-khan","librarian","lieutenant","techmarine","inquisitor","inquisitor-coteaz","inquisitor-draxus","inquisitor-greyfax"],
@@ -552,7 +558,7 @@ export const spaceMarinesUnits: Unit[] = [
 
   {
     id: "eradicator-squad",
-    name: "Eradicator Squad",
+    name: "Eradicator Squad With Melta Rifles",
     faction: "space-marines",
     category: "infantry",
     modelCountOptions: [3, 6],
@@ -569,6 +575,28 @@ export const spaceMarinesUnits: Unit[] = [
       {
         name: "Total Obliteration",
         description: "Each time a ranged attack made by a model in this unit targets a MONSTER or VEHICLE model, you can re-roll the Hit roll, you can re-roll the Wound roll and you can re-roll the Damage roll.",
+      },
+    ],
+    ledBy: ["apothecary-biologis", "captain-in-gravis-armour"],
+  },
+
+  {
+    id: "eradicator-squad-with-heavy-bolters",
+    name: "Eradicator Squad With Heavy Bolters",
+    faction: "space-marines",
+    category: "infantry",
+    modelCountOptions: [3, 6],
+    pointsByModelCount: { 3: 100, 6: 215 },
+    defaultWargear: [
+      { id: "bolt-pistol", name: "Bolt Pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["CLOSE-QUARTERS"] }] },
+      { id: "heavy-bolter", name: "Heavy Bolter", image: "", profiles: [{ range: '36"', attacks: "3", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["SUSTAINED HITS 1", "RAPID FIRE 2", "HEAVY"] }] },
+      { id: "ceramite-fists", name: "Ceramite Fists", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Overlapping Destruction",
+        description: "In your Shooting phase, you can select one enemy unit. This unit’s Heavy Bolter weapons that target that enemy unit have [BLAST 1].",
       },
     ],
     ledBy: ["apothecary-biologis", "captain-in-gravis-armour"],
@@ -970,17 +998,29 @@ export const spaceMarinesUnits: Unit[] = [
     name: "Vanguard Veteran Squad With Jump Packs",
     faction: "space-marines",
     category: "infantry",
+    modelCountOptions: [5, 10],
     points: 110,
+    pointsByModelCount: { 5: 110, 10: 220 },
+    abilities: [
+      {
+        name: "Vanguard Assault",
+        description: "If this unit made a charge move this turn, this unit’s melee attacks have +1 A.",
+      },
+    ],
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "" },
-      { id: "vanguard-veteran-weapon", name: "Vanguard Veteran weapon", image: "" },
+      { id: "heavy-bolt-pistol", name: "Heavy Bolt Pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["CLOSE-QUARTERS"] }] },
+      { id: "master-crafted-power-weapon", name: "Master-crafted Power Weapon", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "5", ap: "-2", damage: "2" }] },
+      { id: "relic-blade", name: "Relic Blade (Sergeant)", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "6", ap: "-2", damage: "2", keywords: ["CLEAVE 1", "LETHAL HITS: NON-MONSTER/VEHICLE"] }] },
+    ],
+    wargearGroups: [
+      ["power-fist", "thunder-hammer"],
     ],
     wargear: [
-      { id: "grav-pistol", name: "Grav-pistol", image: "" },
-      { id: "hand-flamer", name: "Hand flamer", image: "" },
-      { id: "inferno-pistol", name: "Inferno pistol", image: "" },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png" },
-
+      { id: "power-fist", name: "Power Fist", image: "", sergeantOnly: true, replacesDefaultWargear: ["relic-blade"], profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
+      { id: "thunder-hammer", name: "Thunder Hammer", image: "", sergeantOnly: true, replacesDefaultWargear: ["relic-blade"], profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "8", ap: "-2", damage: "3", keywords: ["DEVASTATING WOUNDS"] }] },
+      { id: "sergeant-plasma-pistol", name: "► Plasma Pistol (Sergeant)", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", sergeantOnly: true, profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["CLOSE-QUARTERS"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["CLOSE-QUARTERS", "HAZARDOUS"] }] },
+      { id: "plasma-pistol", name: "► Plasma Pistol", image: "/Warhammerimages/SpaceMarine/Space marine plasma pistol.png", countable: true, maxCountByModelCount: { 5: 2, 10: 4 }, profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["CLOSE-QUARTERS"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["CLOSE-QUARTERS", "HAZARDOUS"] }] },
+      { id: "combat-shield", name: "Combat Shield", image: "", countable: true, maxCountByModelCount: { 5: 5, 10: 10 }, maxCountReducedByWargear: ["plasma-pistol", "sergeant-plasma-pistol"], note: "Combat Shield: This model has 5+ InSv." },
     ],
     ledBy: ["captain-with-jump-pack","chaplain-with-jump-pack"],
   },
@@ -1325,6 +1365,34 @@ export const spaceMarinesUnits: Unit[] = [
   },
 
   {
+    id: "storm-speeder",
+    name: "Storm Speeder",
+    faction: "space-marines",
+    category: "vehicle",
+    modelCountOptions: [1],
+    points: 105,
+    abilities: [
+      {
+        name: "Purgation Run",
+        description: "In your Shooting phase, when this unit has shot, you can use this ability. If you do: This unit can make a normal move of up to D6\". This unit is not eligible to declare a charge until the end of the turn.",
+      },
+    ],
+    defaultWargear: [
+      { id: "multi-melta", name: "Multi-melta", image: "", profiles: [{ range: '18"', attacks: "2", skill: "3+", strength: "10", ap: "-3", damage: "D3+2", keywords: ["MELTA 3"] }] },
+      { id: "stormfury-missile-launcher", name: "Stormfury Missile Launcher", image: "", profiles: [{ range: '48"', attacks: "1", skill: "3+", strength: "10", ap: "-3", damage: "D3+3" }] },
+      { id: "armoured-impact", name: "Armoured Impact", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
+    ],
+    wargearGroups: [
+      ["onslaught-gatling-cannon", "pyrecannon"],
+    ],
+    wargear: [
+      { id: "onslaught-gatling-cannon", name: "Onslaught Gatling Cannon", image: "", profiles: [{ range: '24"', attacks: "8", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["DEVASTATING WOUNDS: NON-MONSTER/VEHICLE"] }] },
+      { id: "pyrecannon", name: "Pyrecannon", image: "", profiles: [{ range: '12"', attacks: "4", skill: "N/A", strength: "6", ap: "-1", damage: "1", keywords: ["BLAST 2", "TORRENT"] }] },
+    ],
+    ledBy: [],
+  },
+
+  {
     id: "storm-speeder-hailstrike",
     name: "Storm Speeder Hailstrike",
     faction: "space-marines",
@@ -1442,6 +1510,45 @@ export const spaceMarinesUnits: Unit[] = [
     wargear: [
       { id: "hunter-killer-missile", name: "Hunter-killer missile", image: "" },
       { id: "storm-bolter", name: "Storm bolter", image: "" },
+    ],
+    ledBy: [],
+  },
+
+  {
+    id: "corvus-blackstar",
+    name: "Corvus Blackstar",
+    faction: "space-marines",
+    category: "transport",
+    modelCountOptions: [1],
+    points: 180,
+    transportCapacity: 12,
+    abilities: [
+      {
+        name: "Blackstar Cluster Launcher",
+        description: "In your Movement phase, when this unit ends a normal move, select up to one enemy unit this unit moved over during that move and roll six D6: For each 4+, that unit suffers 1 mortal wound.",
+      },
+      {
+        name: "Auspex Array",
+        description: "Ranged weapons equipped by the bearer have the [IGNORES COVER] ability.",
+      },
+      {
+        name: "Transport",
+        description: "This model has a transport capacity of 12 DEATHWATCH INFANTRY models. Each GRAVIS/JUMP PACK/TERMINATOR model takes up the space of 2 models.",
+      },
+    ],
+    defaultWargear: [
+      { id: "armoured-hull", name: "Armoured Hull", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
+    ],
+    wargearGroups: [
+      ["blackstar-rocket-launcher", "stormstrike-missile-launcher"],
+      ["twin-assault-cannon", "twin-lascannon"],
+    ],
+    wargear: [
+      { id: "blackstar-rocket-launcher", name: "2x Blackstar Rocket Launcher", image: "", profiles: [{ range: '30"', attacks: "4", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST 1"] }] },
+      { id: "stormstrike-missile-launcher", name: "2x Stormstrike Missile Launcher", image: "", profiles: [{ range: '48"', attacks: "1", skill: "3+", strength: "10", ap: "-2", damage: "3" }] },
+      { id: "twin-assault-cannon", name: "Twin Assault Cannon", image: "", profiles: [{ range: '24"', attacks: "6", skill: "3+", strength: "6", ap: "-2", damage: "1", keywords: ["TWIN-LINKED", "SUSTAINED HITS 1"] }] },
+      { id: "twin-lascannon", name: "Twin Lascannon", image: "", profiles: [{ range: '48"', attacks: "1", skill: "3+", strength: "12", ap: "-3", damage: "D3+3", keywords: ["TWIN-LINKED"] }] },
+      { id: "hurricane-bolter", name: "Hurricane Bolter", image: "", profiles: [{ range: '24"', attacks: "6", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["TWIN-LINKED", "RAPID FIRE 6"] }] },
     ],
     ledBy: [],
   },

@@ -7,29 +7,29 @@ export const spaceMarinesCharacters: Character[] = [
     name: "Ancient",
     faction: "space-marines",
     image: "",
-    points: 50,
+    points: 40,
     canAttachTo: [],
     allowsSecondCharacter: true,
     secondCharacterOptions: ["ancient", "ancient-in-terminator-armour", "bladeguard-ancient", "apothecary", "apothecary-biologis", "lieutenant", "lieutenant-in-phobos-armour", "lieutenant-in-reiver-armour", "lieutenant-with-combi-weapon"],
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt Pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "close-combat-weapon", name: "Close combat weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "4", ap: "0", damage: "1" }] },
+      { id: "bolt-pistol", name: "Bolt Pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["CLOSE-QUARTERS"] }] },
+      { id: "ceramite-fists", name: "Ceramite Fists", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "3+", strength: "5", ap: "0", damage: "1" }] },
     ],
     wargear: [
-      { id: "bolt-rifle", name: "Bolt rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "HEAVY"] }] },
-      { id: "power-weapon", name: "Power weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "1" }] },
+      { id: "bolt-rifle", name: "► Bolt Rifle", image: "", profiles: [{ profileName: "focused fire", range: '24"', attacks: "1", skill: "3+", strength: "6", ap: "-1", damage: "2", keywords: ["RAPID FIRE 1", "HEAVY"] }, { profileName: "saturation", range: '24"', attacks: "2", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["RAPID FIRE 1", "ASSAULT"] }] },
+      { id: "power-weapon", name: "Power Weapon", image: "/Warhammerimages/SpaceMarine/Power sword.png", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "5", ap: "-2", damage: "1" }] },
     ],
     wargearGroups: [
       ["bolt-rifle", "power-weapon"],
     ],
     abilities: [
       {
-        name: "Astartes Banner",
-        description: "While this model is leading a unit, add 1 to the Objective Control characteristic of models in that unit.",
+        name: "Raise the Banner",
+        description: "At the end of your Movement phase, if this unit is controlling an objective, that objective is secured.",
       },
       {
-        name: "Unbreakable Duty",
-        description: "While this model is within range of an objective marker and/or within 6\" of the centre of the battlefield, this model has the Feel No Pain 4+ ability.",
+        name: "Honour of the Company",
+        description: "This unit has +1 OC.",
       },
     ],
   },
@@ -175,6 +175,38 @@ export const spaceMarinesCharacters: Character[] = [
       { id: "master-crafted-power-weapon", name: "Master-crafted power weapon", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "5", ap: "-2", damage: "2" }] },
       { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
       { id: "relic-shield", name: "Relic Shield", image: "", note: "The bearer has a Wounds characteristic of 6." },
+    ],
+  },
+
+  {
+    id: "captain-on-bike",
+    name: "Captain On Bike",
+    faction: "space-marines",
+    image: "",
+    points: 110,
+    canAttachTo: ["outrider-squad"],
+    defaultWargear: [
+      { id: "twin-bolt-rifle", name: "Twin Bolt Rifle", image: "", profiles: [{ range: '24"', attacks: "2", skill: "2+", strength: "5", ap: "-1", damage: "1", keywords: ["TWIN-LINKED", "ASSAULT", "RAPID FIRE 2"] }] },
+    ],
+    wargear: [
+      { id: "heavy-bolt-pistol", name: "Heavy Bolt Pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "2+", strength: "5", ap: "-1", damage: "1", keywords: ["CLOSE-QUARTERS"] }] },
+      { id: "plasma-pistol", name: "► Plasma Pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "2+", strength: "7", ap: "-2", damage: "1", keywords: ["CLOSE-QUARTERS"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "2+", strength: "8", ap: "-3", damage: "2", keywords: ["CLOSE-QUARTERS", "HAZARDOUS"] }] },
+      { id: "master-crafted-power-weapon", name: "Master-crafted Power Weapon", image: "", profiles: [{ range: "Melee", attacks: "6", skill: "2+", strength: "6", ap: "-2", damage: "2" }] },
+      { id: "thunder-hammer", name: "Thunder Hammer", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "3+", strength: "8", ap: "-2", damage: "3", keywords: ["DEVASTATING WOUNDS"] }] },
+    ],
+    wargearGroups: [
+      ["heavy-bolt-pistol", "plasma-pistol"],
+      ["master-crafted-power-weapon", "thunder-hammer"],
+    ],
+    abilities: [
+      {
+        name: "Strategic Acumen",
+        description: "In your Command phase, you can use this ability. If you do, select one combat doctrine to be active for this unit until the start of your next Command phase.",
+      },
+      {
+        name: "Into the Fray",
+        description: "If this unit made a charge move this turn, this unit’s melee attacks have [CLEAVE 1].",
+      },
     ],
   },
 
@@ -418,21 +450,22 @@ export const spaceMarinesCharacters: Character[] = [
     faction: "space-marines",
     image: "",
     points: 75,
-    canAttachTo: ["assault-intercessors-with-jump-packs"],
+    canAttachTo: ["assault-intercessors-with-jump-packs", "vanguard-veteran-squad-with-jump-packs"],
+    abilities: [
+      {
+        name: "Litany of Hate",
+        description: "This unit’s melee attacks have [LANCE].",
+      },
+      {
+        name: "Exhortation of Rage",
+        description: "While this unit is at or below half-strength, this unit’s melee attacks can re-roll wound rolls.",
+      },
+    ],
     defaultWargear: [
-      { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
-      { id: "crozius-arcanum", name: "Crozius arcanum", image: "", profiles: [{ range: "Melee", attacks: "4", skill: "2+", strength: "6", ap: "-1", damage: "2" }] },
+      { id: "absolvor-bolt-pistol", name: "Absolvor Bolt Pistol", image: "", profiles: [{ range: '18"', attacks: "1", skill: "3+", strength: "5", ap: "-2", damage: "2", keywords: ["CLOSE-QUARTERS"] }] },
+      { id: "crozius-arcanum", name: "Crozius Arcanum", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "6", ap: "-1", damage: "2", keywords: ["CLEAVE 1"] }] },
     ],
-    wargear: [
-      { id: "boltgun", name: "Boltgun", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
-      { id: "combi-weapon", name: "Combi-weapon", image: "", profiles: [{ range: '24"', attacks: "2", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 1"] }] },
-      { id: "grav-pistol", name: "Grav-pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "5", ap: "-3", damage: "1", keywords: ["PISTOL", "ANTI-VEHICLE 2+"] }] },
-      { id: "hand-flamer", name: "Hand flamer", image: "", profiles: [{ range: '6"', attacks: "D6", skill: "N/A", strength: "3", ap: "0", damage: "1", keywords: ["IGNORES COVER", "PISTOL", "TORRENT"] }] },
-      { id: "inferno-pistol", name: "Inferno pistol", image: "", profiles: [{ range: '6"', attacks: "1", skill: "3+", strength: "8", ap: "-4", damage: "D3", keywords: ["MELTA 2", "PISTOL"] }] },
-      { id: "plasma-pistol", name: "Plasma pistol", image: "", profiles: [{ profileName: "standard", range: '12"', attacks: "1", skill: "3+", strength: "7", ap: "-2", damage: "1", keywords: ["PISTOL"] }, { profileName: "supercharge", range: '12"', attacks: "1", skill: "3+", strength: "8", ap: "-3", damage: "2", keywords: ["PISTOL", "HAZARDOUS"] }] },
-      { id: "storm-bolter", name: "Storm bolter", image: "", profiles: [{ range: '24"', attacks: "4", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["RAPID FIRE 2"] }] },
-      { id: "power-fist", name: "Power fist", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "3+", strength: "8", ap: "-2", damage: "2" }] },
-    ],
+    wargear: [],
   },
 
   {
@@ -464,16 +497,24 @@ export const spaceMarinesCharacters: Character[] = [
     name: "Librarian",
     faction: "space-marines",
     image: "",
-    points: 65,
+    points: 75,
     canAttachTo: [],
     abilities: [
       {
-        name: "Psychic Hood",
-        description: "While this model is leading a unit, models in that unit have the Feel No Pain 4+ ability against Psychic Attacks.",
+        name: "Librarian (psyker level 1)",
+        description: "This model has the psychic abilities listed in the Psychic Abilities section.",
       },
       {
-        name: "Mental Fortress (Psychic)",
-        description: "While this model is leading a unit, models in that unit have a 4+ invulnerable save.",
+        name: "Psychic Hood (Psychic)",
+        description: "This unit has Feel No Pain 4+ against psychic attacks.",
+      },
+      {
+        name: "Veil of Time (psychic level 1)",
+        description: "When this unit is selected to make an advance move, if this unit is not battle-shocked, you can make a psychic roll for this unit by rolling one D6. If you do: On a 1, this unit is battle-shocked. This unit can change that advance roll to a 6.",
+      },
+      {
+        name: "Force Dome (psychic level 1)",
+        description: "In your Movement phase, if this unit is not battle-shocked, you can make a psychic roll for this unit by rolling one D6. If you do: On a 1, this unit is battle-shocked. This unit has 4+ InSv until the start of your next turn.",
       },
     ],
     defaultWargear: [
@@ -494,7 +535,7 @@ export const spaceMarinesCharacters: Character[] = [
     name: "Librarian In Phobos Armour",
     faction: "space-marines",
     image: "",
-    points: 70,
+    points: 75,
     canAttachTo: ["eliminator-squad", "incursor-squad", "infiltrator-squad", "reiver-squad"],
     defaultWargear: [
       { id: "bolt-pistol", name: "Bolt pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "3+", strength: "4", ap: "0", damage: "1", keywords: ["PISTOL"] }] },
@@ -509,12 +550,20 @@ export const spaceMarinesCharacters: Character[] = [
     wargear: [],
     abilities: [
       {
-        name: "Psychic Hood",
-        description: "While this model is leading a unit, models in that unit have the Feel No Pain 4+ ability against Psychic Attacks.",
+        name: "Librarian (psyker level 1)",
+        description: "This model has the psychic abilities listed in the Psychic Abilities section.",
       },
       {
-        name: "Shrouding",
-        description: "(Psychic): While this model is leading a unit, models in that unit have the Stealth ability and that unit cannot be targeted by ranged attacks unless the attacking model is within 12\".",
+        name: "Psychic Hood (Psychic)",
+        description: "This unit has Feel No Pain 4+ against psychic attacks.",
+      },
+      {
+        name: "Shrouding (psychic level 1)",
+        description: "When an enemy unit targets this unit, if this unit is not battle-shocked, you can make a psychic roll for this unit by rolling one D6. If you do: On a 1, this unit is battle-shocked. Attacks that target this unit have -1 to hit rolls until the end of the phase.",
+      },
+      {
+        name: "Soul Sight (psychic level 1)",
+        description: "In your Shooting phase, if this unit is not battle-shocked, you can make a psychic roll for this unit by rolling one D6. If you do: On a 1, this unit is battle-shocked. Select one visible enemy unit. Ranged attacks that target that enemy unit have [IGNORES COVER].",
       },
     ],
   },
@@ -524,7 +573,7 @@ export const spaceMarinesCharacters: Character[] = [
     name: "Librarian In Terminator Armour",
     faction: "space-marines",
     image: "",
-    points: 75,
+    points: 80,
     canAttachTo: ["terminator-assault-squad", "terminator-squad"],
     defaultWargear: [
       {
@@ -545,12 +594,20 @@ export const spaceMarinesCharacters: Character[] = [
     ],
     abilities: [
       {
-        name: "Psychic Hood",
-        description: "While this model is leading a unit, models in that unit have the Feel No Pain 4+ ability against Psychic Attacks.",
+        name: "Librarian (psyker level 1)",
+        description: "This model has the psychic abilities listed in the Psychic Abilities section.",
       },
       {
-        name: "Veil of Time (Psychic)",
-        description: "While this model is leading a unit, weapons equipped by models in that unit have the [SUSTAINED HITS 1] ability.",
+        name: "Psychic Hood (Psychic)",
+        description: "This unit has Feel No Pain 4+ against psychic attacks.",
+      },
+      {
+        name: "Might of Heroes (psychic level 1)",
+        description: "In the Fight phase, if this unit is not battle-shocked, you can make a psychic roll for this unit by rolling one D6. If you do: On a 1, this unit is battle-shocked. This unit’s melee attacks have +2 S.",
+      },
+      {
+        name: "Thunderous Force (psychic level 1)",
+        description: "In your Shooting phase, if this unit is not battle-shocked, you can make a psychic roll for this unit by rolling one D6. If you do: On a 1, this unit is battle-shocked. This unit’s ranged attacks have +6\" R.",
       },
     ],
   },

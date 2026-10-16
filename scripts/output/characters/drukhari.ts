@@ -91,9 +91,9 @@ export const drukhariCharacters: Character[] = [
     name: "Khaarseth",
     faction: "drukhari",
     image: "",
-    points: 95,
+    points: 80,
     modelCountOptions: [1],
-    pointsByModelCount: { 1: 95 },
+    pointsByModelCount: { 1: 80 },
     canAttachTo: ["corsair-voidreavers", "corsair-voidscarred"],
     defaultWargear: [
       { id: "khaarseth-dread-of-the-deep-void", name: "Dread of the Deep Void", image: "", profiles: [{ range: '24"', attacks: "D6+2", skill: "3+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 2+", "BLAST", "HAZARDOUS", "IGNORES COVER", "PSYCHIC"] }] },
@@ -108,6 +108,33 @@ export const drukhariCharacters: Character[] = [
       {
         name: "Fury of the Void (Psychic)",
         description: "In your Shooting phase, after this model's unit has shot, select one enemy unit hit by one or more attacks made with this model's Dread of the Deep Void. Until the end of the turn, that unit is riven. Each time an AELDARI model from your army makes an attack that targets a riven unit, add 1 to the Strength characteristic of that attack.",
+      },
+    ],
+  },
+
+  {
+    id: "prince-yriel",
+    name: "Prince Yriel",
+    faction: "drukhari",
+    image: "",
+    points: 95,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 95 },
+    canAttachTo: ["corsair-voidreavers", "corsair-voidscarred"],
+    defaultWargear: [
+      { id: "yriel-eye-of-wrath", name: "Eye of Wrath", image: "", profiles: [{ range: '6"', attacks: "3", skill: "2+", strength: "6", ap: "-2", damage: "2", keywords: ["ASSAULT", "PISTOL"] }] },
+      { id: "yriel-shuriken-pistol", name: "Shuriken pistol", image: "", profiles: [{ range: '12"', attacks: "1", skill: "2+", strength: "4", ap: "-1", damage: "1", keywords: ["ASSAULT", "PISTOL"] }] },
+      { id: "yriel-spear-of-twilight", name: "Spear of Twilight", image: "", profiles: [{ range: "Melee", attacks: "5", skill: "2+", strength: "7", ap: "-3", damage: "3", keywords: ["LANCE"] }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Piratical Hero",
+        description: "While this model is leading a unit, each time a model in that unit makes an attack, that attack has the [SUSTAINED HITS 1] ability and add 1 to the Hit roll.",
+      },
+      {
+        name: "Prince of Corsairs",
+        description: "After both players have deployed their armies, if this unit is on the battlefield (or any TRANSPORT it is embarked within is on the battlefield), select up to three AELDARI units from your army and redeploy them. When doing so, you can set those units up in Strategic Reserves, regardless of how many units are already in Strategic Reserves.",
       },
     ],
   },

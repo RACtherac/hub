@@ -418,13 +418,37 @@ export const imperialAgentsUnits: Unit[] = [
     name: "Corvus Blackstar",
     faction: "imperial-agents",
     category: "transport",
+    modelCountOptions: [1],
     points: 180,
-    defaultWargear: [
-      { id: "blackstar-rocket-launcher", name: "Blackstar rocket launcher", image: "" },
-      { id: "twin-assault-cannon", name: "Twin assault cannon", image: "" },
-      { id: "armoured-hull", name: "Armoured hull", image: "" },
+    transportCapacity: 12,
+    abilities: [
+      {
+        name: "Blackstar Cluster Launcher",
+        description: "In your Movement phase, when this unit ends a normal move, select up to one enemy unit this unit moved over during that move and roll six D6: For each 4+, that unit suffers 1 mortal wound.",
+      },
+      {
+        name: "Auspex Array",
+        description: "Ranged weapons equipped by the bearer have the [IGNORES COVER] ability.",
+      },
+      {
+        name: "Transport",
+        description: "This model has a transport capacity of 12 DEATHWATCH INFANTRY models. Each GRAVIS/JUMP PACK/TERMINATOR model takes up the space of 2 models.",
+      },
     ],
-    wargear: [],
+    defaultWargear: [
+      { id: "armoured-hull", name: "Armoured Hull", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "4+", strength: "6", ap: "0", damage: "1" }] },
+    ],
+    wargearGroups: [
+      ["blackstar-rocket-launcher", "stormstrike-missile-launcher"],
+      ["twin-assault-cannon", "twin-lascannon"],
+    ],
+    wargear: [
+      { id: "blackstar-rocket-launcher", name: "2x Blackstar Rocket Launcher", image: "", profiles: [{ range: '30"', attacks: "4", skill: "3+", strength: "5", ap: "0", damage: "1", keywords: ["BLAST 1"] }] },
+      { id: "stormstrike-missile-launcher", name: "2x Stormstrike Missile Launcher", image: "", profiles: [{ range: '48"', attacks: "1", skill: "3+", strength: "10", ap: "-2", damage: "3" }] },
+      { id: "twin-assault-cannon", name: "Twin Assault Cannon", image: "", profiles: [{ range: '24"', attacks: "6", skill: "3+", strength: "6", ap: "-2", damage: "1", keywords: ["TWIN-LINKED", "SUSTAINED HITS 1"] }] },
+      { id: "twin-lascannon", name: "Twin Lascannon", image: "", profiles: [{ range: '48"', attacks: "1", skill: "3+", strength: "12", ap: "-3", damage: "D3+3", keywords: ["TWIN-LINKED"] }] },
+      { id: "hurricane-bolter", name: "Hurricane Bolter", image: "", profiles: [{ range: '24"', attacks: "6", skill: "3+", strength: "5", ap: "-1", damage: "1", keywords: ["TWIN-LINKED", "RAPID FIRE 6"] }] },
+    ],
     ledBy: [],
   },
 

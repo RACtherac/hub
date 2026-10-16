@@ -350,6 +350,32 @@ export const aeldariCharacters: Character[] = [
   },
 
   {
+    id: "khaarseth",
+    name: "Khaarseth",
+    faction: "aeldari",
+    image: "",
+    points: 80,
+    modelCountOptions: [1],
+    pointsByModelCount: { 1: 80 },
+    canAttachTo: ["corsair-voidreavers", "corsair-voidscarred"],
+    defaultWargear: [
+      { id: "khaarseth-dread-of-the-deep-void", name: "Dread of the Deep Void", image: "", profiles: [{ range: '24"', attacks: "D6+2", skill: "3+", strength: "3", ap: "-2", damage: "1", keywords: ["ANTI-INFANTRY 2+", "BLAST", "HAZARDOUS", "IGNORES COVER", "PSYCHIC"] }] },
+      { id: "khaarseth-waystave", name: "Waystave", image: "", profiles: [{ range: "Melee", attacks: "3", skill: "2+", strength: "3", ap: "0", damage: "3", keywords: ["ANTI-INFANTRY 2+", "PSYCHIC"] }] },
+    ],
+    wargear: [],
+    abilities: [
+      {
+        name: "Aethersense (Psychic)",
+        description: "Enemy units that are set up on the battlefield from Reserves cannot be set up within 12\" of this model.",
+      },
+      {
+        name: "Fury of the Void (Psychic)",
+        description: "In your Shooting phase, after this model's unit has shot, select one enemy unit hit by one or more attacks made with this model's Dread of the Deep Void. Until the end of the turn, that unit is riven. Each time an AELDARI model from your army makes an attack that targets a riven unit, add 1 to the Strength characteristic of that attack.",
+      },
+    ],
+  },
+
+  {
     id: "prince-yriel",
     name: "Prince Yriel",
     faction: "aeldari",
