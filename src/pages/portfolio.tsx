@@ -21,6 +21,7 @@ const projects = [
   { name: "Family tree", description: "STILL IN PROGRESS: Visualise your family structure and relationships.", path: "/Familytree" },
   { name: "Function Reference", description: "A developer index of every project's components and functions.", path: "/function-reference" },
   { name: "Roleplaying Sheets", description: "Manage party characters, stats, inventory, attacks, and notes for tabletop sessions.", path: "/roleplaying-sheets" },
+  { name: "DM Screen", description: "Run encounters with initiative, HP and conditions, and map your story as connected cards.", path: "/dm-screen" },
 ];
 
 export default function Portfolio() {

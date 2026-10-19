@@ -17,6 +17,7 @@ import FunctionReference from "./pages/function-reference";
 import FamilyTree from "./pages/FamilyTree";
 import WarhammerToolkit from "./pages/warhammer-toolkit";
 import RoleplayingSheets from "./pages/roleplaying-sheets";
+import DmScreen from "./pages/dm-screen";
 
 
 export default function App() {
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/warhammer-toolkit" element={<WarhammerToolkit />} />
         <Route path="/function-reference" element={<FunctionReference />} />
         <Route path="/roleplaying-sheets" element={<RoleplayingSheets />} />
+        <Route path="/dm-screen" element={<DmScreen />} />
       </Routes>
     </BrowserRouter>
   );

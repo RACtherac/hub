@@ -1,0 +1,1453 @@
+/* ===================================
+   DM SCREEN
+   =================================== */
+
+.dms-page {
+    --dms-danger: #ff6b6b;
+    --dms-heal: #5fd39a;
+    --dms-scene: #e8c547;
+    --dms-encounter: #ff7a5c;
+    --dms-npc: #6fb4ff;
+    --dms-location: #5fd39a;
+    --dms-clue: #c08bff;
+    --dms-note: #8b93ad;
+    --dms-image: #4fd1c5;
+    --dms-taken: var(--dms-heal);
+
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    padding-bottom: 3rem;
+}
+
+.dms-page small {
+    color: var(--text-dim);
+    font-weight: 400;
+}
+
+/* ---------- Top bar & hero ---------- */
+
+.dms-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: clamp(0.75rem, 3vw, 1.5rem) clamp(1rem, 4vw, 2.5rem);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.dms-topbar-back {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.dms-topbar-back span {
+    color: var(--accent);
+}
+
+.dms-topbar-title {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+
+.dms-hero {
+    padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem) 1rem;
+    margin: 0 auto;
+}
+
+.dms-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+}
+
+.dms-title {
+    font-size: clamp(2rem, 6vw, 3.25rem);
+    line-height: 1.05;
+}
+
+.dms-title em {
+    color: var(--accent);
+    font-style: normal;
+}
+
+.dms-subtitle-text {
+    margin-top: 0.75rem;
+    color: var(--text-dim);
+}
+
+.dms-backup {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.dms-error-text {
+    color: var(--dms-danger);
+    font-size: 0.85rem;
+}
+
+/* ---------- Tabs ---------- */
+
+.dms-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+}
+
+.dms-tab {
+    padding: 0.75rem 1.1rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-dim);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: -1px;
+    white-space: nowrap;
+}
+
+.dms-tab:hover {
+    color: var(--text);
+}
+
+.dms-tab.active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+}
+
+.dms-content {
+    margin: 0 auto;
+    padding: 1.5rem clamp(1rem, 4vw, 2.5rem);
+}
+
+/* ---------- Shared pieces ---------- */
+
+.dms-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    min-width: 0;
+}
+
+.dms-panel-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.dms-subtitle {
+    font-size: 0.95rem;
+    margin: 0 0 0.5rem;
+}
+
+.dms-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.dms-field input,
+.dms-field select,
+.dms-field textarea,
+.dms-conditions select,
+.dms-custom-condition input,
+.dms-hp-change input,
+.dms-board-add select {
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-radius: 0.5rem;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.dms-field textarea {
+    resize: vertical;
+    min-height: 2.4rem;
+}
+
+.dms-field input:focus-visible,
+.dms-field select:focus-visible,
+.dms-field textarea:focus-visible,
+.dms-conditions select:focus-visible,
+.dms-custom-condition input:focus-visible,
+.dms-hp-change input:focus-visible,
+.dms-board-add select:focus-visible,
+.dms-button:focus-visible,
+.dms-icon-button:focus-visible,
+.dms-link-button:focus-visible,
+.dms-chip:focus-visible,
+.dms-tab:focus-visible,
+.dms-encounter-item:focus-visible,
+.dms-node:focus-visible,
+.dms-link-label:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.dms-button {
+    padding: 0.55rem 1rem;
+    border-radius: 0.65rem;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.dms-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.dms-button--ghost {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border-2);
+}
+
+.dms-button--ghost:hover:not(:disabled) {
+    border-color: var(--accent);
+}
+
+.dms-button--danger {
+    background: transparent;
+    color: var(--dms-danger);
+    border-color: rgba(255, 107, 107, 0.45);
+}
+
+.dms-button--danger.armed,
+.dms-button--danger:hover {
+    background: rgba(255, 107, 107, 0.12);
+}
+
+.dms-button--heal {
+    background: transparent;
+    color: var(--dms-heal);
+    border-color: rgba(95, 211, 154, 0.45);
+}
+
+.dms-button--heal:hover {
+    background: rgba(95, 211, 154, 0.12);
+}
+
+.dms-link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    text-decoration: underline;
+    text-align: left;
+}
+
+.dms-link-button:hover {
+    color: var(--text);
+}
+
+.dms-link-button.armed {
+    color: var(--dms-danger);
+    font-weight: 700;
+}
+
+.dms-icon-button {
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-2);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.dms-chip {
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+}
+
+.dms-chip.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--text);
+}
+
+.dms-hint,
+.dms-inspector-help,
+.dms-empty {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.dms-hint {
+    margin-top: 0.6rem;
+}
+
+/* ===================================
+   Encounter tracker
+   =================================== */
+
+.dms-tracker {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.dms-encounter-list ul {
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+    margin: 0 0 0.9rem;
+    padding: 0;
+}
+
+.dms-encounter-list .dms-button {
+    width: 100%;
+}
+
+.dms-encounter-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.65rem;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    text-align: left;
+    font-weight: 700;
+}
+
+.dms-encounter-item span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.dms-encounter-item small {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+}
+
+.dms-encounter-item.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+}
+
+.dms-encounter-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dms-encounter-name {
+    flex: 1;
+    max-width: 420px;
+}
+
+.dms-encounter-name input {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.dms-turn-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    padding: 0.9rem 1rem;
+    border-radius: 0.8rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+}
+
+.dms-round,
+.dms-turn-now {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.dms-turn-now {
+    flex: 1;
+}
+
+.dms-round-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.dms-round-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--accent);
+}
+
+.dms-turn-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dms-turn-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dms-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin: 0.9rem 0;
+}
+
+.dms-add-form {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) repeat(5, minmax(0, 1fr)) auto;
+    gap: 0.5rem;
+    align-items: end;
+    padding: 0.9rem;
+    margin-bottom: 1rem;
+    border-radius: 0.8rem;
+    border: 1px dashed var(--border-2);
+}
+
+.dms-combatants {
+    list-style: none;
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+}
+
+.dms-combatant {
+    display: grid;
+    gap: 0.65rem;
+    padding: 0.9rem 1rem;
+    border-radius: 0.8rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--dms-note);
+    transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+
+.dms-combatant .dms-field input,
+.dms-combatant .dms-field select,
+.dms-combatant .dms-field textarea,
+.dms-combatant .dms-conditions select,
+.dms-combatant .dms-custom-condition input,
+.dms-combatant .dms-hp-change input {
+    background: var(--surface);
+}
+
+.dms-kind-pc { border-left-color: var(--dms-npc); }
+.dms-kind-npc { border-left-color: var(--dms-location); }
+.dms-kind-monster { border-left-color: var(--dms-encounter); }
+
+.dms-combatant.turn {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), 0 0 24px rgba(232, 197, 71, 0.12);
+}
+
+.dms-combatant.down {
+    opacity: 0.5;
+}
+
+.dms-combatant.down .dms-combatant-name input {
+    text-decoration: line-through;
+}
+
+.dms-combatant-main {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 2fr) minmax(0, 1fr) 4rem 5rem auto;
+    gap: 0.5rem;
+    align-items: end;
+}
+
+.dms-init input {
+    font-size: 1.15rem;
+    font-weight: 800;
+    text-align: center;
+    color: var(--accent);
+}
+
+.dms-badge {
+    display: inline-block;
+    margin-right: 0.35rem;
+    padding: 0.05rem 0.4rem;
+    border-radius: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+}
+
+.dms-badge--turn {
+    background: var(--accent);
+    color: var(--bg);
+}
+
+.dms-badge--down {
+    background: rgba(255, 107, 107, 0.2);
+    color: var(--dms-danger);
+}
+
+/* Who won an encounter: green when the PCs did, red when the monsters did. */
+.dms-outcome--pcs { --dms-outcome: var(--dms-heal); }
+.dms-outcome--monsters { --dms-outcome: var(--dms-danger); }
+
+.dms-outcome {
+    margin: 0.75rem 0;
+    padding: 0.6rem 0.9rem;
+    border-radius: 0.6rem;
+    border: 1px solid var(--dms-outcome);
+    border-left-width: 4px;
+    background: color-mix(in srgb, var(--dms-outcome) 12%, transparent);
+    font-size: 0.85rem;
+}
+
+.dms-outcome strong,
+.dms-outcome-text {
+    color: var(--dms-outcome);
+}
+
+.dms-outcome-tag {
+    display: inline-block;
+    margin-left: 0.4rem;
+    padding: 0.05rem 0.4rem;
+    border-radius: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    background: color-mix(in srgb, var(--dms-outcome) 20%, transparent);
+    color: var(--dms-outcome);
+}
+
+.dms-row-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+    padding-bottom: 0.25rem;
+}
+
+.dms-combatant-hp {
+    display: grid;
+    grid-template-columns: auto minmax(80px, 1fr) auto;
+    gap: 0.75rem;
+    align-items: end;
+}
+
+.dms-hp-fields {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.4rem;
+}
+
+.dms-hp-fields .dms-small {
+    width: 4.25rem;
+}
+
+.dms-hp-slash {
+    padding-bottom: 0.55rem;
+    color: var(--text-dim);
+}
+
+.dms-hp-bar {
+    height: 0.5rem;
+    margin-bottom: 0.8rem;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.dms-hp-bar span {
+    display: block;
+    height: 100%;
+    background: var(--dms-heal);
+    transition: width 0.2s ease;
+}
+
+.dms-hp-change {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.dms-hp-change input {
+    width: 4.5rem;
+}
+
+.dms-conditions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.dms-conditions select {
+    width: auto;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.dms-custom-condition input {
+    width: 8rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.dms-notes textarea {
+    font-size: 0.85rem;
+}
+
+/* ===================================
+   Story board
+   =================================== */
+
+.dms-storyboard {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.dms-board-area {
+    min-width: 0;
+}
+
+.dms-board-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+}
+
+.dms-board-add,
+.dms-board-zoom {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.dms-board-add select {
+    width: auto;
+}
+
+.dms-zoom-value {
+    min-width: 3.2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.dms-board {
+    position: relative;
+    height: clamp(420px, 68vh, 860px);
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    background-color: var(--surface);
+    background-image: radial-gradient(circle, var(--border-2) 1px, transparent 1.5px);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.dms-board:active {
+    cursor: grabbing;
+}
+
+.dms-board.connecting {
+    cursor: crosshair;
+}
+
+.dms-board-empty {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.dms-world {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    transform-origin: 0 0;
+}
+
+.dms-links {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.dms-link {
+    fill: none;
+    stroke: var(--text-dim);
+    stroke-width: 2;
+}
+
+.dms-link.selected {
+    stroke: var(--accent);
+    stroke-width: 3;
+}
+
+.dms-arrow {
+    fill: var(--text-dim);
+}
+
+.dms-arrow.selected {
+    fill: var(--accent);
+}
+
+.dms-link-hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 16;
+    pointer-events: stroke;
+    cursor: pointer;
+}
+
+.dms-link-draft {
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-dasharray: 6 5;
+}
+
+.dms-link-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    max-width: 180px;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.4rem;
+    border: 1px solid var(--border-2);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dms-link-label.selected {
+    border-color: var(--accent);
+}
+
+.dms-node {
+    --dms-kind: var(--dms-note);
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 220px;
+    border-radius: 0.7rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-top: 4px solid var(--dms-kind);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    cursor: default;
+}
+
+.dms-node.selected {
+    border-color: var(--accent);
+    border-top-color: var(--dms-kind);
+    box-shadow: 0 0 0 2px var(--accent), 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.dms-node--scene { --dms-kind: var(--dms-scene); }
+.dms-node--encounter { --dms-kind: var(--dms-encounter); }
+.dms-node--npc { --dms-kind: var(--dms-npc); }
+.dms-node--location { --dms-kind: var(--dms-location); }
+.dms-node--clue { --dms-kind: var(--dms-clue); }
+.dms-node--note { --dms-kind: var(--dms-note); }
+.dms-node--image { --dms-kind: var(--dms-image); }
+
+.dms-node-image {
+    display: block;
+    width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    background: var(--surface);
+    border-radius: 0 0 0.7rem 0.7rem;
+    /* Pointer events go to the card, so it selects and the browser doesn't drag the image. */
+    pointer-events: none;
+}
+
+.dms-node-image-empty {
+    margin: 0 0.75rem 0.65rem;
+    padding: 1.2rem 0.5rem;
+    border: 1px dashed var(--border-2);
+    border-radius: 0.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.dms-image-preview {
+    display: block;
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+}
+
+.dms-node-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.55rem 0.75rem 0.5rem;
+    cursor: move;
+}
+
+.dms-node-kind {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--dms-kind);
+}
+
+.dms-node-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.dms-node-body {
+    padding: 0 0.75rem 0.65rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.dms-node-body p {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.dms-node-encounter {
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.dms-node-handle {
+    position: absolute;
+    top: 50%;
+    right: -9px;
+    width: 18px;
+    height: 18px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--dms-kind);
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.dms-node-handle:hover {
+    background: var(--dms-kind);
+}
+
+/* ---------- Branch choices ---------- */
+
+.dms-node-header {
+    position: relative;
+}
+
+.dms-node:has(.dms-node-check) .dms-node-header {
+    padding-right: 2.6rem;
+}
+
+.dms-node-check {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.55rem;
+    display: grid;
+    place-items: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid var(--border-2);
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.dms-node-check:hover {
+    border-color: var(--dms-taken);
+    color: var(--dms-taken);
+}
+
+.dms-node-check:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.dms-node-check.checked {
+    background: var(--dms-taken);
+    border-color: var(--dms-taken);
+    color: var(--bg);
+}
+
+.dms-node.taken {
+    border-color: var(--dms-taken);
+    border-top-color: var(--dms-kind);
+    box-shadow: 0 0 0 1px var(--dms-taken), 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.dms-node.taken.selected {
+    box-shadow: 0 0 0 2px var(--accent), 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* Branches the players didn't take. */
+.dms-node.grey {
+    opacity: 0.4;
+    filter: grayscale(1);
+    box-shadow: none;
+}
+
+.dms-node.grey:hover,
+.dms-node.grey.selected {
+    opacity: 0.75;
+}
+
+.dms-node-status {
+    margin-left: 0.5rem;
+    padding: 0 0.35rem;
+    border-radius: 0.25rem;
+    background: var(--border-2);
+    color: var(--text);
+    letter-spacing: 0.04em;
+}
+
+.dms-link-group.grey {
+    opacity: 0.3;
+}
+
+.dms-link-group.grey .dms-link {
+    stroke-dasharray: 6 6;
+}
+
+.dms-link-label.grey {
+    opacity: 0.4;
+}
+
+.dms-branch-status .dms-button {
+    width: 100%;
+}
+
+/* ---------- Inspector ---------- */
+
+.dms-inspector {
+    display: grid;
+    gap: 0.75rem;
+    position: sticky;
+    top: 1rem;
+}
+
+.dms-inspector .dms-panel-title {
+    margin-bottom: 0.25rem;
+}
+
+.dms-inspector-section {
+    display: grid;
+    gap: 0.6rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+
+.dms-inspector-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.dms-connection-list {
+    list-style: none;
+    display: grid;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+}
+
+.dms-connection-route {
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+.dms-legend {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.dms-legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.dms-swatch {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 0.2rem;
+    background: var(--dms-kind);
+}
+
+/* ===================================
+   Map maker
+   =================================== */
+
+.dms-mapmaker {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 280px;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.dms-map-palette {
+    display: grid;
+    gap: 0.75rem;
+    position: sticky;
+    top: 1rem;
+}
+
+.dms-map-palette .dms-panel-title {
+    margin-bottom: 0;
+}
+
+.dms-map-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.dms-map-assets {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.dms-map-asset {
+    display: grid;
+    justify-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem 0.35rem 0.4rem;
+    border-radius: 0.65rem;
+    border: 1px solid var(--border-2);
+    background: var(--surface-2);
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    text-align: center;
+    cursor: grab;
+    user-select: none;
+}
+
+.dms-map-asset:hover {
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+.dms-map-asset:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.dms-map-asset svg {
+    width: 100%;
+    height: 3.4rem;
+    border-radius: 0.4rem;
+    background: #7fa65a;
+}
+
+.dms-map-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.6rem;
+}
+
+.dms-map-tools .dms-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.dms-map-brush-swatch {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    border: 2px solid;
+}
+
+.dms-map-brush-options {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.dms-map-brush-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.dms-map-brush-options input[type="color"] {
+    width: 2rem;
+    height: 1.6rem;
+    padding: 0;
+    border: 1px solid var(--border-2);
+    border-radius: 0.35rem;
+    background: none;
+}
+
+.dms-map-board {
+    position: relative;
+    height: clamp(420px, 68vh, 860px);
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    touch-action: none;
+    user-select: none;
+}
+
+.dms-map-board.tool-select {
+    cursor: grab;
+}
+
+.dms-map-board.tool-select:active {
+    cursor: grabbing;
+}
+
+.dms-map-board.tool-draw,
+.dms-map-board.tool-erase {
+    cursor: crosshair;
+}
+
+.dms-map-board.tool-select [data-item-id],
+.dms-map-board.tool-select [data-stroke-id] {
+    cursor: move;
+}
+
+.dms-map-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.dms-map-empty {
+    color: #2b2118;
+    font-weight: 700;
+}
+
+.dms-map-selection {
+    stroke: var(--accent);
+    stroke-opacity: 0.35;
+}
+
+.dms-map-outline {
+    stroke: var(--accent);
+}
+
+.dms-map-handle {
+    fill: var(--surface);
+    stroke: var(--accent);
+}
+
+.dms-map-handle.rotate {
+    cursor: grab;
+}
+
+.dms-map-handle.scale {
+    cursor: nwse-resize;
+}
+
+.dms-map-empty.dark {
+    color: #d8d2c4;
+}
+
+.dms-map-brush-options select {
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-2);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 0.75rem;
+}
+
+.dms-map-fog-tools {
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--surface);
+}
+
+.dms-map-fog-tools .dms-check {
+    font-weight: 700;
+    margin-right: 0.25rem;
+}
+
+.dms-map-player-buttons {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-left: auto;
+}
+
+.dms-map-player-buttons .dms-button {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+}
+
+.dms-map-box {
+    fill: rgba(232, 197, 71, 0.15);
+    stroke: #e8c547;
+}
+
+.dms-map-box.hide {
+    fill: rgba(11, 11, 24, 0.35);
+    stroke: #8b93ad;
+}
+
+.dms-map-size {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+/* ---------- Player view (its own window) ---------- */
+
+.dms-player {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: #060608;
+    color: #e8e4da;
+}
+
+.dms-player-board {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.dms-player-board:active {
+    cursor: grabbing;
+}
+
+.dms-player-empty {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: 2rem;
+    text-align: center;
+}
+
+.dms-player-controls {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    display: flex;
+    gap: 0.4rem;
+    opacity: 0.35;
+    transition: opacity 0.2s;
+}
+
+.dms-player-controls:hover,
+.dms-player-controls:focus-within {
+    opacity: 1;
+}
+
+.dms-player-controls button {
+    min-width: 2.2rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(20, 20, 26, 0.85);
+    color: #e8e4da;
+    font-weight: 700;
+}
+
+.dms-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.dms-check input {
+    margin-top: 0.2rem;
+    accent-color: var(--accent);
+}
+
+.dms-field input[type="range"] {
+    padding: 0;
+    accent-color: var(--accent);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1200px) {
+    .dms-mapmaker {
+        grid-template-columns: minmax(0, 1fr) 280px;
+    }
+
+    .dms-map-palette {
+        grid-column: 1 / -1;
+        position: static;
+    }
+
+    .dms-map-assets {
+        grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+        max-height: none;
+    }
+}
+
+@media (max-width: 1100px) {
+    .dms-add-form {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .dms-add-form .dms-add-name {
+        grid-column: span 3;
+    }
+}
+
+@media (max-width: 900px) {
+    .dms-tracker,
+    .dms-storyboard,
+    .dms-mapmaker {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dms-inspector {
+        position: static;
+    }
+
+    .dms-combatant-main {
+        grid-template-columns: 4.5rem minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .dms-row-actions {
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .dms-combatant-hp {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.5rem;
+    }
+
+    .dms-hp-bar {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .dms-add-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dms-add-form .dms-add-name {
+        grid-column: span 2;
+    }
+
+    .dms-combatant-main {
+        grid-template-columns: 4rem minmax(0, 1fr);
+    }
+
+    .dms-encounter-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dms-turn-buttons {
+        width: 100%;
+    }
+
+    .dms-turn-buttons .dms-button {
+        flex: 1;
+    }
+
+    .dms-board,
+    .dms-map-board {
+        height: 60vh;
+    }
+}
