@@ -13,6 +13,20 @@ export const STORAGE_KEY = "dm-screen-v1";
 
 export type CombatantKind = "pc" | "npc" | "monster";
 
+export type AttackKind = "weapon" | "magic";
+
+// A weapon attack or a spell. Free text, so it works for any system.
+export interface Attack {
+    id: string;
+    kind: AttackKind;
+    name: string;
+    // "+5", or "DC 14 Dex" for a save.
+    hit: string;
+    // "1d8 + 3 slashing", or an effect for spells.
+    damage: string;
+    range: string;
+}
+
 export interface Combatant {
     id: string;
     name: string;
@@ -28,6 +42,9 @@ export interface Combatant {
     alignment: string;
     conditions: string[];
     notes: string;
+    attacks: Attack[];
+    // What they drop, as free text.
+    loot: string;
 }
 
 export interface Encounter {
@@ -89,6 +106,9 @@ export interface Npc {
     maxHp: number;
     location: string;
     notes: string;
+    attacks: Attack[];
+    // What they drop, as free text. Items from the Items tab they carry are listed separately.
+    loot: string;
     // A downscaled data URL, like image cards.
     image?: string;
 }
@@ -307,10 +327,16 @@ export function createCombatant(fields: Partial<Combatant> = {}): Combatant {
         alignment: "",
         conditions: [],
         notes: "",
+        attacks: [],
+        loot: "",
         ...fields,
         maxHp,
         hp: clamp(Math.trunc(fields.hp ?? maxHp), 0, maxHp),
     };
+}
+
+export function createAttack(kind: AttackKind = "weapon", fields: Partial<Attack> = {}): Attack {
+    return { id: makeId(), kind, name: "", hit: "", damage: "", range: "", ...fields };
 }
 
 export function createEncounter(name = "New encounter"): Encounter {
@@ -332,10 +358,32 @@ export function createNpc(fields: Partial<Npc> = {}): Npc {
         ac: "",
         location: "",
         notes: "",
+        attacks: [],
+        loot: "",
         ...fields,
         maxHp,
         hp: clamp(Math.trunc(fields.hp ?? maxHp), 0, maxHp),
     };
+}
+
+// The NPC as a combatant for the tracker: stats, attacks and loot copied over.
+// Items they carry from the Items tab are added to the loot, so it's all in one place.
+export function combatantFromNpc(data: DmScreenData, npc: Npc): Combatant {
+    const carried = itemsHeldBy(data, npc.id).map((i) => i.name.trim()).filter(Boolean);
+    const loot = [npc.loot.trim(), carried.length ? `Carrying: ${carried.join(", ")}` : ""].filter(Boolean).join("\n");
+    return createCombatant({
+        name: npc.name,
+        kind: "npc",
+        maxHp: npc.maxHp,
+        hp: npc.hp,
+        ac: npc.ac,
+        creatureType: npc.race,
+        alignment: npc.alignment,
+        notes: npc.notes,
+        // Own copies, so editing the combatant mid-fight leaves the NPC sheet alone.
+        attacks: npc.attacks.map((a) => ({ ...a, id: makeId() })),
+        loot,
+    });
 }
 
 export function createItem(fields: Partial<Item> = {}): Item {
@@ -808,6 +856,18 @@ const str = (value: unknown, fallback = "") => (typeof value === "string" ? valu
 const num = (value: unknown, fallback = 0) =>
     typeof value === "number" && Number.isFinite(value) ? value : fallback;
 
+function normalizeAttacks(value: unknown): Attack[] {
+    if (!Array.isArray(value)) return [];
+    return value.filter(isObject).map((a) => ({
+        id: str(a.id) || makeId(),
+        kind: a.kind === "magic" ? "magic" : "weapon",
+        name: str(a.name),
+        hit: str(a.hit),
+        damage: str(a.damage),
+        range: str(a.range),
+    }));
+}
+
 function normalizeCombatant(value: unknown): Combatant | null {
     if (!isObject(value)) return null;
     const kind = COMBATANT_KINDS.some((k) => k.value === value.kind) ? (value.kind as CombatantKind) : "monster";
@@ -826,6 +886,8 @@ function normalizeCombatant(value: unknown): Combatant | null {
         alignment: str(value.alignment),
         conditions: Array.isArray(value.conditions) ? value.conditions.filter((c): c is string => typeof c === "string") : [],
         notes: str(value.notes),
+        attacks: normalizeAttacks(value.attacks),
+        loot: str(value.loot),
     };
 }
 
@@ -909,6 +971,8 @@ function normalizeNpc(value: unknown): Npc | null {
         hp: clamp(Math.trunc(num(value.hp, maxHp)), 0, maxHp),
         location: str(value.location),
         notes: str(value.notes),
+        attacks: normalizeAttacks(value.attacks),
+        loot: str(value.loot),
     };
     const image = str(value.image);
     if (image.startsWith("data:image/")) npc.image = image;

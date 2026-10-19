@@ -11,6 +11,8 @@ import {
     applyHeal,
     cardTitle,
     activeBoard,
+    combatantFromNpc,
+    createAttack,
     createBoard,
     createCombatant,
     createDefaultData,
@@ -574,4 +576,60 @@ test("item search covers type, rarity, holder and the stats for its type", () =>
     // Stats left over from another type aren't searched.
     assert.ok(!itemMatches(data, sword, "hidden"));
     assert.ok(!itemMatches(data, sword, "with the party"));
+});
+
+test("adding an NPC to an encounter copies their stats, attacks and loot, plus what they carry", () => {
+    const vex = createNpc({
+        name: "Vex",
+        race: "Tiefling",
+        alignment: "Neutral evil",
+        ac: "15",
+        maxHp: 40,
+        hp: 33,
+        notes: "Flees at half HP",
+        attacks: [createAttack("weapon", { name: "Rapier", hit: "+6", damage: "1d8 + 4 piercing" }), createAttack("magic", { name: "Hellish Rebuke", hit: "DC 13 Dex" })],
+        loot: "23 gp",
+    });
+    const amulet = createItem({ name: "Amulet", holder: { kind: "npc", npcId: vex.id } });
+    const data = { ...createDefaultData(), npcs: [vex], items: [amulet] };
+
+    const c = combatantFromNpc(data, vex);
+    assert.equal(c.name, "Vex");
+    assert.equal(c.kind, "npc");
+    assert.equal(c.ac, "15");
+    assert.equal(c.maxHp, 40);
+    assert.equal(c.hp, 33);
+    assert.equal(c.creatureType, "Tiefling");
+    assert.equal(c.alignment, "Neutral evil");
+    assert.equal(c.notes, "Flees at half HP");
+    assert.deepEqual(c.attacks.map((a) => [a.kind, a.name, a.hit]), [["weapon", "Rapier", "+6"], ["magic", "Hellish Rebuke", "DC 13 Dex"]]);
+    // Own copies, so editing the combatant doesn't touch the NPC.
+    assert.notEqual(c.attacks[0].id, vex.attacks[0].id);
+    assert.equal(c.loot, "23 gp\nCarrying: Amulet");
+
+    assert.equal(combatantFromNpc({ ...data, items: [] }, { ...vex, loot: "" }).loot, "");
+    assert.equal(combatantFromNpc(data, { ...vex, loot: "" }).loot, "Carrying: Amulet");
+});
+
+test("attacks and loot survive a reload on NPCs and combatants; older saves get none", () => {
+    const rapier = createAttack("weapon", { name: "Rapier", hit: "+6", damage: "1d8", range: "5 ft" });
+    const goblin = createCombatant({ name: "Goblin", attacks: [rapier], loot: "3 cp" });
+    const encounter = { ...createEncounter(), combatants: [goblin] };
+    const vex = createNpc({ name: "Vex", attacks: [createAttack("magic", { name: "Fire Bolt" })], loot: "a key" });
+    const data = { ...createDefaultData(), encounters: [encounter], activeEncounterId: encounter.id, npcs: [vex] };
+
+    const reloaded = parseData(JSON.stringify(data))!;
+    assert.deepEqual(reloaded.encounters[0].combatants[0].attacks, [rapier]);
+    assert.equal(reloaded.encounters[0].combatants[0].loot, "3 cp");
+    assert.deepEqual(reloaded.npcs[0].attacks, vex.attacks);
+    assert.equal(reloaded.npcs[0].loot, "a key");
+
+    const old = parseData(JSON.stringify({
+        encounters: [{ combatants: [{ name: "Orc", attacks: [{ kind: "laser", name: "Axe" }, 3] }] }],
+        npcs: [{ name: "Old NPC" }],
+    }))!;
+    assert.deepEqual(old.encounters[0].combatants[0].attacks.map((a) => [a.kind, a.name]), [["weapon", "Axe"]]);
+    assert.equal(old.encounters[0].combatants[0].loot, "");
+    assert.deepEqual(old.npcs[0].attacks, []);
+    assert.equal(old.npcs[0].loot, "");
 });

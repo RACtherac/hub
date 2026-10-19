@@ -3,7 +3,7 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import { toInt } from "../../utils/makeId";
 import {
     activeBoard,
-    createCombatant,
+    combatantFromNpc,
     createNode,
     createNpc,
     holderLabel,
@@ -17,6 +17,7 @@ import {
     type ItemHolder,
     type Npc,
 } from "../../utils/dmScreen";
+import AttackList from "./AttackList";
 import ConfirmButton from "./ConfirmButton";
 import ImageField from "./ImageField";
 
@@ -123,16 +124,7 @@ function NpcSheet({ npc, data, setData, onShowCard, onOpenItem }: NpcSheetProps)
     };
 
     const addToEncounter = () => {
-        const combatant = createCombatant({
-            name: npc.name,
-            kind: "npc",
-            maxHp: npc.maxHp,
-            hp: npc.hp,
-            ac: npc.ac,
-            creatureType: npc.race,
-            alignment: npc.alignment,
-            notes: npc.notes,
-        });
+        const combatant = combatantFromNpc(data, npc);
         setData((current) => ({
             ...current,
             encounters: current.encounters.map((e) => (e.id === encounter.id ? { ...e, combatants: [...e.combatants, combatant] } : e)),
@@ -187,6 +179,19 @@ function NpcSheet({ npc, data, setData, onShowCard, onOpenItem }: NpcSheetProps)
                             />
                         </label>
                     </div>
+                    <div className="dms-inspector-section">
+                        <span className="dms-subtitle">Attacks &amp; spells</span>
+                        <AttackList attacks={npc.attacks} onChange={(attacks) => set({ attacks })} />
+                    </div>
+                    <label className="dms-field">
+                        <span>Loot</span>
+                        <textarea
+                            rows={3}
+                            value={npc.loot}
+                            placeholder="What they drop: 23 gp, a silver key, a letter from the duke…"
+                            onChange={(e) => set({ loot: e.target.value })}
+                        />
+                    </label>
                     <label className="dms-field">
                         <span>Location</span>
                         <input

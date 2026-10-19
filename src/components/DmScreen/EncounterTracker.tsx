@@ -25,6 +25,7 @@ import {
     type DmScreenData,
     type Encounter,
 } from "../../utils/dmScreen";
+import AttackList from "./AttackList";
 import ConfirmButton from "./ConfirmButton";
 
 interface EncounterTrackerProps {
@@ -261,6 +262,11 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: C
     // Notes show when there are some, or once "+ Notes" is clicked.
     const [notesOpen, setNotesOpen] = useState(false);
     const showNotes = notesOpen || c.notes !== "";
+    // Same for attacks and loot, so rows without them stay compact.
+    const [attacksOpen, setAttacksOpen] = useState(false);
+    const showAttacks = attacksOpen || c.attacks.length > 0;
+    const [lootOpen, setLootOpen] = useState(false);
+    const showLoot = lootOpen || c.loot !== "";
     const down = isDown(c);
     const set = (fields: Partial<Combatant>) => update((current) => ({ ...current, ...fields }));
     const available = STANDARD_CONDITIONS.filter((name) => !c.conditions.some((x) => x.toLowerCase() === name.toLowerCase()));
@@ -401,10 +407,47 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: C
                 >
                     <input aria-label="Custom condition" placeholder="Custom…" value={custom} onChange={(e) => setCustom(e.target.value)} />
                 </form>
+                {!showAttacks && (
+                    <button type="button" className="dms-link-button" onClick={() => setAttacksOpen(true)}>+ Attacks</button>
+                )}
+                {!showLoot && (
+                    <button type="button" className="dms-link-button" onClick={() => setLootOpen(true)}>+ Loot</button>
+                )}
                 {!showNotes && (
                     <button type="button" className="dms-link-button" onClick={() => setNotesOpen(true)}>+ Notes</button>
                 )}
             </div>
+
+            {showAttacks && (
+                <div className="dms-field dms-combatant-attacks">
+                    <span>Attacks &amp; spells</span>
+                    <AttackList attacks={c.attacks} onChange={(attacks) => set({ attacks })} />
+                </div>
+            )}
+
+            {showLoot && (
+                <div className="dms-field dms-notes">
+                    <div className="dms-notes-header">
+                        <label htmlFor={`loot-${c.id}`}>Loot</label>
+                        <ConfirmButton
+                            label="Remove loot"
+                            confirmLabel="Sure?"
+                            onConfirm={() => {
+                                set({ loot: "" });
+                                setLootOpen(false);
+                            }}
+                        />
+                    </div>
+                    <textarea
+                        id={`loot-${c.id}`}
+                        rows={2}
+                        value={c.loot}
+                        placeholder="What they drop: 12 gp, a rusty key…"
+                        autoFocus={lootOpen && c.loot === ""}
+                        onChange={(e) => set({ loot: e.target.value })}
+                    />
+                </div>
+            )}
 
             {showNotes && (
                 <div className="dms-field dms-notes">
@@ -423,7 +466,7 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: C
                         id={`notes-${c.id}`}
                         rows={4}
                         value={c.notes}
-                        placeholder="Tactics, abilities, loot…"
+                        placeholder="Tactics, abilities…"
                         autoFocus={notesOpen && c.notes === ""}
                         onChange={(e) => set({ notes: e.target.value })}
                     />
