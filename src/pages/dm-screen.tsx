@@ -4,13 +4,17 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import "../components/styles/dm-screen.css";
 
 import EncounterTracker from "../components/DmScreen/EncounterTracker";
+import ItemManager from "../components/DmScreen/ItemManager";
 import MapMaker from "../components/DmScreen/MapMaker";
+import NpcManager from "../components/DmScreen/NpcManager";
 import PlayerMapView from "../components/DmScreen/PlayerMapView";
 import StoryBoard from "../components/DmScreen/StoryBoard";
 import { STORAGE_KEY, createDefaultData, parseData, type DmScreenData } from "../utils/dmScreen";
 
 const TABS = [
     { id: "tracker", label: "Encounter Tracker" },
+    { id: "npcs", label: "NPCs" },
+    { id: "items", label: "Items" },
     { id: "board", label: "Story Board" },
     { id: "map", label: "Map" },
 ] as const;
@@ -37,6 +41,8 @@ function DmScreen() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [data, setData] = useState<DmScreenData>(loadStored);
     const [importError, setImportError] = useState("");
+    // A card to select (and scroll to) the next time the story board opens.
+    const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
     const fileInput = useRef<HTMLInputElement>(null);
 
     // The tab lives in the URL so it survives reloads and can be linked to.
@@ -78,6 +84,22 @@ function DmScreen() {
         showTab("tracker");
     };
 
+    const openNpc = (npcId: string) => {
+        setData((current) => ({ ...current, activeNpcId: npcId }));
+        showTab("npcs");
+    };
+
+    const openItem = (itemId: string) => {
+        setData((current) => ({ ...current, activeItemId: itemId }));
+        showTab("items");
+    };
+
+    const showCard = (boardId: string, nodeId: string) => {
+        setData((current) => ({ ...current, activeBoardId: boardId }));
+        setFocusNodeId(nodeId);
+        showTab("board");
+    };
+
     return (
         <div className="dms-page">
             <header className="dms-topbar">
@@ -91,7 +113,7 @@ function DmScreen() {
                 <p className="dms-eyebrow">// tabletop · any system</p>
                 <h1 className="dms-title">DM <em>Screen</em></h1>
                 <p className="dms-subtitle-text">
-                    Run encounters turn by turn, map out your story as cards and strings, and build maps from premade pieces.
+                    Run encounters turn by turn, keep sheets for your named NPCs and loot, map out your story as cards and strings, and build maps from premade pieces.
                 </p>
                 <div className="dms-backup">
                     <button type="button" className="dms-button dms-button--ghost" onClick={exportJson}>
@@ -133,7 +155,19 @@ function DmScreen() {
 
             <main className="dms-content" role="tabpanel" id={`dms-panel-${tab}`} aria-labelledby={`dms-tab-${tab}`}>
                 {tab === "tracker" && <EncounterTracker data={data} setData={setData} />}
-                {tab === "board" && <StoryBoard data={data} setData={setData} onRunEncounter={runEncounter} />}
+                {tab === "npcs" && <NpcManager data={data} setData={setData} onShowCard={showCard} onOpenItem={openItem} />}
+                {tab === "items" && <ItemManager data={data} setData={setData} onShowCard={showCard} />}
+                {tab === "board" && (
+                    <StoryBoard
+                        data={data}
+                        setData={setData}
+                        onRunEncounter={runEncounter}
+                        onOpenNpc={openNpc}
+                        onOpenItem={openItem}
+                        focusNodeId={focusNodeId}
+                        onFocused={() => setFocusNodeId(null)}
+                    />
+                )}
                 {tab === "map" && <MapMaker data={data} setData={setData} />}
             </main>
         </div>

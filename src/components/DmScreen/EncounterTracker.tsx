@@ -19,6 +19,7 @@ import {
     rollInitiative,
     sortCombatants,
     toggleCondition,
+    unlinkEncounter,
     type Combatant,
     type CombatantKind,
     type DmScreenData,
@@ -31,7 +32,16 @@ interface EncounterTrackerProps {
     setData: Dispatch<SetStateAction<DmScreenData>>;
 }
 
-const EMPTY_FORM = { name: "", kind: "monster" as CombatantKind, initiativeMod: "0", maxHp: "10", ac: "", count: "1" };
+const EMPTY_FORM = {
+    name: "",
+    creatureType: "",
+    alignment: "",
+    kind: "monster" as CombatantKind,
+    initiativeMod: "0",
+    maxHp: "10",
+    ac: "",
+    count: "1",
+};
 
 export default function EncounterTracker({ data, setData }: EncounterTrackerProps) {
     const encounter = data.encounters.find((e) => e.id === data.activeEncounterId) ?? data.encounters[0];
@@ -58,17 +68,7 @@ export default function EncounterTracker({ data, setData }: EncounterTrackerProp
         setData((current) => {
             const remaining = current.encounters.filter((e) => e.id !== encounter.id);
             const encounters = remaining.length ? remaining : [createEncounter("First encounter")];
-            return {
-                ...current,
-                encounters,
-                activeEncounterId: encounters[0].id,
-                board: {
-                    ...current.board,
-                    nodes: current.board.nodes.map((n) =>
-                        n.encounterId === encounter.id ? { ...n, encounterId: undefined } : n
-                    ),
-                },
-            };
+            return unlinkEncounter({ ...current, encounters, activeEncounterId: encounters[0].id }, encounter.id);
         });
 
     const addCombatants = (event: FormEvent) => {
@@ -88,11 +88,13 @@ export default function EncounterTracker({ data, setData }: EncounterTrackerProp
                     initiativeMod: toInt(form.initiativeMod),
                     maxHp: Math.max(0, toInt(form.maxHp, 10)),
                     ac: form.ac.trim(),
+                    creatureType: form.creatureType.trim(),
+                    alignment: form.alignment.trim(),
                 }));
             }
             return { ...current, combatants: [...current.combatants, ...added] };
         });
-        setForm({ ...EMPTY_FORM, kind: form.kind });
+        setForm({ ...EMPTY_FORM, kind: form.kind, creatureType: form.creatureType, alignment: form.alignment });
     };
 
     const order = sortCombatants(encounter.combatants);
@@ -187,6 +189,18 @@ export default function EncounterTracker({ data, setData }: EncounterTrackerProp
                         <span>Name</span>
                         <input value={form.name} placeholder="e.g. Goblin" onChange={(e) => setForm({ ...form, name: e.target.value })} />
                     </label>
+                    <label className="dms-field dms-add-wide dms-add-type">
+                        <span>Size / type</span>
+                        <input
+                            value={form.creatureType}
+                            placeholder="e.g. Small humanoid"
+                            onChange={(e) => setForm({ ...form, creatureType: e.target.value })}
+                        />
+                    </label>
+                    <label className="dms-field dms-add-wide">
+                        <span>Alignment</span>
+                        <input value={form.alignment} placeholder="e.g. Neutral evil" onChange={(e) => setForm({ ...form, alignment: e.target.value })} />
+                    </label>
                     <label className="dms-field">
                         <span>Type</span>
                         <select value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value as CombatantKind })}>
@@ -244,6 +258,9 @@ interface CombatantRowProps {
 function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: CombatantRowProps) {
     const [amount, setAmount] = useState("");
     const [custom, setCustom] = useState("");
+    // Notes show when there are some, or once "+ Notes" is clicked.
+    const [notesOpen, setNotesOpen] = useState(false);
+    const showNotes = notesOpen || c.notes !== "";
     const down = isDown(c);
     const set = (fields: Partial<Combatant>) => update((current) => ({ ...current, ...fields }));
     const available = STANDARD_CONDITIONS.filter((name) => !c.conditions.some((x) => x.toLowerCase() === name.toLowerCase()));
@@ -291,6 +308,17 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: C
                     <button type="button" className="dms-link-button" onClick={onDuplicate}>Duplicate</button>
                     <ConfirmButton label="Remove" confirmLabel="Sure?" onConfirm={onRemove} />
                 </div>
+            </div>
+
+            <div className="dms-combatant-details">
+                <label className="dms-field">
+                    <span>Size / type</span>
+                    <input value={c.creatureType} placeholder="e.g. Medium undead" onChange={(e) => set({ creatureType: e.target.value })} />
+                </label>
+                <label className="dms-field">
+                    <span>Alignment</span>
+                    <input value={c.alignment} placeholder="e.g. Chaotic evil" onChange={(e) => set({ alignment: e.target.value })} />
+                </label>
             </div>
 
             <div className="dms-combatant-hp">
@@ -373,12 +401,34 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: C
                 >
                     <input aria-label="Custom condition" placeholder="Custom…" value={custom} onChange={(e) => setCustom(e.target.value)} />
                 </form>
+                {!showNotes && (
+                    <button type="button" className="dms-link-button" onClick={() => setNotesOpen(true)}>+ Notes</button>
+                )}
             </div>
 
-            <label className="dms-field dms-notes">
-                <span>Notes</span>
-                <textarea rows={1} value={c.notes} onChange={(e) => set({ notes: e.target.value })} />
-            </label>
+            {showNotes && (
+                <div className="dms-field dms-notes">
+                    <div className="dms-notes-header">
+                        <label htmlFor={`notes-${c.id}`}>Notes</label>
+                        <ConfirmButton
+                            label="Remove notes"
+                            confirmLabel="Sure?"
+                            onConfirm={() => {
+                                set({ notes: "" });
+                                setNotesOpen(false);
+                            }}
+                        />
+                    </div>
+                    <textarea
+                        id={`notes-${c.id}`}
+                        rows={4}
+                        value={c.notes}
+                        placeholder="Tactics, abilities, loot…"
+                        autoFocus={notesOpen && c.notes === ""}
+                        onChange={(e) => set({ notes: e.target.value })}
+                    />
+                </div>
+            )}
         </li>
     );
 }

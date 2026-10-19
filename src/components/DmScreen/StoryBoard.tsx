@@ -11,16 +11,30 @@ import {
 
 import {
     NODE_KINDS,
+    activeBoard,
     addLink,
     branchState,
     clearTaken,
+    createBoard,
     createEncounter,
+    createNpc,
+    createItem,
+    cardTitle,
+    holderLabel,
+    itemStatLine,
+    itemTypeLabel,
+    itemsHeldBy,
+    linkedItem,
+    linkedNpc,
+    rarityLabel,
     createNode,
     encounterOutcome,
     OUTCOME_LABELS,
+    removeBoard,
     removeLink,
     removeNode,
     toggleTaken,
+    updateActiveBoard,
     zoomAt,
     ZOOM_MAX,
     ZOOM_MIN,
@@ -29,14 +43,25 @@ import {
     type BoardNode,
     type DmScreenData,
     type EncounterOutcome,
+    type Item,
+    type ItemHolder,
     type NodeKind,
+    type Npc,
 } from "../../utils/dmScreen";
 import ConfirmButton from "./ConfirmButton";
+import HolderField from "./HolderField";
+import ImageField from "./ImageField";
+import { imageFileIn, readImageFile } from "./imageFile";
 
 interface StoryBoardProps {
     data: DmScreenData;
     setData: Dispatch<SetStateAction<DmScreenData>>;
     onRunEncounter: (encounterId: string) => void;
+    onOpenNpc: (npcId: string) => void;
+    onOpenItem: (itemId: string) => void;
+    // Select this card and bring it into view when the board opens.
+    focusNodeId: string | null;
+    onFocused: () => void;
 }
 
 type Selection = { type: "node"; id: string } | { type: "link"; id: string } | null;
@@ -53,34 +78,6 @@ interface Point { x: number; y: number }
 const DEFAULT_SIZE: Size = { w: 220, h: 96 };
 
 const kindLabel = (kind: NodeKind) => NODE_KINDS.find((k) => k.value === kind)?.label ?? "Note";
-
-// Imported images are scaled down and re-encoded so the board still fits in localStorage.
-const IMAGE_MAX_SIDE = 800;
-
-async function readImageFile(file: File): Promise<string> {
-    const url = URL.createObjectURL(file);
-    try {
-        const image = new Image();
-        await new Promise<void>((resolve, reject) => {
-            image.onload = () => resolve();
-            image.onerror = () => reject(new Error("That file isn't an image the browser can read."));
-            image.src = url;
-        });
-        const scale = Math.min(1, IMAGE_MAX_SIDE / Math.max(image.naturalWidth, image.naturalHeight));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
-        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
-        canvas.getContext("2d")!.drawImage(image, 0, 0, canvas.width, canvas.height);
-        // WebP keeps transparency and stays small.
-        return canvas.toDataURL("image/webp", 0.85);
-    }
-    finally {
-        URL.revokeObjectURL(url);
-    }
-}
-
-const imageFileIn = (dataTransfer: DataTransfer | null) =>
-    Array.from(dataTransfer?.files ?? []).find((f) => f.type.startsWith("image/"));
 
 function isTyping(target: EventTarget | null) {
     const element = target as HTMLElement | null;
@@ -119,19 +116,35 @@ function linkGeometry(a: BoardNode, aSize: Size, b: BoardNode, bSize: Size) {
     };
 }
 
-export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoardProps) {
-    const { board } = data;
+export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, onOpenItem, focusNodeId, onFocused }: StoryBoardProps) {
+    const board = activeBoard(data);
     const { view } = board;
 
     const boardRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef<Drag | null>(null);
     const [connect, setConnect] = useState<{ from: string; point: Point } | null>(null);
-    const [selection, setSelection] = useState<Selection>(null);
+    const [selection, setSelection] = useState<Selection>(() => (focusNodeId ? { type: "node", id: focusNodeId } : null));
     const [sizes, setSizes] = useState<Record<string, Size>>({});
     const [newKind, setNewKind] = useState<NodeKind>("scene");
 
     const updateBoard = (change: (current: Board) => Board) =>
-        setData((current) => ({ ...current, board: change(current.board) }));
+        setData((current) => updateActiveBoard(current, change));
+
+    const switchBoard = (id: string) => {
+        cancelConnect();
+        setSelection(null);
+        setData((current) => ({ ...current, activeBoardId: id }));
+    };
+
+    const addBoard = () => {
+        const created = createBoard(`Story board ${data.boards.length + 1}`);
+        cancelConnect();
+        setSelection(null);
+        setData((current) => ({ ...current, boards: [...current.boards, created], activeBoardId: created.id }));
+    };
+
+    const renameBoard = (name: string) =>
+        setData((current) => ({ ...current, boards: current.boards.map((b) => (b.id === board.id ? { ...b, name } : b)) }));
 
     const updateNode = (id: string, fields: Partial<BoardNode>) =>
         updateBoard((current) => ({
@@ -213,6 +226,23 @@ export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoard
         setView((current) => zoomAt(current, factor, (rect?.width ?? 0) / 2, (rect?.height ?? 0) / 2));
     };
 
+    // ---- Opened to show a card (e.g. from the NPCs tab): centre it.
+    useLayoutEffect(() => {
+        if (!focusNodeId) return;
+        const rect = boardRef.current?.getBoundingClientRect();
+        const node = board.nodes.find((n) => n.id === focusNodeId);
+        if (rect && node) {
+            setView((current) => ({
+                ...current,
+                x: rect.width / 2 - (node.x + DEFAULT_SIZE.w / 2) * current.zoom,
+                y: rect.height / 2 - (node.y + DEFAULT_SIZE.h / 2) * current.zoom,
+            }));
+        }
+        onFocused();
+        // Only when the board opens with a card to show.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [focusNodeId]);
+
     // ---- Wheel zoom (needs a non-passive listener to stop the page scrolling)
     useEffect(() => {
         const element = boardRef.current;
@@ -221,10 +251,10 @@ export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoard
             event.preventDefault();
             const rect = element.getBoundingClientRect();
             const factor = Math.exp(-event.deltaY * 0.0015);
-            setData((current) => ({
-                ...current,
-                board: { ...current.board, view: zoomAt(current.board.view, factor, event.clientX - rect.left, event.clientY - rect.top) },
-            }));
+            setData((current) => updateActiveBoard(current, (b) => ({
+                ...b,
+                view: zoomAt(b.view, factor, event.clientX - rect.left, event.clientY - rect.top),
+            })));
         };
         element.addEventListener("wheel", onWheel, { passive: false });
         return () => element.removeEventListener("wheel", onWheel);
@@ -340,6 +370,10 @@ export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoard
 
     // ---- Derived drawing data
     const nodeById = new Map(board.nodes.map((n) => [n.id, n]));
+    const titleOf = (id: string) => {
+        const node = nodeById.get(id);
+        return node ? cardTitle(data, node) : "?";
+    };
     const drawnLinks = board.links.flatMap((link) => {
         const from = nodeById.get(link.from);
         const to = nodeById.get(link.to);
@@ -363,6 +397,11 @@ export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoard
             <div className="dms-board-area">
                 <div className="dms-board-toolbar">
                     <div className="dms-board-add">
+                        <select aria-label="Story board" value={board.id} onChange={(e) => switchBoard(e.target.value)}>
+                            {data.boards.map((b) => <option key={b.id} value={b.id}>{b.name || "Untitled"}</option>)}
+                        </select>
+                        <button type="button" className="dms-button dms-button--ghost" onClick={addBoard}>+ New board</button>
+                        <span className="dms-toolbar-divider" aria-hidden="true" />
                         <select aria-label="Card type" value={newKind} onChange={(e) => setNewKind(e.target.value as NodeKind)}>
                             {NODE_KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
                         </select>
@@ -476,6 +515,8 @@ export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoard
 
                         {board.nodes.map((node) => {
                             const encounter = data.encounters.find((e) => e.id === node.encounterId);
+                            const npc = linkedNpc(data, node);
+                            const item = linkedItem(data, node);
                             return (
                                 <NodeCard
                                     key={node.id}
@@ -483,6 +524,12 @@ export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoard
                                     selected={selection?.type === "node" && selection.id === node.id}
                                     encounterName={encounter?.name}
                                     outcome={encounter ? encounterOutcome(encounter) : null}
+                                    npc={npc}
+                                    carrying={npc ? itemsHeldBy(data, npc.id) : []}
+                                    onOpenNpc={onOpenNpc}
+                                    item={item}
+                                    holder={item ? holderLabel(data, item.holder) : ""}
+                                    onOpenItem={onOpenItem}
                                     isChoice={branches.choices.has(node.id)}
                                     grey={branches.greyNodes.has(node.id)}
                                     onToggleTaken={() => onToggleTaken(node.id)}
@@ -511,17 +558,33 @@ export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoard
                         grey={branches.greyNodes.has(selectedNode.id)}
                         onToggleTaken={() => onToggleTaken(selectedNode.id)}
                         onCreateEncounter={() => {
-                            const encounter = createEncounter(selectedNode.title || "New encounter");
-                            setData((current) => ({
-                                ...current,
-                                encounters: [...current.encounters, encounter],
-                                board: {
-                                    ...current.board,
-                                    nodes: current.board.nodes.map((n) => (n.id === selectedNode.id ? { ...n, encounterId: encounter.id } : n)),
-                                },
-                            }));
+                            const encounter = createEncounter(cardTitle(data, selectedNode) || "New encounter");
+                            setData((current) => updateActiveBoard(
+                                { ...current, encounters: [...current.encounters, encounter] },
+                                (b) => ({ ...b, nodes: b.nodes.map((n) => (n.id === selectedNode.id ? { ...n, encounterId: encounter.id } : n)) })
+                            ));
                         }}
                         onRunEncounter={onRunEncounter}
+                        onCreateNpc={() => {
+                            const npc = createNpc({ name: selectedNode.title || "New NPC" });
+                            setData((current) => updateActiveBoard(
+                                { ...current, npcs: [...current.npcs, npc], activeNpcId: npc.id },
+                                (b) => ({ ...b, nodes: b.nodes.map((n) => (n.id === selectedNode.id ? { ...n, npcId: npc.id } : n)) })
+                            ));
+                        }}
+                        onOpenNpc={onOpenNpc}
+                        onCreateItem={() => {
+                            const item = createItem({ name: selectedNode.title || "New item" });
+                            setData((current) => updateActiveBoard(
+                                { ...current, items: [...current.items, item], activeItemId: item.id },
+                                (b) => ({ ...b, nodes: b.nodes.map((n) => (n.id === selectedNode.id ? { ...n, itemId: item.id } : n)) })
+                            ));
+                        }}
+                        onOpenItem={onOpenItem}
+                        onSetHolder={(itemId, holder) => setData((current) => ({
+                            ...current,
+                            items: current.items.map((i) => (i.id === itemId ? { ...i, holder } : i)),
+                        }))}
                         onConnect={(to) => updateBoard((current) => addLink(current, selectedNode.id, to))}
                         onSelectLink={(id) => setSelection({ type: "link", id })}
                         onDelete={deleteSelection}
@@ -529,8 +592,8 @@ export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoard
                 ) : selectedLink ? (
                     <LinkInspector
                         link={selectedLink}
-                        fromTitle={nodeById.get(selectedLink.from)?.title ?? "?"}
-                        toTitle={nodeById.get(selectedLink.to)?.title ?? "?"}
+                        fromTitle={titleOf(selectedLink.from)}
+                        toTitle={titleOf(selectedLink.to)}
                         update={(fields) => updateLink(selectedLink.id, fields)}
                         onReverse={() => {
                             const reversed = { from: selectedLink.to, to: selectedLink.from };
@@ -542,8 +605,13 @@ export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoard
                 ) : (
                     <>
                         <h2 className="dms-panel-title">Story board</h2>
+                        <label className="dms-field">
+                            <span>Board name</span>
+                            <input value={board.name} onChange={(e) => renameBoard(e.target.value)} />
+                        </label>
                         <p className="dms-inspector-help">
-                            Select a card or a connection to edit it here.
+                            Select a card or a connection to edit it here. Switch boards, or start a new one, from the
+                            dropdown above the board.
                         </p>
                         <p className="dms-inspector-help">
                             When a card has several branches, tick ✓ on the one the players took. The other branches,
@@ -557,6 +625,15 @@ export default function StoryBoard({ data, setData, onRunEncounter }: StoryBoard
                                 <li key={k.value}><span className={`dms-swatch dms-node--${k.value}`} />{k.label}</li>
                             ))}
                         </ul>
+                        <ConfirmButton
+                            className="dms-button dms-button--danger"
+                            label="Delete board"
+                            confirmLabel={board.nodes.length ? `Delete ${board.nodes.length} cards?` : "Click again to delete"}
+                            onConfirm={() => {
+                                setSelection(null);
+                                setData((current) => removeBoard(current, board.id));
+                            }}
+                        />
                     </>
                 )}
             </aside>
@@ -574,6 +651,15 @@ interface NodeCardProps {
     encounterName?: string;
     // Who won the linked encounter, once one side is all down.
     outcome: EncounterOutcome | null;
+    // The linked NPC, shown as a tag that opens its sheet.
+    npc?: Npc;
+    // Items the linked NPC carries, as tags too.
+    carrying: Item[];
+    onOpenNpc: (npcId: string) => void;
+    // The linked item, and who has it ("With the party", ...).
+    item?: Item;
+    holder: string;
+    onOpenItem: (itemId: string) => void;
     // One of several branches from the same card, so it can be ticked.
     isChoice: boolean;
     grey: boolean;
@@ -589,6 +675,12 @@ function NodeCard({
     selected,
     encounterName,
     outcome,
+    npc,
+    carrying,
+    onOpenNpc,
+    item,
+    holder,
+    onOpenItem,
     isChoice,
     grey,
     onToggleTaken,
@@ -598,6 +690,8 @@ function NodeCard({
     onSelect,
 }: NodeCardProps) {
     const ref = useRef<HTMLDivElement>(null);
+    // A linked NPC's or item's name is the card's title.
+    const title = npc?.name ?? item?.name ?? node.title;
 
     // Report the card's size so connections meet its edges.
     useLayoutEffect(() => {
@@ -624,7 +718,7 @@ function NodeCard({
             style={{ transform: `translate(${node.x}px, ${node.y}px)` }}
             tabIndex={0}
             role="button"
-            aria-label={`${kindLabel(node.kind)}: ${node.title}${node.taken ? " (taken)" : grey ? " (not taken)" : ""}`}
+            aria-label={`${kindLabel(node.kind)}: ${title}${node.taken ? " (taken)" : grey ? " (not taken)" : ""}`}
             aria-pressed={selected}
             onPointerDown={(event) => {
                 event.stopPropagation();
@@ -642,7 +736,7 @@ function NodeCard({
                     {kindLabel(node.kind)}
                     {grey && <span className="dms-node-status">Not taken</span>}
                 </span>
-                <span className="dms-node-title">{node.title || "Untitled"}</span>
+                <span className="dms-node-title">{title || "Untitled"}</span>
                 {(isChoice || node.taken) && (
                     <button
                         type="button"
@@ -665,6 +759,37 @@ function NodeCard({
                 ? <img className="dms-node-image" src={node.image} alt={node.title} draggable={false} />
                 : <p className="dms-node-image-empty">No image yet</p>
             )}
+            {npc && (
+                <div className="dms-node-npc">
+                    {npc.image && <img className="dms-node-npc-portrait" src={npc.image} alt="" draggable={false} />}
+                    <div className="dms-node-npc-info">
+                        <CardTag label={`👤 ${npc.name || "Unnamed"}`} title={`Open ${npc.name || "this NPC"} in the NPCs tab`} onOpen={() => onOpenNpc(npc.id)} />
+                        {(npc.race || npc.location) && (
+                            <span className="dms-node-npc-meta">{[npc.race, npc.location].filter(Boolean).join(" · ")}</span>
+                        )}
+                    </div>
+                </div>
+            )}
+            {carrying.length > 0 && (
+                <div className="dms-node-carrying" aria-label="Carrying">
+                    {carrying.map((i) => (
+                        <CardTag key={i.id} label={`🎒 ${i.name || "Unnamed"}`} title={`Open ${i.name || "this item"} in the Items tab`} onOpen={() => onOpenItem(i.id)} />
+                    ))}
+                </div>
+            )}
+            {item && (
+                <div className="dms-node-npc">
+                    {item.image && <img className="dms-node-item-image" src={item.image} alt="" draggable={false} />}
+                    <div className="dms-node-npc-info">
+                        <CardTag label={`🎒 ${item.name || "Unnamed"}`} title={`Open ${item.name || "this item"} in the Items tab`} onOpen={() => onOpenItem(item.id)} />
+                        <span className="dms-node-npc-meta">
+                            {[rarityLabel(item.rarity), itemTypeLabel(item.type)].filter(Boolean).join(" · ")}
+                        </span>
+                        {itemStatLine(item) && <span className="dms-node-item-stats">{itemStatLine(item)}</span>}
+                        <span className={`dms-holder-badge dms-holder--${item.holder.kind}`}>{holder}</span>
+                    </div>
+                </div>
+            )}
             {(node.text || encounterName) && (
                 <div className="dms-node-body">
                     {encounterName && (
@@ -685,6 +810,24 @@ function NodeCard({
     );
 }
 
+// A tag on a card that opens the linked NPC or item, without dragging or selecting the card.
+function CardTag({ label, title, onOpen }: { label: string; title: string; onOpen: () => void }) {
+    return (
+        <button
+            type="button"
+            className="dms-npc-tag"
+            title={title}
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={(event) => {
+                event.stopPropagation();
+                onOpen();
+            }}
+        >
+            {label}
+        </button>
+    );
+}
+
 // =====================================
 // Inspectors
 // =====================================
@@ -698,6 +841,11 @@ interface NodeInspectorProps {
     onToggleTaken: () => void;
     onCreateEncounter: () => void;
     onRunEncounter: (encounterId: string) => void;
+    onCreateNpc: () => void;
+    onOpenNpc: (npcId: string) => void;
+    onCreateItem: () => void;
+    onOpenItem: (itemId: string) => void;
+    onSetHolder: (itemId: string, holder: ItemHolder) => void;
     onConnect: (to: string) => void;
     onSelectLink: (id: string) => void;
     onDelete: () => void;
@@ -712,12 +860,24 @@ function NodeInspector({
     onToggleTaken,
     onCreateEncounter,
     onRunEncounter,
+    onCreateNpc,
+    onOpenNpc,
+    onCreateItem,
+    onOpenItem,
+    onSetHolder,
     onConnect,
     onSelectLink,
     onDelete,
 }: NodeInspectorProps) {
-    const { nodes, links } = data.board;
-    const title = (id: string) => nodes.find((n) => n.id === id)?.title || "Untitled";
+    const { nodes, links } = activeBoard(data);
+    const npc = linkedNpc(data, node);
+    const item = linkedItem(data, node);
+    // A linked NPC or item owns the card's name.
+    const linkedName = npc?.name ?? item?.name;
+    const title = (id: string) => {
+        const other = nodes.find((n) => n.id === id);
+        return (other && cardTitle(data, other)) || "Untitled";
+    };
     const outgoing = links.filter((l) => l.from === node.id);
     const incoming = links.filter((l) => l.to === node.id);
     const connectable = nodes.filter((n) => n.id !== node.id && !outgoing.some((l) => l.to === n.id));
@@ -745,22 +905,101 @@ function NodeInspector({
                 <p className="dms-inspector-help">Greyed out: it's only reachable through a branch the players didn't take.</p>
             )}
 
-            <label className="dms-field">
-                <span>Title</span>
-                <input value={node.title} onChange={(e) => update({ title: e.target.value })} />
-            </label>
-            <label className="dms-field">
-                <span>Type</span>
-                <select value={node.kind} onChange={(e) => update({ kind: e.target.value as NodeKind })}>
-                    {NODE_KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
-                </select>
-            </label>
+            {/* An NPC card is either linked to a named NPC, which then owns its
+                name, or unlinked and written by hand like any other card. */}
+            {(node.kind === "npc" || npc) && (
+                <div className="dms-inspector-section">
+                    <label className="dms-field">
+                        <span>Named NPC</span>
+                        <select
+                            value={npc?.id ?? ""}
+                            onChange={(e) => {
+                                const id = e.target.value;
+                                // Unlinking keeps the name, so the card doesn't jump back to an old title.
+                                update(id ? { npcId: id } : { npcId: undefined, title: npc?.name ?? node.title });
+                            }}
+                        >
+                            <option value="">Not linked (write it yourself)</option>
+                            {data.npcs.map((n) => <option key={n.id} value={n.id}>{n.name || "Unnamed"}</option>)}
+                        </select>
+                    </label>
+                    <div className="dms-inspector-buttons">
+                        {npc ? (
+                            <button type="button" className="dms-button" onClick={() => onOpenNpc(npc.id)}>
+                                Open NPC →
+                            </button>
+                        ) : (
+                            <button type="button" className="dms-button dms-button--ghost" onClick={onCreateNpc}>
+                                + Create NPC from this card
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Item cards work the same way, plus who has the item right now. */}
+            {(node.kind === "item" || item) && (
+                <div className="dms-inspector-section">
+                    <label className="dms-field">
+                        <span>Item</span>
+                        <select
+                            value={item?.id ?? ""}
+                            onChange={(e) => {
+                                const id = e.target.value;
+                                update(id ? { itemId: id } : { itemId: undefined, title: item?.name ?? node.title });
+                            }}
+                        >
+                            <option value="">Not linked (write it yourself)</option>
+                            {data.items.map((i) => <option key={i.id} value={i.id}>{i.name || "Unnamed"}</option>)}
+                        </select>
+                    </label>
+                    {item && (
+                        <HolderField id={`card-${node.id}`} holder={item.holder} data={data} onChange={(holder) => onSetHolder(item.id, holder)} />
+                    )}
+                    <div className="dms-inspector-buttons">
+                        {item ? (
+                            <button type="button" className="dms-button" onClick={() => onOpenItem(item.id)}>
+                                Open item →
+                            </button>
+                        ) : (
+                            <button type="button" className="dms-button dms-button--ghost" onClick={onCreateItem}>
+                                + Create item from this card
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {linkedName !== undefined ? (
+                <div className="dms-field">
+                    <span>Title</span>
+                    <p className="dms-locked-value">{linkedName || "Unnamed"}</p>
+                    <p className="dms-inspector-help">
+                        {npc
+                            ? "The name, race, stats and image come from the NPCs tab. Unlink the NPC to write this card yourself."
+                            : "The name, details and image come from the Items tab. Unlink the item to write this card yourself."}
+                    </p>
+                </div>
+            ) : (
+                <>
+                    <label className="dms-field">
+                        <span>Title</span>
+                        <input value={node.title} onChange={(e) => update({ title: e.target.value })} />
+                    </label>
+                    <label className="dms-field">
+                        <span>Type</span>
+                        <select value={node.kind} onChange={(e) => update({ kind: e.target.value as NodeKind })}>
+                            {NODE_KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
+                        </select>
+                    </label>
+                </>
+            )}
             <label className="dms-field">
                 <span>Notes</span>
                 <textarea rows={6} value={node.text} onChange={(e) => update({ text: e.target.value })} />
             </label>
 
-            {node.kind === "image" && <ImageField node={node} update={update} />}
+            {node.kind === "image" && <ImageField image={node.image} alt={node.title} onChange={(image) => update({ image })} />}
 
             {node.kind === "encounter" && (
                 <div className="dms-inspector-section">
@@ -817,7 +1056,7 @@ function NodeInspector({
                         <span>Connect to…</span>
                         <select value="" onChange={(e) => e.target.value && onConnect(e.target.value)}>
                             <option value="">Pick a card</option>
-                            {connectable.map((n) => <option key={n.id} value={n.id}>{n.title || "Untitled"}</option>)}
+                            {connectable.map((n) => <option key={n.id} value={n.id}>{cardTitle(data, n) || "Untitled"}</option>)}
                         </select>
                     </label>
                 )}
@@ -825,54 +1064,6 @@ function NodeInspector({
 
             <ConfirmButton className="dms-button dms-button--danger" label="Delete card" onConfirm={onDelete} />
         </>
-    );
-}
-
-function ImageField({ node, update }: { node: BoardNode; update: (fields: Partial<BoardNode>) => void }) {
-    const fileInput = useRef<HTMLInputElement>(null);
-    const [error, setError] = useState("");
-
-    const importFile = (file: File | undefined) => {
-        if (!file) return;
-        setError("");
-        readImageFile(file)
-            .then((image) => update({ image }))
-            .catch((err: Error) => setError(err.message));
-    };
-
-    return (
-        <div
-            className="dms-inspector-section"
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-                event.preventDefault();
-                importFile(imageFileIn(event.dataTransfer));
-            }}
-        >
-            <span className="dms-subtitle">Image</span>
-            {node.image && <img className="dms-image-preview" src={node.image} alt={node.title} />}
-            <input
-                ref={fileInput}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(event) => {
-                    importFile(event.target.files?.[0]);
-                    event.target.value = "";
-                }}
-            />
-            <div className="dms-inspector-buttons">
-                <button type="button" className="dms-button" onClick={() => fileInput.current?.click()}>
-                    {node.image ? "Replace image" : "Import image"}
-                </button>
-                {node.image && (
-                    <button type="button" className="dms-button dms-button--ghost" onClick={() => update({ image: undefined })}>
-                        Remove
-                    </button>
-                )}
-            </div>
-            {error && <p className="dms-inspector-help">{error}</p>}
-        </div>
     );
 }
 

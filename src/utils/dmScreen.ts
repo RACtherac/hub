@@ -23,6 +23,9 @@ export interface Combatant {
     maxHp: number;
     tempHp: number;
     ac: string;
+    // Free text, e.g. "Medium humanoid (goblinoid)" or "Large undead".
+    creatureType: string;
+    alignment: string;
     conditions: string[];
     notes: string;
 }
@@ -36,7 +39,7 @@ export interface Encounter {
     combatants: Combatant[];
 }
 
-export type NodeKind = "scene" | "encounter" | "npc" | "location" | "clue" | "note" | "image";
+export type NodeKind = "scene" | "encounter" | "npc" | "item" | "location" | "clue" | "note" | "image";
 
 export interface BoardNode {
     id: string;
@@ -46,6 +49,10 @@ export interface BoardNode {
     x: number;
     y: number;
     encounterId?: string;
+    // NPC cards: the named NPC from the NPCs tab.
+    npcId?: string;
+    // Item cards: the item from the Items tab.
+    itemId?: string;
     // Image cards: a downscaled data URL, small enough for localStorage.
     image?: string;
     // The players took this branch; its sibling branches are greyed out.
@@ -71,11 +78,72 @@ export interface Board {
     view: BoardView;
 }
 
+// A named NPC worth keeping a sheet for (the NPCs tab).
+export interface Npc {
+    id: string;
+    name: string;
+    race: string;
+    alignment: string;
+    ac: string;
+    hp: number;
+    maxHp: number;
+    location: string;
+    notes: string;
+    // A downscaled data URL, like image cards.
+    image?: string;
+}
+
+export type ItemType = "weapon" | "armour" | "potion" | "quest" | "treasure" | "other";
+
+export type ItemRarity = "" | "common" | "uncommon" | "rare" | "very-rare" | "legendary" | "artifact";
+
+// Who has an item right now. Items change hands, so this is one field to
+// update rather than a card to rebuild.
+export type ItemHolder =
+    | { kind: "none" }
+    | { kind: "npc"; npcId: string }
+    | { kind: "location"; name: string }
+    // `character` is optional: which party member carries it.
+    | { kind: "party"; character: string };
+
+export type ItemHolderKind = ItemHolder["kind"];
+
+// Loot worth tracking (the Items tab).
+export interface Item {
+    id: string;
+    name: string;
+    type: ItemType;
+    rarity: ItemRarity;
+    // Free text, e.g. "500 gp".
+    value: string;
+    description: string;
+    // Type-specific stats, keyed by ITEM_STAT_FIELDS (damage for weapons, AC
+    // for armour, ...). Values for other types are kept, so switching type
+    // back and forth doesn't lose them.
+    stats: Record<string, string>;
+    holder: ItemHolder;
+    // A downscaled data URL, like image cards.
+    image?: string;
+}
+
+// One of several story boards, e.g. one per adventure or session.
+export interface NamedBoard extends Board {
+    id: string;
+    name: string;
+}
+
 export interface DmScreenData {
     version: 1;
     encounters: Encounter[];
     activeEncounterId: string;
-    board: Board;
+    boards: NamedBoard[];
+    activeBoardId: string;
+    npcs: Npc[];
+    // The NPC open in the NPCs tab, or "" when there are none.
+    activeNpcId: string;
+    items: Item[];
+    // The item open in the Items tab, or "" when there are none.
+    activeItemId: string;
     maps: BattleMap[];
     activeMapId: string;
 }
@@ -106,10 +174,116 @@ export const NODE_KINDS: { value: NodeKind; label: string }[] = [
     { value: "scene", label: "Scene" },
     { value: "encounter", label: "Encounter" },
     { value: "npc", label: "NPC" },
+    { value: "item", label: "Item" },
     { value: "location", label: "Location" },
     { value: "clue", label: "Clue" },
     { value: "note", label: "Note" },
     { value: "image", label: "Image" },
+];
+
+export const ITEM_TYPES: { value: ItemType; label: string }[] = [
+    { value: "weapon", label: "Weapon" },
+    { value: "armour", label: "Armour" },
+    { value: "potion", label: "Potion" },
+    { value: "quest", label: "Quest item" },
+    { value: "treasure", label: "Treasure" },
+    { value: "other", label: "Other" },
+];
+
+export const ITEM_RARITIES: { value: ItemRarity; label: string }[] = [
+    { value: "", label: "No rarity" },
+    { value: "common", label: "Common" },
+    { value: "uncommon", label: "Uncommon" },
+    { value: "rare", label: "Rare" },
+    { value: "very-rare", label: "Very rare" },
+    { value: "legendary", label: "Legendary" },
+    { value: "artifact", label: "Artifact" },
+];
+
+export interface ItemStatField {
+    key: string;
+    label: string;
+    placeholder?: string;
+    // A dropdown instead of free text.
+    options?: { value: string; label: string }[];
+}
+
+// The extra fields each item type has. Free text, so it works for any system.
+export const ITEM_STAT_FIELDS: Record<ItemType, ItemStatField[]> = {
+    weapon: [
+        { key: "attack", label: "Melee / ranged", options: [{ value: "melee", label: "Melee" }, { value: "ranged", label: "Ranged" }] },
+        { key: "range", label: "Range / reach", placeholder: "5 ft, or 80/320 ft" },
+        { key: "hit", label: "To hit / DC", placeholder: "+5, or DC 14 Dex" },
+        { key: "damage", label: "Damage", placeholder: "1d8 + 3" },
+        { key: "damageType", label: "Damage type", placeholder: "Slashing" },
+        { key: "properties", label: "Properties", placeholder: "Finesse, versatile (1d10)" },
+    ],
+    armour: [
+        {
+            key: "armourType",
+            label: "Armour type",
+            options: [
+                { value: "light", label: "Light" },
+                { value: "medium", label: "Medium" },
+                { value: "heavy", label: "Heavy" },
+                { value: "shield", label: "Shield" },
+            ],
+        },
+        { key: "ac", label: "AC", placeholder: "14 + Dex (max 2), or +2" },
+        { key: "strength", label: "Strength needed", placeholder: "Str 13" },
+        { key: "stealth", label: "Stealth", options: [{ value: "disadvantage", label: "Disadvantage" }] },
+    ],
+    potion: [
+        { key: "effect", label: "Effect", placeholder: "Regain 2d4 + 2 HP" },
+        { key: "duration", label: "Duration", placeholder: "Instant, or 1 hour" },
+    ],
+    quest: [
+        { key: "quest", label: "Part of quest", placeholder: "The Sunken Abbey" },
+        { key: "wantedBy", label: "Wanted by", placeholder: "Abbot Merrin" },
+    ],
+    treasure: [
+        { key: "quantity", label: "Quantity", placeholder: "3" },
+    ],
+    other: [],
+};
+
+const statOption = (type: ItemType, key: string, value: string) =>
+    ITEM_STAT_FIELDS[type].find((f) => f.key === key)?.options?.find((o) => o.value === value)?.label ?? value;
+
+// One line of the stats that matter at the table, for the card face:
+// "Melee · +5 · 1d8 + 3 slashing · 5 ft", "Heavy · AC 18 · Stealth disadv.".
+export function itemStatLine(item: Item): string {
+    const s = (key: string) => (item.stats[key] ?? "").trim();
+    const parts: string[] = [];
+    switch (item.type) {
+        case "weapon":
+            parts.push(statOption("weapon", "attack", s("attack")), s("hit"), [s("damage"), s("damageType").toLowerCase()].filter(Boolean).join(" "), s("range"));
+            break;
+        case "armour":
+            parts.push(statOption("armour", "armourType", s("armourType")), s("ac") && `AC ${s("ac")}`, s("stealth") && "Stealth disadv.");
+            break;
+        case "potion":
+            parts.push(s("effect"), s("duration"));
+            break;
+        case "quest":
+            parts.push(s("quest"));
+            break;
+        case "treasure":
+            parts.push(s("quantity") && `×${s("quantity")}`);
+            break;
+    }
+    return parts.filter(Boolean).join(" · ");
+}
+
+export const itemTypeLabel =(type: ItemType) => ITEM_TYPES.find((t) => t.value === type)?.label ?? "Item";
+
+export const rarityLabel = (rarity: ItemRarity) => (rarity ? ITEM_RARITIES.find((r) => r.value === rarity)?.label ?? "" : "");
+
+export const ITEM_HOLDERS: { value: ItemHolderKind; label: string }[] = [
+    { value: "none", label: "Not found yet" },
+    { value: "npc", label: "An NPC" },
+    { value: "location", label: "A location" },
+    { value: "party", label: "The party" },
 ];
 
 export const ZOOM_MIN = 0.3;
@@ -129,6 +303,8 @@ export function createCombatant(fields: Partial<Combatant> = {}): Combatant {
         initiativeMod: 0,
         tempHp: 0,
         ac: "",
+        creatureType: "",
+        alignment: "",
         conditions: [],
         notes: "",
         ...fields,
@@ -146,14 +322,54 @@ export function createNode(kind: NodeKind, x: number, y: number): BoardNode {
     return { id: makeId(), kind, title: `New ${label.toLowerCase()}`, text: "", x, y };
 }
 
+export function createNpc(fields: Partial<Npc> = {}): Npc {
+    const maxHp = Math.max(0, Math.trunc(fields.maxHp ?? 10));
+    return {
+        id: makeId(),
+        name: "New NPC",
+        race: "",
+        alignment: "",
+        ac: "",
+        location: "",
+        notes: "",
+        ...fields,
+        maxHp,
+        hp: clamp(Math.trunc(fields.hp ?? maxHp), 0, maxHp),
+    };
+}
+
+export function createItem(fields: Partial<Item> = {}): Item {
+    return {
+        id: makeId(),
+        name: "New item",
+        type: "other",
+        rarity: "",
+        value: "",
+        description: "",
+        stats: {},
+        holder: { kind: "none" },
+        ...fields,
+    };
+}
+
+export function createBoard(name = "New story board"): NamedBoard {
+    return { id: makeId(), name, nodes: [], links: [], view: { x: 0, y: 0, zoom: 1 } };
+}
+
 export function createDefaultData(): DmScreenData {
     const encounter = createEncounter("First encounter");
+    const board = createBoard("Story board");
     const map = createMap("First map");
     return {
         version: 1,
         encounters: [encounter],
         activeEncounterId: encounter.id,
-        board: { nodes: [], links: [], view: { x: 0, y: 0, zoom: 1 } },
+        boards: [board],
+        activeBoardId: board.id,
+        npcs: [],
+        activeNpcId: "",
+        items: [],
+        activeItemId: "",
         maps: [map],
         activeMapId: map.id,
     };
@@ -422,6 +638,156 @@ export function clearTaken(board: Board): Board {
     };
 }
 
+// ---- Several story boards
+
+export function activeBoard(data: DmScreenData): NamedBoard {
+    return data.boards.find((b) => b.id === data.activeBoardId) ?? data.boards[0];
+}
+
+export function updateActiveBoard(data: DmScreenData, change: (current: Board) => Board): DmScreenData {
+    const id = activeBoard(data).id;
+    return { ...data, boards: data.boards.map((b) => (b.id === id ? { ...b, ...change(b) } : b)) };
+}
+
+// Removes a board; the last one is replaced by an empty board so there's always one.
+export function removeBoard(data: DmScreenData, id: string): DmScreenData {
+    const boards = data.boards.filter((b) => b.id !== id);
+    if (boards.length === 0) boards.push(createBoard("Story board"));
+    const activeBoardId = boards.some((b) => b.id === data.activeBoardId) ? data.activeBoardId : boards[0].id;
+    return { ...data, boards, activeBoardId };
+}
+
+// ---- NPCs
+
+export function removeNpc(data: DmScreenData, id: string): DmScreenData {
+    const npcs = data.npcs.filter((n) => n.id !== id);
+    return {
+        ...data,
+        npcs,
+        activeNpcId: data.activeNpcId === id ? (npcs[0]?.id ?? "") : data.activeNpcId,
+        // Cards that showed this NPC stay on the board, unlinked.
+        boards: data.boards.map((b) => ({
+            ...b,
+            nodes: b.nodes.map((n) => (n.npcId === id ? { ...n, npcId: undefined } : n)),
+        })),
+        // What they carried is left without a holder, rather than lost.
+        items: data.items.map((item) =>
+            item.holder.kind === "npc" && item.holder.npcId === id ? { ...item, holder: { kind: "none" } } : item
+        ),
+    };
+}
+
+// The NPC a card is linked to, if it still exists.
+export function linkedNpc(data: DmScreenData, node: BoardNode): Npc | undefined {
+    return node.npcId ? data.npcs.find((n) => n.id === node.npcId) : undefined;
+}
+
+// The item a card is linked to, if it still exists.
+export function linkedItem(data: DmScreenData, node: BoardNode): Item | undefined {
+    return node.itemId ? data.items.find((i) => i.id === node.itemId) : undefined;
+}
+
+// A card linked to an NPC or item is titled with its name; otherwise its own title.
+export function cardTitle(data: DmScreenData, node: BoardNode): string {
+    return linkedNpc(data, node)?.name ?? linkedItem(data, node)?.name ?? node.title;
+}
+
+// ---- Search
+
+// True when every word of the query appears somewhere in the texts, ignoring case.
+function matchesQuery(query: string, texts: string[]): boolean {
+    const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+    const haystack = texts.join("\n").toLowerCase();
+    return words.every((word) => haystack.includes(word));
+}
+
+export function npcMatches(npc: Npc, query: string): boolean {
+    return matchesQuery(query, [npc.name, npc.race, npc.alignment, npc.location, npc.notes]);
+}
+
+// Searches the name, type, rarity, who has it, description and stats,
+// so "rare", "with the party", "slashing" or "Vex" all work.
+export function itemMatches(data: DmScreenData, item: Item, query: string): boolean {
+    return matchesQuery(query, [
+        item.name,
+        itemTypeLabel(item.type),
+        rarityLabel(item.rarity),
+        item.value,
+        holderLabel(data, item.holder),
+        item.description,
+        ...ITEM_STAT_FIELDS[item.type].map((f) => statOption(item.type, f.key, item.stats[f.key] ?? "")),
+    ]);
+}
+
+// ---- Items
+
+export function removeItem(data: DmScreenData, id: string): DmScreenData {
+    const items = data.items.filter((i) => i.id !== id);
+    return {
+        ...data,
+        items,
+        activeItemId: data.activeItemId === id ? (items[0]?.id ?? "") : data.activeItemId,
+        boards: data.boards.map((b) => ({
+            ...b,
+            nodes: b.nodes.map((n) => (n.itemId === id ? { ...n, itemId: undefined } : n)),
+        })),
+    };
+}
+
+export function itemCards(data: DmScreenData, itemId: string): { board: NamedBoard; node: BoardNode }[] {
+    return data.boards.flatMap((board) => board.nodes.filter((n) => n.itemId === itemId).map((node) => ({ board, node })));
+}
+
+export function itemsHeldBy(data: DmScreenData, npcId: string): Item[] {
+    return data.items.filter((i) => i.holder.kind === "npc" && i.holder.npcId === npcId);
+}
+
+// Switching holder kind keeps nothing from the old holder.
+export function holderOfKind(kind: ItemHolderKind, data: DmScreenData): ItemHolder {
+    if (kind === "npc") return { kind, npcId: data.npcs[0]?.id ?? "" };
+    if (kind === "location") return { kind, name: "" };
+    if (kind === "party") return { kind, character: "" };
+    return { kind: "none" };
+}
+
+// "With the party (Mira)", "Held by Vex", "At the Tavern", "Not found yet".
+export function holderLabel(data: DmScreenData, holder: ItemHolder): string {
+    switch (holder.kind) {
+        case "npc": {
+            const npc = data.npcs.find((n) => n.id === holder.npcId);
+            return npc ? `Held by ${npc.name || "an unnamed NPC"}` : "Held by an NPC";
+        }
+        case "location":
+            return holder.name.trim() ? `At ${holder.name.trim()}` : "At a location";
+        case "party":
+            return holder.character.trim() ? `With the party (${holder.character.trim()})` : "With the party";
+        default:
+            return "Not found yet";
+    }
+}
+
+// Every story board card linked to an NPC, with the board it's on.
+export function npcCards(data: DmScreenData, npcId: string): { board: NamedBoard; node: BoardNode }[] {
+    return data.boards.flatMap((board) => board.nodes.filter((n) => n.npcId === npcId).map((node) => ({ board, node })));
+}
+
+// Titles of Location cards on every board, as suggestions for an NPC's location.
+export function locationNames(data: DmScreenData): string[] {
+    const names = data.boards.flatMap((b) => b.nodes.filter((n) => n.kind === "location").map((n) => n.title.trim()));
+    return [...new Set(names.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+// Cards on every board that pointed at a deleted encounter stop pointing at it.
+export function unlinkEncounter(data: DmScreenData, encounterId: string): DmScreenData {
+    return {
+        ...data,
+        boards: data.boards.map((b) => ({
+            ...b,
+            nodes: b.nodes.map((n) => (n.encounterId === encounterId ? { ...n, encounterId: undefined } : n)),
+        })),
+    };
+}
+
 // Zooms around a point on screen (relative to the board), keeping the world
 // position under that point fixed.
 export function zoomAt(view: BoardView, factor: number, screenX: number, screenY: number): BoardView {
@@ -456,6 +822,8 @@ function normalizeCombatant(value: unknown): Combatant | null {
         hp: clamp(Math.trunc(num(value.hp, maxHp)), 0, maxHp),
         tempHp: Math.max(0, Math.trunc(num(value.tempHp))),
         ac: str(value.ac),
+        creatureType: str(value.creatureType),
+        alignment: str(value.alignment),
         conditions: Array.isArray(value.conditions) ? value.conditions.filter((c): c is string => typeof c === "string") : [],
         notes: str(value.notes),
     };
@@ -489,6 +857,10 @@ function normalizeNode(value: unknown): BoardNode | null {
     };
     const encounterId = str(value.encounterId);
     if (encounterId) node.encounterId = encounterId;
+    const npcId = str(value.npcId);
+    if (npcId) node.npcId = npcId;
+    const itemId = str(value.itemId);
+    if (itemId) node.itemId = itemId;
     const image = str(value.image);
     if (image.startsWith("data:image/")) node.image = image;
     if (value.taken === true) node.taken = true;
@@ -524,11 +896,63 @@ function normalizeBoard(value: unknown): Board {
     return board;
 }
 
+function normalizeNpc(value: unknown): Npc | null {
+    if (!isObject(value)) return null;
+    const maxHp = Math.max(0, Math.trunc(num(value.maxHp)));
+    const npc: Npc = {
+        id: str(value.id) || makeId(),
+        name: str(value.name, "Unnamed"),
+        race: str(value.race),
+        alignment: str(value.alignment),
+        ac: str(value.ac),
+        maxHp,
+        hp: clamp(Math.trunc(num(value.hp, maxHp)), 0, maxHp),
+        location: str(value.location),
+        notes: str(value.notes),
+    };
+    const image = str(value.image);
+    if (image.startsWith("data:image/")) npc.image = image;
+    return npc;
+}
+
+function normalizeHolder(value: unknown, npcIds: Set<string>): ItemHolder {
+    if (!isObject(value)) return { kind: "none" };
+    if (value.kind === "npc" && npcIds.has(str(value.npcId))) return { kind: "npc", npcId: str(value.npcId) };
+    if (value.kind === "location") return { kind: "location", name: str(value.name) };
+    if (value.kind === "party") return { kind: "party", character: str(value.character) };
+    return { kind: "none" };
+}
+
+function normalizeItem(value: unknown, npcIds: Set<string>): Item | null {
+    if (!isObject(value)) return null;
+    const item: Item = {
+        id: str(value.id) || makeId(),
+        name: str(value.name, "Unnamed"),
+        type: ITEM_TYPES.some((t) => t.value === value.type) ? (value.type as ItemType) : "other",
+        rarity: ITEM_RARITIES.some((r) => r.value === value.rarity) ? (value.rarity as ItemRarity) : "",
+        value: str(value.value),
+        description: str(value.description),
+        // Only string stats; older saves have none.
+        stats: isObject(value.stats)
+            ? Object.fromEntries(Object.entries(value.stats).filter((entry): entry is [string, string] => typeof entry[1] === "string"))
+            : {},
+        holder: normalizeHolder(value.holder, npcIds),
+    };
+    const image = str(value.image);
+    if (image.startsWith("data:image/")) item.image = image;
+    return item;
+}
+
+function normalizeNamedBoard(value: unknown, fallbackName: string): NamedBoard {
+    const source = isObject(value) ? value : {};
+    return { id: str(source.id) || makeId(), name: str(source.name, fallbackName), ...normalizeBoard(source) };
+}
+
 // Turns anything (parsed JSON, old saves, junk) into valid data, or null if
 // it doesn't look like a DM screen at all.
 export function normalizeData(value: unknown): DmScreenData | null {
     if (!isObject(value)) return null;
-    if (!Array.isArray(value.encounters) && !isObject(value.board)) return null;
+    if (!Array.isArray(value.encounters) && !isObject(value.board) && !Array.isArray(value.boards)) return null;
 
     const encounters = Array.isArray(value.encounters)
         ? value.encounters.map(normalizeEncounter).filter((e): e is Encounter => e !== null)
@@ -536,11 +960,32 @@ export function normalizeData(value: unknown): DmScreenData | null {
     if (encounters.length === 0) encounters.push(createEncounter("First encounter"));
 
     const activeId = str(value.activeEncounterId);
-    const board = normalizeBoard(value.board);
+    // Saves from before multiple boards have a single `board`; it becomes the first one.
+    const boards = Array.isArray(value.boards)
+        ? value.boards.filter(isObject).map((b, i) => normalizeNamedBoard(b, `Story board ${i + 1}`))
+        : isObject(value.board) ? [normalizeNamedBoard(value.board, "Story board")] : [];
+    if (boards.length === 0) boards.push(createBoard("Story board"));
+    const activeBoardId = str(value.activeBoardId);
+
+    const npcs = Array.isArray(value.npcs)
+        ? value.npcs.map(normalizeNpc).filter((n): n is Npc => n !== null)
+        : [];
+    const activeNpcId = str(value.activeNpcId);
+
     const encounterIds = new Set(encounters.map((e) => e.id));
-    board.nodes.forEach((node) => {
+    const npcIds = new Set(npcs.map((n) => n.id));
+
+    const items = Array.isArray(value.items)
+        ? value.items.map((i) => normalizeItem(i, npcIds)).filter((i): i is Item => i !== null)
+        : [];
+    const activeItemId = str(value.activeItemId);
+    const itemIds = new Set(items.map((i) => i.id));
+
+    boards.forEach((board) => board.nodes.forEach((node) => {
         if (node.encounterId && !encounterIds.has(node.encounterId)) delete node.encounterId;
-    });
+        if (node.npcId && !npcIds.has(node.npcId)) delete node.npcId;
+        if (node.itemId && !itemIds.has(node.itemId)) delete node.itemId;
+    }));
 
     // Saves from before the map maker have no maps; give them an empty one.
     const maps = Array.isArray(value.maps)
@@ -553,7 +998,12 @@ export function normalizeData(value: unknown): DmScreenData | null {
         version: 1,
         encounters,
         activeEncounterId: encounterIds.has(activeId) ? activeId : encounters[0].id,
-        board,
+        boards,
+        activeBoardId: boards.some((b) => b.id === activeBoardId) ? activeBoardId : boards[0].id,
+        npcs,
+        activeNpcId: npcIds.has(activeNpcId) ? activeNpcId : (npcs[0]?.id ?? ""),
+        items,
+        activeItemId: itemIds.has(activeItemId) ? activeItemId : (items[0]?.id ?? ""),
         maps,
         activeMapId: maps.some((m) => m.id === activeMapId) ? activeMapId : maps[0].id,
     };

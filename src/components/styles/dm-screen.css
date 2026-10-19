@@ -12,6 +12,7 @@
     --dms-clue: #c08bff;
     --dms-note: #8b93ad;
     --dms-image: #4fd1c5;
+    --dms-item: #f0a04b;
     --dms-taken: var(--dms-heal);
 
     position: relative;
@@ -441,15 +442,21 @@
     margin: 0.9rem 0;
 }
 
+/* Two rows: name, size/type and alignment on top; the numbers below. */
 .dms-add-form {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) repeat(5, minmax(0, 1fr)) auto;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 0.5rem;
     align-items: end;
     padding: 0.9rem;
     margin-bottom: 1rem;
     border-radius: 0.8rem;
     border: 1px dashed var(--border-2);
+}
+
+.dms-add-form .dms-add-name,
+.dms-add-form .dms-add-wide {
+    grid-column: span 2;
 }
 
 .dms-combatants {
@@ -502,6 +509,12 @@
     grid-template-columns: 4.5rem minmax(0, 2fr) minmax(0, 1fr) 4rem 5rem auto;
     gap: 0.5rem;
     align-items: end;
+}
+
+.dms-combatant-details {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 0.5rem;
 }
 
 .dms-init input {
@@ -636,8 +649,17 @@
     font-size: 0.8rem;
 }
 
+.dms-notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
 .dms-notes textarea {
-    font-size: 0.85rem;
+    min-height: 6rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
 }
 
 /* ===================================
@@ -673,6 +695,17 @@
 
 .dms-board-add select {
     width: auto;
+}
+
+.dms-board-add {
+    flex-wrap: wrap;
+}
+
+.dms-toolbar-divider {
+    align-self: stretch;
+    width: 1px;
+    margin: 0 0.3rem;
+    background: var(--border-2);
 }
 
 .dms-zoom-value {
@@ -813,6 +846,7 @@
 .dms-node--clue { --dms-kind: var(--dms-clue); }
 .dms-node--note { --dms-kind: var(--dms-note); }
 .dms-node--image { --dms-kind: var(--dms-image); }
+.dms-node--item { --dms-kind: var(--dms-item); }
 
 .dms-node-image {
     display: block;
@@ -833,6 +867,216 @@
     text-align: center;
     font-size: 0.8rem;
     color: var(--text-dim);
+}
+
+/* NPC card: the linked NPC's portrait and a tag that opens their sheet. */
+.dms-node-npc {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0 0.75rem 0.6rem;
+}
+
+.dms-node-npc-portrait {
+    flex: none;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--dms-kind);
+    pointer-events: none;
+}
+
+.dms-node-npc-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.dms-npc-tag {
+    max-width: 100%;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--dms-kind);
+    background: color-mix(in srgb, var(--dms-kind) 15%, transparent);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.dms-npc-tag:hover {
+    background: color-mix(in srgb, var(--dms-kind) 30%, transparent);
+}
+
+.dms-npc-tag:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.dms-node-npc-meta {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    overflow-wrap: anywhere;
+}
+
+/* Item card: a square thumbnail instead of a round portrait. */
+.dms-node-item-image {
+    flex: none;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 0.4rem;
+    object-fit: contain;
+    background: var(--surface);
+    border: 1px solid var(--dms-kind);
+    pointer-events: none;
+}
+
+.dms-node-item-stats {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text);
+    overflow-wrap: anywhere;
+}
+
+/* The fields for the item's type (damage for weapons, AC for armour, ...). */
+.dms-item-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px solid var(--border-2);
+    border-left: 3px solid var(--dms-item);
+    border-radius: 0.6rem;
+}
+
+.dms-item-stats legend {
+    padding: 0 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--dms-item);
+}
+
+/* Items an NPC carries, as tags on their card. */
+.dms-node-carrying {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    padding: 0 0.75rem 0.6rem;
+}
+
+.dms-node-carrying .dms-npc-tag {
+    --dms-kind: var(--dms-item);
+    font-weight: 500;
+}
+
+/* Who has an item. Gold once the party has it, so loot they've collected stands out. */
+.dms-holder-badge {
+    padding: 0.05rem 0.4rem;
+    border-radius: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: var(--surface);
+    color: var(--text-dim);
+}
+
+.dms-holder--party {
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    color: var(--accent);
+}
+
+.dms-holder--npc {
+    background: color-mix(in srgb, var(--dms-npc) 18%, transparent);
+    color: var(--dms-npc);
+}
+
+.dms-holder--location {
+    background: color-mix(in srgb, var(--dms-location) 18%, transparent);
+    color: var(--dms-location);
+}
+
+.dms-holder {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.dms-list-search {
+    margin-bottom: 0.6rem;
+}
+
+.dms-item-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.75rem;
+}
+
+.dms-carry-list {
+    list-style: none;
+    display: grid;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+}
+
+.dms-carry-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+
+/* A linked NPC card's title: shown, not edited. */
+.dms-locked-value {
+    padding: 0.5rem 0.6rem;
+    border-radius: 0.5rem;
+    border: 1px dashed var(--border-2);
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* NPCs tab: fields on the left, image and links on the right. */
+.dms-npc-sheet {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.dms-npc-fields {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.dms-npc-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.dms-npc-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dms-npc-fields .dms-notes textarea {
+    min-height: 12rem;
+}
+
+.dms-npc-side {
+    display: grid;
+    gap: 1rem;
 }
 
 .dms-image-preview {
@@ -1387,6 +1631,14 @@
     .dms-add-form .dms-add-name {
         grid-column: span 3;
     }
+
+    .dms-add-form .dms-add-wide {
+        grid-column: span 1;
+    }
+
+    .dms-add-form .dms-add-type {
+        grid-column: span 2;
+    }
 }
 
 @media (max-width: 900px) {
@@ -1398,6 +1650,10 @@
 
     .dms-inspector {
         position: static;
+    }
+
+    .dms-npc-sheet {
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .dms-combatant-main {
@@ -1429,8 +1685,19 @@
         grid-column: span 2;
     }
 
+    .dms-add-form .dms-add-wide,
+    .dms-add-form .dms-add-type {
+        grid-column: span 1;
+    }
+
     .dms-combatant-main {
         grid-template-columns: 4rem minmax(0, 1fr);
+    }
+
+    .dms-combatant-details,
+    .dms-npc-row,
+    .dms-npc-stats {
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .dms-encounter-header {
