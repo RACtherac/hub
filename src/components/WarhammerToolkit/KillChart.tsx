@@ -5,6 +5,10 @@ interface KillChartProps {
     killAtLeast: number[];
     // P(exactly k models destroyed), k = 0..models
     killDistribution: number[];
+    title?: string;
+    countLabel?: string;
+    // Colour the bars as one side of a Battle.
+    side?: "a" | "b";
 }
 
 const WIDTH = 640;
@@ -34,7 +38,13 @@ function columnPath(x: number, width: number, top: number, bottom: number): stri
     ].join(" ");
 }
 
-export default function KillChart({ killAtLeast, killDistribution }: KillChartProps) {
+export default function KillChart({
+    killAtLeast,
+    killDistribution,
+    title = "Chance to kill at least N models",
+    countLabel = "Models killed",
+    side,
+}: KillChartProps) {
     const [hovered, setHovered] = useState<number | null>(null);
     const [showTable, setShowTable] = useState(false);
 
@@ -53,14 +63,14 @@ export default function KillChart({ killAtLeast, killDistribution }: KillChartPr
     return (
         <figure className="whk-chart">
             <figcaption className="whk-chart-header">
-                <span className="whk-chart-title">Chance to kill at least N models</span>
+                <span className="whk-chart-title">{title}</span>
                 <button type="button" className="whk-link-button" onClick={() => setShowTable((v) => !v)} aria-expanded={showTable}>
                     {showTable ? "Hide table" : "Show table"}
                 </button>
             </figcaption>
 
             <div className="whk-chart-plot">
-                <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label="Column chart of the chance to kill at least each number of models">
+                <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={`Column chart: ${title}`}>
                     {[0, 0.5, 1].map((tick) => (
                         <g key={tick}>
                             <line className="whk-chart-grid" x1={MARGIN.left} x2={WIDTH - MARGIN.right} y1={yOf(tick)} y2={yOf(tick)} />
@@ -78,7 +88,7 @@ export default function KillChart({ killAtLeast, killDistribution }: KillChartPr
                         return (
                             <g key={k}>
                                 <path
-                                    className={isHovered ? "whk-chart-bar active" : "whk-chart-bar"}
+                                    className={`whk-chart-bar${side ? ` whk-chart-bar--${side}` : ""}${isHovered ? " active" : ""}`}
                                     d={columnPath(x, barWidth, yOf(p), baseline)}
                                 />
                                 {showValues && p >= 0.005 && (
@@ -133,7 +143,7 @@ export default function KillChart({ killAtLeast, killDistribution }: KillChartPr
                     <table className="whk-table whk-table--compact">
                         <thead>
                             <tr>
-                                <th scope="col">Models killed</th>
+                                <th scope="col">{countLabel}</th>
                                 <th scope="col">Exactly</th>
                                 <th scope="col">At least</th>
                             </tr>

@@ -2,11 +2,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import "../components/styles/warhammer-toolkit.css";
 
+import Battle from "../components/WarhammerToolkit/Battle";
 import GameTracker from "../components/WarhammerToolkit/GameTracker";
 import Mathhammer from "../components/WarhammerToolkit/Mathhammer";
 
 const TABS = [
     { id: "mathhammer", label: "Mathhammer" },
+    { id: "battle", label: "Battle" },
     { id: "tracker", label: "Game Tracker" },
 ] as const;
 
@@ -17,7 +19,7 @@ export default function WarhammerToolkit() {
     const [searchParams, setSearchParams] = useSearchParams();
 
     // The tab lives in the URL so it survives reloads and can be linked to.
-    const tab: TabId = searchParams.get("tab") === "tracker" ? "tracker" : "mathhammer";
+    const tab: TabId = TABS.find((t) => t.id === searchParams.get("tab"))?.id ?? "mathhammer";
 
     return (
         <div className="whk-page">
@@ -32,7 +34,7 @@ export default function WarhammerToolkit() {
                 <p className="whk-eyebrow">// 40k · 10th edition</p>
                 <h1 className="whk-title">Warhammer <em>Toolkit</em></h1>
                 <p className="whk-subtitle-text">
-                    Work out the odds before you roll, then keep score while you play.
+                    Work out the odds before you roll, pit two units against each other, then keep score while you play.
                 </p>
             </section>
 
@@ -54,7 +56,7 @@ export default function WarhammerToolkit() {
             </div>
 
             <main className="whk-content" role="tabpanel" id={`whk-panel-${tab}`} aria-labelledby={`whk-tab-${tab}`}>
-                {tab === "mathhammer" ? <Mathhammer /> : <GameTracker />}
+                {tab === "mathhammer" ? <Mathhammer /> : tab === "battle" ? <Battle /> : <GameTracker />}
             </main>
         </div>
     );

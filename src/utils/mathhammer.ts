@@ -464,24 +464,43 @@ function applyDamage(
 
 const NEGLIGIBLE = 1e-12;
 
-export function calculate(
-    profiles: AttackProfile[],
-    target: Target,
-    situation: Situation
-): MathhammerResult {
+function validateTarget(target: Target) {
     if (!(target.toughness >= 1)) throw new MathhammerInputError("Target toughness must be at least 1.");
     if (!(target.save >= 2 && target.save <= 7)) throw new MathhammerInputError("Target save must be between 2+ and 7 (no save).");
     if (!(target.wounds >= 1 && target.wounds <= 100)) throw new MathhammerInputError("Target wounds must be between 1 and 100.");
     if (!(target.models >= 1 && target.models <= 100)) throw new MathhammerInputError("Target models must be between 1 and 100.");
+}
+
+// Damage state of a unit: index = models destroyed * wounds + damage on the
+// model currently taking damage. Index models * wounds means wiped out.
+export function wipedState(target: Target): number {
+    return Math.floor(target.models) * Math.floor(target.wounds);
+}
+
+// Resolves all profiles against a target that starts in the given damage
+// state, and returns the distribution of damage states afterwards. Blast
+// counts only the models still alive.
+export function resolveAttacks(
+    profiles: AttackProfile[],
+    target: Target,
+    situation: Situation,
+    startState = 0
+): Dist {
+    validateTarget(target);
 
     const models = Math.floor(target.models);
     const wounds = Math.floor(target.wounds);
-    const outcomes = profiles.map((profile) => evaluateProfile(profile, { ...target, models, wounds }, situation));
+    const wiped = models * wounds;
+    const start = Math.max(0, Math.min(wiped, Math.floor(startState)));
+
+    let states: Dist = new Array(wiped + 1).fill(0);
+    states[start] = 1;
+    if (start === wiped) return states;
+
+    const alive = models - Math.floor(start / wounds);
+    const outcomes = profiles.map((profile) => evaluateProfile(profile, { ...target, models: alive, wounds }, situation));
 
     // Damage from each profile is allocated in order, one unsaved wound at a time.
-    let states: Dist = new Array(models * wounds + 1).fill(0);
-    states[0] = 1;
-
     outcomes.forEach(({ unsaved, damage }) => {
         const mixed: Dist = new Array(states.length).fill(0);
         let current = states;
@@ -498,6 +517,21 @@ export function calculate(
 
         states = mixed;
     });
+
+    return states;
+}
+
+export function calculate(
+    profiles: AttackProfile[],
+    target: Target,
+    situation: Situation
+): MathhammerResult {
+    validateTarget(target);
+
+    const models = Math.floor(target.models);
+    const wounds = Math.floor(target.wounds);
+    const outcomes = profiles.map((profile) => evaluateProfile(profile, { ...target, models, wounds }, situation));
+    const states = resolveAttacks(profiles, target, situation);
 
     const killDistribution: Dist = new Array(models + 1).fill(0);
     states.forEach((p, index) => {
