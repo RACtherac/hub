@@ -67,7 +67,7 @@ test("couple's children hang from one bus dropped from the marriage line", () =>
     assert.equal(drops.length, 1, "one drop for the couple, not one per parent");
     assert.equal(buses.length, 1);
     // The drop starts in the gap between the two cards, on the marriage line.
-    assert.equal(drops[0].d, "M 210 60 L 210 225");
+    assert.equal(drops[0].d, "M 210 40 L 210 225");
     assert.ok(lines.every(line => isOrthogonal(line.d)), "only straight segments");
 });
 
@@ -75,7 +75,7 @@ test("marriage line joins the facing edges of two cards on the same row", () => 
     const { tree, boxes } = family();
     const spouse = buildConnectionPaths(tree.members, boxes).find(line => line.type === "spouse");
 
-    assert.equal(spouse?.d, "M 180 60 L 240 60");
+    assert.equal(spouse?.d, "M 180 40 L 240 40");
 });
 
 test("siblings who share a parent get no extra line", () => {
@@ -154,7 +154,7 @@ test("a child with a line colour gets its own full line from each parent, in tha
     assert.equal(colouredLines.length, 1);
     assert.equal(colouredLines[0].color, "#ff6b6b");
     // Marriage line -> own lane 6px below the bus -> down to the child's top.
-    assert.equal(colouredLines[0].d, "M 210 60 L 210 231 L 330 231 L 330 260");
+    assert.equal(colouredLines[0].d, "M 210 40 L 210 231 L 330 231 L 330 260");
     // Drawn on top of everything else.
     assert.equal(lines[lines.length - 1], colouredLines[0]);
     // The other child still uses the shared blue bus.
@@ -170,4 +170,50 @@ test("when every child is coloured there is no shared bus", () => {
     assert.ok(!lines.some(line => line.type === "parent" && !line.color));
     const lanes = lines.filter(line => line.color).map(line => line.d.split(" ")[5]);
     assert.equal(new Set(lanes).size, 2, "each coloured child is on its own lane");
+});
+
+// ---- Curved style ----------------------------------------------------------
+
+test("curved: each child gets its own curve with an arrow from the marriage line", () => {
+    const { tree, boxes, kid1 } = family();
+    const lines = buildConnectionPaths(tree.members, boxes, "curved");
+    const parentLines = lines.filter(line => line.type === "parent");
+
+    assert.equal(parentLines.length, 2, "one curve per child, no bus");
+    assert.ok(parentLines.every(line => line.arrow));
+    assert.ok(!lines.some(line => line.id.endsWith("-bus")));
+
+    const toKid1 = parentLines.find(line => line.id.endsWith(kid1.id));
+    // Straight down from the middle of the marriage line until clear of the
+    // parents' cards, then a curve to the top centre of the child's card.
+    assert.equal(toKid1?.d, "M 210 40 L 210 190 C 210 225, 90 225, 90 260");
+});
+
+test("curved: marriage on the same row stays a straight line", () => {
+    const { tree, boxes } = family();
+    const spouse = buildConnectionPaths(tree.members, boxes, "curved").find(line => line.type === "spouse");
+
+    assert.equal(spouse?.d, "M 180 40 L 240 40");
+    assert.ok(!spouse?.arrow);
+});
+
+test("curved: siblings without parents get an arch, not a bracket", () => {
+    const a = person("A");
+    const b = person("B");
+    const tree = connectSiblings({ members: [a, b] }, a.id, b.id);
+
+    const [line] = buildConnectionPaths(tree.members, { [a.id]: box(0, 1), [b.id]: box(2, 1) }, "curved");
+
+    assert.ok(line.d.includes(" C "), line.d);
+    assert.ok(!line.arrow);
+});
+
+test("curved: a coloured child's curve keeps its colour", () => {
+    const { tree, boxes, kid2 } = family();
+    const members = tree.members.map(member => member.id === kid2.id ? { ...member, lineColor: "#ff6b6b" } : member);
+    const lines = buildConnectionPaths(members, boxes, "curved");
+
+    const coloured = lines.filter(line => line.color);
+    assert.equal(coloured.length, 1);
+    assert.ok(coloured[0].id.endsWith(kid2.id));
 });

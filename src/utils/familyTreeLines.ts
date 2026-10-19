@@ -29,17 +29,24 @@ export interface CardBox {
 
 export type ConnectionType = "parent" | "spouse" | "ex-spouse" | "sibling" | "cousin";
 
+// "classic": straight lines and buses like a paper tree.
+// "curved": a smooth curve from the parents to each child, with an arrowhead,
+// like the cards on the DM Screen story board.
+export type LineStyle = "classic" | "curved";
+
 export interface ConnectionPath {
     id: string;
     d: string;
     type: ConnectionType;
     // Set for a child's own coloured line; otherwise the type's CSS colour is used.
     color?: string;
+    // Draw an arrowhead at the end of the line (parent to child, curved style).
+    arrow?: boolean;
 }
 
 // Height of the marriage line, measured from the top of the cards
-// (the middle of the photo area).
-const MARRIAGE_LINE_OFFSET = 60;
+// (the middle of the 80px photo area in FamilyTree.css).
+const MARRIAGE_LINE_OFFSET = 40;
 const SIBLING_BRACKET_RISE = 14;
 const COUSIN_BRACKET_RISE = 26;
 const BUS_STAGGER = 8;
@@ -81,6 +88,47 @@ function bracketPath(a: CardBox, b: CardBox, rise: number): string {
     return path([[centerX(a), a.top], [centerX(a), y], [centerX(b), y], [centerX(b), b.top]]);
 }
 
+// ---- Curved style ----------------------------------------------------------
+
+const MIN_BEND = 30;
+
+function cubic(from: [number, number], c1: [number, number], c2: [number, number], to: [number, number]): string {
+    const p = ([x, y]: [number, number]) => `${round(x)} ${round(y)}`;
+    return `M ${p(from)} C ${p(c1)}, ${p(c2)}, ${p(to)}`;
+}
+
+// S-curve that leaves and arrives vertically. With `straightTo`, it first
+// drops straight down to that height (to clear the parents' cards) and only
+// then curves across.
+function verticalCurve(from: [number, number], to: [number, number], straightTo?: number): string {
+    const start: [number, number] = straightTo !== undefined && straightTo > from[1] && straightTo < to[1]
+        ? [from[0], straightTo]
+        : from;
+    const sign = to[1] >= start[1] ? 1 : -1;
+    const bend = Math.max(MIN_BEND, Math.abs(to[1] - start[1]) / 2);
+    const curve = cubic(start, [start[0], start[1] + sign * bend], [to[0], to[1] - sign * bend], to);
+    return start === from ? curve : `M ${round(from[0])} ${round(from[1])} L ${curve.slice(2)}`;
+}
+
+// Marriage line: straight on the same row, otherwise an S-curve between the
+// facing edges of the two cards.
+function curvedMarriagePath(a: CardBox, b: CardBox): string {
+    const [left, right] = a.left <= b.left ? [a, b] : [b, a];
+    if (sameRow(left, right)) return marriagePath(left, right);
+
+    const from: [number, number] = [left.left + left.width, left.top + MARRIAGE_LINE_OFFSET];
+    const to: [number, number] = [right.left, right.top + MARRIAGE_LINE_OFFSET];
+    const bend = Math.max(MIN_BEND, Math.abs(to[0] - from[0]) / 2);
+    return cubic(from, [from[0] + bend, from[1]], [to[0] - bend, to[1]], to);
+}
+
+// Arch above two cards, peaking `rise` above the higher card.
+function archPath(a: CardBox, b: CardBox, rise: number): string {
+    // A cubic with both control points at y peaks 3/4 of the way there.
+    const y = Math.min(a.top, b.top) - (rise * 4) / 3;
+    return cubic([centerX(a), a.top], [centerX(a), y], [centerX(b), y], [centerX(b), b.top]);
+}
+
 // Parents whose cards sit next to each other on the same row with nothing in
 // between, so the children's line can drop from the middle of their marriage line.
 function adjacentCouple(parents: CardBox[], allBoxes: CardBox[]): boolean {
@@ -97,11 +145,15 @@ function adjacentCouple(parents: CardBox[], allBoxes: CardBox[]): boolean {
 
 export function buildConnectionPaths(
     members: FamilyMember[],
-    boxes: Record<string, CardBox>
+    boxes: Record<string, CardBox>,
+    style: LineStyle = "classic"
 ): ConnectionPath[] {
     const lines: ConnectionPath[] = [];
     const visible = members.filter(member => boxes[member.id]);
     const allBoxes = Object.values(boxes);
+    const curved = style === "curved";
+    const marriage = curved ? curvedMarriagePath : marriagePath;
+    const bracket = curved ? archPath : bracketPath;
 
     // ---- Marriages -------------------------------------------------------
     visible.forEach(member => {
@@ -109,7 +161,7 @@ export function buildConnectionPaths(
             if (member.id >= spouseId || !boxes[spouseId]) return;
             lines.push({
                 id: `${member.id}-spouse-${spouseId}`,
-                d: marriagePath(boxes[member.id], boxes[spouseId]),
+                d: marriage(boxes[member.id], boxes[spouseId]),
                 type: "spouse",
             });
         });
@@ -118,7 +170,7 @@ export function buildConnectionPaths(
             if (member.id >= spouseId || !boxes[spouseId]) return;
             lines.push({
                 id: `${member.id}-ex-spouse-${spouseId}`,
-                d: marriagePath(boxes[member.id], boxes[spouseId]),
+                d: marriage(boxes[member.id], boxes[spouseId]),
                 type: "ex-spouse",
             });
         });
@@ -177,6 +229,24 @@ export function buildConnectionPaths(
         }
 
         const colorOf = (childId: string) => members.find(m => m.id === childId)?.lineColor;
+
+        // Curved style: one curve from each drop point to each child.
+        if (curved) {
+            drops.forEach((drop, dropIndex) => {
+                childIds.forEach(childId => {
+                    const child = boxes[childId];
+                    lines.push({
+                        id: `${key}-curve-${dropIndex}-${childId}`,
+                        d: verticalCurve(drop.points[0], [centerX(child), child.top], parentsBottom),
+                        type: "parent",
+                        color: colorOf(childId),
+                        arrow: true,
+                    });
+                });
+            });
+            return;
+        }
+
         const plainChildIds = childIds.filter(id => !colorOf(id));
         const coloredChildIds = childIds.filter(id => colorOf(id));
 
@@ -237,7 +307,7 @@ export function buildConnectionPaths(
 
             lines.push({
                 id: `${member.id}-sib-${siblingId}`,
-                d: bracketPath(boxes[member.id], boxes[siblingId], SIBLING_BRACKET_RISE),
+                d: bracket(boxes[member.id], boxes[siblingId], SIBLING_BRACKET_RISE),
                 type: "sibling",
             });
         });
@@ -248,7 +318,7 @@ export function buildConnectionPaths(
 
             lines.push({
                 id: `${member.id}-cousin-${cousinId}`,
-                d: bracketPath(boxes[member.id], boxes[cousinId], COUSIN_BRACKET_RISE),
+                d: bracket(boxes[member.id], boxes[cousinId], COUSIN_BRACKET_RISE),
                 type: "cousin",
             });
         });

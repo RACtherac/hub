@@ -39,9 +39,25 @@ import {
     buildConnectionPaths,
     type CardBox,
     type ConnectionPath,
+    type LineStyle,
 } from "../utils/familyTreeLines";
 
 const LINE_COLOR_PRESETS = ["#ff6b6b", "#ffa94d", "#ffd43b", "#69db7c", "#38d9a9", "#da77f2", "#f783ac"];
+
+// Spacing of the dotted background grid at 100% zoom.
+const GRID_DOT_SPACING = 40;
+
+// The line style is a per-browser preference, kept apart from the tree data.
+const LINE_STYLE_KEY = "family-tree-line-style";
+
+function loadLineStyle(): LineStyle {
+    try {
+        return localStorage.getItem(LINE_STYLE_KEY) === "classic" ? "classic" : "curved";
+    }
+    catch {
+        return "curved";
+    }
+}
 
 type RelationItem = {
     relation: string;
@@ -133,6 +149,22 @@ const FamilyTree: React.FC = () => {
 
     const [connections, setConnections] =
         useState<ConnectionPath[]>([]);
+
+    const [lineStyle, setLineStyle] =
+        useState<LineStyle>(loadLineStyle);
+
+    // Bumped when a rendered card changes size, so the lines are re-routed.
+    const [cardSizeVersion, setCardSizeVersion] =
+        useState(0);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(LINE_STYLE_KEY, lineStyle);
+        }
+        catch {
+            // Storage can be unavailable (private mode); the choice just isn't remembered.
+        }
+    }, [lineStyle]);
 
     const [treeDimensions, setTreeDimensions] =
         useState({ width: 1200, height: 800 });
@@ -299,8 +331,21 @@ const FamilyTree: React.FC = () => {
             };
         });
 
-        setConnections(buildConnectionPaths(tree.members, boxes));
-    }, [tree, memberPositions, displayedMembers]);
+        setConnections(buildConnectionPaths(tree.members, boxes, lineStyle));
+    }, [tree, memberPositions, displayedMembers, lineStyle, cardSizeVersion]);
+
+    // Cards change size without the tree changing (photos and fonts loading,
+    // style changes), so re-route the lines whenever a card is resized.
+    useEffect(() => {
+        if (typeof ResizeObserver === "undefined") return;
+
+        const observer = new ResizeObserver(() => setCardSizeVersion(version => version + 1));
+        displayedMembers.forEach(member => {
+            const card = cardRefs.current[member.id]?.firstElementChild;
+            if (card) observer.observe(card);
+        });
+        return () => observer.disconnect();
+    }, [displayedMembers]);
 
     //==========================================================
     // ADD PERSON
@@ -732,6 +777,12 @@ const FamilyTree: React.FC = () => {
             <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>－</button>
             <button onClick={handleFitToView}>🧭 Fit</button>
             <button onClick={handleCenterSelected}>🎯 Center</button>
+            <button
+                onClick={() => setLineStyle(style => (style === "curved" ? "classic" : "curved"))}
+                title="Switch between curved lines and classic straight lines"
+            >
+                {lineStyle === "curved" ? "〰️ Curved lines" : "📐 Classic lines"}
+            </button>
             <button onClick={() => setActiveBranchId(null)}>🗂️ All Branches</button>
             <button className="ft-toolbar-reset" onClick={handleResetView}>↺ Reset View</button>
         </div>
@@ -983,8 +1034,16 @@ const FamilyTree: React.FC = () => {
     // TREE VIEW
     //==========================================================
 
+    const gridSize = GRID_DOT_SPACING * zoom;
+
     const renderTree = () => (
-        <div className="ft-tree-container">
+        <div
+            className="ft-tree-container"
+            style={{
+                backgroundSize: `${gridSize}px ${gridSize}px, auto`,
+                backgroundPosition: `${viewOffset.x}px ${viewOffset.y}px, 0 0`,
+            }}
+        >
             <div
                 className="ft-tree"
                 ref={treeRef}
@@ -999,12 +1058,19 @@ const FamilyTree: React.FC = () => {
                     height={treeDimensions.height}
                     preserveAspectRatio="xMinYMin meet"
                 >
+                    <defs>
+                        {/* Takes the colour of the line it ends. */}
+                        <marker id="ft-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" />
+                        </marker>
+                    </defs>
                     {connections.map(connection => (
                         <path
                             key={connection.id}
                             d={connection.d}
                             className={`ft-connection ft-connection--${connection.type}`}
                             style={connection.color ? { stroke: connection.color } : undefined}
+                            markerEnd={connection.arrow ? "url(#ft-arrow)" : undefined}
                         />
                     ))}
                 </svg>
