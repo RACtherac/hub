@@ -673,8 +673,46 @@
     align-items: start;
 }
 
+/* Side panel hidden: the board takes the full width. */
+.dms-storyboard.panel-hidden {
+    grid-template-columns: minmax(0, 1fr);
+}
+
 .dms-board-area {
     min-width: 0;
+}
+
+/* Grip under the board for dragging its height. */
+.dms-board-resize {
+    position: relative;
+    height: 14px;
+    margin-top: 2px;
+    border-radius: 0.4rem;
+    cursor: ns-resize;
+    touch-action: none;
+}
+
+.dms-board-resize::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 48px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--border-2);
+    transform: translate(-50%, -50%);
+    transition: background 0.15s ease, width 0.15s ease;
+}
+
+.dms-board-resize:hover::before,
+.dms-board-resize:focus-visible::before {
+    width: 72px;
+    background: var(--accent);
+}
+
+.dms-board-resize:focus-visible {
+    outline: none;
 }
 
 .dms-board-toolbar {

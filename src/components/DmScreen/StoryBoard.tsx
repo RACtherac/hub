@@ -5,6 +5,7 @@ import {
     useRef,
     useState,
     type Dispatch,
+    type KeyboardEvent as ReactKeyboardEvent,
     type PointerEvent as ReactPointerEvent,
     type SetStateAction,
 } from "react";
@@ -77,7 +78,27 @@ interface Point { x: number; y: number }
 // Cards are measured after render; this is used until a card has a size.
 const DEFAULT_SIZE: Size = { w: 220, h: 96 };
 
-const kindLabel = (kind: NodeKind) => NODE_KINDS.find((k) => k.value === kind)?.label ?? "Note";
+// The side panel toggle and board height are a per-browser preference, not
+// part of the DM screen data.
+const LAYOUT_KEY = "dm-screen-board-layout";
+const MIN_BOARD_HEIGHT = 320;
+
+interface BoardLayout { panelOpen: boolean; height: number | null }
+
+function loadLayout(): BoardLayout {
+    try {
+        const saved = JSON.parse(localStorage.getItem(LAYOUT_KEY) ?? "{}");
+        return {
+            panelOpen: saved.panelOpen !== false,
+            height: typeof saved.height === "number" && saved.height >= MIN_BOARD_HEIGHT ? saved.height : null,
+        };
+    }
+    catch {
+        return { panelOpen: true, height: null };
+    }
+}
+
+const kindLabel =(kind: NodeKind) => NODE_KINDS.find((k) => k.value === kind)?.label ?? "Note";
 
 function isTyping(target: EventTarget | null) {
     const element = target as HTMLElement | null;
@@ -126,6 +147,44 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
     const [selection, setSelection] = useState<Selection>(() => (focusNodeId ? { type: "node", id: focusNodeId } : null));
     const [sizes, setSizes] = useState<Record<string, Size>>({});
     const [newKind, setNewKind] = useState<NodeKind>("scene");
+    const [layout, setLayout] = useState<BoardLayout>(loadLayout);
+    const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout));
+        }
+        catch {
+            // Storage can be blocked; the layout just isn't remembered.
+        }
+    }, [layout]);
+
+    const setPanelOpen = (panelOpen: boolean) => setLayout((current) => ({ ...current, panelOpen }));
+
+    // ---- Dragging the grip under the board changes its height.
+    const onResizeDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+        if (event.button !== 0) return;
+        resizeRef.current = { startY: event.clientY, startHeight: boardRef.current?.offsetHeight ?? 600 };
+        event.currentTarget.setPointerCapture(event.pointerId);
+    };
+    const onResizeMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+        const resize = resizeRef.current;
+        if (!resize) return;
+        const height = Math.max(MIN_BOARD_HEIGHT, Math.round(resize.startHeight + event.clientY - resize.startY));
+        setLayout((current) => ({ ...current, height }));
+    };
+    const onResizeUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+        resizeRef.current = null;
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    };
+    const onResizeKey = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+        const step = event.shiftKey ? 100 : 40;
+        const delta = event.key === "ArrowDown" ? step : event.key === "ArrowUp" ? -step : 0;
+        if (!delta) return;
+        event.preventDefault();
+        const current = boardRef.current?.offsetHeight ?? 600;
+        setLayout((l) => ({ ...l, height: Math.max(MIN_BOARD_HEIGHT, current + delta) }));
+    };
 
     const updateBoard = (change: (current: Board) => Board) =>
         setData((current) => updateActiveBoard(current, change));
@@ -393,7 +452,7 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
     const gridSize = 24 * view.zoom;
 
     return (
-        <div className="dms-storyboard">
+        <div className={layout.panelOpen ? "dms-storyboard" : "dms-storyboard panel-hidden"}>
             <div className="dms-board-area">
                 <div className="dms-board-toolbar">
                     <div className="dms-board-add">
@@ -421,13 +480,26 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                         <button type="button" className="dms-icon-button" aria-label="Zoom in" onClick={() => zoomBy(1.2)}>+</button>
                         <button type="button" className="dms-button dms-button--ghost" onClick={() => setView(() => ({ x: 0, y: 0, zoom: 1 }))}>Reset</button>
                         <button type="button" className="dms-button dms-button--ghost" onClick={fitView}>Fit</button>
+                        <button
+                            type="button"
+                            className="dms-button dms-button--ghost"
+                            aria-expanded={layout.panelOpen}
+                            aria-controls="dms-board-panel"
+                            onClick={() => setPanelOpen(!layout.panelOpen)}
+                        >
+                            {layout.panelOpen ? "Hide panel ▸" : "◂ Show panel"}
+                        </button>
                     </div>
                 </div>
 
                 <div
                     ref={boardRef}
                     className={connect ? "dms-board connecting" : "dms-board"}
-                    style={{ backgroundSize: `${gridSize}px ${gridSize}px`, backgroundPosition: `${view.x}px ${view.y}px` }}
+                    style={{
+                        backgroundSize: `${gridSize}px ${gridSize}px`,
+                        backgroundPosition: `${view.x}px ${view.y}px`,
+                        ...(layout.height ? { height: layout.height } : {}),
+                    }}
                     onPointerDown={onBoardPointerDown}
                     onPointerMove={onPointerMove}
                     onPointerUp={onPointerUp}
@@ -537,18 +609,38 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                                     onHeaderPointerDown={(event) => onNodePointerDown(event, node)}
                                     onHandlePointerDown={(event) => onHandlePointerDown(event, node)}
                                     onSelect={() => setSelection({ type: "node", id: node.id })}
+                                    onOpen={() => {
+                                        setSelection({ type: "node", id: node.id });
+                                        setPanelOpen(true);
+                                    }}
                                 />
                             );
                         })}
                     </div>
                 </div>
+                <div
+                    className="dms-board-resize"
+                    role="separator"
+                    aria-orientation="horizontal"
+                    aria-label="Board height (drag, or use the arrow keys)"
+                    aria-valuenow={layout.height ?? undefined}
+                    tabIndex={0}
+                    title="Drag to make the board taller or shorter. Double-click to reset."
+                    onPointerDown={onResizeDown}
+                    onPointerMove={onResizeMove}
+                    onPointerUp={onResizeUp}
+                    onPointerCancel={onResizeUp}
+                    onKeyDown={onResizeKey}
+                    onDoubleClick={() => setLayout((current) => ({ ...current, height: null }))}
+                />
                 <p className="dms-hint">
-                    Drag the background to pan, scroll to zoom. Drag a card by its header. Drag ● onto another card to connect. Drop an image file on the board for an image card. Delete removes the selection, Esc cancels.
+                    Drag the background to pan, scroll to zoom. Drag a card by its header. Drag ● onto another card to connect. Drop an image file on the board for an image card. Drag the bar under the board to resize it. Delete removes the selection, Esc cancels.
+                    {!layout.panelOpen && " Double-click a card to edit it."}
                 </p>
             </div>
 
             {/* ---------------- Side panel ---------------- */}
-            <aside className="dms-panel dms-inspector" aria-label="Selected card or connection">
+            {layout.panelOpen && <aside id="dms-board-panel" className="dms-panel dms-inspector" aria-label="Selected card or connection">
                 {selectedNode ? (
                     <NodeInspector
                         node={selectedNode}
@@ -636,7 +728,7 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                         />
                     </>
                 )}
-            </aside>
+            </aside>}
         </div>
     );
 }
@@ -668,6 +760,8 @@ interface NodeCardProps {
     onHeaderPointerDown: (event: ReactPointerEvent) => void;
     onHandlePointerDown: (event: ReactPointerEvent) => void;
     onSelect: () => void;
+    // Double-click: select and show the side panel.
+    onOpen: () => void;
 }
 
 function NodeCard({
@@ -688,6 +782,7 @@ function NodeCard({
     onHeaderPointerDown,
     onHandlePointerDown,
     onSelect,
+    onOpen,
 }: NodeCardProps) {
     const ref = useRef<HTMLDivElement>(null);
     // A linked NPC's or item's name is the card's title.
@@ -724,10 +819,14 @@ function NodeCard({
                 event.stopPropagation();
                 onSelect();
             }}
+            onDoubleClick={(event) => {
+                event.stopPropagation();
+                onOpen();
+            }}
             onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
-                    onSelect();
+                    onOpen();
                 }
             }}
         >
