@@ -7,7 +7,7 @@ const skills = ["React", "TypeScript", "HTML5", "CSS3", "SQL", "C#", "Agile", "J
 
 const projects = [
   { name: "Warhammer Army Builder", description: "Create and visualise your army lists.", path: "/warhammer-army-builder" },
-  { name: "Warhammer Toolkit", description: "Mathhammer odds calculator and a 40k game tracker for score, CP and turns.", path: "/warhammer-toolkit" },
+  { name: "Warhammer Toolkit", description: "Mathhammer odds calculator, unit-vs-unit battle odds and a 40k game tracker for score, CP and turns.", path: "/warhammer-toolkit" },
   { name: "Pokemon TCG Tool", description: "Track Pokémon health and energy during battles.", path: "/pokemon-tcg-tool" },
   { name: "Mini Paint Tracker", description: "Save paint recipes and photos for your miniatures.", path: "/paint-tracker" },
   { name: "Pixel Art Editor", description: "Draw pixel art on an 8×8, 16×16, or 32×32 canvas.", path: "/pixel-art" },
@@ -22,6 +22,7 @@ const projects = [
   { name: "Function Reference", description: "A developer index of every project's components and functions.", path: "/function-reference" },
   { name: "Roleplaying Sheets", description: "Manage party characters, stats, inventory, attacks, and notes for tabletop sessions.", path: "/roleplaying-sheets" },
   { name: "DM Screen", description: "Run encounters with initiative, HP and conditions, and map your story as connected cards.", path: "/dm-screen" },
+  { name: "Dev Tools", description: "Small browser tools, starting with a converter that turns CSV, JS objects and .env files into JSON.", path: "/tools" },
 ];
 
 export default function Portfolio() {
