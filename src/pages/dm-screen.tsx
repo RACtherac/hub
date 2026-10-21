@@ -6,6 +6,7 @@ import "../components/styles/dm-screen.css";
 import EncounterTracker from "../components/DmScreen/EncounterTracker";
 import ItemManager from "../components/DmScreen/ItemManager";
 import MapMaker from "../components/DmScreen/MapMaker";
+import NoteManager from "../components/DmScreen/NoteManager";
 import NpcManager from "../components/DmScreen/NpcManager";
 import PlayerMapView from "../components/DmScreen/PlayerMapView";
 import StoryBoard from "../components/DmScreen/StoryBoard";
@@ -15,6 +16,7 @@ const TABS = [
     { id: "tracker", label: "Encounter Tracker" },
     { id: "npcs", label: "NPCs" },
     { id: "items", label: "Items" },
+    { id: "notes", label: "Notes" },
     { id: "board", label: "Story Board" },
     { id: "map", label: "Map" },
 ] as const;
@@ -94,6 +96,11 @@ function DmScreen() {
         showTab("items");
     };
 
+    const openNote = (noteId: string) => {
+        setData((current) => ({ ...current, activeNoteId: noteId }));
+        showTab("notes");
+    };
+
     const showCard = (boardId: string, nodeId: string) => {
         setData((current) => ({ ...current, activeBoardId: boardId }));
         setFocusNodeId(nodeId);
@@ -154,9 +161,10 @@ function DmScreen() {
             </div>
 
             <main className="dms-content" role="tabpanel" id={`dms-panel-${tab}`} aria-labelledby={`dms-tab-${tab}`}>
-                {tab === "tracker" && <EncounterTracker data={data} setData={setData} />}
+                {tab === "tracker" && <EncounterTracker data={data} setData={setData} onOpenNpc={openNpc} />}
                 {tab === "npcs" && <NpcManager data={data} setData={setData} onShowCard={showCard} onOpenItem={openItem} />}
                 {tab === "items" && <ItemManager data={data} setData={setData} onShowCard={showCard} />}
+                {tab === "notes" && <NoteManager data={data} setData={setData} onShowCard={showCard} />}
                 {tab === "board" && (
                     <StoryBoard
                         data={data}
@@ -164,6 +172,7 @@ function DmScreen() {
                         onRunEncounter={runEncounter}
                         onOpenNpc={openNpc}
                         onOpenItem={openItem}
+                        onOpenNote={openNote}
                         focusNodeId={focusNodeId}
                         onFocused={() => setFocusNodeId(null)}
                     />

@@ -45,6 +45,9 @@ export interface Combatant {
     attacks: Attack[];
     // What they drop, as free text.
     loot: string;
+    // Added from this NPC's sheet: attacks and loot stay the same on both
+    // (see shareWithNpc). Everything else, like HP, is the combatant's own.
+    npcId?: string;
 }
 
 export interface Encounter {
@@ -70,6 +73,8 @@ export interface BoardNode {
     npcId?: string;
     // Item cards: the item from the Items tab.
     itemId?: string;
+    // Note cards: the note from the Notes tab.
+    noteId?: string;
     // Image cards: a downscaled data URL, small enough for localStorage.
     image?: string;
     // The players took this branch; its sibling branches are greyed out.
@@ -146,6 +151,17 @@ export interface Item {
     image?: string;
 }
 
+// Free-form notes worth keeping (the Notes tab): lore, rumours, session recaps.
+export interface Note {
+    id: string;
+    title: string;
+    body: string;
+    // Pinned notes stay at the top of the list.
+    pinned: boolean;
+    // When the note was last edited, in ms, for sorting and "edited 2 days ago".
+    updatedAt: number;
+}
+
 // One of several story boards, e.g. one per adventure or session.
 export interface NamedBoard extends Board {
     id: string;
@@ -164,6 +180,9 @@ export interface DmScreenData {
     items: Item[];
     // The item open in the Items tab, or "" when there are none.
     activeItemId: string;
+    notes: Note[];
+    // The note open in the Notes tab, or "" when there are none.
+    activeNoteId: string;
     maps: BattleMap[];
     activeMapId: string;
 }
@@ -366,11 +385,10 @@ export function createNpc(fields: Partial<Npc> = {}): Npc {
     };
 }
 
-// The NPC as a combatant for the tracker: stats, attacks and loot copied over.
-// Items they carry from the Items tab are added to the loot, so it's all in one place.
-export function combatantFromNpc(data: DmScreenData, npc: Npc): Combatant {
-    const carried = itemsHeldBy(data, npc.id).map((i) => i.name.trim()).filter(Boolean);
-    const loot = [npc.loot.trim(), carried.length ? `Carrying: ${carried.join(", ")}` : ""].filter(Boolean).join("\n");
+// The NPC as a combatant for the tracker, linked back to the sheet. Stats are
+// copied once, so HP can drop mid-fight without touching the sheet; attacks
+// and loot stay shared with it from then on (shareWithNpc).
+export function combatantFromNpc(npc: Npc): Combatant {
     return createCombatant({
         name: npc.name,
         kind: "npc",
@@ -380,10 +398,32 @@ export function combatantFromNpc(data: DmScreenData, npc: Npc): Combatant {
         creatureType: npc.race,
         alignment: npc.alignment,
         notes: npc.notes,
-        // Own copies, so editing the combatant mid-fight leaves the NPC sheet alone.
-        attacks: npc.attacks.map((a) => ({ ...a, id: makeId() })),
-        loot,
+        attacks: npc.attacks,
+        loot: npc.loot,
+        npcId: npc.id,
     });
+}
+
+export type SharedNpcFields = Partial<Pick<Npc, "attacks" | "loot">>;
+
+// Changes attacks and/or loot on an NPC and on every combatant added from it,
+// in any encounter, so an edit in either place shows in both. Each combatant
+// keeps its own copy too, so it still has them if the NPC is deleted.
+export function shareWithNpc(data: DmScreenData, npcId: string, fields: SharedNpcFields): DmScreenData {
+    return {
+        ...data,
+        npcs: data.npcs.map((n) => (n.id === npcId ? { ...n, ...fields } : n)),
+        encounters: data.encounters.map((e) => (e.combatants.some((c) => c.npcId === npcId)
+            ? { ...e, combatants: e.combatants.map((c) => (c.npcId === npcId ? { ...c, ...fields } : c)) }
+            : e)),
+    };
+}
+
+// Combatants linked to an NPC, for "in 2 encounters" on the sheet.
+export function npcCombatants(data: DmScreenData, npcId: string): { encounter: Encounter; combatant: Combatant }[] {
+    return data.encounters.flatMap((encounter) =>
+        encounter.combatants.filter((c) => c.npcId === npcId).map((combatant) => ({ encounter, combatant }))
+    );
 }
 
 export function createItem(fields: Partial<Item> = {}): Item {
@@ -398,6 +438,10 @@ export function createItem(fields: Partial<Item> = {}): Item {
         holder: { kind: "none" },
         ...fields,
     };
+}
+
+export function createNote(fields: Partial<Note> = {}, now = Date.now()): Note {
+    return { id: makeId(), title: "New note", body: "", pinned: false, updatedAt: now, ...fields };
 }
 
 export function createBoard(name = "New story board"): NamedBoard {
@@ -418,6 +462,8 @@ export function createDefaultData(): DmScreenData {
         activeNpcId: "",
         items: [],
         activeItemId: "",
+        notes: [],
+        activeNoteId: "",
         maps: [map],
         activeMapId: map.id,
     };
@@ -722,6 +768,11 @@ export function removeNpc(data: DmScreenData, id: string): DmScreenData {
         items: data.items.map((item) =>
             item.holder.kind === "npc" && item.holder.npcId === id ? { ...item, holder: { kind: "none" } } : item
         ),
+        // Combatants keep their attacks and loot, but stop sharing them.
+        encounters: data.encounters.map((e) => ({
+            ...e,
+            combatants: e.combatants.map((c) => (c.npcId === id ? { ...c, npcId: undefined } : c)),
+        })),
     };
 }
 
@@ -736,8 +787,46 @@ export function linkedItem(data: DmScreenData, node: BoardNode): Item | undefine
 }
 
 // A card linked to an NPC or item is titled with its name; otherwise its own title.
+// The note a card is linked to, if it still exists.
+export function linkedNote(data: DmScreenData, node: BoardNode): Note | undefined {
+    return node.noteId ? data.notes.find((n) => n.id === node.noteId) : undefined;
+}
+
 export function cardTitle(data: DmScreenData, node: BoardNode): string {
-    return linkedNpc(data, node)?.name ?? linkedItem(data, node)?.name ?? node.title;
+    return linkedNpc(data, node)?.name ?? linkedItem(data, node)?.name ?? linkedNote(data, node)?.title ?? node.title;
+}
+
+// ---- Notes
+
+// Pinned first, then the most recently edited.
+export function sortedNotes(notes: Note[]): Note[] {
+    return [...notes].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt);
+}
+
+export function updateNote(data: DmScreenData, id: string, fields: Partial<Omit<Note, "id" | "updatedAt">>, now = Date.now()): DmScreenData {
+    return { ...data, notes: data.notes.map((n) => (n.id === id ? { ...n, ...fields, updatedAt: now } : n)) };
+}
+
+// Cards linked to the note stay on the board, unlinked, and keep its text so
+// nothing written there disappears with it.
+export function removeNote(data: DmScreenData, id: string): DmScreenData {
+    const note = data.notes.find((n) => n.id === id);
+    const notes = data.notes.filter((n) => n.id !== id);
+    return {
+        ...data,
+        notes,
+        activeNoteId: data.activeNoteId === id ? (sortedNotes(notes)[0]?.id ?? "") : data.activeNoteId,
+        boards: data.boards.map((b) => ({
+            ...b,
+            nodes: b.nodes.map((n) => (n.noteId === id
+                ? { ...n, noteId: undefined, title: note?.title ?? n.title, text: note?.body ?? n.text }
+                : n)),
+        })),
+    };
+}
+
+export function noteCards(data: DmScreenData, noteId: string): { board: NamedBoard; node: BoardNode }[] {
+    return data.boards.flatMap((board) => board.nodes.filter((n) => n.noteId === noteId).map((node) => ({ board, node })));
 }
 
 // ---- Search
@@ -751,6 +840,10 @@ function matchesQuery(query: string, texts: string[]): boolean {
 
 export function npcMatches(npc: Npc, query: string): boolean {
     return matchesQuery(query, [npc.name, npc.race, npc.alignment, npc.location, npc.notes]);
+}
+
+export function noteMatches(note: Note, query: string): boolean {
+    return matchesQuery(query, [note.title, note.body]);
 }
 
 // Searches the name, type, rarity, who has it, description and stats,
@@ -888,6 +981,8 @@ function normalizeCombatant(value: unknown): Combatant | null {
         notes: str(value.notes),
         attacks: normalizeAttacks(value.attacks),
         loot: str(value.loot),
+        // Checked against the NPCs once they're loaded, in normalizeData.
+        ...(str(value.npcId) ? { npcId: str(value.npcId) } : {}),
     };
 }
 
@@ -923,6 +1018,8 @@ function normalizeNode(value: unknown): BoardNode | null {
     if (npcId) node.npcId = npcId;
     const itemId = str(value.itemId);
     if (itemId) node.itemId = itemId;
+    const noteId = str(value.noteId);
+    if (noteId) node.noteId = noteId;
     const image = str(value.image);
     if (image.startsWith("data:image/")) node.image = image;
     if (value.taken === true) node.taken = true;
@@ -1007,6 +1104,17 @@ function normalizeItem(value: unknown, npcIds: Set<string>): Item | null {
     return item;
 }
 
+function normalizeNote(value: unknown): Note | null {
+    if (!isObject(value)) return null;
+    return {
+        id: str(value.id) || makeId(),
+        title: str(value.title, "Untitled"),
+        body: str(value.body),
+        pinned: value.pinned === true,
+        updatedAt: num(value.updatedAt),
+    };
+}
+
 function normalizeNamedBoard(value: unknown, fallbackName: string): NamedBoard {
     const source = isObject(value) ? value : {};
     return { id: str(source.id) || makeId(), name: str(source.name, fallbackName), ...normalizeBoard(source) };
@@ -1038,6 +1146,9 @@ export function normalizeData(value: unknown): DmScreenData | null {
 
     const encounterIds = new Set(encounters.map((e) => e.id));
     const npcIds = new Set(npcs.map((n) => n.id));
+    encounters.forEach((e) => e.combatants.forEach((c) => {
+        if (c.npcId && !npcIds.has(c.npcId)) delete c.npcId;
+    }));
 
     const items = Array.isArray(value.items)
         ? value.items.map((i) => normalizeItem(i, npcIds)).filter((i): i is Item => i !== null)
@@ -1045,10 +1156,17 @@ export function normalizeData(value: unknown): DmScreenData | null {
     const activeItemId = str(value.activeItemId);
     const itemIds = new Set(items.map((i) => i.id));
 
+    const notes = Array.isArray(value.notes)
+        ? value.notes.map(normalizeNote).filter((n): n is Note => n !== null)
+        : [];
+    const activeNoteId = str(value.activeNoteId);
+    const noteIds = new Set(notes.map((n) => n.id));
+
     boards.forEach((board) => board.nodes.forEach((node) => {
         if (node.encounterId && !encounterIds.has(node.encounterId)) delete node.encounterId;
         if (node.npcId && !npcIds.has(node.npcId)) delete node.npcId;
         if (node.itemId && !itemIds.has(node.itemId)) delete node.itemId;
+        if (node.noteId && !noteIds.has(node.noteId)) delete node.noteId;
     }));
 
     // Saves from before the map maker have no maps; give them an empty one.
@@ -1068,6 +1186,8 @@ export function normalizeData(value: unknown): DmScreenData | null {
         activeNpcId: npcIds.has(activeNpcId) ? activeNpcId : (npcs[0]?.id ?? ""),
         items,
         activeItemId: itemIds.has(activeItemId) ? activeItemId : (items[0]?.id ?? ""),
+        notes,
+        activeNoteId: noteIds.has(activeNoteId) ? activeNoteId : (sortedNotes(notes)[0]?.id ?? ""),
         maps,
         activeMapId: maps.some((m) => m.id === activeMapId) ? activeMapId : maps[0].id,
     };

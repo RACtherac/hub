@@ -12,18 +12,23 @@ import {
     duplicateName,
     encounterOutcome,
     isDown,
+    itemsHeldBy,
     OUTCOME_LABELS,
     nextTurn,
     previousTurn,
     removeCombatant,
     rollInitiative,
     sortCombatants,
+    shareWithNpc,
     toggleCondition,
     unlinkEncounter,
     type Combatant,
     type CombatantKind,
     type DmScreenData,
     type Encounter,
+    type Item,
+    type Npc,
+    type SharedNpcFields,
 } from "../../utils/dmScreen";
 import AttackList from "./AttackList";
 import ConfirmButton from "./ConfirmButton";
@@ -31,6 +36,7 @@ import ConfirmButton from "./ConfirmButton";
 interface EncounterTrackerProps {
     data: DmScreenData;
     setData: Dispatch<SetStateAction<DmScreenData>>;
+    onOpenNpc: (npcId: string) => void;
 }
 
 const EMPTY_FORM = {
@@ -44,7 +50,7 @@ const EMPTY_FORM = {
     count: "1",
 };
 
-export default function EncounterTracker({ data, setData }: EncounterTrackerProps) {
+export default function EncounterTracker({ data, setData, onOpenNpc }: EncounterTrackerProps) {
     const encounter = data.encounters.find((e) => e.id === data.activeEncounterId) ?? data.encounters[0];
     const [form, setForm] = useState(EMPTY_FORM);
 
@@ -239,6 +245,10 @@ export default function EncounterTracker({ data, setData }: EncounterTrackerProp
                                 update={(change) => updateCombatant(c.id, change)}
                                 onDuplicate={() => updateEncounter((e) => duplicateCombatant(e, c.id))}
                                 onRemove={() => updateEncounter((e) => removeCombatant(e, c.id))}
+                                npc={c.npcId ? data.npcs.find((n) => n.id === c.npcId) : undefined}
+                                carrying={c.npcId ? itemsHeldBy(data, c.npcId) : []}
+                                onShare={(fields) => c.npcId && setData((current) => shareWithNpc(current, c.npcId!, fields))}
+                                onOpenNpc={onOpenNpc}
                             />
                         ))}
                     </ol>
@@ -254,9 +264,15 @@ interface CombatantRowProps {
     update: (change: (current: Combatant) => Combatant) => void;
     onDuplicate: () => void;
     onRemove: () => void;
+    // The NPC sheet this combatant was added from; attacks and loot are shared with it.
+    npc?: Npc;
+    // Items that NPC carries in the Items tab, shown with the loot.
+    carrying: Item[];
+    onShare: (fields: SharedNpcFields) => void;
+    onOpenNpc: (npcId: string) => void;
 }
 
-function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: CombatantRowProps) {
+function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove, npc, carrying, onShare, onOpenNpc }: CombatantRowProps) {
     const [amount, setAmount] = useState("");
     const [custom, setCustom] = useState("");
     // Notes show when there are some, or once "+ Notes" is clicked.
@@ -266,7 +282,9 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: C
     const [attacksOpen, setAttacksOpen] = useState(false);
     const showAttacks = attacksOpen || c.attacks.length > 0;
     const [lootOpen, setLootOpen] = useState(false);
-    const showLoot = lootOpen || c.loot !== "";
+    const showLoot = lootOpen || c.loot !== "" || carrying.length > 0;
+    // Linked to an NPC: attacks and loot change on the sheet too.
+    const setShared = (fields: SharedNpcFields) => (npc ? onShare(fields) : set(fields));
     const down = isDown(c);
     const set = (fields: Partial<Combatant>) => update((current) => ({ ...current, ...fields }));
     const available = STANDARD_CONDITIONS.filter((name) => !c.conditions.some((x) => x.toLowerCase() === name.toLowerCase()));
@@ -418,10 +436,18 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: C
                 )}
             </div>
 
+            {npc && (showAttacks || showLoot) && (
+                <p className="dms-shared-note">
+                    🔗 Attacks and loot are shared with{" "}
+                    <button type="button" className="dms-link-button" onClick={() => onOpenNpc(npc.id)}>{npc.name ? `${npc.name}'s` : "the"} NPC sheet</button>
+                    : changing them here changes them there too.
+                </p>
+            )}
+
             {showAttacks && (
                 <div className="dms-field dms-combatant-attacks">
                     <span>Attacks &amp; spells</span>
-                    <AttackList attacks={c.attacks} onChange={(attacks) => set({ attacks })} />
+                    <AttackList attacks={c.attacks} onChange={(attacks) => setShared({ attacks })} />
                 </div>
             )}
 
@@ -431,9 +457,9 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: C
                         <label htmlFor={`loot-${c.id}`}>Loot</label>
                         <ConfirmButton
                             label="Remove loot"
-                            confirmLabel="Sure?"
+                            confirmLabel={npc ? "Clears it on the sheet too" : "Sure?"}
                             onConfirm={() => {
-                                set({ loot: "" });
+                                setShared({ loot: "" });
                                 setLootOpen(false);
                             }}
                         />
@@ -444,8 +470,13 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove }: C
                         value={c.loot}
                         placeholder="What they drop: 12 gp, a rusty key…"
                         autoFocus={lootOpen && c.loot === ""}
-                        onChange={(e) => set({ loot: e.target.value })}
+                        onChange={(e) => setShared({ loot: e.target.value })}
                     />
+                    {carrying.length > 0 && (
+                        <p className="dms-inspector-help">
+                            Also carrying (Items tab): {carrying.map((i) => i.name || "Unnamed").join(", ")}
+                        </p>
+                    )}
                 </div>
             )}
 

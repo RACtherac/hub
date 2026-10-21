@@ -1067,7 +1067,7 @@ const PROJECTS: Project[] = [
     label: "DM Screen",
     tag: "tool",
     route: "/dm-screen",
-    description: "A game master's screen for any tabletop system — an initiative and HP tracker, sheets for named NPCs and loot, story boards of connected cards, and a map maker with fog of war and a live players' window.",
+    description: "A game master's screen for any tabletop system — an initiative and HP tracker, sheets for named NPCs and loot, notes, story boards of connected cards, and a map maker with fog of war and a live players' window.",
     tree: {
       name: "DmScreenPage()",
       children: [
@@ -1102,6 +1102,10 @@ const PROJECTS: Project[] = [
               ],
             },
             {
+              name: "NoteManager()",
+              children: [{ name: "NoteSheet()" }],
+            },
+            {
               name: "StoryBoard()",
               children: [
                 { name: "NodeCard()", children: [{ name: "CardTag()" }] },
@@ -1134,8 +1138,8 @@ const PROJECTS: Project[] = [
     functions: [
       {
         name: "DmScreen()",
-        description: "Root page. Owns all DM screen data, saves it to localStorage, and switches between the Tracker, NPCs, Items, Story Board and Map tabs.",
-        detail: "Loads a DmScreenData object with parseData() (falling back to createDefaultData()) and writes it back to localStorage under STORAGE_KEY \"dm-screen-v1\" in a useEffect on every change. The active tab is in the ?tab= search parameter. Export/Import JSON back up everything in one file. Jump helpers connect the tabs: runEncounter() opens an encounter in the tracker, openNpc() / openItem() open a sheet, and showCard() switches the story board to a board and sets focusNodeId so that card is selected and centred. DmScreenPage() renders PlayerMapView instead when the URL has ?view=player.",
+        description: "Root page. Owns all DM screen data, saves it to localStorage, and switches between the Tracker, NPCs, Items, Notes, Story Board and Map tabs.",
+        detail: "Loads a DmScreenData object with parseData() (falling back to createDefaultData()) and writes it back to localStorage under STORAGE_KEY \"dm-screen-v1\" in a useEffect on every change. The active tab is in the ?tab= search parameter. Export/Import JSON back up everything in one file. Jump helpers connect the tabs: runEncounter() opens an encounter in the tracker, openNpc() / openItem() / openNote() open a sheet, and showCard() switches the story board to a board and sets focusNodeId so that card is selected and centred. DmScreenPage() renders PlayerMapView instead when the URL has ?view=player.",
         file: "src/pages/dm-screen.tsx",
         state: ["data: DmScreenData", "importError: string", "focusNodeId: string | null"],
       },
@@ -1144,15 +1148,15 @@ const PROJECTS: Project[] = [
         description: "Initiative tracker: a list of encounters, the turn and round bar, initiative rolls, an add-combatants form and one row per combatant.",
         detail: "Combatants are sorted with sortCombatants() (initiative, then modifier, then name). nextTurn() and previousTurn() move the turn and roll over into new rounds. 'Roll initiative' rolls d20 + modifier for everyone or only non-PCs. The add form can add up to 20 copies at once, numbering duplicate names with duplicateName(). Once every PC or every monster is at 0 HP, encounterOutcome() decides the winner and a 'Combat over' banner shows it, which linked story board cards also show. Deleting an encounter unlinks it from cards on every board.",
         file: "src/components/DmScreen/EncounterTracker.tsx",
-        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>"],
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onOpenNpc: (npcId: string) => void"],
         state: ["form: typeof EMPTY_FORM"],
       },
       {
         name: "CombatantRow()",
         description: "One combatant: initiative, name, type, AC, size/type and alignment, HP with damage/heal, conditions, attacks, loot and notes.",
-        detail: "Damage eats temporary HP first (applyDamage()) and healing stops at max HP (applyHeal()). A combatant at 0 HP is marked Down. Conditions come from STANDARD_CONDITIONS or a custom text box. Attacks, loot and notes stay hidden behind '+ Attacks', '+ Loot' and '+ Notes' links until they have content, so rows stay compact. Loot and notes have a confirm-to-remove button.",
+        detail: "Damage eats temporary HP first (applyDamage()) and healing stops at max HP (applyHeal()). A combatant at 0 HP is marked Down. Conditions come from STANDARD_CONDITIONS or a custom text box. Attacks, loot and notes stay hidden behind '+ Attacks', '+ Loot' and '+ Notes' links until they have content, so rows stay compact. Loot and notes have a confirm-to-remove button. A combatant added from an NPC shows a '🔗 shared with … NPC sheet' line, sends attack and loot edits through onShare (shareWithNpc()) instead of changing only itself, and lists the items that NPC carries under the loot.",
         file: "src/components/DmScreen/EncounterTracker.tsx",
-        props: ["combatant: Combatant", "isTurn: boolean", "update: (change: (current: Combatant) => Combatant) => void", "onDuplicate: () => void", "onRemove: () => void"],
+        props: ["combatant: Combatant", "isTurn: boolean", "update: (change: (current: Combatant) => Combatant) => void", "onDuplicate: () => void", "onRemove: () => void", "npc?: Npc", "carrying: Item[]", "onShare: (fields: SharedNpcFields) => void", "onOpenNpc: (npcId: string) => void"],
         state: ["amount: string", "custom: string", "notesOpen: boolean", "attacksOpen: boolean", "lootOpen: boolean"],
       },
       {
@@ -1179,6 +1183,14 @@ const PROJECTS: Project[] = [
         state: ["filter: Filter", "query: string"],
       },
       {
+        name: "NoteManager()",
+        description: "The Notes tab: free-form notes for lore, rumours and recaps, searchable and pinnable, which Note cards on the story board link to.",
+        detail: "Lists notes with sortedNotes() (pinned first, then most recently edited) filtered by noteMatches(). NoteSheet() edits the title and a large text box through updateNote(), which stamps updatedAt for the 'Edited 2 days ago' line, and has a pin toggle, the note's story board cards (noteCards()) and '+ Put on story board'. Unlike NPC and item cards, a linked Note card edits the note itself from the story board's side panel. removeNote() leaves its cards on the board with the note's title and text copied back onto them.",
+        file: "src/components/DmScreen/NoteManager.tsx",
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onShowCard: (boardId: string, nodeId: string) => void"],
+        state: ["query: string"],
+      },
+      {
         name: "HolderField()",
         description: "'Who has it' control for an item: not found yet, an NPC, a location or the party.",
         detail: "Changing the holder kind goes through holderOfKind() so nothing from the old holder is kept. An NPC holder picks from the NPCs tab (the option is disabled when there are none), a location holder suggests Location card titles, and a party holder has an optional 'Carried by' name. Used on item sheets and in the story board side panel for linked item cards.",
@@ -1188,9 +1200,9 @@ const PROJECTS: Project[] = [
       {
         name: "StoryBoard()",
         description: "Pan-and-zoom board of story cards joined by labelled arrows, with several named boards and a side panel for editing.",
-        detail: "Works on activeBoard(data) and writes changes back with updateActiveBoard(). The board captures the pointer for panning, dragging cards by their header and dragging the ● handle onto another card to connect them. Wheel zoom uses a non-passive listener and zoomAt(). Ticking the branch the players took runs branchState(), which greys out the other branches and everything only reachable through them. Cards can link to an encounter, a named NPC or an item; linked NPC and item cards take their title from it (cardTitle()) and only their notes can be edited. Dropping an image file on the board makes an image card. The side panel can be hidden and the board height dragged, both remembered per browser.",
+        detail: "Works on activeBoard(data) and writes changes back with updateActiveBoard(). The board captures the pointer for panning, dragging cards by their header and dragging the ● handle onto another card to connect them. Wheel zoom uses a non-passive listener and zoomAt(). Ticking the branch the players took runs branchState(), which greys out the other branches and everything only reachable through them. Cards can link to an encounter, a named NPC, an item or a note; linked NPC and item cards take their title from it (cardTitle()) and only their notes can be edited, while a linked Note card shows the note and edits it in place. Dropping an image file on the board makes an image card. The side panel can be hidden and the board height dragged, both remembered per browser.",
         file: "src/components/DmScreen/StoryBoard.tsx",
-        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onRunEncounter: (encounterId: string) => void", "onOpenNpc: (npcId: string) => void", "onOpenItem: (itemId: string) => void", "focusNodeId: string | null", "onFocused: () => void"],
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onRunEncounter: (encounterId: string) => void", "onOpenNpc: (npcId: string) => void", "onOpenItem: (itemId: string) => void", "onOpenNote: (noteId: string) => void", "focusNodeId: string | null", "onFocused: () => void"],
         state: ["connect: { from: string; point: Point } | null", "selection: Selection", "sizes: Record<string, Size>", "newKind: NodeKind", "layout: BoardLayout"],
       },
       {
@@ -1222,8 +1234,14 @@ const PROJECTS: Project[] = [
       },
       {
         name: "combatantFromNpc()",
-        description: "Builds a tracker combatant from an NPC sheet.",
-        detail: "Copies name, AC, HP, race (as size/type), alignment and notes, gives the attacks new ids so editing the combatant mid-fight leaves the NPC alone, and adds the items the NPC carries to the loot as a 'Carrying: …' line.",
+        description: "Builds a tracker combatant from an NPC sheet, linked back to it by npcId.",
+        detail: "Copies name, AC, HP, race (as size/type), alignment and notes once, so HP can drop mid-fight without touching the sheet. Attacks and loot are copied too, but stay shared with the sheet from then on through shareWithNpc().",
+        file: "src/utils/dmScreen.ts",
+      },
+      {
+        name: "shareWithNpc()",
+        description: "Changes attacks and/or loot on an NPC and on every combatant added from it, in any encounter.",
+        detail: "Both the NPC sheet and the tracker's combatant row call it, so a change on either side shows on both, and on the same NPC in other encounters. Every combatant also keeps its own copy, so removeNpc() can unlink them without losing anything. npcCombatants() lists the linked combatants for the sheet's 'shared with … in Ambush, Finale' line.",
         file: "src/utils/dmScreen.ts",
       },
     ],
@@ -1233,23 +1251,36 @@ const PROJECTS: Project[] = [
     label: "Dev Tools",
     tag: "utility",
     route: "/tools",
-    description: "A page of small browser-only developer tools. The first is a JSON converter that checks and formats JSON and turns relaxed JS objects, CSV/TSV and key = value files into JSON.",
+    description: "A page of small browser-only developer tools: a JSON converter, Base64 / URL / HTML encoding, a JWT decoder, a regex tester, a timestamp converter, a colour converter with WCAG contrast, text case and line tools, and UUID and hash generators.",
     tree: {
       name: "Tools()",
-      children: [{ name: "JsonConverter()" }],
+      children: [
+        { name: "JsonConverter()" },
+        { name: "EncodeDecode()", children: [{ name: "CopyButton()" }] },
+        { name: "JwtDecoder()", children: [{ name: "ClaimTime()" }, { name: "CopyButton()" }] },
+        { name: "RegexTester()", children: [{ name: "CopyButton()" }] },
+        { name: "TimestampConverter()", children: [{ name: "Readout()" }] },
+        { name: "ColorConverter()", children: [{ name: "Contrast()" }, { name: "CopyButton()" }] },
+        { name: "TextTools()", children: [{ name: "CopyButton()" }] },
+        {
+          name: "Generators()",
+          children: [{ name: "UuidGenerator()" }, { name: "HashGenerator()" }],
+        },
+      ],
     },
     improvements: [
-      "Add YAML and XML as input formats, and JSON → CSV for the other direction.",
-      "Highlight the error position inside the input box itself instead of only below it.",
-      "Add a tree view of the output that can be collapsed, with a path for each value.",
-      "More tools on the same page: Base64 and URL encode/decode, a JWT decoder, a regex tester, UUID and hash generators, and a colour converter.",
-      "Move the conversion into a Web Worker so very large files don't freeze the page while typing.",
+      "Add YAML and XML as input formats to the JSON converter, and JSON → CSV for the other direction.",
+      "Run the regex tester in a Web Worker with a time limit, so a pattern with catastrophic backtracking can't freeze the page.",
+      "Verify JWT signatures when the user pastes an HS256 secret or an RS256 public key (Web Crypto can do both).",
+      "Add a text diff tool that shows added and removed lines between two texts.",
+      "Remember each tool's last input (like the JSON converter's draft) so switching tabs doesn't lose it.",
+      "Add a tree view of JSON output that can be collapsed, with a copyable path for each value.",
     ],
     functions: [
       {
         name: "Tools()",
         description: "Root page with one tab per tool.",
-        detail: "Same shell as the other hub tool pages: top bar, hero and a tab bar whose active tab lives in the ?tab= search parameter. Adding a tool means adding it to TABS and rendering it in the panel.",
+        detail: "Same shell as the other hub tool pages: top bar, hero and a tab bar whose active tab lives in the ?tab= search parameter. TABS holds each tool's id, label and component, so adding a tool is one line there.",
         file: "src/pages/tools.tsx",
       },
       {
@@ -1282,6 +1313,54 @@ const PROJECTS: Project[] = [
         description: ".env, .ini and .properties files to a nested object.",
         detail: "Reads 'key = value' and 'key: value' lines, skipping comments and blank lines. [section] headers and dotted keys like db.host become nested objects, quoted values keep their text, and an 'export ' prefix (from shell .env files) is ignored. A key that is used both as a value and as a parent of nested keys is reported with its line.",
         file: "src/utils/jsonConverter.ts",
+      },
+      {
+        name: "EncodeDecode()",
+        description: "Encode or decode text as Base64, URL-safe Base64, URL encoding or HTML entities, with a swap button.",
+        detail: "Runs encode() or decode() from devTools.ts on every change. Base64 goes through the text's UTF-8 bytes so accents and emoji round-trip, accepts input with or without padding and line breaks, and says when the bytes are binary rather than text. URL decoding treats + as a space. HTML unescaping knows the common named entities and every numeric one. '⇄ Swap' turns the result into the input and flips the direction.",
+        file: "src/components/Tools/EncodeDecode.tsx",
+        state: ["codec: Codec", "direction: 'encode' | 'decode'", "input: string"],
+      },
+      {
+        name: "JwtDecoder()",
+        description: "Decodes a JWT's header and payload and shows when it was issued and when it expires.",
+        detail: "decodeJwt() splits the token (a leading 'Bearer ' is fine), Base64-decodes and JSON-parses the header and payload, and turns the iat / nbf / exp claims into dates. jwtStatus() gives a badge: not expired, expired, not valid yet or never expires. Errors name the broken part. The page says plainly that it only decodes: the signature can't be verified without the key.",
+        file: "src/components/Tools/JwtDecoder.tsx",
+        state: ["token: string", "now: Date"],
+      },
+      {
+        name: "RegexTester()",
+        description: "Live regex tester with flag toggles, highlighted matches, a capture group table and a replace preview.",
+        detail: "runRegex() always searches globally to find every match (then keeps only the first when the g flag is off, like String.match), steps past empty matches so patterns like x* can't loop forever, and stops at MAX_MATCHES (1000). highlightSegments() splits the text into plain and matched pieces, shown as alternating <mark>s. The group table names named groups. With Replace on, regexReplace() shows the result, with $1, $<name> and $& working. Invalid patterns show the browser's message without the 'Invalid regular expression' prefix.",
+        file: "src/components/Tools/RegexTester.tsx",
+        state: ["pattern: string", "flags: string", "text: string", "replacement: string", "showReplace: boolean"],
+      },
+      {
+        name: "TimestampConverter()",
+        description: "Unix seconds or milliseconds, ISO 8601 or a written date in; every common format and 'how long ago' out.",
+        detail: "parseTimestamp() treats numbers below 1e11 as seconds and larger ones as milliseconds, and anything else goes to Date.parse. The results (Unix s and ms, ISO, local time with the time zone name, UTC and relative) each have a copy link. relativeTime() uses Intl.RelativeTimeFormat with the biggest unit that fits ('yesterday', 'in 2 hours'). A one-second interval keeps 'now' and the relative time current.",
+        file: "src/components/Tools/TimestampConverter.tsx",
+        state: ["input: string", "now: Date"],
+      },
+      {
+        name: "ColorConverter()",
+        description: "HEX, RGB, HSL and colour names in any form, converted to each other, with a picker and WCAG contrast against white and black.",
+        detail: "parseColor() reads #rgb / #rgba / #rrggbb / #rrggbbaa, rgb() and hsl() with commas or spaces and an optional alpha, and common names. toHex(), toRgbString() and toHslString() write it back out. Contrast() shows sample text on white and black with contrastRatio() (WCAG relative luminance) and the wcagLevel() for normal text. A checkerboard behind the swatch shows transparency.",
+        file: "src/components/Tools/ColorConverter.tsx",
+        state: ["input: string"],
+      },
+      {
+        name: "TextTools()",
+        description: "Case conversion, character / word / line / byte counts and line operations, with one step of undo.",
+        detail: "convertCase() splits each line into words with splitWords(), which understands camelCase, snake_case, kebab-case and acronyms like XMLHttpRequest, then joins them in the chosen case. textStats() counts emoji as one character and gives the UTF-8 size. applyLineOperation() sorts naturally (item 2 before item 10) with Intl.Collator, removes duplicates or empty lines, trims, reverses or shuffles with Fisher–Yates.",
+        file: "src/components/Tools/TextTools.tsx",
+        state: ["text: string", "previous: string | null"],
+      },
+      {
+        name: "Generators()",
+        description: "UUID v4 generator with formats, and SHA-1 / SHA-256 / SHA-384 / SHA-512 hashes of any text.",
+        detail: "UuidGenerator() makes up to 100 UUIDs with randomUuid(), which uses crypto.randomUUID and falls back to uuidFromBytes() over crypto.getRandomValues on pages where randomUUID isn't available, setting the version and variant bits by hand. They can be shown lower case, upper case, without dashes or in braces. HashGenerator() hashes the text's UTF-8 bytes with Web Crypto's crypto.subtle.digest, ignoring results from older text if typing is faster than hashing.",
+        file: "src/components/Tools/Generators.tsx",
       },
     ],
   },

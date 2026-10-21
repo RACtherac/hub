@@ -1126,6 +1126,26 @@
     gap: 0.5rem;
 }
 
+/* Attacks and loot shared between an NPC sheet and its combatants. */
+.dms-shared-note {
+    padding: 0.45rem 0.7rem;
+    border-radius: 0.5rem;
+    border: 1px dashed color-mix(in srgb, var(--dms-npc) 60%, transparent);
+    background: color-mix(in srgb, var(--dms-npc) 8%, transparent);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+/* Notes tab */
+.dms-pin {
+    color: var(--accent);
+}
+
+.dms-note-body textarea {
+    min-height: 22rem;
+    line-height: 1.55;
+}
+
 .dms-list-search {
     margin-bottom: 0.6rem;
 }

@@ -19,6 +19,7 @@ import {
     createEncounter,
     createItem,
     createNode,
+    createNote,
     createNpc,
     duplicateCombatant,
     duplicateName,
@@ -31,13 +32,20 @@ import {
     locationNames,
     nextTurn,
     normalizeData,
+    noteCards,
+    noteMatches,
     npcCards,
+    npcCombatants,
     npcMatches,
     parseData,
     previousTurn,
     removeBoard,
     removeCombatant,
     removeItem,
+    removeNote,
+    shareWithNpc,
+    sortedNotes,
+    updateNote,
     removeNode,
     removeNpc,
     rollInitiative,
@@ -578,7 +586,7 @@ test("item search covers type, rarity, holder and the stats for its type", () =>
     assert.ok(!itemMatches(data, sword, "with the party"));
 });
 
-test("adding an NPC to an encounter copies their stats, attacks and loot, plus what they carry", () => {
+test("adding an NPC to an encounter copies their stats and links the combatant to the sheet", () => {
     const vex = createNpc({
         name: "Vex",
         race: "Tiefling",
@@ -590,10 +598,8 @@ test("adding an NPC to an encounter copies their stats, attacks and loot, plus w
         attacks: [createAttack("weapon", { name: "Rapier", hit: "+6", damage: "1d8 + 4 piercing" }), createAttack("magic", { name: "Hellish Rebuke", hit: "DC 13 Dex" })],
         loot: "23 gp",
     });
-    const amulet = createItem({ name: "Amulet", holder: { kind: "npc", npcId: vex.id } });
-    const data = { ...createDefaultData(), npcs: [vex], items: [amulet] };
-
-    const c = combatantFromNpc(data, vex);
+    const c = combatantFromNpc(vex);
+    assert.equal(c.npcId, vex.id);
     assert.equal(c.name, "Vex");
     assert.equal(c.kind, "npc");
     assert.equal(c.ac, "15");
@@ -602,13 +608,59 @@ test("adding an NPC to an encounter copies their stats, attacks and loot, plus w
     assert.equal(c.creatureType, "Tiefling");
     assert.equal(c.alignment, "Neutral evil");
     assert.equal(c.notes, "Flees at half HP");
-    assert.deepEqual(c.attacks.map((a) => [a.kind, a.name, a.hit]), [["weapon", "Rapier", "+6"], ["magic", "Hellish Rebuke", "DC 13 Dex"]]);
-    // Own copies, so editing the combatant doesn't touch the NPC.
-    assert.notEqual(c.attacks[0].id, vex.attacks[0].id);
-    assert.equal(c.loot, "23 gp\nCarrying: Amulet");
+    assert.deepEqual(c.attacks, vex.attacks);
+    // Carried items are shown live in the tracker, not written into the shared loot.
+    assert.equal(c.loot, "23 gp");
+});
 
-    assert.equal(combatantFromNpc({ ...data, items: [] }, { ...vex, loot: "" }).loot, "");
-    assert.equal(combatantFromNpc(data, { ...vex, loot: "" }).loot, "Carrying: Amulet");
+test("attacks and loot changed on either side show on the NPC and every combatant from it", () => {
+    const vex = createNpc({ name: "Vex", attacks: [createAttack("weapon", { name: "Rapier" })], loot: "23 gp" });
+    const ulf = createNpc({ name: "Ulf", loot: "a mug" });
+    const goblin = createCombatant({ name: "Goblin", loot: "3 cp" });
+    const ambush = { ...createEncounter("Ambush"), combatants: [combatantFromNpc(vex), goblin, combatantFromNpc(ulf)] };
+    const finale = { ...createEncounter("Finale"), combatants: [{ ...combatantFromNpc(vex), hp: 5 }] };
+    const data = { ...createDefaultData(), encounters: [ambush, finale], npcs: [vex, ulf] };
+
+    // From the sheet.
+    const dagger = createAttack("weapon", { name: "Dagger" });
+    const fromSheet = shareWithNpc(data, vex.id, { attacks: [...vex.attacks, dagger] });
+    assert.deepEqual(fromSheet.npcs[0].attacks.map((a) => a.name), ["Rapier", "Dagger"]);
+    assert.deepEqual(fromSheet.encounters[0].combatants[0].attacks.map((a) => a.name), ["Rapier", "Dagger"]);
+    assert.deepEqual(fromSheet.encounters[1].combatants[0].attacks.map((a) => a.name), ["Rapier", "Dagger"]);
+    // Only Vex's: the goblin and Ulf are untouched, and the combatant keeps its own HP.
+    assert.deepEqual(fromSheet.encounters[0].combatants[1], goblin);
+    assert.equal(fromSheet.encounters[0].combatants[2].loot, "a mug");
+    assert.equal(fromSheet.npcs[1].loot, "a mug");
+    assert.equal(fromSheet.encounters[1].combatants[0].hp, 5);
+
+    // From a combatant: the same call, so the sheet and the other encounter follow.
+    const fromTracker = shareWithNpc(fromSheet, vex.id, { loot: "23 gp, a black key" });
+    assert.equal(fromTracker.npcs[0].loot, "23 gp, a black key");
+    assert.equal(fromTracker.encounters[1].combatants[0].loot, "23 gp, a black key");
+    assert.deepEqual(fromTracker.encounters[0].combatants[0].attacks.map((a) => a.name), ["Rapier", "Dagger"]);
+
+    assert.deepEqual(npcCombatants(fromTracker, vex.id).map(({ encounter }) => encounter.name), ["Ambush", "Finale"]);
+});
+
+test("deleting an NPC leaves its combatants with their attacks and loot, no longer shared", () => {
+    const vex = createNpc({ name: "Vex", attacks: [createAttack("weapon", { name: "Rapier" })], loot: "23 gp" });
+    const encounter = { ...createEncounter(), combatants: [combatantFromNpc(vex)] };
+    const data = { ...createDefaultData(), encounters: [encounter], npcs: [vex] };
+
+    const left = removeNpc(data, vex.id).encounters[0].combatants[0];
+    assert.equal(left.npcId, undefined);
+    assert.deepEqual(left.attacks.map((a) => a.name), ["Rapier"]);
+    assert.equal(left.loot, "23 gp");
+});
+
+test("a combatant's NPC link survives a reload, and a link to a missing NPC is dropped", () => {
+    const vex = createNpc({ name: "Vex" });
+    const encounter = { ...createEncounter(), combatants: [combatantFromNpc(vex), { ...createCombatant(), npcId: "gone" }] };
+    const data = { ...createDefaultData(), encounters: [encounter], activeEncounterId: encounter.id, npcs: [vex] };
+
+    const reloaded = parseData(JSON.stringify(data))!.encounters[0].combatants;
+    assert.equal(reloaded[0].npcId, vex.id);
+    assert.equal(reloaded[1].npcId, undefined);
 });
 
 test("attacks and loot survive a reload on NPCs and combatants; older saves get none", () => {
@@ -632,4 +684,60 @@ test("attacks and loot survive a reload on NPCs and combatants; older saves get 
     assert.equal(old.encounters[0].combatants[0].loot, "");
     assert.deepEqual(old.npcs[0].attacks, []);
     assert.equal(old.npcs[0].loot, "");
+});
+
+test("notes and their card links survive a reload; older saves have none", () => {
+    const lore = createNote({ title: "The Sunken Abbey", body: "Flooded in the year of the comet.", pinned: true }, 1000);
+    const board = { ...createBoard("Act 1"), nodes: [{ ...createNode("note", 0, 0), noteId: lore.id }, { ...createNode("note", 0, 0), noteId: "gone" }] };
+    const data = { ...createDefaultData(), boards: [board], activeBoardId: board.id, notes: [lore], activeNoteId: lore.id };
+
+    const reloaded = parseData(JSON.stringify(data))!;
+    assert.deepEqual(reloaded.notes, [lore]);
+    assert.equal(reloaded.activeNoteId, lore.id);
+    assert.equal(reloaded.boards[0].nodes[0].noteId, lore.id);
+    assert.equal(reloaded.boards[0].nodes[1].noteId, undefined);
+
+    const old = parseData(JSON.stringify({ encounters: [] }))!;
+    assert.deepEqual(old.notes, []);
+    assert.equal(old.activeNoteId, "");
+});
+
+test("a linked note card is titled with the note; notes sort pinned first, then newest", () => {
+    const note = createNote({ title: "Rumours" });
+    const card = { ...createNode("note", 0, 0), title: "old", noteId: note.id };
+    assert.equal(cardTitle({ ...createDefaultData(), notes: [note] }, card), "Rumours");
+
+    const a = createNote({ title: "a" }, 100);
+    const b = createNote({ title: "b" }, 300);
+    const c = createNote({ title: "c", pinned: true }, 50);
+    assert.deepEqual(sortedNotes([a, b, c]).map((n) => n.title), ["c", "b", "a"]);
+});
+
+test("editing a note stamps the time; search covers title and text", () => {
+    const note = createNote({ title: "Rumours", body: "The miller saw lights on the hill" }, 100);
+    const data = { ...createDefaultData(), notes: [note] };
+    const edited = updateNote(data, note.id, { body: "changed" }, 500).notes[0];
+    assert.equal(edited.body, "changed");
+    assert.equal(edited.updatedAt, 500);
+    assert.equal(edited.title, "Rumours");
+
+    assert.ok(noteMatches(note, "rumours"));
+    assert.ok(noteMatches(note, "miller hill"));
+    assert.ok(!noteMatches(note, "castle"));
+});
+
+test("deleting a note leaves its cards on the board with the note's text", () => {
+    const note = createNote({ title: "Rumours", body: "Lights on the hill" });
+    const other = createNote({ title: "Recap" });
+    const card = { ...createNode("note", 0, 0), title: "", text: "", noteId: note.id };
+    const data = { ...createDefaultData(), boards: [{ ...createBoard("Act 1"), nodes: [card] }], notes: [note, other], activeNoteId: note.id };
+
+    assert.equal(noteCards(data, note.id).length, 1);
+    const removed = removeNote(data, note.id);
+    assert.deepEqual(removed.notes.map((n) => n.title), ["Recap"]);
+    assert.equal(removed.activeNoteId, other.id);
+    const left = removed.boards[0].nodes[0];
+    assert.equal(left.noteId, undefined);
+    assert.equal(left.title, "Rumours");
+    assert.equal(left.text, "Lights on the hill");
 });

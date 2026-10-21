@@ -10,12 +10,15 @@ import {
     itemsHeldBy,
     locationNames,
     npcCards,
+    npcCombatants,
     npcMatches,
+    shareWithNpc,
     removeNpc,
     updateActiveBoard,
     type DmScreenData,
     type ItemHolder,
     type Npc,
+    type SharedNpcFields,
 } from "../../utils/dmScreen";
 import AttackList from "./AttackList";
 import ConfirmButton from "./ConfirmButton";
@@ -103,6 +106,9 @@ interface NpcSheetProps extends NpcManagerProps {
 function NpcSheet({ npc, data, setData, onShowCard, onOpenItem }: NpcSheetProps) {
     const [addedTo, setAddedTo] = useState("");
     const carrying = itemsHeldBy(data, npc.id);
+    // Attacks and loot also change on every combatant added from this NPC.
+    const share = (fields: SharedNpcFields) => setData((current) => shareWithNpc(current, npc.id, fields));
+    const linkedEncounters = [...new Set(npcCombatants(data, npc.id).map(({ encounter }) => encounter.name || "Untitled"))];
     const givable = data.items.filter((i) => !(i.holder.kind === "npc" && i.holder.npcId === npc.id));
 
     const setHolder = (itemId: string, holder: ItemHolder) =>
@@ -124,7 +130,7 @@ function NpcSheet({ npc, data, setData, onShowCard, onOpenItem }: NpcSheetProps)
     };
 
     const addToEncounter = () => {
-        const combatant = combatantFromNpc(data, npc);
+        const combatant = combatantFromNpc(npc);
         setData((current) => ({
             ...current,
             encounters: current.encounters.map((e) => (e.id === encounter.id ? { ...e, combatants: [...e.combatants, combatant] } : e)),
@@ -181,7 +187,7 @@ function NpcSheet({ npc, data, setData, onShowCard, onOpenItem }: NpcSheetProps)
                     </div>
                     <div className="dms-inspector-section">
                         <span className="dms-subtitle">Attacks &amp; spells</span>
-                        <AttackList attacks={npc.attacks} onChange={(attacks) => set({ attacks })} />
+                        <AttackList attacks={npc.attacks} onChange={(attacks) => share({ attacks })} />
                     </div>
                     <label className="dms-field">
                         <span>Loot</span>
@@ -189,9 +195,14 @@ function NpcSheet({ npc, data, setData, onShowCard, onOpenItem }: NpcSheetProps)
                             rows={3}
                             value={npc.loot}
                             placeholder="What they drop: 23 gp, a silver key, a letter from the duke…"
-                            onChange={(e) => set({ loot: e.target.value })}
+                            onChange={(e) => share({ loot: e.target.value })}
                         />
                     </label>
+                    {linkedEncounters.length > 0 && (
+                        <p className="dms-shared-note">
+                            🔗 Attacks and loot are shared with this NPC in {linkedEncounters.join(", ")}: a change here or there shows in both.
+                        </p>
+                    )}
                     <label className="dms-field">
                         <span>Location</span>
                         <input

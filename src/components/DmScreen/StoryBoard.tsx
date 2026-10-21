@@ -25,8 +25,12 @@ import {
     itemStatLine,
     itemTypeLabel,
     itemsHeldBy,
+    createNote,
     linkedItem,
+    linkedNote,
     linkedNpc,
+    sortedNotes,
+    updateNote,
     rarityLabel,
     createNode,
     encounterOutcome,
@@ -47,6 +51,7 @@ import {
     type Item,
     type ItemHolder,
     type NodeKind,
+    type Note,
     type Npc,
 } from "../../utils/dmScreen";
 import ConfirmButton from "./ConfirmButton";
@@ -60,6 +65,7 @@ interface StoryBoardProps {
     onRunEncounter: (encounterId: string) => void;
     onOpenNpc: (npcId: string) => void;
     onOpenItem: (itemId: string) => void;
+    onOpenNote: (noteId: string) => void;
     // Select this card and bring it into view when the board opens.
     focusNodeId: string | null;
     onFocused: () => void;
@@ -137,7 +143,7 @@ function linkGeometry(a: BoardNode, aSize: Size, b: BoardNode, bSize: Size) {
     };
 }
 
-export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, onOpenItem, focusNodeId, onFocused }: StoryBoardProps) {
+export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, onOpenItem, onOpenNote, focusNodeId, onFocused }: StoryBoardProps) {
     const board = activeBoard(data);
     const { view } = board;
 
@@ -589,6 +595,7 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                             const encounter = data.encounters.find((e) => e.id === node.encounterId);
                             const npc = linkedNpc(data, node);
                             const item = linkedItem(data, node);
+                            const note = linkedNote(data, node);
                             return (
                                 <NodeCard
                                     key={node.id}
@@ -600,6 +607,8 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                                     carrying={npc ? itemsHeldBy(data, npc.id) : []}
                                     onOpenNpc={onOpenNpc}
                                     item={item}
+                                    note={note}
+                                    onOpenNote={onOpenNote}
                                     holder={item ? holderLabel(data, item.holder) : ""}
                                     onOpenItem={onOpenItem}
                                     isChoice={branches.choices.has(node.id)}
@@ -673,6 +682,16 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                             ));
                         }}
                         onOpenItem={onOpenItem}
+                        onCreateNote={() => {
+                            // The card's text moves into the note, which the card then shows.
+                            const note = createNote({ title: selectedNode.title || "New note", body: selectedNode.text });
+                            setData((current) => updateActiveBoard(
+                                { ...current, notes: [...current.notes, note], activeNoteId: note.id },
+                                (b) => ({ ...b, nodes: b.nodes.map((n) => (n.id === selectedNode.id ? { ...n, noteId: note.id, text: "" } : n)) })
+                            ));
+                        }}
+                        onOpenNote={onOpenNote}
+                        onUpdateNote={(noteId, fields) => setData((current) => updateNote(current, noteId, fields))}
                         onSetHolder={(itemId, holder) => setData((current) => ({
                             ...current,
                             items: current.items.map((i) => (i.id === itemId ? { ...i, holder } : i)),
@@ -752,6 +771,9 @@ interface NodeCardProps {
     item?: Item;
     holder: string;
     onOpenItem: (itemId: string) => void;
+    // The linked note, whose title and text the card shows.
+    note?: Note;
+    onOpenNote: (noteId: string) => void;
     // One of several branches from the same card, so it can be ticked.
     isChoice: boolean;
     grey: boolean;
@@ -775,6 +797,8 @@ function NodeCard({
     item,
     holder,
     onOpenItem,
+    note,
+    onOpenNote,
     isChoice,
     grey,
     onToggleTaken,
@@ -786,7 +810,9 @@ function NodeCard({
 }: NodeCardProps) {
     const ref = useRef<HTMLDivElement>(null);
     // A linked NPC's or item's name is the card's title.
-    const title = npc?.name ?? item?.name ?? node.title;
+    const title = npc?.name ?? item?.name ?? note?.title ?? node.title;
+    // A linked note's text replaces the card's own.
+    const text = note ? note.body : node.text;
 
     // Report the card's size so connections meet its edges.
     useLayoutEffect(() => {
@@ -889,7 +915,12 @@ function NodeCard({
                     </div>
                 </div>
             )}
-            {(node.text || encounterName) && (
+            {note && (
+                <div className="dms-node-carrying">
+                    <CardTag label={note.pinned ? "★ 📝 Note" : "📝 Note"} title={`Open ${note.title || "this note"} in the Notes tab`} onOpen={() => onOpenNote(note.id)} />
+                </div>
+            )}
+            {(text || encounterName) && (
                 <div className="dms-node-body">
                     {encounterName && (
                         <p className="dms-node-encounter">
@@ -897,7 +928,7 @@ function NodeCard({
                             {outcome && <span className={`dms-outcome-tag dms-outcome--${outcome}`}>{OUTCOME_LABELS[outcome]}</span>}
                         </p>
                     )}
-                    {node.text && <p>{node.text}</p>}
+                    {text && <p>{text}</p>}
                 </div>
             )}
             <span
@@ -944,6 +975,9 @@ interface NodeInspectorProps {
     onOpenNpc: (npcId: string) => void;
     onCreateItem: () => void;
     onOpenItem: (itemId: string) => void;
+    onCreateNote: () => void;
+    onOpenNote: (noteId: string) => void;
+    onUpdateNote: (noteId: string, fields: Partial<Pick<Note, "title" | "body">>) => void;
     onSetHolder: (itemId: string, holder: ItemHolder) => void;
     onConnect: (to: string) => void;
     onSelectLink: (id: string) => void;
@@ -963,6 +997,9 @@ function NodeInspector({
     onOpenNpc,
     onCreateItem,
     onOpenItem,
+    onCreateNote,
+    onOpenNote,
+    onUpdateNote,
     onSetHolder,
     onConnect,
     onSelectLink,
@@ -971,6 +1008,7 @@ function NodeInspector({
     const { nodes, links } = activeBoard(data);
     const npc = linkedNpc(data, node);
     const item = linkedItem(data, node);
+    const note = linkedNote(data, node);
     // A linked NPC or item owns the card's name.
     const linkedName = npc?.name ?? item?.name;
     const title = (id: string) => {
@@ -1069,7 +1107,52 @@ function NodeInspector({
                 </div>
             )}
 
-            {linkedName !== undefined ? (
+            {/* Note cards link to a note from the Notes tab. Unlike NPCs and
+                items, the note is edited right here: its title and text are
+                all there is to it. */}
+            {(node.kind === "note" || note) && !npc && !item && (
+                <div className="dms-inspector-section">
+                    <label className="dms-field">
+                        <span>Note</span>
+                        <select
+                            value={note?.id ?? ""}
+                            onChange={(e) => {
+                                const id = e.target.value;
+                                // Unlinking keeps the note's text on the card.
+                                update(id ? { noteId: id } : { noteId: undefined, title: note?.title ?? node.title, text: note?.body ?? node.text });
+                            }}
+                        >
+                            <option value="">Not linked (write it yourself)</option>
+                            {sortedNotes(data.notes).map((n) => <option key={n.id} value={n.id}>{n.pinned ? "★ " : ""}{n.title || "Untitled"}</option>)}
+                        </select>
+                    </label>
+                    <div className="dms-inspector-buttons">
+                        {note ? (
+                            <button type="button" className="dms-button" onClick={() => onOpenNote(note.id)}>
+                                Open in Notes →
+                            </button>
+                        ) : (
+                            <button type="button" className="dms-button dms-button--ghost" onClick={onCreateNote}>
+                                + Create note from this card
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {note ? (
+                <>
+                    <label className="dms-field">
+                        <span>Title</span>
+                        <input value={note.title} onChange={(e) => onUpdateNote(note.id, { title: e.target.value })} />
+                    </label>
+                    <label className="dms-field">
+                        <span>Note text</span>
+                        <textarea rows={10} value={note.body} onChange={(e) => onUpdateNote(note.id, { body: e.target.value })} />
+                    </label>
+                    <p className="dms-inspector-help">This edits the note in the Notes tab, and every card linked to it.</p>
+                </>
+            ) : linkedName !== undefined ? (
                 <div className="dms-field">
                     <span>Title</span>
                     <p className="dms-locked-value">{linkedName || "Unnamed"}</p>
@@ -1093,10 +1176,12 @@ function NodeInspector({
                     </label>
                 </>
             )}
-            <label className="dms-field">
-                <span>Notes</span>
-                <textarea rows={6} value={node.text} onChange={(e) => update({ text: e.target.value })} />
-            </label>
+            {!note && (
+                <label className="dms-field">
+                    <span>Notes</span>
+                    <textarea rows={6} value={node.text} onChange={(e) => update({ text: e.target.value })} />
+                </label>
+            )}
 
             {node.kind === "image" && <ImageField image={node.image} alt={node.title} onChange={(image) => update({ image })} />}
 
