@@ -336,12 +336,332 @@
     min-width: 0;
 }
 
+/* ---------- Shared tool layout ---------- */
+
+.tl-stack {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.tl-two {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.tl-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1rem;
+}
+
+.tl-code--short {
+    min-height: 12rem;
+}
+
+.tl-code--tiny {
+    min-height: 5rem;
+}
+
+.tl-code--wrap {
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.tl-pre {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    min-height: 3rem;
+    max-height: 28rem;
+    overflow: auto;
+    background: var(--bg);
+    border: 1px solid var(--border-2);
+    border-radius: 0.7rem;
+    color: #c9e4ff;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.tl-pre--wrap {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--text);
+}
+
+.tl-pre mark {
+    padding: 0 1px;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--accent) 35%, transparent);
+    color: var(--text);
+    box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.tl-pre mark.alt {
+    background: color-mix(in srgb, #6eb5ff 30%, transparent);
+    box-shadow: inset 0 -2px 0 #6eb5ff;
+}
+
+.tl-mono-input {
+    width: 100%;
+    min-width: 0;
+    padding: 0.55rem 0.7rem;
+    background: var(--bg);
+    border: 1px solid var(--border-2);
+    border-radius: 0.5rem;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.tl-mono-input--big {
+    padding: 0.75rem 0.9rem;
+    font-size: 1.05rem;
+}
+
+.tl-mono-input[aria-invalid="true"] {
+    border-color: var(--tl-error);
+}
+
+.tl-mono-input:focus-visible,
+.tl-segmented button:focus-visible,
+.tl-color-input input[type="color"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* A row of toggle buttons, one active. */
+.tl-segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    border: 1px solid var(--border-2);
+    border-radius: 0.55rem;
+    overflow: hidden;
+}
+
+.tl-segmented button {
+    padding: 0.45rem 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.tl-segmented button + button {
+    border-left: 1px solid var(--border-2);
+}
+
+.tl-segmented button:hover {
+    color: var(--text);
+}
+
+.tl-segmented button.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.tl-badge {
+    display: inline-block;
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.tl-badge--ok { background: color-mix(in srgb, var(--tl-ok) 18%, transparent); color: var(--tl-ok); }
+.tl-badge--warn { background: var(--accent-dim); color: var(--accent); }
+.tl-badge--error { background: color-mix(in srgb, var(--tl-error) 18%, transparent); color: var(--tl-error); }
+
+/* Label + value + copy, e.g. "Unix seconds 1700000000 Copy". */
+.tl-readouts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 0.75rem;
+}
+
+.tl-readouts--column {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.tl-readout {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.75rem 0.9rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    min-width: 0;
+}
+
+.tl-panel .tl-readout {
+    background: var(--surface-2);
+}
+
+.tl-readout span {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+}
+
+.tl-readout strong {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    overflow-wrap: anywhere;
+}
+
+.tl-readout small {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+}
+
+.tl-readout .tl-link-button {
+    justify-self: start;
+    font-size: 0.8rem;
+}
+
+.tl-readout--hash strong {
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+
+/* Regex */
+.tl-regex-input {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.tl-regex-slash {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    color: var(--text-dim);
+}
+
+.tl-table-wrap {
+    overflow-x: auto;
+}
+
+.tl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.tl-table th,
+.tl-table td {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.tl-table th {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-weight: 500;
+}
+
+.tl-table code {
+    font-family: var(--font-mono);
+    color: #c9e4ff;
+}
+
+/* Colours */
+.tl-color-input {
+    display: flex;
+    gap: 0.6rem;
+    align-items: stretch;
+}
+
+.tl-color-input input[type="color"] {
+    flex: none;
+    width: 3.5rem;
+    min-height: 3rem;
+    padding: 0.2rem;
+    border: 1px solid var(--border-2);
+    border-radius: 0.5rem;
+    background: var(--surface-2);
+    cursor: pointer;
+}
+
+.tl-swatch {
+    height: 8rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-2);
+    /* A checkerboard behind, so transparency shows. */
+    background-image: conic-gradient(#ccc 25%, #fff 0 50%, #ccc 0 75%, #fff 0);
+    background-size: 16px 16px;
+}
+
+.tl-contrast {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-2);
+}
+
+.tl-contrast strong {
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.tl-contrast span {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+/* Text */
+.tl-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+
+.tl-stats strong {
+    color: var(--text);
+    font-family: var(--font-mono);
+}
+
+.tl-button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+    gap: 0.5rem;
+}
+
+.tl-field input[type="number"] {
+    width: 5rem;
+}
+
 @media (max-width: 900px) {
-    .tl-json {
+    .tl-json,
+    .tl-two {
         grid-template-columns: minmax(0, 1fr);
     }
 
     .tl-code {
         min-height: 16rem;
+    }
+
+    .tl-code--short {
+        min-height: 9rem;
+    }
+
+    .tl-code--tiny {
+        min-height: 5rem;
     }
 }

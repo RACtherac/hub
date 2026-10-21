@@ -22,7 +22,7 @@ const projects = [
   { name: "Function Reference", description: "A developer index of every project's components and functions.", path: "/function-reference" },
   { name: "Roleplaying Sheets", description: "Manage party characters, stats, inventory, attacks, and notes for tabletop sessions.", path: "/roleplaying-sheets" },
   { name: "DM Screen", description: "Run encounters with initiative, HP and conditions, and map your story as connected cards.", path: "/dm-screen" },
-  { name: "Dev Tools", description: "Small browser tools, starting with a converter that turns CSV, JS objects and .env files into JSON.", path: "/tools" },
+  { name: "Dev Tools", description: "Browser tools: a JSON converter, Base64/URL encoding, a JWT decoder, a regex tester, timestamps, colours, text case and UUID/hash generators.", path: "/tools" },
 ];
 
 export default function Portfolio() {
