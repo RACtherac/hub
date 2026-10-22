@@ -655,6 +655,7 @@ const PROJECTS: Project[] = [
     "Add searchable tags and categories for nodes.",
     "Allow collapsing and expanding all tree branches at once.",
     "Support Markdown formatting inside text and note blocks.",
+    "Add read-only syntax highlighting to code blocks (an overlay behind the textarea), still without running anything.",
     "Add automatic backlinks between related nodes.",
     "Add version history so node edits can be restored.",
     "Export documentation as Markdown, PDF, or HTML.",
@@ -741,9 +742,9 @@ const PROJECTS: Project[] = [
         "Editor panel used for modifying the selected node's content blocks.",
 
       detail:
-        "Displays the selected node's page title and all attached content blocks. Supports text, notes, links, and image blocks with individual editing controls. Allows adding new blocks, deleting blocks, reordering them, and uploading images while updating the shared tree state.",
+        "Displays the selected node's page title and all attached content blocks. Supports text, note, link, image and code blocks with individual editing controls. Allows adding new blocks, deleting blocks, reordering them, and uploading images while updating the shared tree state. Rendered inline in the page component rather than as a separate file.",
 
-      file: "src/components/Tree/NodeEditor.tsx",
+      file: "src/pages/project-tree.tsx",
 
       props: [
         "selectedNode: TreeNodeData",
@@ -751,6 +752,20 @@ const PROJECTS: Project[] = [
         "onAddBlock()",
         "onDeleteBlock()",
         "onMoveBlock()",
+      ],
+    },
+    {
+      name: "CodeBlock()",
+      description:
+        "A block for keeping code snippets: a monospace editor with line numbers, a language label and copy. The code is never run.",
+      detail:
+        "The code is only ever text in a textarea — never evaluated or inserted as HTML. Tab and Shift+Tab indent or outdent the selected lines and Enter keeps the indentation (adding one level after {, [, ( or :), using indentSelection() and newlineWithIndent() from codeEditing.ts. {, [ and ( close themselves (typeOpener(), which also wraps a selection and skips pairing right before a word), typing the closer steps over an existing one (typeCloser()), Backspace in an empty pair removes both (backspacePair()), and Enter between a pair moves the closer to its own line. AltGr, which Swedish layouts use for { and [, isn't mistaken for a Ctrl shortcut. Those edits go through document.execCommand('insertText') so Ctrl+Z still works, with a fallback that sets the value. Esc makes the next Tab move focus out of the box, so keyboard users aren't trapped. The language is stored on the block and shown in its header.",
+      file: "src/components/Tree/CodeBlock.tsx",
+      props: [
+        "value: string",
+        "language: string",
+        "onChange(value)",
+        "onLanguageChange(language)",
       ],
     },
   ],

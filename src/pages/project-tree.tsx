@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import "../components/styles/tree.css";
 
+import CodeBlock from "../components/Tree/CodeBlock";
 import Tree from "../components/Tree/Tree";
 import TreeToolbar from "../components/Tree/TreeToolbar";
 
@@ -20,6 +21,7 @@ import {
 } from "../utils/treeUtils";
 
 import { moveTreeNode } from "../utils/treeNotionMove";
+import { DEFAULT_LANGUAGE, languageLabel } from "../utils/codeEditing";
 
 function createNode(title: string): TreeNodeData {
   return {
@@ -108,6 +110,7 @@ function addBlock(
           id: crypto.randomUUID(),
           type,
           value: "",
+          ...(type === "code" ? { language: DEFAULT_LANGUAGE } : {}),
         },
       ],
     };
@@ -150,6 +153,34 @@ function updateBlock(
         blockId,
         value
       )
+    ),
+  };
+}
+
+function updateBlockLanguage(
+  tree: TreeNodeData,
+  nodeId: string,
+  blockId: string,
+  language: string
+): TreeNodeData {
+  if (tree.id === nodeId) {
+    return {
+      ...tree,
+      blocks: tree.blocks.map((block) =>
+        block.id === blockId
+          ? {
+              ...block,
+              language,
+            }
+          : block
+      ),
+    };
+  }
+
+  return {
+    ...tree,
+    children: tree.children.map((child) =>
+      updateBlockLanguage(child, nodeId, blockId, language)
     ),
   };
 }
@@ -612,6 +643,26 @@ export default function ProjectTree() {
     <small>Upload image</small>
 </div>
                 </button>
+
+                <button
+                  className="block-add-button"
+                  onClick={() =>
+                    setTree((prev) =>
+                      addBlock(
+                        prev,
+                        selectedNode.id,
+                        "code"
+                      )
+                    )
+                  }
+                >
+                  <span>{"</>"}</span>
+
+                  <div className="block-add-info">
+                    <strong>Code</strong>
+                    <small>Keep a snippet</small>
+                  </div>
+                </button>
               </div>
 
               <div className="node-blocks">
@@ -623,7 +674,9 @@ export default function ProjectTree() {
                     >
                       <div className="node-block-header">
                         <span>
-                          {block.type.toUpperCase()}
+                          {block.type === "code"
+                            ? `CODE · ${languageLabel(block.language)}`
+                            : block.type.toUpperCase()}
                         </span>
 
                         <div className="block-actions">
@@ -743,6 +796,23 @@ export default function ProjectTree() {
                             )
                           }
                           placeholder="https://example.com"
+                        />
+                      )}
+
+                      {block.type === "code" && (
+                        <CodeBlock
+                          value={block.value}
+                          language={block.language ?? DEFAULT_LANGUAGE}
+                          onChange={(value) =>
+                            setTree((prev) =>
+                              updateBlock(prev, selectedNode.id, block.id, value)
+                            )
+                          }
+                          onLanguageChange={(language) =>
+                            setTree((prev) =>
+                              updateBlockLanguage(prev, selectedNode.id, block.id, language)
+                            )
+                          }
                         />
                       )}
 

@@ -2,7 +2,8 @@ export type TreeBlockType =
   | "text"
   | "note"
   | "link"
-  | "image";
+  | "image"
+  | "code";
 
 export interface TreeBlock {
   id: string;
@@ -10,6 +11,9 @@ export interface TreeBlock {
   type: TreeBlockType;
 
   value: string;
+
+  // Code blocks: the language it's labelled as, e.g. "typescript".
+  language?: string;
 }
 
 export interface TreeNodeData {
