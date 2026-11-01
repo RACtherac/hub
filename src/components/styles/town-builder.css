@@ -1,0 +1,350 @@
+/* ===================================
+   TOWN BUILDER
+   =================================== */
+
+.tb-page {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* ---------- Top bar ---------- */
+
+.tb-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem clamp(1rem, 3vw, 1.5rem);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.tb-back {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.tb-back span {
+    color: var(--accent);
+}
+
+.tb-name {
+    flex: 1;
+    min-width: 8rem;
+    max-width: 22rem;
+    padding: 0.35rem 0.6rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    color: var(--text);
+    font: inherit;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.tb-name:hover,
+.tb-name:focus-visible {
+    border-color: var(--border-2);
+    background: var(--surface);
+}
+
+.tb-topbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-left: auto;
+}
+
+/* ---------- Buttons ---------- */
+
+.tb-button {
+    padding: 0.45rem 0.85rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--bg);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tb-button--ghost {
+    background: transparent;
+    border-color: var(--border-2);
+    color: var(--text);
+    font-weight: 600;
+}
+
+.tb-button--ghost:hover:not(:disabled) {
+    border-color: var(--accent);
+}
+
+.tb-button--danger {
+    background: transparent;
+    border-color: rgba(255, 107, 107, 0.5);
+    color: #ff6b6b;
+}
+
+.tb-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.tb-back:focus-visible,
+.tb-button:focus-visible,
+.tb-name:focus-visible,
+.tb-tools button:focus-visible,
+.tb-piece:focus-visible,
+.tb-field input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ---------- Layout ---------- */
+
+.tb-workspace {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    flex: 1;
+    min-height: 0;
+}
+
+.tb-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding: 1rem;
+    overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+}
+
+/* In a scrolling flex column, children (like the clipped tool buttons) would
+   otherwise shrink to nothing instead of the panel scrolling. */
+.tb-panel > * {
+    flex-shrink: 0;
+}
+
+.tb-stage {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    /* Stops the page scrolling or selecting text while building. */
+    touch-action: none;
+    user-select: none;
+}
+
+.tb-stage canvas {
+    display: block;
+}
+
+/* ---------- Tools and palette ---------- */
+
+.tb-tools {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--border-2);
+    border-radius: 0.6rem;
+    overflow: hidden;
+}
+
+.tb-tools button {
+    padding: 0.55rem 0.3rem;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.tb-tools button + button {
+    border-left: 1px solid var(--border-2);
+}
+
+.tb-tools button.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.tb-category h2 {
+    margin-bottom: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+}
+
+.tb-palette {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4rem;
+}
+
+.tb-piece {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 0.55rem;
+    background: var(--surface-2);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.82rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.tb-piece:hover {
+    border-color: var(--border-2);
+}
+
+.tb-piece.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+}
+
+.tb-swatch {
+    flex: none;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+/* ---------- Stats and settings ---------- */
+
+.tb-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4rem;
+}
+
+.tb-stats div {
+    padding: 0.5rem 0.6rem;
+    border-radius: 0.55rem;
+    background: var(--surface-2);
+}
+
+.tb-stats dt {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+}
+
+.tb-stats dd {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.tb-hint {
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--accent);
+}
+
+.tb-check {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.tb-check input {
+    accent-color: var(--accent);
+}
+
+.tb-field {
+    display: grid;
+    gap: 0.3rem;
+    margin-bottom: 0.7rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.tb-field input[type="range"] {
+    accent-color: var(--accent);
+}
+
+.tb-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+/* ---------- Overlays on the 3D view ---------- */
+
+.tb-status {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.55rem;
+    background: rgba(14, 16, 23, 0.78);
+    color: var(--text);
+    font-size: 0.82rem;
+    pointer-events: none;
+}
+
+.tb-status strong {
+    color: var(--accent);
+}
+
+.tb-help {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0.55rem;
+    background: rgba(14, 16, 23, 0.82);
+    color: var(--text);
+    font-size: 0.76rem;
+    text-align: center;
+    pointer-events: none;
+}
+
+/* ---------- Narrow screens: tools above, town below ---------- */
+
+@media (max-width: 800px) {
+    .tb-page {
+        height: auto;
+        min-height: 100dvh;
+    }
+
+    .tb-workspace {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tb-panel {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        max-height: 40dvh;
+    }
+
+    .tb-stage {
+        height: 60dvh;
+    }
+
+    .tb-help {
+        display: none;
+    }
+}

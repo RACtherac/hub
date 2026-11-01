@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 
 import Portfolio from "./pages/portfolio";
 import PokemonTCGTool from "./pages/pokemonTCGTool";
@@ -11,7 +12,6 @@ import TacticsGame from "./pages/tactics-game";
 import PasswordStrength from "./pages/password-strength";
 import RateLimiter from "./pages/rate-limiter";
 import Magazine from "./pages/magazine";
-import DiceBalanceTester from "./pages/dice-balance-tester";
 import ProjectTree from "./pages/project-tree";
 import FunctionReference from "./pages/function-reference";
 import FamilyTree from "./pages/FamilyTree";
@@ -19,6 +19,9 @@ import WarhammerToolkit from "./pages/warhammer-toolkit";
 import RoleplayingSheets from "./pages/roleplaying-sheets";
 import DmScreen from "./pages/dm-screen";
 import Tools from "./pages/tools";
+
+// three.js is large, so the town builder downloads only when it's opened.
+const TownBuilder = lazy(() => import("./pages/town-builder"));
 
 
 export default function App() {
@@ -36,7 +39,8 @@ export default function App() {
         <Route path="/password-strength" element={<PasswordStrength />} />
         <Route path="/rate-limiter" element={<RateLimiter />} />
         <Route path="/blog" element={<Magazine />} />
-        <Route path="/dice-balance-tester" element={<DiceBalanceTester />} />
+        {/* The old dice tester now lives in the Warhammer Toolkit. */}
+        <Route path="/dice-balance-tester" element={<Navigate to="/warhammer-toolkit?tab=dice" replace />} />
         <Route path="/project-tree" element={<ProjectTree />} />
         <Route path="/Familytree" element={<FamilyTree />} />
         <Route path="/warhammer-toolkit" element={<WarhammerToolkit />} />
@@ -44,6 +48,14 @@ export default function App() {
         <Route path="/roleplaying-sheets" element={<RoleplayingSheets />} />
         <Route path="/dm-screen" element={<DmScreen />} />
         <Route path="/tools" element={<Tools />} />
+        <Route
+          path="/town-builder"
+          element={
+            <Suspense fallback={<p style={{ padding: "2rem", fontFamily: "var(--font-mono)", color: "var(--text-dim)" }}>Loading the town builder…</p>}>
+              <TownBuilder />
+            </Suspense>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
