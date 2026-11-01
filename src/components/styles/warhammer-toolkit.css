@@ -941,6 +941,185 @@ span.whk-duel-ongoing { background: var(--duel-ongoing); }
 
 /* ---------- Wide screens ---------- */
 
+/* ---------- Dice tester ---------- */
+
+.whk-dice {
+    --whk-good: #5fd39a;
+    --whk-bad: #ff6b6b;
+}
+
+.whk-dice-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+}
+
+.whk-dice-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.whk-dice-faces {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4.25rem, 1fr));
+    gap: 0.5rem;
+}
+
+.whk-dice-face {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.7rem 0.25rem 0.55rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-2);
+    background: var(--surface-2);
+    color: var(--text);
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.whk-dice-face:hover {
+    border-color: var(--accent);
+}
+
+.whk-dice-face:active {
+    background: var(--accent-dim);
+}
+
+.whk-dice-face:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.whk-dice-face-value {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.whk-dice-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 1rem;
+}
+
+.whk-dice-totals {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.whk-dice-verdict {
+    --whk-verdict: var(--text-dim);
+    margin-bottom: 1.25rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--whk-verdict);
+    border-left-width: 4px;
+    border-radius: 0.65rem;
+    background: color-mix(in srgb, var(--whk-verdict) 10%, transparent);
+}
+
+.whk-dice-verdict strong {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: var(--whk-verdict);
+    font-size: 1.1rem;
+}
+
+.whk-dice-verdict p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.whk-dice-verdict--fair { --whk-verdict: var(--whk-good); }
+.whk-dice-verdict--suspicious { --whk-verdict: var(--accent); }
+.whk-dice-verdict--biased { --whk-verdict: var(--whk-bad); }
+
+.whk-dice-bars {
+    list-style: none;
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+}
+
+.whk-dice-bar {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr) minmax(9rem, auto);
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+}
+
+.whk-dice-bar-face {
+    font-weight: 700;
+    text-align: right;
+}
+
+.whk-dice-bar-track {
+    position: relative;
+    height: 0.9rem;
+    border-radius: 999px;
+    background: var(--surface-2);
+}
+
+.whk-dice-bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--accent);
+}
+
+.whk-dice-bar--high .whk-dice-bar-fill { background: var(--whk-bad); }
+.whk-dice-bar--low .whk-dice-bar-fill { background: #6fb4ff; }
+
+.whk-dice-bar-expected {
+    position: absolute;
+    top: -0.2rem;
+    bottom: -0.2rem;
+    width: 2px;
+    background: var(--text);
+    transform: translateX(-1px);
+}
+
+.whk-dice-bar-value {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+}
+
+.whk-dice-bar-value strong {
+    color: var(--text);
+}
+
+.whk-dice-help {
+    margin: 0.6rem 0 1.25rem;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+}
+
+.whk-dice-up { color: var(--whk-good); }
+.whk-dice-down { color: var(--whk-bad); }
+
+@media (max-width: 560px) {
+    .whk-dice-bar {
+        grid-template-columns: 1.5rem minmax(0, 1fr);
+    }
+
+    .whk-dice-bar-value {
+        grid-column: 2;
+    }
+}
+
 @media (min-width: 1400px) {
     /* Attacker | Target | Results side by side, results stay in view. */
     .whk-mathhammer {

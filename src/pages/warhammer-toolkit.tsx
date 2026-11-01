@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import "../components/styles/warhammer-toolkit.css";
 
 import Battle from "../components/WarhammerToolkit/Battle";
+import DiceTester from "../components/WarhammerToolkit/DiceTester";
 import GameTracker from "../components/WarhammerToolkit/GameTracker";
 import Mathhammer from "../components/WarhammerToolkit/Mathhammer";
 
@@ -10,6 +11,7 @@ const TABS = [
     { id: "mathhammer", label: "Mathhammer" },
     { id: "battle", label: "Battle" },
     { id: "tracker", label: "Game Tracker" },
+    { id: "dice", label: "Dice Tester" },
 ] as const;
 
 type TabId = typeof TABS[number]["id"];
@@ -34,7 +36,7 @@ export default function WarhammerToolkit() {
                 <p className="whk-eyebrow">// 40k · 10th edition</p>
                 <h1 className="whk-title">Warhammer <em>Toolkit</em></h1>
                 <p className="whk-subtitle-text">
-                    Work out the odds before you roll, pit two units against each other, then keep score while you play.
+                    Work out the odds before you roll, pit two units against each other, then keep score while you play, and check whether your dice are fair.
                 </p>
             </section>
 
@@ -56,7 +58,10 @@ export default function WarhammerToolkit() {
             </div>
 
             <main className="whk-content" role="tabpanel" id={`whk-panel-${tab}`} aria-labelledby={`whk-tab-${tab}`}>
-                {tab === "mathhammer" ? <Mathhammer /> : tab === "battle" ? <Battle /> : <GameTracker />}
+                {tab === "mathhammer" && <Mathhammer />}
+                {tab === "battle" && <Battle />}
+                {tab === "tracker" && <GameTracker />}
+                {tab === "dice" && <DiceTester />}
             </main>
         </div>
     );
