@@ -1262,6 +1262,71 @@ const PROJECTS: Project[] = [
     ],
   },
   {
+    id: "townbuilder",
+    label: "Town Builder",
+    tag: "game",
+    route: "/town-builder",
+    description: "An early 3D town builder: lay roads, homes, shops, parks and water on a grid, turn the camera around the town, and save, export or take a picture of it.",
+    tree: {
+      name: "TownBuilder()",
+      children: [
+        {
+          name: "TownScene()",
+          children: [
+            {
+              name: "Piece()",
+              children: [
+                { name: "Road()" },
+                { name: "House() / Cottage() / Apartment()" },
+                { name: "Shop() / Tower() / TownHall()" },
+                { name: "TreeShape() / Park() / Fountain() / Water()" },
+              ],
+            },
+            { name: "OrbitControls" },
+          ],
+        },
+      ],
+    },
+    improvements: [
+      "Draw repeated pieces with instancing (one draw call per piece type) so towns of thousands of buildings stay smooth.",
+      "Swap the simple-shape buildings for a free CC0 model pack, such as Kenney's City Kit, behind the same Piece() interface.",
+      "Add buildings bigger than one tile, like a 2×2 stadium or a station.",
+      "Terrain with hills, and water that connects into rivers and lakes with shores.",
+      "A day/night cycle with lit windows and street lights.",
+      "Cars and people moving along the roads.",
+      "Town needs: happiness from parks near homes, and jobs vs residents shown as a balance.",
+    ],
+    functions: [
+      {
+        name: "TownBuilder()",
+        description: "Root page: palette, tools, stats and settings beside the 3D view, with undo/redo, saving, import/export and a picture download.",
+        detail: "Keeps the town and its undo history in one state object ({ past, present, future, strokeBase }) so every change is one pure update. A whole click-or-drag is one undo step: onStrokeStart remembers the town, onStrokeTile changes it per tile, and onStrokeEnd records it. New buildings face a road beside them (facingRoad()), otherwise the chosen direction. Keyboard: 1–9 pick pieces, R rotates the hovered piece or the placing direction, E toggles erase, G the grid, Delete removes, Ctrl+Z / Ctrl+Y undo and redo. The town is saved to localStorage under 'town-builder-v1'; a first visit gets createStarterTown(). The page is lazy-loaded in App.tsx, so three.js only downloads when it's opened.",
+        file: "src/pages/town-builder.tsx",
+        state: ["history: History", "tool: Tool", "piece: PieceType", "placeRotation: Rotation", "hovered: [number, number] | null", "showGrid: boolean", "message: string"],
+      },
+      {
+        name: "TownScene()",
+        description: "The React Three Fiber canvas: lights and shadows, the grass and grid, every piece, the hover highlight and the camera.",
+        detail: "Tile (x, z) is centred at world (x − size/2 + 0.5, 0, z − size/2 + 0.5). Pointer events on the town group find the tile from the first hit: a piece's userData.tile, or the ground point. Left mouse builds (drags fill the tiles in between with tilesBetween(), so fast drags leave no gaps), right-drag turns the camera, middle-drag pans and the wheel zooms (drei's OrbitControls); on touch, a tap builds and one finger turns the camera. preserveDrawingBuffer keeps the last frame for 'Save picture'.",
+        file: "src/components/TownBuilder/TownScene.tsx",
+        props: ["town: Town", "tool: Tool", "hovered: [number, number] | null", "showGrid: boolean", "onHover()", "onStrokeStart()", "onStrokeTile(x, z)", "onStrokeEnd()", "onCanvas(canvas)"],
+      },
+      {
+        name: "Piece()",
+        description: "Draws one piece from simple shapes, rotated in quarter turns; memoised so only changed tiles redraw.",
+        detail: "Houses, cottages, apartments (4–7 floors of windows), shops with awnings, glass office towers, the domed town hall, trees, parks, fountains and water, all inside one 1×1 tile. tileNoise() gives each tile stable variation in colour, height and tree shape. Roads draw dashed centre lines towards neighbouring roads (roadLinks() / roadShape()), zebra crossings at junctions and kerbs on sides that don't continue; they redraw when a neighbour changes. Roads and water ignore rotation, since their look comes from their neighbours.",
+        file: "src/components/TownBuilder/pieces.tsx",
+        props: ["town: Town", "type: PieceType", "rotation: Rotation", "x: number", "z: number"],
+      },
+      {
+        name: "townBuilder.ts",
+        description: "The town's data: pieces, placing/removing/rotating, road shapes, stats, drag lines and saving.",
+        detail: "placePiece() returns the same town when nothing changes, so drags over the same tile add no history. roadLinks() and roadShape() say which way a road continues (single, end, straight, corner, tee, cross); facingRoad() finds a road beside a tile. townStats() adds up residents and jobs from PIECES and the share of buildings next to a road. tilesBetween() is a Bresenham line that only steps sideways, never diagonally, so dragged roads always connect. normalizeTown() / parseTown() repair or reject saves and imports.",
+        file: "src/utils/townBuilder.ts",
+      },
+    ],
+  },
+  {
     id: "tools",
     label: "Dev Tools",
     tag: "utility",

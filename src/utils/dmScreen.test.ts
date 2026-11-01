@@ -7,11 +7,33 @@ import {
     addLink,
     branchState,
     clearTaken,
+    endStory,
+    latestRecap,
     applyDamage,
     applyHeal,
     cardTitle,
     activeBoard,
+    addPartyToEncounter,
     combatantFromNpc,
+    combatantFromPlayer,
+    createLocation,
+    combatantsFromMonster,
+    createMonster,
+    monsterFromCombatant,
+    removeMonster,
+    rollFormula,
+    createPlayer,
+    linkedEvent,
+    linkedLocation,
+    locationCards,
+    removeEvent,
+    timeSkip,
+    travelFields,
+    createTracker,
+    removeLocation,
+    removePlayer,
+    shareWithPlayer,
+    stepTracker,
     createAttack,
     createBoard,
     createCombatant,
@@ -39,6 +61,11 @@ import {
     npcMatches,
     parseData,
     previousTurn,
+    playerRecord,
+    recordResult,
+    restParty,
+    rollDeathSave,
+    deathSaveState,
     removeBoard,
     removeCombatant,
     removeItem,
@@ -58,6 +85,7 @@ import {
     type Board,
     type Encounter,
 } from "./dmScreen";
+import { starterMonsters } from "./dmMonsters";
 
 function encounterWith(...specs: [string, number][]): Encounter {
     return {
@@ -280,6 +308,46 @@ test("ticking again or clearing undoes the choice, and taken survives a reload",
     assert.equal(branchState(toggleTaken(board, "A")).greyNodes.size, 0);
     assert.equal(branchState(clearTaken(board)).greyNodes.size, 0);
     assert.ok(!clearTaken(board).nodes.some((n) => "taken" in n));
+});
+
+// A board in data, with the card named "End" turned into an End story card.
+function storyData(board: Board) {
+    const named = { ...createBoard("Act 1"), ...board, nodes: board.nodes.map((n) => (n.id === "End" ? { ...n, kind: "end" as const } : n)) };
+    return { ...createDefaultData(), boards: [named], activeBoardId: named.id };
+}
+
+test("ending a story keeps the cards that led to it, in order, without untaken branches", () => {
+    let board = boardFrom("Start>Fight", "Start>Sneak", "Sneak>Vault", "Fight>Boss", "Boss>End", "Vault>End");
+    board = toggleTaken(board, "Fight");
+    const ended = endStory(storyData(board), "End");
+    const recap = activeBoard(ended).nodes.find((n) => n.id === "End")!.recap!;
+
+    assert.deepEqual(recap.steps.map((s) => s.title), ["Start", "Fight", "Boss"]);
+    assert.equal(recap.boardName, "Act 1");
+    const fight = recap.steps[1];
+    assert.equal(fight.taken, true);
+    assert.deepEqual(fight.passedOver, ["Sneak"]);
+});
+
+test("an unconnected end card recaps the whole board, and the recap survives a reload", () => {
+    const data = storyData(boardFrom("Start>Middle", "Lonely>End"));
+    const board = activeBoard(data);
+    const unlinked = { ...board, links: board.links.filter((l) => l.to !== "End") };
+    const ended = endStory({ ...data, boards: [unlinked] }, "End");
+
+    assert.deepEqual(latestRecap(ended, unlinked.id)!.steps.map((s) => s.title), ["Start", "Middle", "Lonely"]);
+    const reloaded = normalizeData(JSON.parse(JSON.stringify(ended)))!;
+    assert.deepEqual(latestRecap(reloaded, unlinked.id), latestRecap(ended, unlinked.id));
+});
+
+test("a board with no ended story has no recap, and deleting a board unlinks resume cards", () => {
+    const first = createBoard("Act 1");
+    const resume = { ...createNode("resume", 0, 0), resumeBoardId: first.id };
+    const second = { ...createBoard("Act 2"), nodes: [resume] };
+    const data = { ...createDefaultData(), boards: [first, second], activeBoardId: second.id };
+
+    assert.equal(latestRecap(data, first.id), null);
+    assert.equal(removeBoard(data, first.id).boards[0].nodes[0].resumeBoardId, undefined);
 });
 
 test("parseData keeps image data URLs on cards and drops anything else", () => {
@@ -740,4 +808,342 @@ test("deleting a note leaves its cards on the board with the note's text", () =>
     assert.equal(left.noteId, undefined);
     assert.equal(left.title, "Rumours");
     assert.equal(left.text, "Lights on the hill");
+});
+
+test("trackers step between 0 and their max, or without a max", () => {
+    const slots = createTracker({ name: "Spell slots", value: 1, max: 2 });
+    assert.equal(stepTracker(slots, 1).value, 2);
+    assert.equal(stepTracker(stepTracker(slots, 1), 1).value, 2);
+    assert.equal(stepTracker(slots, -5).value, 0);
+    assert.equal(stepTracker(createTracker({ value: 40 }), 10).value, 50);
+});
+
+test("a player's HP, AC and trackers are shared with every encounter they're in", () => {
+    const ayla = createPlayer({ name: "Ayla", maxHp: 30, ac: "15", trackers: [createTracker({ name: "Rage", value: 3, max: 3 })] });
+    const bram = createPlayer({ name: "Bram", maxHp: 20 });
+    const ambush = addPartyToEncounter(createEncounter("Ambush"), [ayla, bram]);
+    const finale = { ...createEncounter("Finale"), combatants: [combatantFromPlayer(ayla)] };
+    const data = { ...createDefaultData(), encounters: [ambush, finale], players: [ayla, bram] };
+
+    assert.deepEqual(ambush.combatants.map((c) => [c.name, c.kind, c.playerId]), [["Ayla", "pc", ayla.id], ["Bram", "pc", bram.id]]);
+    // Nobody is added twice.
+    assert.equal(addPartyToEncounter(ambush, [ayla, bram]), ambush);
+
+    const rage = { ...ayla.trackers[0], value: 2 };
+    const hurt = shareWithPlayer(data, ayla.id, { hp: 12, trackers: [rage] });
+    assert.equal(hurt.players[0].hp, 12);
+    assert.equal(hurt.encounters[0].combatants[0].hp, 12);
+    assert.equal(hurt.encounters[1].combatants[0].hp, 12);
+    assert.equal(hurt.encounters[1].combatants[0].trackers[0].value, 2);
+    // Bram is untouched.
+    assert.equal(hurt.encounters[0].combatants[1].hp, 20);
+    assert.equal(hurt.players[1].hp, 20);
+});
+
+test("deleting a player keeps their combatants, unlinked, and links survive a reload", () => {
+    const ayla = createPlayer({ name: "Ayla", trackers: [createTracker({ name: "Ki", value: 9, max: 4 })] });
+    const encounter = { ...createEncounter(), combatants: [combatantFromPlayer(ayla), { ...createCombatant(), playerId: "gone" }] };
+    const data = { ...createDefaultData(), encounters: [encounter], activeEncounterId: encounter.id, players: [ayla], activePlayerId: ayla.id };
+
+    const reloaded = parseData(JSON.stringify(data))!;
+    assert.equal(reloaded.activePlayerId, ayla.id);
+    assert.equal(reloaded.encounters[0].combatants[0].playerId, ayla.id);
+    assert.equal(reloaded.encounters[0].combatants[1].playerId, undefined);
+    // A value over the max is clamped on load.
+    assert.equal(reloaded.players[0].trackers[0].value, 4);
+
+    const removed = removePlayer(data, ayla.id);
+    assert.deepEqual(removed.players, []);
+    assert.equal(removed.activePlayerId, "");
+    assert.equal(removed.encounters[0].combatants[0].playerId, undefined);
+    assert.equal(removed.encounters[0].combatants[0].name, "Ayla");
+});
+
+test("saves from before the Players tab load with no players", () => {
+    const old: Record<string, unknown> = { ...createDefaultData() };
+    delete old.players;
+    delete old.activePlayerId;
+    const loaded = normalizeData(old)!;
+    assert.deepEqual(loaded.players, []);
+    assert.equal(loaded.activePlayerId, "");
+    assert.deepEqual(loaded.encounters[0].combatants, []);
+});
+
+test("recording a win or loss moves the players out and puts it on their sheets", () => {
+    const ayla = createPlayer({ name: "Ayla" });
+    const bram = createPlayer({ name: "Bram" });
+    const orc = createCombatant({ name: "Orc", kind: "monster", hp: 0 });
+    const ally = createCombatant({ name: "Guard", kind: "npc" });
+    const fight = { ...addPartyToEncounter(createEncounter("Ambush"), [ayla, bram]), round: 3 };
+    const encounter = { ...fight, combatants: [...fight.combatants, orc, ally], turnId: fight.combatants[0].id };
+    const data = { ...createDefaultData(), encounters: [encounter], players: [ayla, bram] };
+    assert.equal(encounterOutcome(encounter), "pcs");
+
+    const after = recordResult(data, encounter.id, "won", 1000);
+    const won = after.encounters[0];
+    assert.deepEqual(won.combatants.map((c) => c.name), ["Orc", "Guard"]);
+    assert.equal(won.turnId, null);
+    assert.deepEqual(won.result, { outcome: "won", at: 1000, round: 3, by: ["Ayla", "Bram"] });
+    // Still shows its result with the PCs gone.
+    assert.equal(encounterOutcome(won), "pcs");
+    assert.deepEqual(after.players[0].results, [{ encounterId: encounter.id, name: "Ambush", outcome: "won", round: 3, at: 1000 }]);
+    assert.equal(recordResult(after, encounter.id, "won"), after);
+
+    const rematch = addPartyToEncounter(createEncounter("Rematch"), [after.players[0]]);
+    const lost = recordResult({ ...after, encounters: [...after.encounters, { ...rematch, round: 6 }] }, rematch.id, "lost", 2000);
+    assert.equal(encounterOutcome(lost.encounters[1]), "monsters");
+    assert.deepEqual(playerRecord(lost.players[0]), { wins: 1, losses: 1, winRate: 50, averageRounds: 4.5 });
+    assert.deepEqual(playerRecord(lost.players[1]), { wins: 1, losses: 0, winRate: 100, averageRounds: 3 });
+    assert.deepEqual(playerRecord(createPlayer()), { wins: 0, losses: 0, winRate: null, averageRounds: null });
+
+    const reloaded = parseData(JSON.stringify(lost))!;
+    assert.deepEqual(reloaded.encounters[1].result, lost.encounters[1].result);
+    assert.deepEqual(reloaded.players[0].results, lost.players[0].results);
+});
+
+test("wins saved before losses were tracked load as wins", () => {
+    const ayla = createPlayer({ name: "Ayla" });
+    const encounter = createEncounter("Ambush");
+    const old = {
+        ...createDefaultData(),
+        encounters: [{ ...encounter, won: { at: 5, round: 2, by: ["Ayla"] } }],
+        players: [{ ...ayla, results: undefined, victories: [{ encounterId: encounter.id, name: "Ambush", round: 2, at: 5 }] }],
+    };
+    const loaded = normalizeData(JSON.parse(JSON.stringify(old)))!;
+    assert.deepEqual(loaded.encounters[0].result, { outcome: "won", at: 5, round: 2, by: ["Ayla"] });
+    assert.deepEqual(loaded.players[0].results, [{ encounterId: encounter.id, name: "Ambush", outcome: "won", round: 2, at: 5 }]);
+});
+
+test("rests refill the right trackers, and a long rest restores HP and clears death saves", () => {
+    const ayla = createPlayer({
+        name: "Ayla",
+        maxHp: 30,
+        hp: 0,
+        tempHp: 4,
+        deathSaves: { successes: 1, failures: 2 },
+        trackers: [
+            createTracker({ name: "Ki", value: 0, max: 3, resets: "short" }),
+            createTracker({ name: "Slots", value: 1, max: 4, resets: "long" }),
+            createTracker({ name: "Luck", value: 0, max: 1, resets: "none" }),
+        ],
+    });
+    const encounter = { ...createEncounter(), combatants: [combatantFromPlayer(ayla)] };
+    const data = { ...createDefaultData(), encounters: [encounter], players: [ayla] };
+
+    const short = restParty(data, "short");
+    assert.deepEqual(short.players[0].trackers.map((t) => t.value), [3, 1, 0]);
+    // Default lengths: a short rest is an hour, a long rest eight.
+    assert.equal(short.calendar.minutes, data.calendar.minutes + 60);
+    assert.equal(short.players[0].hp, 0);
+    assert.deepEqual(short.players[0].deathSaves, { successes: 1, failures: 2 });
+
+    const long = restParty(data, "long");
+    const rested = long.players[0];
+    assert.deepEqual(rested.trackers.map((t) => t.value), [3, 4, 0]);
+    assert.equal(rested.hp, 30);
+    assert.equal(rested.tempHp, 0);
+    assert.deepEqual(rested.deathSaves, { successes: 0, failures: 0 });
+    // The encounter copy rests too.
+    assert.equal(long.encounters[0].combatants[0].hp, 30);
+    assert.equal(long.calendar.minutes, data.calendar.minutes + 8 * 60);
+
+    // The DM's own lengths: a 24-hour long rest lands on the next day.
+    const slow = restParty({ ...data, settings: { shortRestMinutes: 10, longRestMinutes: 24 * 60 } }, "long");
+    assert.equal(slow.calendar.minutes, data.calendar.minutes);
+    assert.equal(slow.calendar.today.day, data.calendar.today.day + 1);
+    assert.equal(restParty({ ...data, settings: { shortRestMinutes: 10, longRestMinutes: 0 } }, "short").calendar.minutes, data.calendar.minutes + 10);
+
+    // Settings load back, clamped; old saves get the defaults.
+    const loaded = parseData(JSON.stringify({ ...data, settings: { shortRestMinutes: -5, longRestMinutes: 99999 } }))!;
+    assert.deepEqual(loaded.settings, { shortRestMinutes: 0, longRestMinutes: 7 * 24 * 60 });
+    assert.deepEqual(parseData(JSON.stringify({ ...data, settings: undefined }))!.settings, { shortRestMinutes: 60, longRestMinutes: 480 });
+});
+
+test("death saves: 10+ succeeds, a 1 is two failures, a 20 is back up, and healing clears them", () => {
+    const down = createCombatant({ kind: "pc", maxHp: 10, hp: 0 });
+    assert.deepEqual(rollDeathSave(down, 12).deathSaves, { successes: 1, failures: 0 });
+    assert.deepEqual(rollDeathSave(down, 9).deathSaves, { successes: 0, failures: 1 });
+    assert.deepEqual(rollDeathSave(down, 1).deathSaves, { successes: 0, failures: 2 });
+    const up = rollDeathSave({ ...down, deathSaves: { successes: 1, failures: 2 } }, 20);
+    assert.equal(up.hp, 1);
+    assert.deepEqual(up.deathSaves, { successes: 0, failures: 0 });
+
+    const dying = { ...down, deathSaves: { successes: 0, failures: 2 } };
+    const dead = rollDeathSave(dying, 1);
+    assert.equal(deathSaveState(dead.deathSaves), "dead");
+    // No more rolls once it's decided.
+    assert.equal(rollDeathSave(dead, 20), dead);
+    assert.equal(deathSaveState({ successes: 3, failures: 1 }), "stable");
+
+    // Healing a linked player clears the saves on the sheet and in the fight.
+    const ayla = createPlayer({ maxHp: 10, hp: 0, deathSaves: { successes: 2, failures: 1 } });
+    const data = { ...createDefaultData(), encounters: [{ ...createEncounter(), combatants: [combatantFromPlayer(ayla)] }], players: [ayla] };
+    const healed = shareWithPlayer(data, ayla.id, { hp: 4 });
+    assert.deepEqual(healed.players[0].deathSaves, { successes: 0, failures: 0 });
+    assert.deepEqual(healed.encounters[0].combatants[0].deathSaves, { successes: 0, failures: 0 });
+    // Saves load back clamped.
+    const loaded = parseData(JSON.stringify({ ...data, players: [{ ...ayla, deathSaves: { successes: 9, failures: -1 } }] }))!;
+    assert.deepEqual(loaded.players[0].deathSaves, { successes: 3, failures: 0 });
+});
+
+test("locations save and load, and their names are offered as NPC locations", () => {
+    const inn = createLocation({ name: "The Rusty Lantern", kind: "Tavern", rumour: "Lights at night" });
+    const data = { ...createDefaultData(), locations: [inn], activeLocationId: inn.id };
+    assert.ok(locationNames(data).includes("The Rusty Lantern"));
+
+    const reloaded = parseData(JSON.stringify(data))!;
+    assert.deepEqual(reloaded.locations, [inn]);
+    assert.equal(reloaded.activeLocationId, inn.id);
+
+    const removed = removeLocation(data, inn.id);
+    assert.deepEqual(removed.locations, []);
+    assert.equal(removed.activeLocationId, "");
+
+    // Saves from before locations and the calendar still load.
+    const old: Record<string, unknown> = { ...createDefaultData() };
+    delete old.locations;
+    delete old.calendar;
+    const loaded = normalizeData(old)!;
+    assert.deepEqual(loaded.locations, []);
+    assert.equal(loaded.calendar.months.length, 12);
+});
+
+test("location and time cards link to their sheet and event, and keep their names when it's deleted", () => {
+    const inn = createLocation({ name: "The Rusty Lantern" });
+    const feast = { id: "feast", title: "Harvest feast", notes: "", year: 1, month: 0, day: 3 };
+    const placeCard = { ...createNode("location", 0, 0), title: "", locationId: inn.id };
+    const timeCard = { ...createNode("time", 0, 0), title: "", eventId: feast.id };
+    const base = createDefaultData();
+    const data = {
+        ...base,
+        boards: [{ ...createBoard("Act 1"), nodes: [placeCard, timeCard] }],
+        locations: [inn],
+        calendar: { ...base.calendar, events: [feast] },
+    };
+
+    assert.equal(linkedLocation(data, placeCard), inn);
+    assert.equal(linkedEvent(data, timeCard), feast);
+    assert.equal(cardTitle(data, placeCard), "The Rusty Lantern");
+    assert.equal(cardTitle(data, timeCard), "Harvest feast");
+    assert.equal(locationCards(data, inn.id).length, 1);
+
+    const reloaded = parseData(JSON.stringify(data))!;
+    assert.equal(reloaded.boards[0].nodes[0].locationId, inn.id);
+    assert.equal(reloaded.boards[0].nodes[1].eventId, feast.id);
+    assert.equal(reloaded.boards[0].nodes[1].kind, "time");
+
+    const noPlace = removeLocation(data, inn.id).boards[0].nodes[0];
+    assert.equal(noPlace.locationId, undefined);
+    assert.equal(noPlace.title, "The Rusty Lantern");
+    const noEvent = removeEvent(data, feast.id);
+    assert.deepEqual(noEvent.calendar.events, []);
+    assert.equal(noEvent.boards[0].nodes[1].eventId, undefined);
+    assert.equal(noEvent.boards[0].nodes[1].title, "Harvest feast");
+
+    // Links to things that are gone are dropped on load.
+    const dangling = parseData(JSON.stringify({ ...data, locations: [], calendar: { ...data.calendar, events: [] } }))!;
+    assert.equal(dangling.boards[0].nodes[0].locationId, undefined);
+    assert.equal(dangling.boards[0].nodes[1].eventId, undefined);
+});
+
+test("a time card skips the calendar once, and undo moves it back", () => {
+    const card = { ...createNode("time", 0, 0), skipMinutes: 3 * 24 * 60 + 90 };
+    const plain = createNode("time", 0, 0);
+    const base = createDefaultData();
+    const board = { ...base.boards[0], nodes: [card, plain] };
+    const data = { ...base, boards: [board], activeBoardId: board.id };
+    const start = data.calendar;
+
+    const skipped = timeSkip(data, card.id);
+    assert.equal(skipped.calendar.today.day, start.today.day + 3);
+    assert.equal(skipped.calendar.minutes, start.minutes + 90);
+    assert.equal(skipped.boards[0].nodes[0].skipped, true);
+    // A second click does nothing until it's undone.
+    assert.equal(timeSkip(skipped, card.id), skipped);
+
+    const undone = timeSkip(skipped, card.id, true);
+    assert.deepEqual(undone.calendar, start);
+    assert.equal(undone.boards[0].nodes[0].skipped, undefined);
+    assert.equal(timeSkip(undone, card.id, true), undone);
+
+    // No length, no skip.
+    assert.equal(timeSkip(data, plain.id), data);
+    // Survives a reload.
+    const reloaded = parseData(JSON.stringify(skipped))!;
+    assert.equal(reloaded.boards[0].nodes[0].skipMinutes, card.skipMinutes);
+    assert.equal(reloaded.boards[0].nodes[0].skipped, true);
+});
+
+test("a travel card's journey sets its skip, and skipping it moves the calendar", () => {
+    const blank = createNode("travel", 0, 0);
+    const walk = { ...blank, ...travelFields(blank, { travelDistance: 60, travelUnit: "mi", travelMode: "walk" }) };
+    // 24 miles a day walking: two full days and 4 hours.
+    assert.equal(walk.skipMinutes, 2 * 24 * 60 + 4 * 60);
+    const km = { ...walk, ...travelFields(walk, { travelDistance: 60 * 1.609344, travelUnit: "km", travelMode: "walk" }) };
+    assert.equal(km.skipMinutes, walk.skipMinutes);
+    assert.equal(travelFields(blank, { travelDistance: undefined }).skipMinutes, undefined);
+
+    const base = createDefaultData();
+    const board = { ...base.boards[0], nodes: [walk] };
+    const data = { ...base, boards: [board], activeBoardId: board.id };
+    const skipped = timeSkip(data, walk.id);
+    assert.equal(skipped.calendar.today.day, data.calendar.today.day + 2);
+
+    const reloaded = parseData(JSON.stringify(skipped))!.boards[0].nodes[0];
+    assert.equal(reloaded.kind, "travel");
+    assert.equal(reloaded.travelDistance, 60);
+    assert.equal(reloaded.travelMode, "walk");
+    assert.equal(reloaded.skipped, true);
+});
+
+test("dice formulas roll within range, and junk isn't a formula", () => {
+    const low = () => 0;
+    const high = () => 0.9999;
+    assert.equal(rollFormula("2d6 + 2", low), 4);
+    assert.equal(rollFormula("2d6 + 2", high), 14);
+    assert.equal(rollFormula("d20", high), 20);
+    assert.equal(rollFormula("3d8-1", low), 2);
+    assert.equal(rollFormula("7", low), 7);
+    assert.equal(rollFormula("", low), null);
+    assert.equal(rollFormula("2d", low), null);
+    assert.equal(rollFormula("lots", low), null);
+});
+
+test("library monsters become numbered combatants, with rolled or average HP", () => {
+    const goblin = createMonster({
+        name: "Goblin", hp: 7, hpDice: "2d6", ac: "15", initiativeMod: 2,
+        attacks: [createAttack("weapon", { name: "Scimitar" })], traits: "Nimble Escape", loot: "3 cp",
+    });
+    const copies = combatantsFromMonster(goblin, 3, ["Goblin"]);
+    assert.deepEqual(copies.map((c) => c.name), ["Goblin 2", "Goblin 3", "Goblin 4"]);
+    assert.ok(copies.every((c) => c.kind === "monster" && c.maxHp === 7 && c.hp === 7 && c.ac === "15" && c.notes === "Nimble Escape"));
+    // Each copy has its own attacks, so editing one doesn't edit the others.
+    assert.notEqual(copies[0].attacks[0].id, copies[1].attacks[0].id);
+
+    const rolled = combatantsFromMonster(goblin, 2, [], true, () => 0.9999);
+    assert.deepEqual(rolled.map((c) => [c.name, c.maxHp]), [["Goblin", 12], ["Goblin 2", 12]]);
+    // No valid dice: falls back to average.
+    assert.equal(combatantsFromMonster({ ...goblin, hpDice: "?" }, 1, [], true)[0].maxHp, 7);
+
+    const saved = monsterFromCombatant(copies[1]);
+    assert.equal(saved.name, "Goblin");
+    assert.equal(saved.hp, 7);
+    assert.equal(saved.attacks[0].name, "Scimitar");
+
+    const data = { ...createDefaultData(), monsters: [goblin], activeMonsterId: goblin.id };
+    const reloaded = parseData(JSON.stringify(data))!;
+    assert.deepEqual(reloaded.monsters, [goblin]);
+    assert.equal(removeMonster(reloaded, goblin.id).activeMonsterId, "");
+});
+
+test("starter monsters have hit dice that roll around their average HP", () => {
+    const starters = starterMonsters();
+    assert.ok(starters.length >= 5);
+    for (const m of starters) {
+        const low = rollFormula(m.hpDice, () => 0)!;
+        const high = rollFormula(m.hpDice, () => 0.9999)!;
+        assert.ok(low <= m.hp && m.hp <= high, `${m.name}: ${m.hp} not in ${low}-${high}`);
+    }
+    // Fresh ids each time, so adding them twice doesn't clash.
+    assert.notEqual(starterMonsters()[0].id, starters[0].id);
 });

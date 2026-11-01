@@ -1,3 +1,4 @@
+import { KM_PER_MILE, TRAVEL_MODES, advanceTime, createCalendar, formatDate, formatDuration, normalizeCalendar, travelMinutes, type Calendar, type CalendarEvent } from "./dmCalendar";
 import { createMap, normalizeMap, type BattleMap } from "./dmMap";
 import { makeId } from "./makeId";
 
@@ -45,10 +46,45 @@ export interface Combatant {
     attacks: Attack[];
     // What they drop, as free text.
     loot: string;
+    // Named counters with + and -, e.g. spell slots or inspiration.
+    trackers: Tracker[];
+    // Only used for PCs, while they're at 0 HP.
+    deathSaves: DeathSaves;
     // Added from this NPC's sheet: attacks and loot stay the same on both
     // (see shareWithNpc). Everything else, like HP, is the combatant's own.
     npcId?: string;
+    // Added from this player's sheet: HP, AC and trackers stay the same on
+    // both (see shareWithPlayer), so damage carries over between encounters.
+    playerId?: string;
 }
+
+// A named counter with + and -: spell slots, inspiration, arrows, hit dice...
+export interface Tracker {
+    id: string;
+    name: string;
+    value: number;
+    // Upper limit, or null for none. Value never goes below 0.
+    max: number | null;
+    // Which rest refills it to its max. A long rest also refills short-rest ones.
+    resets: TrackerReset;
+    notes: string;
+}
+
+export type TrackerReset = "none" | "short" | "long";
+
+export const TRACKER_RESETS: { value: TrackerReset; label: string }[] = [
+    { value: "none", label: "Never" },
+    { value: "short", label: "Short rest" },
+    { value: "long", label: "Long rest" },
+];
+
+// Three successes and they're stable; three failures and they die.
+export interface DeathSaves {
+    successes: number;
+    failures: number;
+}
+
+export const NO_DEATH_SAVES: DeathSaves = { successes: 0, failures: 0 };
 
 export interface Encounter {
     id: string;
@@ -57,9 +93,55 @@ export interface Encounter {
     // The combatant whose turn it is, or null before the first turn.
     turnId: string | null;
     combatants: Combatant[];
+    // Set once the party's win or loss is recorded (recordResult) and the players have left.
+    result?: RecordedOutcome;
 }
 
-export type NodeKind = "scene" | "encounter" | "npc" | "item" | "location" | "clue" | "note" | "image";
+export type ResultOutcome = "won" | "lost";
+
+export interface RecordedOutcome {
+    outcome: ResultOutcome;
+    // When it was recorded, in ms.
+    at: number;
+    round: number;
+    // Names of the players who fought it, as they were then.
+    by: string[];
+}
+
+// An encounter a player won or lost, kept on their sheet.
+export interface EncounterResult {
+    encounterId: string;
+    // The encounter's name then, for when it's renamed or deleted later.
+    name: string;
+    outcome: ResultOutcome;
+    round: number;
+    at: number;
+}
+
+export type NodeKind = "scene" | "encounter" | "npc" | "item" | "location" | "time" | "travel" | "clue" | "note" | "image" | "end" | "resume";
+
+// One card the story went through, as it was when the story ended.
+export interface RecapStep {
+    kind: NodeKind;
+    title: string;
+    text: string;
+    // The label on the connection the story came in by, if any.
+    via: string;
+    // Ticked as the branch the players took; `passedOver` are the other branches.
+    taken: boolean;
+    passedOver: string[];
+    // e.g. "⚔ Goblin ambush: Players won", "⏩ Skipped 3 h".
+    details: string[];
+}
+
+// What happened on a board, saved by its End story card.
+export interface StoryRecap {
+    boardName: string;
+    // When the story was ended, in ms, and the in-game date then.
+    endedAt: number;
+    endedOn: string;
+    steps: RecapStep[];
+}
 
 export interface BoardNode {
     id: string;
@@ -75,10 +157,26 @@ export interface BoardNode {
     itemId?: string;
     // Note cards: the note from the Notes tab.
     noteId?: string;
+    // Location cards: the location from the Locations tab.
+    locationId?: string;
+    // Time cards: an event on the calendar.
+    eventId?: string;
+    // Travel cards: the journey, which sets skipMinutes.
+    travelDistance?: number;
+    travelUnit?: TravelUnit;
+    travelMode?: string;
+    // Time and travel cards: how far the skip button moves the calendar, in minutes.
+    skipMinutes?: number;
+    // The skip has been used; undoing it moves the calendar back.
+    skipped?: boolean;
     // Image cards: a downscaled data URL, small enough for localStorage.
     image?: string;
     // The players took this branch; its sibling branches are greyed out.
     taken?: boolean;
+    // End story cards: what happened, saved when the story was ended.
+    recap?: StoryRecap;
+    // Resume story cards: the board whose story this one carries on.
+    resumeBoardId?: string;
 }
 
 export interface BoardLink {
@@ -116,6 +214,73 @@ export interface Npc {
     loot: string;
     // A downscaled data URL, like image cards.
     image?: string;
+}
+
+// A player character (the Players tab). Free text where systems differ.
+export interface Player {
+    id: string;
+    name: string;
+    // Who plays them.
+    playerName: string;
+    // e.g. "Half-elf ranger".
+    ancestryClass: string;
+    level: string;
+    ac: string;
+    hp: number;
+    maxHp: number;
+    tempHp: number;
+    initiativeMod: number;
+    // Free text so they fit any system.
+    passive: string;
+    speed: string;
+    trackers: Tracker[];
+    deathSaves: DeathSaves;
+    // Encounters they've won or lost, oldest first.
+    results: EncounterResult[];
+    notes: string;
+    // A downscaled data URL, like image cards.
+    image?: string;
+}
+
+// A reusable stat block (the Monsters tab). Each copy added to an encounter
+// is its own combatant; changing the library doesn't touch fights already set up.
+export interface Monster {
+    id: string;
+    name: string;
+    // Free text, e.g. "Small humanoid (goblinoid)".
+    creatureType: string;
+    alignment: string;
+    // "1/4", "CR 3", "Level 5"... whatever the system uses.
+    challenge: string;
+    ac: string;
+    // Average HP, used unless HP is rolled.
+    hp: number;
+    // Hit dice to roll HP for each copy, e.g. "2d6 + 2". Optional.
+    hpDice: string;
+    initiativeMod: number;
+    speed: string;
+    attacks: Attack[];
+    // Special abilities, resistances, tactics.
+    traits: string;
+    loot: string;
+    // A downscaled data URL, like image cards.
+    image?: string;
+}
+
+// A place worth a sheet (the Locations tab). Every field can be typed or generated.
+export interface Location {
+    id: string;
+    name: string;
+    // "Village", "Tavern", "Ruins"... free text, with suggestions.
+    kind: string;
+    description: string;
+    // A landmark or something notable there.
+    feature: string;
+    // Someone the party can meet there.
+    npc: string;
+    rumour: string;
+    danger: string;
+    notes: string;
 }
 
 export type ItemType = "weapon" | "armour" | "potion" | "quest" | "treasure" | "other";
@@ -168,6 +333,15 @@ export interface NamedBoard extends Board {
     name: string;
 }
 
+// Table rules the DM can change (the Settings tab).
+export interface DmSettings {
+    // How long each rest takes; the calendar moves on by this much.
+    shortRestMinutes: number;
+    longRestMinutes: number;
+}
+
+export const DEFAULT_SETTINGS: DmSettings = { shortRestMinutes: 60, longRestMinutes: 8 * 60 };
+
 export interface DmScreenData {
     version: 1;
     encounters: Encounter[];
@@ -177,6 +351,17 @@ export interface DmScreenData {
     npcs: Npc[];
     // The NPC open in the NPCs tab, or "" when there are none.
     activeNpcId: string;
+    players: Player[];
+    // The player open in the Players tab, or "" when there are none.
+    activePlayerId: string;
+    locations: Location[];
+    // The location open in the Locations tab, or "" when there are none.
+    activeLocationId: string;
+    monsters: Monster[];
+    // The monster open in the Monsters tab, or "" when there are none.
+    activeMonsterId: string;
+    calendar: Calendar;
+    settings: DmSettings;
     items: Item[];
     // The item open in the Items tab, or "" when there are none.
     activeItemId: string;
@@ -215,9 +400,13 @@ export const NODE_KINDS: { value: NodeKind; label: string }[] = [
     { value: "npc", label: "NPC" },
     { value: "item", label: "Item" },
     { value: "location", label: "Location" },
+    { value: "time", label: "Time" },
+    { value: "travel", label: "Travel" },
     { value: "clue", label: "Clue" },
     { value: "note", label: "Note" },
     { value: "image", label: "Image" },
+    { value: "end", label: "End story" },
+    { value: "resume", label: "Resume story" },
 ];
 
 export const ITEM_TYPES: { value: ItemType; label: string }[] = [
@@ -348,6 +537,8 @@ export function createCombatant(fields: Partial<Combatant> = {}): Combatant {
         notes: "",
         attacks: [],
         loot: "",
+        trackers: [],
+        deathSaves: NO_DEATH_SAVES,
         ...fields,
         maxHp,
         hp: clamp(Math.trunc(fields.hp ?? maxHp), 0, maxHp),
@@ -364,7 +555,8 @@ export function createEncounter(name = "New encounter"): Encounter {
 
 export function createNode(kind: NodeKind, x: number, y: number): BoardNode {
     const label = NODE_KINDS.find((k) => k.value === kind)?.label ?? "Note";
-    return { id: makeId(), kind, title: `New ${label.toLowerCase()}`, text: "", x, y };
+    const title = kind === "end" ? "The end" : kind === "resume" ? "Previously…" : `New ${label.toLowerCase()}`;
+    return { id: makeId(), kind, title, text: "", x, y };
 }
 
 export function createNpc(fields: Partial<Npc> = {}): Npc {
@@ -419,11 +611,345 @@ export function shareWithNpc(data: DmScreenData, npcId: string, fields: SharedNp
     };
 }
 
+export function createPlayer(fields: Partial<Player> = {}): Player {
+    const maxHp = Math.max(0, Math.trunc(fields.maxHp ?? 10));
+    return {
+        id: makeId(),
+        name: "New player",
+        playerName: "",
+        ancestryClass: "",
+        level: "",
+        ac: "",
+        tempHp: 0,
+        initiativeMod: 0,
+        passive: "",
+        speed: "",
+        trackers: [],
+        deathSaves: NO_DEATH_SAVES,
+        results: [],
+        notes: "",
+        ...fields,
+        maxHp,
+        hp: clamp(Math.trunc(fields.hp ?? maxHp), 0, maxHp),
+    };
+}
+
+export function createTracker(fields: Partial<Tracker> = {}): Tracker {
+    return { id: makeId(), name: "", value: 0, max: null, resets: "none", notes: "", ...fields };
+}
+
+// Moves a tracker by delta, kept between 0 and its max.
+export function stepTracker(tracker: Tracker, delta: number): Tracker {
+    const value = Math.max(0, tracker.value + delta);
+    return { ...tracker, value: tracker.max === null ? value : Math.min(tracker.max, value) };
+}
+
+// The player as a combatant for the tracker, linked back to the sheet.
+export function combatantFromPlayer(player: Player): Combatant {
+    return createCombatant({
+        name: player.name,
+        kind: "pc",
+        initiativeMod: player.initiativeMod,
+        maxHp: player.maxHp,
+        hp: player.hp,
+        tempHp: player.tempHp,
+        ac: player.ac,
+        creatureType: player.ancestryClass,
+        trackers: player.trackers,
+        deathSaves: player.deathSaves,
+        playerId: player.id,
+    });
+}
+
+export type SharedPlayerFields = Partial<Pick<Player, "hp" | "maxHp" | "tempHp" | "ac" | "trackers" | "deathSaves">>;
+
+export const sharedPlayerFields = ({ hp, maxHp, tempHp, ac, trackers, deathSaves }: Combatant | Player): SharedPlayerFields =>
+    ({ hp, maxHp, tempHp, ac, trackers, deathSaves });
+
+// Death saves only matter at 0 HP; once someone is back up they start over.
+export function clearDeathSavesIfUp<T extends { hp: number; deathSaves: DeathSaves }>(target: T): T {
+    const { successes, failures } = target.deathSaves;
+    return target.hp > 0 && (successes || failures) ? { ...target, deathSaves: NO_DEATH_SAVES } : target;
+}
+
+export type DeathSaveState = "rolling" | "stable" | "dead";
+
+export function deathSaveState({ successes, failures }: DeathSaves): DeathSaveState {
+    if (failures >= 3) return "dead";
+    if (successes >= 3) return "stable";
+    return "rolling";
+}
+
+// One death save, D&D style: 10 or more succeeds, a 1 counts as two failures,
+// and a 20 brings them back with 1 HP.
+export function rollDeathSave<T extends { hp: number; deathSaves: DeathSaves }>(target: T, roll: number): T {
+    if (deathSaveState(target.deathSaves) !== "rolling") return target;
+    if (roll >= 20) return { ...target, hp: 1, deathSaves: NO_DEATH_SAVES };
+    const { successes, failures } = target.deathSaves;
+    if (roll >= 10) return { ...target, deathSaves: { successes: successes + 1, failures } };
+    return { ...target, deathSaves: { successes, failures: Math.min(3, failures + (roll <= 1 ? 2 : 1)) } };
+}
+
+export type RestKind = "short" | "long";
+
+// What a rest gives back: trackers that reset on it go to their max, and a
+// long rest also restores HP, drops temp HP and clears death saves.
+export function restFields(player: Player, kind: RestKind): SharedPlayerFields {
+    const trackers = player.trackers.map((t) =>
+        t.max !== null && (t.resets === kind || (kind === "long" && t.resets === "short")) ? { ...t, value: t.max } : t
+    );
+    return kind === "long"
+        ? { trackers, hp: player.maxHp, tempHp: 0, deathSaves: NO_DEATH_SAVES }
+        : { trackers };
+}
+
+export type TravelUnit = "mi" | "km";
+
+// A travel card's journey, and how long it takes on the calendar.
+export function cardTravel(node: BoardNode) {
+    const mode = TRAVEL_MODES.find((m) => m.id === node.travelMode) ?? TRAVEL_MODES[0];
+    const unit: TravelUnit = node.travelUnit ?? "mi";
+    const distance = node.travelDistance ?? 0;
+    const minutes = travelMinutes(unit === "km" ? distance / KM_PER_MILE : distance, mode);
+    return { mode, unit, distance, minutes };
+}
+
+// Changes a travel card's journey and its skip length with it.
+export function travelFields(node: BoardNode, fields: Pick<BoardNode, "travelDistance" | "travelUnit" | "travelMode">): Partial<BoardNode> {
+    const minutes = cardTravel({ ...node, ...fields }).minutes;
+    return { ...fields, skipMinutes: minutes > 0 ? Math.min(365 * 24 * 60, minutes) : undefined };
+}
+
+// A time card's skip button: moves the calendar on by the card's skip, or
+// back again with undo. Each card skips once until undone, so a double click
+// can't skip twice.
+export function timeSkip(data: DmScreenData, nodeId: string, undo = false): DmScreenData {
+    const node = activeBoard(data).nodes.find((n) => n.id === nodeId);
+    if (!node?.skipMinutes || !!node.skipped !== undo) return data;
+    const moved = { ...data, calendar: advanceTime(data.calendar, undo ? -node.skipMinutes : node.skipMinutes) };
+    return updateActiveBoard(moved, (b) => ({
+        ...b,
+        nodes: b.nodes.map((n) => (n.id === nodeId ? { ...n, skipped: undo ? undefined : true } : n)),
+    }));
+}
+
+export const restMinutes = (settings: DmSettings, kind: RestKind) =>
+    kind === "long" ? settings.longRestMinutes : settings.shortRestMinutes;
+
+// The whole party rests at once, in the Players tab and every encounter, and
+// the calendar moves on by the rest's length from the Settings tab.
+export function restParty(data: DmScreenData, kind: RestKind): DmScreenData {
+    const rested = data.players.reduce((current, player) => shareWithPlayer(current, player.id, restFields(player, kind)), data);
+    return { ...rested, calendar: advanceTime(rested.calendar, restMinutes(data.settings, kind)) };
+}
+
+function normalizeSettings(value: unknown): DmSettings {
+    const source = isObject(value) ? value : {};
+    // Up to a week, so a typo can't fling the calendar years ahead.
+    const minutes = (raw: unknown, fallback: number) => Math.min(7 * 24 * 60, Math.max(0, Math.trunc(num(raw, fallback))));
+    return {
+        shortRestMinutes: minutes(source.shortRestMinutes, DEFAULT_SETTINGS.shortRestMinutes),
+        longRestMinutes: minutes(source.longRestMinutes, DEFAULT_SETTINGS.longRestMinutes),
+    };
+}
+
+// Changes HP, AC, trackers and/or death saves on a player and on every
+// combatant added from them, in any encounter, so a hit in one fight is still
+// there in the next.
+export function shareWithPlayer(data: DmScreenData, playerId: string, fields: SharedPlayerFields): DmScreenData {
+    const player = data.players.find((p) => p.id === playerId);
+    if (player) fields = { ...fields, deathSaves: clearDeathSavesIfUp({ ...player, ...fields }).deathSaves };
+    return {
+        ...data,
+        players: data.players.map((p) => (p.id === playerId ? { ...p, ...fields } : p)),
+        encounters: data.encounters.map((e) => (e.combatants.some((c) => c.playerId === playerId)
+            ? { ...e, combatants: e.combatants.map((c) => (c.playerId === playerId ? { ...c, ...fields } : c)) }
+            : e)),
+    };
+}
+
+// Adds every player who isn't in the encounter yet.
+export function addPartyToEncounter(encounter: Encounter, players: Player[]): Encounter {
+    const present = new Set(encounter.combatants.map((c) => c.playerId));
+    const added = players.filter((p) => !present.has(p.id)).map(combatantFromPlayer);
+    return added.length ? { ...encounter, combatants: [...encounter.combatants, ...added] } : encounter;
+}
+
+// The fight is over: every combatant linked to a player leaves the encounter
+// and the win or loss goes on their sheets. The encounter remembers it, so it
+// still shows its result with the players gone.
+export function recordResult(data: DmScreenData, encounterId: string, outcome: ResultOutcome, now = Date.now()): DmScreenData {
+    const encounter = data.encounters.find((e) => e.id === encounterId);
+    if (!encounter) return data;
+    const fighters = encounter.combatants.filter((c) => c.playerId && data.players.some((p) => p.id === c.playerId));
+    if (fighters.length === 0) return data;
+
+    const fighterIds = new Set(fighters.map((c) => c.playerId));
+    const result: EncounterResult = { encounterId, name: encounter.name || "Untitled", outcome, round: encounter.round, at: now };
+    const combatants = encounter.combatants.filter((c) => !fighters.includes(c));
+    return {
+        ...data,
+        players: data.players.map((p) => (fighterIds.has(p.id) ? { ...p, results: [...p.results, result] } : p)),
+        encounters: data.encounters.map((e) => (e.id === encounterId
+            ? {
+                ...e,
+                combatants,
+                turnId: combatants.some((c) => c.id === e.turnId) ? e.turnId : null,
+                result: { outcome, at: now, round: e.round, by: fighters.map((c) => c.name) },
+            }
+            : e)),
+    };
+}
+
+export interface PlayerRecord {
+    wins: number;
+    losses: number;
+    // Wins as a whole percentage of all results, or null with none yet.
+    winRate: number | null;
+    // Average rounds per recorded fight, to one decimal, or null with none yet.
+    averageRounds: number | null;
+}
+
+export function playerRecord(player: Player): PlayerRecord {
+    const total = player.results.length;
+    const wins = player.results.filter((r) => r.outcome === "won").length;
+    const rounds = player.results.reduce((sum, r) => sum + r.round, 0);
+    return {
+        wins,
+        losses: total - wins,
+        winRate: total ? Math.round((wins / total) * 100) : null,
+        averageRounds: total ? Math.round((rounds / total) * 10) / 10 : null,
+    };
+}
+
+export function removePlayer(data: DmScreenData, id: string): DmScreenData {
+    const players = data.players.filter((p) => p.id !== id);
+    return {
+        ...data,
+        players,
+        activePlayerId: data.activePlayerId === id ? (players[0]?.id ?? "") : data.activePlayerId,
+        // Combatants stay in their fights, but stop sharing with the sheet.
+        encounters: data.encounters.map((e) => ({
+            ...e,
+            combatants: e.combatants.map((c) => (c.playerId === id ? { ...c, playerId: undefined } : c)),
+        })),
+    };
+}
+
 // Combatants linked to an NPC, for "in 2 encounters" on the sheet.
 export function npcCombatants(data: DmScreenData, npcId: string): { encounter: Encounter; combatant: Combatant }[] {
     return data.encounters.flatMap((encounter) =>
         encounter.combatants.filter((c) => c.npcId === npcId).map((combatant) => ({ encounter, combatant }))
     );
+}
+
+export function createMonster(fields: Partial<Monster> = {}): Monster {
+    return {
+        id: makeId(),
+        name: "New monster",
+        creatureType: "",
+        alignment: "",
+        challenge: "",
+        ac: "",
+        hp: 10,
+        hpDice: "",
+        initiativeMod: 0,
+        speed: "",
+        attacks: [],
+        traits: "",
+        loot: "",
+        ...fields,
+    };
+}
+
+// Rolls a dice formula like "2d6 + 2", "3d8-1" or "d20". Null if it isn't one.
+export function rollFormula(formula: string, random: () => number = Math.random): number | null {
+    const text = formula.replace(/\s+/g, "").toLowerCase();
+    if (!/^[+-]?(\d*d\d+|\d+)([+-](\d*d\d+|\d+))*$/.test(text)) return null;
+    let total = 0;
+    for (const [, sign, term] of text.matchAll(/([+-]?)(\d*d\d+|\d+)/g)) {
+        let value = 0;
+        if (term.includes("d")) {
+            const [count, sides] = term.split("d").map((n) => Number(n || 1));
+            if (count > 100 || sides < 1) return null;
+            for (let i = 0; i < count; i++) value += Math.floor(random() * sides) + 1;
+        } else {
+            value = Number(term);
+        }
+        total += sign === "-" ? -value : value;
+    }
+    return total;
+}
+
+// Copies of a monster for an encounter, named so they don't clash ("Goblin",
+// "Goblin 2"...). With rollHp and valid hit dice, each copy rolls its own HP.
+export function combatantsFromMonster(monster: Monster, count: number, takenNames: string[], rollHp = false, random: () => number = Math.random): Combatant[] {
+    const added: Combatant[] = [];
+    const name = monster.name.trim() || "Monster";
+    for (let i = 0; i < Math.min(20, Math.max(1, count)); i++) {
+        const taken = [...takenNames, ...added.map((c) => c.name)];
+        const rolled = rollHp ? rollFormula(monster.hpDice, random) : null;
+        added.push(createCombatant({
+            name: taken.includes(name) ? duplicateName(name, taken) : name,
+            kind: "monster",
+            initiativeMod: monster.initiativeMod,
+            maxHp: Math.max(1, rolled ?? monster.hp),
+            ac: monster.ac,
+            creatureType: monster.creatureType,
+            alignment: monster.alignment,
+            notes: monster.traits,
+            attacks: monster.attacks.map((a) => ({ ...a, id: makeId() })),
+            loot: monster.loot,
+        }));
+    }
+    return added;
+}
+
+// A combatant typed into the tracker, saved as a library monster.
+export function monsterFromCombatant(c: Combatant): Monster {
+    return createMonster({
+        name: c.name.replace(/\s+\d+$/, "").trim() || c.name,
+        creatureType: c.creatureType,
+        alignment: c.alignment,
+        ac: c.ac,
+        hp: c.maxHp,
+        initiativeMod: c.initiativeMod,
+        attacks: c.attacks.map((a) => ({ ...a, id: makeId() })),
+        traits: c.notes,
+        loot: c.loot,
+    });
+}
+
+export function removeMonster(data: DmScreenData, id: string): DmScreenData {
+    const monsters = data.monsters.filter((m) => m.id !== id);
+    return { ...data, monsters, activeMonsterId: data.activeMonsterId === id ? (monsters[0]?.id ?? "") : data.activeMonsterId };
+}
+
+export function monsterMatches(monster: Monster, query: string): boolean {
+    return matchesQuery(query, [monster.name, monster.creatureType, monster.challenge, monster.traits]);
+}
+
+export function createLocation(fields: Partial<Location> = {}): Location {
+    return { id: makeId(), name: "New location", kind: "", description: "", feature: "", npc: "", rumour: "", danger: "", notes: "", ...fields };
+}
+
+export function removeLocation(data: DmScreenData, id: string): DmScreenData {
+    const location = data.locations.find((l) => l.id === id);
+    const locations = data.locations.filter((l) => l.id !== id);
+    return {
+        ...data,
+        locations,
+        activeLocationId: data.activeLocationId === id ? (locations[0]?.id ?? "") : data.activeLocationId,
+        // Cards that showed it stay on the board, unlinked, keeping its name.
+        boards: data.boards.map((b) => ({
+            ...b,
+            nodes: b.nodes.map((n) => (n.locationId === id ? { ...n, locationId: undefined, title: location?.name ?? n.title } : n)),
+        })),
+    };
+}
+
+export function locationMatches(location: Location, query: string): boolean {
+    return matchesQuery(query, [location.name, location.kind, location.description, location.notes]);
 }
 
 export function createItem(fields: Partial<Item> = {}): Item {
@@ -460,6 +986,14 @@ export function createDefaultData(): DmScreenData {
         activeBoardId: board.id,
         npcs: [],
         activeNpcId: "",
+        players: [],
+        activePlayerId: "",
+        locations: [],
+        activeLocationId: "",
+        monsters: [],
+        activeMonsterId: "",
+        calendar: createCalendar(),
+        settings: DEFAULT_SETTINGS,
         items: [],
         activeItemId: "",
         notes: [],
@@ -516,6 +1050,7 @@ export const OUTCOME_LABELS: Record<EncounterOutcome, string> = {
 // The fight is over once one side is all down. PCs fight monsters; NPCs can be
 // on either side, so they don't decide it. Null while both sides are standing.
 export function encounterOutcome(encounter: Encounter): EncounterOutcome | null {
+    if (encounter.result) return encounter.result.outcome === "won" ? "pcs" : "monsters";
     const pcs = encounter.combatants.filter((c) => c.kind === "pc");
     const monsters = encounter.combatants.filter((c) => c.kind === "monster");
     if (pcs.length === 0 || monsters.length === 0) return null;
@@ -597,6 +1132,8 @@ export function duplicateCombatant(encounter: Encounter, id: string): Encounter 
         hp: source.maxHp,
         tempHp: 0,
         conditions: [],
+        // A copy of a player character is someone else; it stops sharing with the sheet.
+        playerId: undefined,
     };
     const index = encounter.combatants.findIndex((c) => c.id === id);
     const combatants = [...encounter.combatants];
@@ -732,6 +1269,104 @@ export function clearTaken(board: Board): Board {
     };
 }
 
+// ---- Ending and resuming a story --------------------------------------------
+//
+// An End story card saves what happened on its board: every card leading to
+// it that the story still reaches (not greyed out), in story order. A Resume
+// story card on another board shows that recap.
+
+export function storyRecap(data: DmScreenData, board: NamedBoard, endId: string): StoryRecap {
+    const { greyNodes } = branchState(board);
+    const nodeById = new Map(board.nodes.map((n) => [n.id, n]));
+
+    // Everything with a path to the end card...
+    const reached = new Set<string>();
+    const queue = [endId];
+    while (queue.length > 0) {
+        const id = queue.pop()!;
+        board.links.forEach((link) => {
+            if (link.to !== id || reached.has(link.from) || link.from === endId) return;
+            reached.add(link.from);
+            queue.push(link.from);
+        });
+    }
+    // ...or, for an end card that isn't connected yet, the whole board.
+    const pool = reached.size > 0
+        ? board.nodes.filter((n) => reached.has(n.id))
+        : board.nodes.filter((n) => n.id !== endId && n.kind !== "end");
+    const inStory = new Set(pool.filter((n) => !greyNodes.has(n.id)).map((n) => n.id));
+    const links = board.links.filter((l) => inStory.has(l.from) && inStory.has(l.to));
+
+    // Story order: a card comes after the cards leading to it. Cards that
+    // are ready at the same time go left to right, as they're laid out.
+    const waiting = new Map([...inStory].map((id) => [id, links.filter((l) => l.to === id).length]));
+    const order: BoardNode[] = [];
+    while (waiting.size > 0) {
+        let ready = [...waiting].filter(([, count]) => count === 0).map(([id]) => nodeById.get(id)!);
+        // A loop: carry on from its leftmost card.
+        if (ready.length === 0) ready = [...waiting.keys()].map((id) => nodeById.get(id)!);
+        const next = ready.reduce((a, b) => (b.x < a.x || (b.x === a.x && b.y < a.y) ? b : a));
+        order.push(next);
+        waiting.delete(next.id);
+        links.forEach((l) => {
+            if (l.from === next.id && waiting.has(l.to)) waiting.set(l.to, waiting.get(l.to)! - 1);
+        });
+    }
+
+    const title = (node: BoardNode) => cardTitle(data, node) || "Untitled";
+    const steps = order.map((node): RecapStep => {
+        const incoming = links.filter((l) => l.to === node.id);
+        const passedOver = node.taken
+            ? board.links
+                .filter((l) => incoming.some((i) => i.from === l.from) && l.to !== node.id && !nodeById.get(l.to)?.taken)
+                .map((l) => title(nodeById.get(l.to)!))
+            : [];
+        const details: string[] = [];
+        const encounter = data.encounters.find((e) => e.id === node.encounterId);
+        if (encounter) {
+            const outcome = encounterOutcome(encounter);
+            details.push(`⚔ ${encounter.name || "Untitled"}${outcome ? `: ${OUTCOME_LABELS[outcome]}` : ""}`);
+        }
+        if (node.skipped && node.skipMinutes) details.push(`⏩ Skipped ${formatDuration(node.skipMinutes)}`);
+        if (node.kind === "resume") {
+            const from = data.boards.find((b) => b.id === node.resumeBoardId);
+            if (from) details.push(`↪ Carried on from ${from.name || "Untitled"}`);
+        }
+        return {
+            kind: node.kind,
+            title: title(node),
+            text: linkedNote(data, node)?.body ?? node.text,
+            via: incoming.find((l) => l.label.trim())?.label.trim() ?? "",
+            taken: !!node.taken,
+            passedOver,
+            details,
+        };
+    });
+
+    return {
+        boardName: board.name || "Untitled",
+        endedAt: Date.now(),
+        endedOn: formatDate(data.calendar, data.calendar.today),
+        steps,
+    };
+}
+
+// Saves the recap on an End story card on the open board.
+export function endStory(data: DmScreenData, nodeId: string): DmScreenData {
+    const recap = storyRecap(data, activeBoard(data), nodeId);
+    return updateActiveBoard(data, (b) => ({
+        ...b,
+        nodes: b.nodes.map((n) => (n.id === nodeId ? { ...n, recap } : n)),
+    }));
+}
+
+// The most recently ended story on a board, for Resume story cards.
+export function latestRecap(data: DmScreenData, boardId: string | undefined): StoryRecap | null {
+    const board = data.boards.find((b) => b.id === boardId);
+    const recaps = (board?.nodes ?? []).flatMap((n) => (n.kind === "end" && n.recap ? [n.recap] : []));
+    return recaps.reduce<StoryRecap | null>((latest, r) => (!latest || r.endedAt > latest.endedAt ? r : latest), null);
+}
+
 // ---- Several story boards
 
 export function activeBoard(data: DmScreenData): NamedBoard {
@@ -745,7 +1380,12 @@ export function updateActiveBoard(data: DmScreenData, change: (current: Board) =
 
 // Removes a board; the last one is replaced by an empty board so there's always one.
 export function removeBoard(data: DmScreenData, id: string): DmScreenData {
-    const boards = data.boards.filter((b) => b.id !== id);
+    // Resume story cards that carried on from it stop pointing at it.
+    const boards = data.boards
+        .filter((b) => b.id !== id)
+        .map((b) => (b.nodes.some((n) => n.resumeBoardId === id)
+            ? { ...b, nodes: b.nodes.map((n) => (n.resumeBoardId === id ? { ...n, resumeBoardId: undefined } : n)) }
+            : b));
     if (boards.length === 0) boards.push(createBoard("Story board"));
     const activeBoardId = boards.some((b) => b.id === data.activeBoardId) ? data.activeBoardId : boards[0].id;
     return { ...data, boards, activeBoardId };
@@ -792,8 +1432,43 @@ export function linkedNote(data: DmScreenData, node: BoardNode): Note | undefine
     return node.noteId ? data.notes.find((n) => n.id === node.noteId) : undefined;
 }
 
+export function linkedLocation(data: DmScreenData, node: BoardNode): Location | undefined {
+    return node.locationId ? data.locations.find((l) => l.id === node.locationId) : undefined;
+}
+
+export function linkedEvent(data: DmScreenData, node: BoardNode): CalendarEvent | undefined {
+    return node.eventId ? data.calendar.events.find((e) => e.id === node.eventId) : undefined;
+}
+
+// Cards on any board linked to this location, for "On the story board" on its sheet.
+export function locationCards(data: DmScreenData, locationId: string): { board: NamedBoard; node: BoardNode }[] {
+    return data.boards.flatMap((board) => board.nodes.filter((n) => n.locationId === locationId).map((node) => ({ board, node })));
+}
+
+export function eventCards(data: DmScreenData, eventId: string): { board: NamedBoard; node: BoardNode }[] {
+    return data.boards.flatMap((board) => board.nodes.filter((n) => n.eventId === eventId).map((node) => ({ board, node })));
+}
+
+// Deleting a calendar event leaves its cards on the board, unlinked, with its title.
+export function removeEvent(data: DmScreenData, id: string): DmScreenData {
+    const event = data.calendar.events.find((e) => e.id === id);
+    return {
+        ...data,
+        calendar: {
+            ...data.calendar,
+            events: data.calendar.events.filter((e) => e.id !== id),
+            passed: data.calendar.passed.filter((x) => x !== id),
+        },
+        boards: data.boards.map((b) => ({
+            ...b,
+            nodes: b.nodes.map((n) => (n.eventId === id ? { ...n, eventId: undefined, title: event?.title ?? n.title } : n)),
+        })),
+    };
+}
+
 export function cardTitle(data: DmScreenData, node: BoardNode): string {
-    return linkedNpc(data, node)?.name ?? linkedItem(data, node)?.name ?? linkedNote(data, node)?.title ?? node.title;
+    return linkedNpc(data, node)?.name ?? linkedItem(data, node)?.name ?? linkedNote(data, node)?.title
+        ?? linkedLocation(data, node)?.name ?? linkedEvent(data, node)?.title ?? node.title;
 }
 
 // ---- Notes
@@ -840,6 +1515,10 @@ function matchesQuery(query: string, texts: string[]): boolean {
 
 export function npcMatches(npc: Npc, query: string): boolean {
     return matchesQuery(query, [npc.name, npc.race, npc.alignment, npc.location, npc.notes]);
+}
+
+export function playerMatches(player: Player, query: string): boolean {
+    return matchesQuery(query, [player.name, player.playerName, player.ancestryClass, player.notes]);
 }
 
 export function noteMatches(note: Note, query: string): boolean {
@@ -914,7 +1593,10 @@ export function npcCards(data: DmScreenData, npcId: string): { board: NamedBoard
 
 // Titles of Location cards on every board, as suggestions for an NPC's location.
 export function locationNames(data: DmScreenData): string[] {
-    const names = data.boards.flatMap((b) => b.nodes.filter((n) => n.kind === "location").map((n) => n.title.trim()));
+    const names = [
+        ...data.boards.flatMap((b) => b.nodes.filter((n) => n.kind === "location").map((n) => n.title.trim())),
+        ...data.locations.map((l) => l.name.trim()),
+    ];
     return [...new Set(names.filter(Boolean))].sort((a, b) => a.localeCompare(b));
 }
 
@@ -981,9 +1663,68 @@ function normalizeCombatant(value: unknown): Combatant | null {
         notes: str(value.notes),
         attacks: normalizeAttacks(value.attacks),
         loot: str(value.loot),
-        // Checked against the NPCs once they're loaded, in normalizeData.
+        trackers: normalizeTrackers(value.trackers),
+        deathSaves: normalizeDeathSaves(value.deathSaves),
+        // Checked against the NPCs and players once they're loaded, in normalizeData.
         ...(str(value.npcId) ? { npcId: str(value.npcId) } : {}),
+        ...(str(value.playerId) ? { playerId: str(value.playerId) } : {}),
     };
+}
+
+function normalizeDeathSaves(value: unknown): DeathSaves {
+    if (!isObject(value)) return NO_DEATH_SAVES;
+    return {
+        successes: clamp(Math.trunc(num(value.successes)), 0, 3),
+        failures: clamp(Math.trunc(num(value.failures)), 0, 3),
+    };
+}
+
+function normalizeTrackers(value: unknown): Tracker[] {
+    if (!Array.isArray(value)) return [];
+    return value.filter(isObject).map((t) => {
+        const max = typeof t.max === "number" && Number.isFinite(t.max) ? Math.max(0, Math.trunc(t.max)) : null;
+        const resets = TRACKER_RESETS.some((r) => r.value === t.resets) ? (t.resets as TrackerReset) : "none";
+        const tracker = { id: str(t.id) || makeId(), name: str(t.name), value: 0, max, resets, notes: str(t.notes) };
+        return stepTracker(tracker, Math.trunc(num(t.value)));
+    });
+}
+
+// Saves from before losses were tracked have `victories`, which are all wins.
+function normalizeResults(value: Record<string, unknown>): EncounterResult[] {
+    const list = Array.isArray(value.results) ? value.results : Array.isArray(value.victories) ? value.victories : [];
+    return list.filter(isObject).map((r) => ({
+        encounterId: str(r.encounterId),
+        name: str(r.name, "Untitled"),
+        outcome: r.outcome === "lost" ? "lost" : "won",
+        round: Math.max(1, Math.trunc(num(r.round, 1))),
+        at: num(r.at),
+    }));
+}
+
+function normalizePlayer(value: unknown): Player | null {
+    if (!isObject(value)) return null;
+    const maxHp = Math.max(0, Math.trunc(num(value.maxHp)));
+    const player: Player = {
+        id: str(value.id) || makeId(),
+        name: str(value.name, "Unnamed"),
+        playerName: str(value.playerName),
+        ancestryClass: str(value.ancestryClass),
+        level: str(value.level),
+        ac: str(value.ac),
+        maxHp,
+        hp: clamp(Math.trunc(num(value.hp, maxHp)), 0, maxHp),
+        tempHp: Math.max(0, Math.trunc(num(value.tempHp))),
+        initiativeMod: Math.trunc(num(value.initiativeMod)),
+        passive: str(value.passive),
+        speed: str(value.speed),
+        trackers: normalizeTrackers(value.trackers),
+        deathSaves: normalizeDeathSaves(value.deathSaves),
+        results: normalizeResults(value),
+        notes: str(value.notes),
+    };
+    const image = str(value.image);
+    if (image.startsWith("data:image/")) player.image = image;
+    return player;
 }
 
 function normalizeEncounter(value: unknown): Encounter | null {
@@ -992,13 +1733,24 @@ function normalizeEncounter(value: unknown): Encounter | null {
         ? value.combatants.map(normalizeCombatant).filter((c): c is Combatant => c !== null)
         : [];
     const turnId = str(value.turnId);
-    return {
+    const encounter: Encounter = {
         id: str(value.id) || makeId(),
         name: str(value.name, "Encounter"),
         round: Math.max(1, Math.trunc(num(value.round, 1))),
         turnId: combatants.some((c) => c.id === turnId) ? turnId : null,
         combatants,
     };
+    // Saves from before losses were tracked have `won` instead.
+    const result = isObject(value.result) ? value.result : isObject(value.won) ? { ...value.won, outcome: "won" } : null;
+    if (result) {
+        encounter.result = {
+            outcome: result.outcome === "lost" ? "lost" : "won",
+            at: num(result.at),
+            round: Math.max(1, Math.trunc(num(result.round, 1))),
+            by: Array.isArray(result.by) ? result.by.filter((n): n is string => typeof n === "string") : [],
+        };
+    }
+    return encounter;
 }
 
 function normalizeNode(value: unknown): BoardNode | null {
@@ -1020,10 +1772,44 @@ function normalizeNode(value: unknown): BoardNode | null {
     if (itemId) node.itemId = itemId;
     const noteId = str(value.noteId);
     if (noteId) node.noteId = noteId;
+    const locationId = str(value.locationId);
+    if (locationId) node.locationId = locationId;
+    const eventId = str(value.eventId);
+    if (eventId) node.eventId = eventId;
+    const travelDistance = num(value.travelDistance);
+    if (travelDistance > 0) node.travelDistance = travelDistance;
+    if (value.travelUnit === "km" || value.travelUnit === "mi") node.travelUnit = value.travelUnit;
+    const travelMode = str(value.travelMode);
+    if (TRAVEL_MODES.some((m) => m.id === travelMode)) node.travelMode = travelMode;
+    const skipMinutes = Math.trunc(num(value.skipMinutes));
+    if (skipMinutes > 0) node.skipMinutes = skipMinutes;
+    if (value.skipped === true && skipMinutes > 0) node.skipped = true;
     const image = str(value.image);
     if (image.startsWith("data:image/")) node.image = image;
     if (value.taken === true) node.taken = true;
+    const recap = normalizeRecap(value.recap);
+    if (recap && kind === "end") node.recap = recap;
+    const resumeBoardId = str(value.resumeBoardId);
+    if (resumeBoardId && kind === "resume") node.resumeBoardId = resumeBoardId;
     return node;
+}
+
+function normalizeRecap(value: unknown): StoryRecap | null {
+    if (!isObject(value) || !Array.isArray(value.steps)) return null;
+    return {
+        boardName: str(value.boardName, "Untitled"),
+        endedAt: num(value.endedAt),
+        endedOn: str(value.endedOn),
+        steps: value.steps.filter(isObject).map((step) => ({
+            kind: NODE_KINDS.some((k) => k.value === step.kind) ? (step.kind as NodeKind) : "note",
+            title: str(step.title, "Untitled"),
+            text: str(step.text),
+            via: str(step.via),
+            taken: step.taken === true,
+            passedOver: Array.isArray(step.passedOver) ? step.passedOver.map((p) => str(p)).filter(Boolean) : [],
+            details: Array.isArray(step.details) ? step.details.map((d) => str(d)).filter(Boolean) : [],
+        })),
+    };
 }
 
 function normalizeBoard(value: unknown): Board {
@@ -1074,6 +1860,43 @@ function normalizeNpc(value: unknown): Npc | null {
     const image = str(value.image);
     if (image.startsWith("data:image/")) npc.image = image;
     return npc;
+}
+
+function normalizeMonster(value: unknown): Monster | null {
+    if (!isObject(value)) return null;
+    const monster: Monster = {
+        id: str(value.id) || makeId(),
+        name: str(value.name, "Unnamed"),
+        creatureType: str(value.creatureType),
+        alignment: str(value.alignment),
+        challenge: str(value.challenge),
+        ac: str(value.ac),
+        hp: Math.max(0, Math.trunc(num(value.hp, 10))),
+        hpDice: str(value.hpDice),
+        initiativeMod: Math.trunc(num(value.initiativeMod)),
+        speed: str(value.speed),
+        attacks: normalizeAttacks(value.attacks),
+        traits: str(value.traits),
+        loot: str(value.loot),
+    };
+    const image = str(value.image);
+    if (image.startsWith("data:image/")) monster.image = image;
+    return monster;
+}
+
+function normalizeLocation(value: unknown): Location | null {
+    if (!isObject(value)) return null;
+    return {
+        id: str(value.id) || makeId(),
+        name: str(value.name, "Unnamed"),
+        kind: str(value.kind),
+        description: str(value.description),
+        feature: str(value.feature),
+        npc: str(value.npc),
+        rumour: str(value.rumour),
+        danger: str(value.danger),
+        notes: str(value.notes),
+    };
 }
 
 function normalizeHolder(value: unknown, npcIds: Set<string>): ItemHolder {
@@ -1144,10 +1967,30 @@ export function normalizeData(value: unknown): DmScreenData | null {
         : [];
     const activeNpcId = str(value.activeNpcId);
 
+    // Saves from before the Players tab have none.
+    const players = Array.isArray(value.players)
+        ? value.players.map(normalizePlayer).filter((p): p is Player => p !== null)
+        : [];
+    const activePlayerId = str(value.activePlayerId);
+
+    // Saves from before the Monsters tab have none.
+    const monsters = Array.isArray(value.monsters)
+        ? value.monsters.map(normalizeMonster).filter((m): m is Monster => m !== null)
+        : [];
+    const activeMonsterId = str(value.activeMonsterId);
+
+    // Saves from before the Locations tab have none.
+    const locations = Array.isArray(value.locations)
+        ? value.locations.map(normalizeLocation).filter((l): l is Location => l !== null)
+        : [];
+    const activeLocationId = str(value.activeLocationId);
+
     const encounterIds = new Set(encounters.map((e) => e.id));
     const npcIds = new Set(npcs.map((n) => n.id));
+    const playerIds = new Set(players.map((p) => p.id));
     encounters.forEach((e) => e.combatants.forEach((c) => {
         if (c.npcId && !npcIds.has(c.npcId)) delete c.npcId;
+        if (c.playerId && !playerIds.has(c.playerId)) delete c.playerId;
     }));
 
     const items = Array.isArray(value.items)
@@ -1161,12 +2004,17 @@ export function normalizeData(value: unknown): DmScreenData | null {
         : [];
     const activeNoteId = str(value.activeNoteId);
     const noteIds = new Set(notes.map((n) => n.id));
+    const locationIds = new Set(locations.map((l) => l.id));
+    const calendar = normalizeCalendar(value.calendar);
+    const eventIds = new Set(calendar.events.map((e) => e.id));
 
     boards.forEach((board) => board.nodes.forEach((node) => {
         if (node.encounterId && !encounterIds.has(node.encounterId)) delete node.encounterId;
         if (node.npcId && !npcIds.has(node.npcId)) delete node.npcId;
         if (node.itemId && !itemIds.has(node.itemId)) delete node.itemId;
         if (node.noteId && !noteIds.has(node.noteId)) delete node.noteId;
+        if (node.locationId && !locationIds.has(node.locationId)) delete node.locationId;
+        if (node.eventId && !eventIds.has(node.eventId)) delete node.eventId;
     }));
 
     // Saves from before the map maker have no maps; give them an empty one.
@@ -1184,6 +2032,14 @@ export function normalizeData(value: unknown): DmScreenData | null {
         activeBoardId: boards.some((b) => b.id === activeBoardId) ? activeBoardId : boards[0].id,
         npcs,
         activeNpcId: npcIds.has(activeNpcId) ? activeNpcId : (npcs[0]?.id ?? ""),
+        players,
+        activePlayerId: playerIds.has(activePlayerId) ? activePlayerId : (players[0]?.id ?? ""),
+        monsters,
+        activeMonsterId: monsters.some((m) => m.id === activeMonsterId) ? activeMonsterId : (monsters[0]?.id ?? ""),
+        locations,
+        activeLocationId: locations.some((l) => l.id === activeLocationId) ? activeLocationId : (locations[0]?.id ?? ""),
+        calendar,
+        settings: normalizeSettings(value.settings),
         items,
         activeItemId: itemIds.has(activeItemId) ? activeItemId : (items[0]?.id ?? ""),
         notes,

@@ -3,22 +3,33 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import "../components/styles/dm-screen.css";
 
+import CalendarView from "../components/DmScreen/CalendarView";
 import EncounterTracker from "../components/DmScreen/EncounterTracker";
 import ItemManager from "../components/DmScreen/ItemManager";
+import LocationManager from "../components/DmScreen/LocationManager";
 import MapMaker from "../components/DmScreen/MapMaker";
 import NoteManager from "../components/DmScreen/NoteManager";
+import MonsterManager from "../components/DmScreen/MonsterManager";
 import NpcManager from "../components/DmScreen/NpcManager";
+import SettingsView from "../components/DmScreen/SettingsView";
+import PlayerManager from "../components/DmScreen/PlayerManager";
 import PlayerMapView from "../components/DmScreen/PlayerMapView";
 import StoryBoard from "../components/DmScreen/StoryBoard";
+import { formatDate, passedEvents, type CalendarDate } from "../utils/dmCalendar";
 import { STORAGE_KEY, createDefaultData, parseData, type DmScreenData } from "../utils/dmScreen";
 
 const TABS = [
     { id: "tracker", label: "Encounter Tracker" },
+    { id: "players", label: "Players" },
     { id: "npcs", label: "NPCs" },
+    { id: "monsters", label: "Monsters" },
+    { id: "locations", label: "Locations" },
     { id: "items", label: "Items" },
     { id: "notes", label: "Notes" },
+    { id: "calendar", label: "Calendar" },
     { id: "board", label: "Story Board" },
     { id: "map", label: "Map" },
+    { id: "settings", label: "Settings" },
 ] as const;
 
 type TabId = typeof TABS[number]["id"];
@@ -45,6 +56,8 @@ function DmScreen() {
     const [importError, setImportError] = useState("");
     // A card to select (and scroll to) the next time the story board opens.
     const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
+    // A day to show the next time the calendar opens.
+    const [focusDate, setFocusDate] = useState<CalendarDate | null>(null);
     const fileInput = useRef<HTMLInputElement>(null);
 
     // The tab lives in the URL so it survives reloads and can be linked to.
@@ -91,6 +104,11 @@ function DmScreen() {
         showTab("npcs");
     };
 
+    const openPlayer = (playerId: string) => {
+        setData((current) => ({ ...current, activePlayerId: playerId }));
+        showTab("players");
+    };
+
     const openItem = (itemId: string) => {
         setData((current) => ({ ...current, activeItemId: itemId }));
         showTab("items");
@@ -99,6 +117,21 @@ function DmScreen() {
     const openNote = (noteId: string) => {
         setData((current) => ({ ...current, activeNoteId: noteId }));
         showTab("notes");
+    };
+
+    const openMonster = (monsterId: string) => {
+        setData((current) => ({ ...current, activeMonsterId: monsterId }));
+        showTab("monsters");
+    };
+
+    const openLocation = (locationId: string) => {
+        setData((current) => ({ ...current, activeLocationId: locationId }));
+        showTab("locations");
+    };
+
+    const openCalendar = (date: CalendarDate) => {
+        setFocusDate({ year: date.year, month: date.month, day: date.day });
+        showTab("calendar");
     };
 
     const showCard = (boardId: string, nodeId: string) => {
@@ -120,7 +153,7 @@ function DmScreen() {
                 <p className="dms-eyebrow">// tabletop · any system</p>
                 <h1 className="dms-title">DM <em>Screen</em></h1>
                 <p className="dms-subtitle-text">
-                    Run encounters turn by turn, keep sheets for your named NPCs and loot, map out your story as cards and strings, and build maps from premade pieces.
+                    Run encounters turn by turn, track the party's HP and resources across fights, keep sheets for your named NPCs and loot, map out your story as cards and strings, and build maps from premade pieces.
                 </p>
                 <div className="dms-backup">
                     <button type="button" className="dms-button dms-button--ghost" onClick={exportJson}>
@@ -160,11 +193,44 @@ function DmScreen() {
                 ))}
             </div>
 
+            {passedEvents(data.calendar).length > 0 && (
+                <div className="dms-time-alert" role="status">
+                    <span className="dms-time-alert-icon" aria-hidden="true">⏰</span>
+                    <p>
+                        <strong>Time passed:</strong> you reached{" "}
+                        {passedEvents(data.calendar).map((event, i, all) => (
+                            <span key={event.id}>
+                                <button type="button" className="dms-link-button" onClick={() => openCalendar(event)}>
+                                    {event.title || "Untitled"}
+                                </button>
+                                {" "}<small>({formatDate(data.calendar, event)})</small>
+                                {i < all.length - 2 ? ", " : i === all.length - 2 ? " and " : "."}
+                            </span>
+                        ))}
+                    </p>
+                    <button
+                        type="button"
+                        className="dms-icon-button"
+                        aria-label="Dismiss"
+                        title="Dismiss"
+                        onClick={() => setData((current) => ({ ...current, calendar: { ...current.calendar, passed: [] } }))}
+                    >
+                        ×
+                    </button>
+                </div>
+            )}
+
             <main className="dms-content" role="tabpanel" id={`dms-panel-${tab}`} aria-labelledby={`dms-tab-${tab}`}>
-                {tab === "tracker" && <EncounterTracker data={data} setData={setData} onOpenNpc={openNpc} />}
+                {tab === "tracker" && <EncounterTracker data={data} setData={setData} onOpenNpc={openNpc} onOpenPlayer={openPlayer} onOpenMonster={openMonster} />}
+                {tab === "monsters" && <MonsterManager data={data} setData={setData} onRunEncounter={runEncounter} />}
+                {tab === "players" && <PlayerManager data={data} setData={setData} onOpenEncounter={runEncounter} />}
                 {tab === "npcs" && <NpcManager data={data} setData={setData} onShowCard={showCard} onOpenItem={openItem} />}
                 {tab === "items" && <ItemManager data={data} setData={setData} onShowCard={showCard} />}
+                {tab === "locations" && <LocationManager data={data} setData={setData} onShowCard={showCard} />}
                 {tab === "notes" && <NoteManager data={data} setData={setData} onShowCard={showCard} />}
+                {tab === "calendar" && (
+                    <CalendarView data={data} setData={setData} focusDate={focusDate} onFocused={() => setFocusDate(null)} onShowCard={showCard} />
+                )}
                 {tab === "board" && (
                     <StoryBoard
                         data={data}
@@ -173,11 +239,14 @@ function DmScreen() {
                         onOpenNpc={openNpc}
                         onOpenItem={openItem}
                         onOpenNote={openNote}
+                        onOpenLocation={openLocation}
+                        onOpenCalendar={openCalendar}
                         focusNodeId={focusNodeId}
                         onFocused={() => setFocusNodeId(null)}
                     />
                 )}
                 {tab === "map" && <MapMaker data={data} setData={setData} />}
+                {tab === "settings" && <SettingsView data={data} setData={setData} />}
             </main>
         </div>
     );

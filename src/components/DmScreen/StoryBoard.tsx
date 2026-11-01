@@ -27,12 +27,21 @@ import {
     itemsHeldBy,
     createNote,
     linkedItem,
+    createLocation,
+    linkedEvent,
+    linkedLocation,
     linkedNote,
     linkedNpc,
+    cardTravel,
+    timeSkip,
+    travelFields,
     sortedNotes,
     updateNote,
     rarityLabel,
     createNode,
+    endStory,
+    latestRecap,
+    storyRecap,
     encounterOutcome,
     OUTCOME_LABELS,
     removeBoard,
@@ -50,14 +59,18 @@ import {
     type EncounterOutcome,
     type Item,
     type ItemHolder,
+    type Location,
     type NodeKind,
     type Note,
     type Npc,
+    type StoryRecap,
 } from "../../utils/dmScreen";
+import { KM_PER_MILE, MINUTES_PER_DAY, TRAVEL_MODES, createEvent, dayNumber, formatDate, formatDuration, type Calendar, type CalendarDate, type CalendarEvent } from "../../utils/dmCalendar";
 import ConfirmButton from "./ConfirmButton";
 import HolderField from "./HolderField";
 import ImageField from "./ImageField";
 import { imageFileIn, readImageFile } from "./imageFile";
+import RecapDialog from "./RecapDialog";
 
 interface StoryBoardProps {
     data: DmScreenData;
@@ -66,6 +79,8 @@ interface StoryBoardProps {
     onOpenNpc: (npcId: string) => void;
     onOpenItem: (itemId: string) => void;
     onOpenNote: (noteId: string) => void;
+    onOpenLocation: (locationId: string) => void;
+    onOpenCalendar: (date: CalendarDate) => void;
     // Select this card and bring it into view when the board opens.
     focusNodeId: string | null;
     onFocused: () => void;
@@ -106,6 +121,109 @@ function loadLayout(): BoardLayout {
 
 const kindLabel =(kind: NodeKind) => NODE_KINDS.find((k) => k.value === kind)?.label ?? "Note";
 
+// A travel card's journey: distance and how the party travels, which set
+// the card's time skip.
+function TravelField({ node, update }: { node: BoardNode; update: (fields: Partial<BoardNode>) => void }) {
+    const { mode, unit, distance, minutes } = cardTravel(node);
+    // Typed as text, so "2." or "1,5" isn't fought while typing.
+    const [text, setText] = useState(distance ? String(distance) : "");
+    const perDay = mode.milesPerHour * mode.hoursPerDay * (unit === "km" ? KM_PER_MILE : 1);
+    const change = (fields: Parameters<typeof travelFields>[1]) =>
+        update(travelFields(node, { travelDistance: node.travelDistance, travelUnit: node.travelUnit, travelMode: node.travelMode, ...fields }));
+
+    return (
+        <div className="dms-field">
+            <span>Journey</span>
+            <div className="dms-travel-row">
+                <label className="dms-field dms-small">
+                    <span>Distance</span>
+                    <input
+                        inputMode="decimal"
+                        value={text}
+                        placeholder="0"
+                        disabled={node.skipped}
+                        onChange={(e) => {
+                            setText(e.target.value);
+                            const value = Math.max(0, Number(e.target.value.replace(",", ".")) || 0);
+                            change({ travelDistance: value || undefined });
+                        }}
+                    />
+                </label>
+                <label className="dms-field dms-small">
+                    <span>Unit</span>
+                    <select value={unit} disabled={node.skipped} onChange={(e) => change({ travelUnit: e.target.value as "mi" | "km" })}>
+                        <option value="mi">miles</option>
+                        <option value="km">km</option>
+                    </select>
+                </label>
+                <label className="dms-field dms-travel-mode">
+                    <span>Going by</span>
+                    <select value={mode.id} disabled={node.skipped} onChange={(e) => change({ travelMode: e.target.value })}>
+                        {TRAVEL_MODES.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+                    </select>
+                </label>
+            </div>
+            <p className="dms-inspector-help">
+                About {Math.round(perDay)} {unit} a day ({mode.hoursPerDay} h on the move).
+                {minutes > 0 && <> This trip takes <strong>{formatDuration(minutes)}</strong>.</>}
+            </p>
+        </div>
+    );
+}
+
+// A time card's skip length, and its skip / undo buttons.
+function TimeSkipField({ node, update, onTimeSkip }: { node: BoardNode; update: (fields: Partial<BoardNode>) => void; onTimeSkip: (undo: boolean) => void }) {
+    const total = node.skipMinutes ?? 0;
+    const parts = { days: Math.floor(total / MINUTES_PER_DAY), hours: Math.floor((total % MINUTES_PER_DAY) / 60), minutes: total % 60 };
+    const setPart = (key: keyof typeof parts, value: string) => {
+        const next = { ...parts, [key]: Math.max(0, Math.trunc(Number(value)) || 0) };
+        const minutes = Math.min(365 * MINUTES_PER_DAY, next.days * MINUTES_PER_DAY + Math.min(23, next.hours) * 60 + Math.min(59, next.minutes));
+        update({ skipMinutes: minutes || undefined });
+    };
+
+    return (
+        <div className="dms-field">
+            <span>Time skip</span>
+            <div className="dms-time-skip">
+                {(["days", "hours", "minutes"] as const).map((key) => (
+                    <label key={key} className="dms-field dms-small">
+                        <span>{key[0].toUpperCase() + key.slice(1)}</span>
+                        <input inputMode="numeric" value={parts[key]} disabled={node.skipped} onChange={(e) => setPart(key, e.target.value)} />
+                    </label>
+                ))}
+            </div>
+            {total ? (
+                <SkipButtons node={node} onTimeSkip={onTimeSkip} />
+            ) : (
+                <p className="dms-inspector-help">Set a length to put a skip button on the card, e.g. a night's sleep.</p>
+            )}
+        </div>
+    );
+}
+
+// Skip / undo for a time or travel card with a skip length.
+function SkipButtons({ node, onTimeSkip }: { node: BoardNode; onTimeSkip: (undo: boolean) => void }) {
+    const total = node.skipMinutes ?? 0;
+    if (!total) return null;
+    return node.skipped ? (
+        <div className="dms-inspector-buttons">
+            <span className="dms-inspector-help">✓ Skipped {formatDuration(total)}.</span>
+            <button type="button" className="dms-button dms-button--ghost" onClick={() => onTimeSkip(true)}>↩ Undo skip</button>
+        </div>
+    ) : (
+        <div className="dms-inspector-buttons">
+            <button type="button" className="dms-button" onClick={() => onTimeSkip(false)}>⏩ Skip {formatDuration(total)}</button>
+        </div>
+    );
+}
+
+// "3 Harvest, 1492 · in 4 days" for a time card.
+function eventWhen(calendar: Calendar, event: CalendarEvent): string {
+    const diff = dayNumber(calendar, event) - dayNumber(calendar, calendar.today);
+    const relative = diff === 0 ? "today" : diff === 1 ? "tomorrow" : diff > 0 ? `in ${diff} days` : diff === -1 ? "yesterday" : `${-diff} days ago`;
+    return `${formatDate(calendar, event)} · ${relative}`;
+}
+
 function isTyping(target: EventTarget | null) {
     const element = target as HTMLElement | null;
     return !!element && (element.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(element.tagName));
@@ -143,7 +261,7 @@ function linkGeometry(a: BoardNode, aSize: Size, b: BoardNode, bSize: Size) {
     };
 }
 
-export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, onOpenItem, onOpenNote, focusNodeId, onFocused }: StoryBoardProps) {
+export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, onOpenItem, onOpenNote, onOpenLocation, onOpenCalendar, focusNodeId, onFocused }: StoryBoardProps) {
     const board = activeBoard(data);
     const { view } = board;
 
@@ -154,6 +272,8 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
     const [sizes, setSizes] = useState<Record<string, Size>>({});
     const [newKind, setNewKind] = useState<NodeKind>("scene");
     const [layout, setLayout] = useState<BoardLayout>(loadLayout);
+    // The "Previously on…" popup: a saved recap, or the board so far if it was never ended.
+    const [recapShown, setRecapShown] = useState<{ recap: StoryRecap; ended: boolean } | null>(null);
     const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
 
     useEffect(() => {
@@ -450,6 +570,35 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
     const branches = branchState(board);
     const anyTaken = board.nodes.some((n) => n.taken);
     const onToggleTaken = (id: string) => updateBoard((current) => toggleTaken(current, id));
+    const onTimeSkip = (id: string, undo: boolean) => setData((current) => timeSkip(current, id, undo));
+
+    // ---- Ending and resuming stories
+    const onEndStory = (id: string) => setData((current) => endStory(current, id));
+    const showRecapOf = (boardId: string | undefined) => {
+        const saved = latestRecap(data, boardId);
+        const from = data.boards.find((b) => b.id === boardId);
+        if (saved) setRecapShown({ recap: saved, ended: true });
+        else if (from) setRecapShown({ recap: storyRecap(data, from, ""), ended: false });
+    };
+    const showRecapOn = (node: BoardNode) => {
+        if (node.kind === "resume") showRecapOf(node.resumeBoardId);
+        else setRecapShown(node.recap ? { recap: node.recap, ended: true } : { recap: storyRecap(data, board, node.id), ended: false });
+    };
+    // From an End story card: end it if it wasn't, then open a new board that starts by resuming it.
+    const startNextBoard = (endId: string) => {
+        const resume = { ...createNode("resume", 80, 80), resumeBoardId: board.id };
+        const next = { ...createBoard(`Story board ${data.boards.length + 1}`), nodes: [resume] };
+        cancelConnect();
+        setSelection({ type: "node", id: resume.id });
+        setData((current) => {
+            const ended = activeBoard(current).nodes.find((n) => n.id === endId)?.recap ? current : endStory(current, endId);
+            return { ...ended, boards: [...ended.boards, next], activeBoardId: next.id };
+        });
+    };
+    const boardName = (id: string | undefined) => {
+        const found = data.boards.find((b) => b.id === id);
+        return found ? found.name || "Untitled" : undefined;
+    };
 
     const connectFrom = connect ? nodeById.get(connect.from) : undefined;
     const selectedNode = selection?.type === "node" ? nodeById.get(selection.id) : undefined;
@@ -596,6 +745,8 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                             const npc = linkedNpc(data, node);
                             const item = linkedItem(data, node);
                             const note = linkedNote(data, node);
+                            const location = linkedLocation(data, node);
+                            const event = linkedEvent(data, node);
                             return (
                                 <NodeCard
                                     key={node.id}
@@ -609,11 +760,20 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                                     item={item}
                                     note={note}
                                     onOpenNote={onOpenNote}
+                                    location={location}
+                                    onOpenLocation={onOpenLocation}
+                                    event={event}
+                                    eventWhen={event ? eventWhen(data.calendar, event) : ""}
+                                    onOpenCalendar={onOpenCalendar}
                                     holder={item ? holderLabel(data, item.holder) : ""}
                                     onOpenItem={onOpenItem}
                                     isChoice={branches.choices.has(node.id)}
                                     grey={branches.greyNodes.has(node.id)}
                                     onToggleTaken={() => onToggleTaken(node.id)}
+                                    onTimeSkip={(undo) => onTimeSkip(node.id, undo)}
+                                    resumeBoardName={boardName(node.resumeBoardId)}
+                                    onEndStory={() => onEndStory(node.id)}
+                                    onShowRecap={() => showRecapOn(node)}
                                     onSize={onSize}
                                     onHeaderPointerDown={(event) => onNodePointerDown(event, node)}
                                     onHandlePointerDown={(event) => onHandlePointerDown(event, node)}
@@ -658,6 +818,16 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                         isChoice={branches.choices.has(selectedNode.id)}
                         grey={branches.greyNodes.has(selectedNode.id)}
                         onToggleTaken={() => onToggleTaken(selectedNode.id)}
+                        onTimeSkip={(undo) => onTimeSkip(selectedNode.id, undo)}
+                        onEndStory={() => onEndStory(selectedNode.id)}
+                        onShowRecap={() => showRecapOn(selectedNode)}
+                        onStartNextBoard={() => startNextBoard(selectedNode.id)}
+                        onResumeBoard={(id) => {
+                            updateNode(selectedNode.id, { resumeBoardId: id || undefined });
+                            // Picking a board shows what happened there last time.
+                            if (id) showRecapOf(id);
+                        }}
+                        onSwitchBoard={switchBoard}
                         onCreateEncounter={() => {
                             const encounter = createEncounter(cardTitle(data, selectedNode) || "New encounter");
                             setData((current) => updateActiveBoard(
@@ -692,6 +862,23 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                         }}
                         onOpenNote={onOpenNote}
                         onUpdateNote={(noteId, fields) => setData((current) => updateNote(current, noteId, fields))}
+                        onCreateLocation={() => {
+                            const location = createLocation({ name: selectedNode.title || "New location", description: selectedNode.text });
+                            setData((current) => updateActiveBoard(
+                                { ...current, locations: [...current.locations, location], activeLocationId: location.id },
+                                (b) => ({ ...b, nodes: b.nodes.map((n) => (n.id === selectedNode.id ? { ...n, locationId: location.id } : n)) })
+                            ));
+                        }}
+                        onOpenLocation={onOpenLocation}
+                        onCreateEvent={() => {
+                            // On today's date; move it in the Calendar tab.
+                            const event = createEvent(data.calendar.today, { title: selectedNode.title || "New event", notes: selectedNode.text });
+                            setData((current) => updateActiveBoard(
+                                { ...current, calendar: { ...current.calendar, events: [...current.calendar.events, event] } },
+                                (b) => ({ ...b, nodes: b.nodes.map((n) => (n.id === selectedNode.id ? { ...n, eventId: event.id } : n)) })
+                            ));
+                        }}
+                        onOpenCalendar={onOpenCalendar}
                         onSetHolder={(itemId, holder) => setData((current) => ({
                             ...current,
                             items: current.items.map((i) => (i.id === itemId ? { ...i, holder } : i)),
@@ -748,6 +935,8 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                     </>
                 )}
             </aside>}
+
+            {recapShown && <RecapDialog recap={recapShown.recap} ended={recapShown.ended} onClose={() => setRecapShown(null)} />}
         </div>
     );
 }
@@ -774,10 +963,23 @@ interface NodeCardProps {
     // The linked note, whose title and text the card shows.
     note?: Note;
     onOpenNote: (noteId: string) => void;
+    // The linked location, shown as a tag that opens its sheet.
+    location?: Location;
+    onOpenLocation: (locationId: string) => void;
+    // The linked calendar event, and when it is ("in 3 days").
+    event?: CalendarEvent;
+    eventWhen: string;
+    onOpenCalendar: (date: CalendarDate) => void;
     // One of several branches from the same card, so it can be ticked.
     isChoice: boolean;
     grey: boolean;
     onToggleTaken: () => void;
+    // Time cards: skip time, or undo the skip.
+    onTimeSkip: (undo: boolean) => void;
+    // Resume story cards: the board they carry on from.
+    resumeBoardName?: string;
+    onEndStory: () => void;
+    onShowRecap: () => void;
     onSize: (id: string, size: Size) => void;
     onHeaderPointerDown: (event: ReactPointerEvent) => void;
     onHandlePointerDown: (event: ReactPointerEvent) => void;
@@ -799,9 +1001,18 @@ function NodeCard({
     onOpenItem,
     note,
     onOpenNote,
+    location,
+    onOpenLocation,
+    event,
+    eventWhen,
+    onOpenCalendar,
     isChoice,
     grey,
     onToggleTaken,
+    onTimeSkip,
+    resumeBoardName,
+    onEndStory,
+    onShowRecap,
     onSize,
     onHeaderPointerDown,
     onHandlePointerDown,
@@ -810,7 +1021,7 @@ function NodeCard({
 }: NodeCardProps) {
     const ref = useRef<HTMLDivElement>(null);
     // A linked NPC's or item's name is the card's title.
-    const title = npc?.name ?? item?.name ?? note?.title ?? node.title;
+    const title = npc?.name ?? item?.name ?? note?.title ?? location?.name ?? event?.title ?? node.title;
     // A linked note's text replaces the card's own.
     const text = note ? note.body : node.text;
 
@@ -920,6 +1131,19 @@ function NodeCard({
                     <CardTag label={note.pinned ? "★ 📝 Note" : "📝 Note"} title={`Open ${note.title || "this note"} in the Notes tab`} onOpen={() => onOpenNote(note.id)} />
                 </div>
             )}
+            {location && (
+                <div className="dms-node-npc-info">
+                    <CardTag label={`📍 ${location.name || "Unnamed"}`} title={`Open ${location.name || "this location"} in the Locations tab`} onOpen={() => onOpenLocation(location.id)} />
+                    {location.kind && <span className="dms-node-npc-meta">{location.kind}</span>}
+                    {location.description && <span className="dms-node-item-stats">{location.description}</span>}
+                </div>
+            )}
+            {event && (
+                <div className="dms-node-npc-info">
+                    <CardTag label={`🕒 ${eventWhen}`} title="Open this day in the Calendar tab" onOpen={() => onOpenCalendar(event)} />
+                    {event.notes && <span className="dms-node-item-stats">{event.notes}</span>}
+                </div>
+            )}
             {(text || encounterName) && (
                 <div className="dms-node-body">
                     {encounterName && (
@@ -931,12 +1155,71 @@ function NodeCard({
                     {text && <p>{text}</p>}
                 </div>
             )}
+            {node.kind === "travel" && (() => {
+                const { mode, unit, distance } = cardTravel(node);
+                return (
+                    <p className="dms-node-travel">
+                        🧭 {distance ? `${distance} ${unit}` : "No distance yet"} · {mode.label}
+                    </p>
+                );
+            })()}
+            {(node.kind === "time" || node.kind === "travel") && !!node.skipMinutes && (
+                <div className="dms-node-skip">
+                    {node.skipped ? (
+                        <>
+                            <span className="dms-node-skip-done">✓ Skipped {formatDuration(node.skipMinutes)}</span>
+                            <CardButton label="↩ Undo" title="Move the calendar back again" onClick={() => onTimeSkip(true)} />
+                        </>
+                    ) : (
+                        <CardButton label={`⏩ Skip ${formatDuration(node.skipMinutes)}`} title="Move the calendar forward" onClick={() => onTimeSkip(false)} />
+                    )}
+                </div>
+            )}
+            {node.kind === "end" && (
+                <div className="dms-node-skip">
+                    {node.recap ? (
+                        <>
+                            <span className="dms-node-skip-done">■ Ended · {node.recap.steps.length} cards</span>
+                            <CardButton label="📜 Recap" title="Show what happened on this board" onClick={onShowRecap} />
+                        </>
+                    ) : (
+                        <CardButton label="■ End story" title="Save everything that happened on the way to this card" onClick={onEndStory} />
+                    )}
+                </div>
+            )}
+            {node.kind === "resume" && (
+                <div className="dms-node-skip">
+                    {resumeBoardName !== undefined ? (
+                        <CardButton label={`📜 Previously on ${resumeBoardName}`} title="Show what happened last time" onClick={onShowRecap} />
+                    ) : (
+                        <span className="dms-node-npc-meta">Pick a board to resume</span>
+                    )}
+                </div>
+            )}
             <span
                 className="dms-node-handle"
                 title="Drag onto another card to connect"
                 onPointerDown={onHandlePointerDown}
             />
         </div>
+    );
+}
+
+// A button on a card that works without dragging or selecting the card.
+function CardButton({ label, title, onClick }: { label: string; title: string; onClick: () => void }) {
+    return (
+        <button
+            type="button"
+            className="dms-node-skip-button"
+            title={title}
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={(event) => {
+                event.stopPropagation();
+                onClick();
+            }}
+        >
+            {label}
+        </button>
     );
 }
 
@@ -969,6 +1252,12 @@ interface NodeInspectorProps {
     isChoice: boolean;
     grey: boolean;
     onToggleTaken: () => void;
+    onTimeSkip: (undo: boolean) => void;
+    onEndStory: () => void;
+    onShowRecap: () => void;
+    onStartNextBoard: () => void;
+    onResumeBoard: (boardId: string) => void;
+    onSwitchBoard: (boardId: string) => void;
     onCreateEncounter: () => void;
     onRunEncounter: (encounterId: string) => void;
     onCreateNpc: () => void;
@@ -978,6 +1267,10 @@ interface NodeInspectorProps {
     onCreateNote: () => void;
     onOpenNote: (noteId: string) => void;
     onUpdateNote: (noteId: string, fields: Partial<Pick<Note, "title" | "body">>) => void;
+    onCreateLocation: () => void;
+    onOpenLocation: (locationId: string) => void;
+    onCreateEvent: () => void;
+    onOpenCalendar: (date: CalendarDate) => void;
     onSetHolder: (itemId: string, holder: ItemHolder) => void;
     onConnect: (to: string) => void;
     onSelectLink: (id: string) => void;
@@ -991,6 +1284,12 @@ function NodeInspector({
     isChoice,
     grey,
     onToggleTaken,
+    onTimeSkip,
+    onEndStory,
+    onShowRecap,
+    onStartNextBoard,
+    onResumeBoard,
+    onSwitchBoard,
     onCreateEncounter,
     onRunEncounter,
     onCreateNpc,
@@ -1000,17 +1299,25 @@ function NodeInspector({
     onCreateNote,
     onOpenNote,
     onUpdateNote,
+    onCreateLocation,
+    onOpenLocation,
+    onCreateEvent,
+    onOpenCalendar,
     onSetHolder,
     onConnect,
     onSelectLink,
     onDelete,
 }: NodeInspectorProps) {
-    const { nodes, links } = activeBoard(data);
+    const { id: boardId, nodes, links } = activeBoard(data);
+    const carriedOnIn = data.boards.filter((b) => b.nodes.some((n) => n.resumeBoardId === boardId));
     const npc = linkedNpc(data, node);
     const item = linkedItem(data, node);
     const note = linkedNote(data, node);
-    // A linked NPC or item owns the card's name.
-    const linkedName = npc?.name ?? item?.name;
+    const location = linkedLocation(data, node);
+    const event = linkedEvent(data, node);
+    // A linked NPC, item, location or event owns the card's name.
+    const linkedName = npc?.name ?? item?.name ?? location?.name ?? event?.title;
+    const sortedEvents = [...data.calendar.events].sort((a, b) => dayNumber(data.calendar, a) - dayNumber(data.calendar, b));
     const title = (id: string) => {
         const other = nodes.find((n) => n.id === id);
         return (other && cardTitle(data, other)) || "Untitled";
@@ -1140,6 +1447,78 @@ function NodeInspector({
                 </div>
             )}
 
+            {/* Location cards link to a sheet in the Locations tab, like NPC cards. */}
+            {(node.kind === "location" || location) && !npc && !item && !note && (
+                <div className="dms-inspector-section">
+                    <label className="dms-field">
+                        <span>Location</span>
+                        <select
+                            value={location?.id ?? ""}
+                            onChange={(e) => {
+                                const id = e.target.value;
+                                update(id ? { locationId: id } : { locationId: undefined, title: location?.name ?? node.title });
+                            }}
+                        >
+                            <option value="">Not linked (write it yourself)</option>
+                            {data.locations.map((l) => <option key={l.id} value={l.id}>{l.name || "Unnamed"}{l.kind && ` (${l.kind})`}</option>)}
+                        </select>
+                    </label>
+                    <div className="dms-inspector-buttons">
+                        {location ? (
+                            <button type="button" className="dms-button" onClick={() => onOpenLocation(location.id)}>
+                                Open location →
+                            </button>
+                        ) : (
+                            <button type="button" className="dms-button dms-button--ghost" onClick={onCreateLocation}>
+                                + Create location from this card
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Time cards link to an event on the calendar and show when it is. */}
+            {(node.kind === "time" || event) && !npc && !item && !note && !location && (
+                <div className="dms-inspector-section">
+                    <label className="dms-field">
+                        <span>Calendar event</span>
+                        <select
+                            value={event?.id ?? ""}
+                            onChange={(e) => {
+                                const id = e.target.value;
+                                update(id ? { eventId: id } : { eventId: undefined, title: event?.title ?? node.title });
+                            }}
+                        >
+                            <option value="">Not linked (write it yourself)</option>
+                            {sortedEvents.map((ev) => (
+                                <option key={ev.id} value={ev.id}>{ev.title || "Untitled"} · {formatDate(data.calendar, ev)}</option>
+                            ))}
+                        </select>
+                    </label>
+                    {event && <p className="dms-inspector-help">🕒 {eventWhen(data.calendar, event)}</p>}
+                    <TimeSkipField node={node} update={update} onTimeSkip={onTimeSkip} />
+                    <div className="dms-inspector-buttons">
+                        {event ? (
+                            <button type="button" className="dms-button" onClick={() => onOpenCalendar(event)}>
+                                Open in Calendar →
+                            </button>
+                        ) : (
+                            <button type="button" className="dms-button dms-button--ghost" onClick={onCreateEvent}>
+                                + Create event from this card
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Travel cards work out the trip's length and skip it on the calendar. */}
+            {node.kind === "travel" && !npc && !item && !note && !location && !event && (
+                <div className="dms-inspector-section">
+                    <TravelField key={node.id} node={node} update={update} />
+                    <SkipButtons node={node} onTimeSkip={onTimeSkip} />
+                </div>
+            )}
+
             {note ? (
                 <>
                     <label className="dms-field">
@@ -1159,7 +1538,11 @@ function NodeInspector({
                     <p className="dms-inspector-help">
                         {npc
                             ? "The name, race, stats and image come from the NPCs tab. Unlink the NPC to write this card yourself."
-                            : "The name, details and image come from the Items tab. Unlink the item to write this card yourself."}
+                            : item
+                                ? "The name, details and image come from the Items tab. Unlink the item to write this card yourself."
+                                : location
+                                    ? "The name, type and description come from the Locations tab. Unlink it to write this card yourself."
+                                    : "The title and date come from the Calendar tab. Unlink the event to write this card yourself."}
                     </p>
                 </div>
             ) : (
@@ -1181,6 +1564,65 @@ function NodeInspector({
                     <span>Notes</span>
                     <textarea rows={6} value={node.text} onChange={(e) => update({ text: e.target.value })} />
                 </label>
+            )}
+
+            {node.kind === "end" && (
+                <div className="dms-inspector-section">
+                    <p className="dms-inspector-help">
+                        Ending the story saves every card leading here that wasn't greyed out, which branches the
+                        players took, and how fights went. A Resume story card on another board shows it.
+                    </p>
+                    {node.recap && (
+                        <p className="dms-inspector-help">
+                            Ended {new Date(node.recap.endedAt).toLocaleString()}{node.recap.endedOn && ` (${node.recap.endedOn} in game)`} · {node.recap.steps.length} cards
+                        </p>
+                    )}
+                    <div className="dms-inspector-buttons">
+                        <button type="button" className={node.recap ? "dms-button dms-button--ghost" : "dms-button"} onClick={onEndStory}>
+                            {node.recap ? "↻ Update recap" : "■ End story"}
+                        </button>
+                        <button type="button" className="dms-button dms-button--ghost" onClick={onShowRecap}>
+                            📜 {node.recap ? "Show recap" : "Preview recap"}
+                        </button>
+                        <button type="button" className="dms-button dms-button--ghost" onClick={onStartNextBoard}>
+                            + Carry on in a new board →
+                        </button>
+                    </div>
+                    {carriedOnIn.length > 0 && (
+                        <>
+                            <h3 className="dms-subtitle">Carried on in</h3>
+                            <ul className="dms-connection-list">
+                                {carriedOnIn.map((b) => (
+                                    <li key={b.id}>
+                                        <button type="button" className="dms-link-button" onClick={() => onSwitchBoard(b.id)}>→ {b.name || "Untitled"}</button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </>
+                    )}
+                </div>
+            )}
+
+            {node.kind === "resume" && (
+                <div className="dms-inspector-section">
+                    <label className="dms-field">
+                        <span>Carry on from</span>
+                        <select value={node.resumeBoardId ?? ""} onChange={(e) => onResumeBoard(e.target.value)}>
+                            <option value="">Pick a board</option>
+                            {data.boards.filter((b) => b.id !== boardId).map((b) => (
+                                <option key={b.id} value={b.id}>{b.name || "Untitled"}{latestRecap(data, b.id) ? "" : " (not ended yet)"}</option>
+                            ))}
+                        </select>
+                    </label>
+                    {node.resumeBoardId && (
+                        <div className="dms-inspector-buttons">
+                            <button type="button" className="dms-button" onClick={onShowRecap}>📜 Previously on…</button>
+                            <button type="button" className="dms-button dms-button--ghost" onClick={() => onSwitchBoard(node.resumeBoardId!)}>
+                                Go to that board →
+                            </button>
+                        </div>
+                    )}
+                </div>
             )}
 
             {node.kind === "image" && <ImageField image={node.image} alt={node.title} onChange={(image) => update({ image })} />}

@@ -13,6 +13,10 @@
     --dms-note: #8b93ad;
     --dms-image: #4fd1c5;
     --dms-item: #f0a04b;
+    --dms-time: #e88bd4;
+    --dms-travel: #c9a46b;
+    --dms-end: #e5645f;
+    --dms-resume: #7fc8a9;
     --dms-taken: var(--dms-heal);
 
     position: relative;
@@ -230,6 +234,35 @@
 
 .dms-button--ghost:hover:not(:disabled) {
     border-color: var(--accent);
+}
+
+/* A dropdown that sits among buttons and looks like a ghost button. */
+.dms-select-button {
+    padding: 0.55rem 2rem 0.55rem 1rem;
+    border-radius: 0.65rem;
+    border: 1px solid var(--border-2);
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M0 0l5 6 5-6z%27 fill=%27%236b7491%27/%3E%3C/svg%3E") no-repeat right 0.8rem center;
+    color: var(--text);
+    font: inherit;
+    font-weight: 700;
+    font-size: 0.85rem;
+    appearance: none;
+    cursor: pointer;
+}
+
+.dms-select-button:hover {
+    border-color: var(--accent);
+}
+
+.dms-select-button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.dms-select-button option {
+    background: var(--surface-2);
+    color: var(--text);
+    font-weight: 400;
 }
 
 .dms-button--danger {
@@ -556,6 +589,15 @@
     border-left-width: 4px;
     background: color-mix(in srgb, var(--dms-outcome) 12%, transparent);
     font-size: 0.85rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+}
+
+.dms-outcome p {
+    margin: 0;
 }
 
 .dms-outcome strong,
@@ -725,6 +767,653 @@
     display: flex;
     gap: 0.9rem;
 }
+
+/* Locations: a dice button beside each field generates it. */
+.dms-generate-row {
+    display: flex;
+    gap: 0.4rem;
+    align-items: flex-start;
+}
+
+.dms-generate-row > input,
+.dms-generate-row > textarea {
+    flex: 1;
+    min-width: 0;
+}
+
+.dms-dice-button {
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+/* "Time passed" alert, under the tabs, when time moves onto an event. */
+.dms-time-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1rem clamp(1rem, 4vw, 2.5rem) 0;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--dms-time);
+    border-left-width: 4px;
+    border-radius: 0.6rem;
+    background: color-mix(in srgb, var(--dms-time) 12%, var(--surface));
+    font-size: 0.9rem;
+}
+
+.dms-time-alert p {
+    flex: 1;
+    margin: 0;
+}
+
+.dms-time-alert-icon {
+    font-size: 1.3rem;
+}
+
+.dms-calendar-weather {
+    display: grid;
+    gap: 0.15rem;
+    justify-items: start;
+}
+
+.dms-calendar-weather-value {
+    font-size: 1.05rem;
+}
+
+.dms-calendar-day-weather {
+    font-size: 0.7rem;
+    line-height: 1;
+}
+
+.dms-check-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.dms-node-travel {
+    margin: 0;
+    padding: 0 0.7rem 0.5rem;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+}
+
+.dms-travel-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.4rem;
+}
+
+.dms-travel-row .dms-small input {
+    width: 5rem;
+}
+
+.dms-travel-mode {
+    flex: 1;
+    min-width: 10rem;
+}
+
+/* Tracker: add copies from the monster library. */
+.dms-library-add {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.5rem 0.75rem;
+    margin: -0.25rem 0 1rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px dashed var(--border-2);
+    border-radius: 0.6rem;
+}
+
+.dms-library-add .dms-subtitle {
+    flex-basis: 100%;
+    margin: 0;
+}
+
+.dms-library-pick {
+    flex: 1;
+    min-width: 12rem;
+}
+
+.dms-library-add .dms-small input {
+    width: 4.5rem;
+}
+
+.dms-library-add .dms-check-field {
+    padding-bottom: 0.55rem;
+}
+
+.dms-library-add .dms-link-button {
+    padding-bottom: 0.6rem;
+}
+
+/* Settings tab. */
+.dms-settings-rests {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem;
+    margin-top: 0.75rem;
+}
+
+.dms-settings-rest {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    background: var(--surface-2);
+}
+
+.dms-settings-duration {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.dms-settings-duration .dms-field input {
+    width: 4.5rem;
+}
+
+.dms-settings-total {
+    padding-bottom: 0.5rem;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.dms-settings-rest .dms-link-button {
+    justify-self: start;
+}
+
+/* Calendar tab. */
+.dms-calendar {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.dms-calendar > .dms-panel {
+    margin: 0;
+}
+
+.dms-calendar-now {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem 2rem;
+}
+
+.dms-calendar-today,
+.dms-calendar-clock {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.dms-calendar-date,
+.dms-calendar-time {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    line-height: 1.1;
+}
+
+.dms-calendar-meta {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.dms-calendar-steps,
+.dms-calendar-set {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.4rem 0.6rem;
+}
+
+.dms-calendar-set .dms-field input {
+    width: 4rem;
+}
+
+.dms-calendar-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.dms-calendar-body > .dms-panel {
+    margin: 0;
+}
+
+.dms-calendar-month-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+}
+
+.dms-calendar-month-header .dms-panel-title {
+    flex: 1;
+    margin: 0;
+    text-align: center;
+}
+
+.dms-calendar-grid {
+    display: grid;
+    gap: 0.3rem;
+}
+
+.dms-calendar-weekday {
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    text-align: center;
+    overflow: hidden;
+}
+
+.dms-calendar-day {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.6rem;
+    border-radius: 0.45rem;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.dms-calendar-day:hover {
+    border-color: var(--border-2);
+}
+
+.dms-calendar-day.today {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    font-weight: 700;
+}
+
+.dms-calendar-day.selected {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
+.dms-calendar-day:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.dms-calendar-dot {
+    color: var(--dms-time);
+    font-size: 0.55rem;
+    line-height: 1;
+}
+
+.dms-calendar-side .dms-panel-title {
+    margin-bottom: 0.2rem;
+}
+
+.dms-calendar-events {
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+    margin: 0.5rem 0 0.75rem;
+    padding: 0;
+}
+
+.dms-calendar-events li {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--dms-time);
+    border-radius: 0.6rem;
+    background: color-mix(in srgb, var(--dms-time) 6%, var(--surface));
+}
+
+.dms-calendar-events .dms-field input {
+    font-weight: 600;
+}
+
+.dms-calendar-add {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.dms-calendar-add .dms-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.dms-calendar-event-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.3rem 0.8rem;
+}
+
+.dms-calendar-side .dms-inspector-section {
+    margin-top: 1rem;
+}
+
+.dms-calendar-settings {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.dms-calendar-month-list {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0 0 0.4rem;
+    padding-left: 1.5rem;
+}
+
+.dms-calendar-month-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.dms-calendar-month-list input:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.dms-calendar-month-list input + input {
+    width: 4.5rem;
+}
+
+/* Player win/loss popup. */
+.dms-dialog {
+    width: min(34rem, calc(100vw - 2rem));
+    max-height: calc(100vh - 4rem);
+    /* The global reset zeroes margins, which undoes the browser's centring. */
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--border-2);
+    border-radius: 0.8rem;
+    background: var(--surface);
+    color: var(--text);
+}
+
+.dms-dialog-body {
+    padding: 1rem 1.1rem 1.2rem;
+}
+
+/* "Previously on…" story recap popup. */
+.dms-recap-dialog {
+    width: min(40rem, calc(100vw - 2rem));
+}
+
+.dms-recap-list {
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+    margin: 0.8rem 0 0;
+    padding: 0;
+}
+
+.dms-recap-step {
+    --dms-kind: var(--dms-note);
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--dms-kind);
+    border-radius: 0.55rem;
+    background: color-mix(in srgb, var(--dms-kind) 6%, var(--surface));
+}
+
+.dms-recap-via {
+    align-self: flex-start;
+    padding: 0.05rem 0.45rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--dms-kind) 18%, transparent);
+    font-size: 0.72rem;
+    font-style: italic;
+}
+
+.dms-recap-taken {
+    color: var(--dms-taken);
+    font-size: 0.8rem;
+}
+
+.dms-recap-meta {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+}
+
+.dms-recap-text {
+    margin: 0.2rem 0 0;
+    font-size: 0.88rem;
+    white-space: pre-wrap;
+}
+
+.dms-dialog::backdrop {
+    background: rgb(0 0 0 / 0.55);
+}
+
+.dms-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.dms-dialog-header .dms-panel-title {
+    margin: 0;
+}
+
+.dms-record-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.dms-record-stat {
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 0.55rem;
+    background: var(--surface-2);
+}
+
+.dms-record-stat dt {
+    color: var(--text-dim);
+    font-size: 0.72rem;
+}
+
+.dms-record-stat dd {
+    margin: 0.1rem 0 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--dms-outcome, var(--text));
+}
+
+.dms-record-bar {
+    height: 0.4rem;
+    margin: 0.6rem 0 0.2rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--dms-danger) 45%, transparent);
+    overflow: hidden;
+}
+
+.dms-record-bar span {
+    display: block;
+    height: 100%;
+    background: var(--dms-heal);
+}
+
+.dms-record-list {
+    list-style: none;
+    display: grid;
+    gap: 0.35rem;
+    margin: 0.85rem 0 0;
+    padding: 0;
+}
+
+.dms-record-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+}
+
+.dms-record-name {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Trackers: a named counter with − / + , an optional max and a note. */
+.dms-trackers {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.dms-tracker-list {
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+}
+
+.dms-tracker-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) auto minmax(0, 4rem) minmax(0, 7.5rem) minmax(0, 1.6fr) auto;
+    gap: 0.4rem;
+    align-items: end;
+    padding: 0.45rem 0.5rem;
+    border-radius: 0.55rem;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--dms-npc);
+    background: color-mix(in srgb, var(--dms-npc) 6%, transparent);
+}
+
+.dms-tracker-row .dms-field input {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.85rem;
+}
+
+.dms-tracker-stepper {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--border-2);
+    border-radius: 0.45rem;
+    overflow: hidden;
+}
+
+.dms-tracker-stepper button {
+    width: 2rem;
+    border: none;
+    background: var(--surface-2);
+    color: var(--text);
+    font: inherit;
+    font-size: 1.05rem;
+    cursor: pointer;
+}
+
+.dms-tracker-stepper button:disabled {
+    color: var(--text-dim);
+    cursor: default;
+}
+
+.dms-tracker-stepper button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+
+.dms-tracker-stepper input {
+    width: 3rem;
+    border: none;
+    border-left: 1px solid var(--border-2);
+    border-right: 1px solid var(--border-2);
+    border-radius: 0;
+    text-align: center;
+    font-weight: 600;
+}
+
+.dms-player-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dms-tracker-row select {
+    padding: 0.35rem 0.4rem;
+    font-size: 0.8rem;
+}
+
+.dms-party-rest {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+
+/* Death saves: three boxes each for successes and failures, at 0 HP. */
+.dms-death-saves {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.1rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--dms-danger);
+    border-left-width: 4px;
+    border-radius: 0.55rem;
+    background: color-mix(in srgb, var(--dms-danger) 8%, transparent);
+    font-size: 0.82rem;
+}
+
+.dms-death-saves--stable {
+    border-color: var(--dms-heal);
+    background: color-mix(in srgb, var(--dms-heal) 8%, transparent);
+}
+
+.dms-death-saves-title {
+    font-weight: 700;
+}
+
+.dms-death-save-row {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--text-dim);
+}
+
+.dms-death-save-box {
+    width: 1.3rem;
+    height: 1.3rem;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid var(--dms-save);
+    background: transparent;
+    cursor: pointer;
+}
+
+.dms-death-save-box.filled {
+    background: var(--dms-save);
+}
+
+.dms-death-save-box:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.dms-death-save-row--success { --dms-save: var(--dms-heal); }
+.dms-death-save-row--failure { --dms-save: var(--dms-danger); }
 
 .dms-notes-header {
     display: flex;
@@ -962,6 +1651,10 @@
 .dms-node--note { --dms-kind: var(--dms-note); }
 .dms-node--image { --dms-kind: var(--dms-image); }
 .dms-node--item { --dms-kind: var(--dms-item); }
+.dms-node--time { --dms-kind: var(--dms-time); }
+.dms-node--travel { --dms-kind: var(--dms-travel); }
+.dms-node--end { --dms-kind: var(--dms-end); }
+.dms-node--resume { --dms-kind: var(--dms-resume); }
 
 .dms-node-image {
     display: block;
@@ -1293,6 +1986,49 @@
 
 .dms-node:has(.dms-node-check) .dms-node-header {
     padding-right: 2.6rem;
+}
+
+.dms-node-skip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.6rem;
+    padding: 0 0.7rem 0.6rem;
+    font-size: 0.75rem;
+}
+
+.dms-node-skip-button {
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--dms-time);
+    background: color-mix(in srgb, var(--dms-time) 18%, transparent);
+    color: var(--text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.dms-node-skip-button:hover {
+    background: color-mix(in srgb, var(--dms-time) 30%, transparent);
+}
+
+.dms-node-skip-button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.dms-node-skip-done {
+    color: var(--dms-taken);
+    font-weight: 600;
+}
+
+.dms-time-skip {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.dms-time-skip .dms-field input {
+    width: 4rem;
 }
 
 .dms-node-check {
@@ -1787,12 +2523,31 @@
         position: static;
     }
 
-    .dms-npc-sheet {
+    .dms-npc-sheet,
+    .dms-calendar-body {
         grid-template-columns: minmax(0, 1fr);
     }
 
     .dms-attack {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    }
+
+    .dms-tracker-row {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+
+    .dms-tracker-name,
+    .dms-tracker-notes {
+        grid-column: span 2;
+    }
+
+    .dms-tracker-row {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    }
+
+    .dms-player-stats,
+    .dms-record-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .dms-attack-toggle,

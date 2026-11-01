@@ -4,7 +4,13 @@ import { toInt } from "../../utils/makeId";
 import {
     COMBATANT_KINDS,
     STANDARD_CONDITIONS,
+    addPartyToEncounter,
     applyDamage,
+    clearDeathSavesIfUp,
+    combatantFromPlayer,
+    combatantsFromMonster,
+    monsterFromCombatant,
+    rollFormula,
     applyHeal,
     createCombatant,
     createEncounter,
@@ -16,10 +22,13 @@ import {
     OUTCOME_LABELS,
     nextTurn,
     previousTurn,
+    recordResult,
     removeCombatant,
     rollInitiative,
     sortCombatants,
     shareWithNpc,
+    shareWithPlayer,
+    sharedPlayerFields,
     toggleCondition,
     unlinkEncounter,
     type Combatant,
@@ -28,15 +37,20 @@ import {
     type Encounter,
     type Item,
     type Npc,
+    type Player,
     type SharedNpcFields,
 } from "../../utils/dmScreen";
 import AttackList from "./AttackList";
 import ConfirmButton from "./ConfirmButton";
+import DeathSaveTracker from "./DeathSaveTracker";
+import TrackerList from "./TrackerList";
 
 interface EncounterTrackerProps {
     data: DmScreenData;
     setData: Dispatch<SetStateAction<DmScreenData>>;
     onOpenNpc: (npcId: string) => void;
+    onOpenPlayer: (playerId: string) => void;
+    onOpenMonster: (monsterId: string) => void;
 }
 
 const EMPTY_FORM = {
@@ -50,9 +64,10 @@ const EMPTY_FORM = {
     count: "1",
 };
 
-export default function EncounterTracker({ data, setData, onOpenNpc }: EncounterTrackerProps) {
+export default function EncounterTracker({ data, setData, onOpenNpc, onOpenPlayer, onOpenMonster }: EncounterTrackerProps) {
     const encounter = data.encounters.find((e) => e.id === data.activeEncounterId) ?? data.encounters[0];
     const [form, setForm] = useState(EMPTY_FORM);
+    const [library, setLibrary] = useState({ monsterId: "", count: "1", rollHp: true });
 
     const updateEncounter = (change: (current: Encounter) => Encounter) =>
         setData((current) => ({
@@ -60,11 +75,20 @@ export default function EncounterTracker({ data, setData, onOpenNpc }: Encounter
             encounters: current.encounters.map((e) => (e.id === encounter.id ? change(e) : e)),
         }));
 
+    // A player's HP, AC and trackers also change on their sheet and in other encounters.
     const updateCombatant = (id: string, change: (current: Combatant) => Combatant) =>
-        updateEncounter((current) => ({
-            ...current,
-            combatants: current.combatants.map((c) => (c.id === id ? change(c) : c)),
-        }));
+        setData((current) => {
+            const source = current.encounters.find((e) => e.id === encounter.id)?.combatants.find((c) => c.id === id);
+            if (!source) return current;
+            const changed = clearDeathSavesIfUp(change(source));
+            const next = {
+                ...current,
+                encounters: current.encounters.map((e) => (e.id === encounter.id
+                    ? { ...e, combatants: e.combatants.map((c) => (c.id === id ? changed : c)) }
+                    : e)),
+            };
+            return changed.playerId ? shareWithPlayer(next, changed.playerId, sharedPlayerFields(changed)) : next;
+        });
 
     const addEncounter = () => {
         const created = createEncounter(`Encounter ${data.encounters.length + 1}`);
@@ -103,6 +127,31 @@ export default function EncounterTracker({ data, setData, onOpenNpc }: Encounter
         });
         setForm({ ...EMPTY_FORM, kind: form.kind, creatureType: form.creatureType, alignment: form.alignment });
     };
+
+    const fighters = encounter.combatants.filter((c) => c.playerId && data.players.some((p) => p.id === c.playerId));
+
+    const libraryMonster = data.monsters.find((m) => m.id === library.monsterId) ?? data.monsters[0];
+    const addFromLibrary = (event: FormEvent) => {
+        event.preventDefault();
+        if (!libraryMonster) return;
+        const rollHp = library.rollHp && rollFormula(libraryMonster.hpDice) !== null;
+        updateEncounter((current) => ({
+            ...current,
+            combatants: [
+                ...current.combatants,
+                ...combatantsFromMonster(libraryMonster, toInt(library.count, 1), current.combatants.map((c) => c.name), rollHp),
+            ],
+        }));
+    };
+    const saveToLibrary = (c: Combatant) => {
+        const monster = monsterFromCombatant(c);
+        setData((current) => ({ ...current, monsters: [...current.monsters, monster], activeMonsterId: monster.id }));
+        return monster.id;
+    };
+
+    const absentPlayers = data.players.filter((p) => !encounter.combatants.some((c) => c.playerId === p.id));
+    const addPlayer = (player: Player) =>
+        updateEncounter((current) => ({ ...current, combatants: [...current.combatants, combatantFromPlayer(player)] }));
 
     const order = sortCombatants(encounter.combatants);
     const active = order.find((c) => c.id === encounter.turnId);
@@ -168,11 +217,36 @@ export default function EncounterTracker({ data, setData, onOpenNpc }: Encounter
                     </div>
                 </div>
 
-                {outcome && (
-                    <p className={`dms-outcome dms-outcome--${outcome}`} role="status">
-                        <strong>Combat over: {OUTCOME_LABELS[outcome]}.</strong>{" "}
-                        {outcome === "pcs" ? "Every monster is down." : "Every PC is down."} Heal someone to keep fighting.
-                    </p>
+                {encounter.result ? (
+                    <div className={`dms-outcome dms-outcome--${encounter.result.outcome === "won" ? "pcs" : "monsters"}`} role="status">
+                        <p>
+                            <strong>{encounter.result.outcome === "won" ? "Won" : "Lost"}</strong> in round {encounter.result.round}
+                            {encounter.result.by.length > 0 && <> by {encounter.result.by.join(", ")}</>}. It's on their player sheets.
+                        </p>
+                        <button
+                            type="button"
+                            className="dms-link-button"
+                            onClick={() => updateEncounter((c) => ({ ...c, result: undefined }))}
+                        >
+                            Reopen encounter
+                        </button>
+                    </div>
+                ) : outcome && (
+                    <div className={`dms-outcome dms-outcome--${outcome}`} role="status">
+                        <p>
+                            <strong>Combat over: {OUTCOME_LABELS[outcome]}.</strong>{" "}
+                            {outcome === "pcs" ? "Every monster is down." : "Every PC is down."} Heal someone to keep fighting.
+                        </p>
+                        {fighters.length > 0 && (
+                            <button
+                                type="button"
+                                className={outcome === "pcs" ? "dms-button dms-button--heal" : "dms-button dms-button--danger"}
+                                onClick={() => setData((current) => recordResult(current, encounter.id, outcome === "pcs" ? "won" : "lost"))}
+                            >
+                                Record the {outcome === "pcs" ? "win" : "loss"} &amp; remove the party
+                            </button>
+                        )}
+                    </div>
                 )}
 
                 <div className="dms-toolbar">
@@ -182,6 +256,29 @@ export default function EncounterTracker({ data, setData, onOpenNpc }: Encounter
                     <button type="button" className="dms-button dms-button--ghost" onClick={() => updateEncounter((c) => rollInitiative(c, "all"))}>
                         Roll for everyone
                     </button>
+                    {absentPlayers.length > 0 && (
+                        <>
+                            <button
+                                type="button"
+                                className="dms-button dms-button--ghost"
+                                onClick={() => updateEncounter((c) => addPartyToEncounter(c, data.players))}
+                            >
+                                + Add party ({absentPlayers.length})
+                            </button>
+                            <select
+                                className="dms-select-button"
+                                aria-label="Add one player"
+                                value=""
+                                onChange={(e) => {
+                                    const player = absentPlayers.find((p) => p.id === e.target.value);
+                                    if (player) addPlayer(player);
+                                }}
+                            >
+                                <option value="">+ Player…</option>
+                                {absentPlayers.map((p) => <option key={p.id} value={p.id}>{p.name || "Unnamed"}</option>)}
+                            </select>
+                        </>
+                    )}
                     <button
                         type="button"
                         className="dms-link-button"
@@ -233,6 +330,34 @@ export default function EncounterTracker({ data, setData, onOpenNpc }: Encounter
                     <button type="submit" className="dms-button">+ Add</button>
                 </form>
 
+                {data.monsters.length > 0 && libraryMonster && (
+                    <form className="dms-library-add" onSubmit={addFromLibrary}>
+                        <span className="dms-subtitle">From the monster library</span>
+                        <label className="dms-field dms-library-pick">
+                            <span>Monster</span>
+                            <select value={libraryMonster.id} onChange={(e) => setLibrary({ ...library, monsterId: e.target.value })}>
+                                {data.monsters.map((m) => (
+                                    <option key={m.id} value={m.id}>
+                                        {m.name || "Unnamed"}{m.challenge && ` (CR ${m.challenge})`}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className="dms-field dms-small">
+                            <span>How many</span>
+                            <input inputMode="numeric" value={library.count} onChange={(e) => setLibrary({ ...library, count: e.target.value })} />
+                        </label>
+                        {rollFormula(libraryMonster.hpDice) !== null && (
+                            <label className="dms-check-field">
+                                <input type="checkbox" checked={library.rollHp} onChange={(e) => setLibrary({ ...library, rollHp: e.target.checked })} />
+                                <span>Roll HP ({libraryMonster.hpDice})</span>
+                            </label>
+                        )}
+                        <button type="submit" className="dms-button">+ Add</button>
+                        <button type="button" className="dms-link-button" onClick={() => onOpenMonster(libraryMonster.id)}>Open in library →</button>
+                    </form>
+                )}
+
                 {order.length === 0 ? (
                     <p className="dms-empty">No combatants yet. Add the party and their foes above.</p>
                 ) : (
@@ -249,6 +374,10 @@ export default function EncounterTracker({ data, setData, onOpenNpc }: Encounter
                                 carrying={c.npcId ? itemsHeldBy(data, c.npcId) : []}
                                 onShare={(fields) => c.npcId && setData((current) => shareWithNpc(current, c.npcId!, fields))}
                                 onOpenNpc={onOpenNpc}
+                                player={c.playerId ? data.players.find((p) => p.id === c.playerId) : undefined}
+                                onOpenPlayer={onOpenPlayer}
+                                onSaveToLibrary={() => saveToLibrary(c)}
+                                onOpenMonster={onOpenMonster}
                             />
                         ))}
                     </ol>
@@ -270,9 +399,17 @@ interface CombatantRowProps {
     carrying: Item[];
     onShare: (fields: SharedNpcFields) => void;
     onOpenNpc: (npcId: string) => void;
+    // The player sheet this combatant was added from; HP, AC and trackers are shared with it.
+    player?: Player;
+    onOpenPlayer: (playerId: string) => void;
+    // Saves this combatant as a library monster and returns its id.
+    onSaveToLibrary: () => string;
+    onOpenMonster: (monsterId: string) => void;
 }
 
-function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove, npc, carrying, onShare, onOpenNpc }: CombatantRowProps) {
+function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove, npc, carrying, onShare, onOpenNpc, player, onOpenPlayer, onSaveToLibrary, onOpenMonster }: CombatantRowProps) {
+    // The monster this combatant was just saved as, for an "open" link.
+    const [savedId, setSavedId] = useState("");
     const [amount, setAmount] = useState("");
     const [custom, setCustom] = useState("");
     // Notes show when there are some, or once "+ Notes" is clicked.
@@ -283,6 +420,8 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove, npc
     const showAttacks = attacksOpen || c.attacks.length > 0;
     const [lootOpen, setLootOpen] = useState(false);
     const showLoot = lootOpen || c.loot !== "" || carrying.length > 0;
+    const [trackersOpen, setTrackersOpen] = useState(false);
+    const showTrackers = trackersOpen || c.trackers.length > 0;
     // Linked to an NPC: attacks and loot change on the sheet too.
     const setShared = (fields: SharedNpcFields) => (npc ? onShare(fields) : set(fields));
     const down = isDown(c);
@@ -330,6 +469,13 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove, npc
                 </label>
                 <div className="dms-row-actions">
                     <button type="button" className="dms-link-button" onClick={onDuplicate}>Duplicate</button>
+                    {c.kind !== "pc" && !c.npcId && (savedId ? (
+                        <button type="button" className="dms-link-button" onClick={() => onOpenMonster(savedId)}>✓ In library →</button>
+                    ) : (
+                        <button type="button" className="dms-link-button" title="Save these stats as a reusable monster" onClick={() => setSavedId(onSaveToLibrary())}>
+                            Save to library
+                        </button>
+                    ))}
                     <ConfirmButton label="Remove" confirmLabel="Sure?" onConfirm={onRemove} />
                 </div>
             </div>
@@ -394,6 +540,10 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove, npc
                 </div>
             </div>
 
+            {c.kind === "pc" && down && (
+                <DeathSaveTracker target={c} onChange={(fields) => set(fields)} />
+            )}
+
             <div className="dms-conditions">
                 {c.conditions.map((condition) => (
                     <button
@@ -425,6 +575,9 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove, npc
                 >
                     <input aria-label="Custom condition" placeholder="Custom…" value={custom} onChange={(e) => setCustom(e.target.value)} />
                 </form>
+                {!showTrackers && (
+                    <button type="button" className="dms-link-button" onClick={() => setTrackersOpen(true)}>+ Trackers</button>
+                )}
                 {!showAttacks && (
                     <button type="button" className="dms-link-button" onClick={() => setAttacksOpen(true)}>+ Attacks</button>
                 )}
@@ -442,6 +595,21 @@ function CombatantRow({ combatant: c, isTurn, update, onDuplicate, onRemove, npc
                     <button type="button" className="dms-link-button" onClick={() => onOpenNpc(npc.id)}>{npc.name ? `${npc.name}'s` : "the"} NPC sheet</button>
                     : changing them here changes them there too.
                 </p>
+            )}
+
+            {player && (
+                <p className="dms-shared-note">
+                    🔗 HP, AC and trackers are shared with{" "}
+                    <button type="button" className="dms-link-button" onClick={() => onOpenPlayer(player.id)}>{player.name ? `${player.name}'s` : "the"} player sheet</button>
+                    , so they carry over to the next fight.
+                </p>
+            )}
+
+            {showTrackers && (
+                <div className="dms-field dms-combatant-attacks">
+                    <span>Trackers</span>
+                    <TrackerList trackers={c.trackers} onChange={(trackers) => set({ trackers })} />
+                </div>
             )}
 
             {showAttacks && (
