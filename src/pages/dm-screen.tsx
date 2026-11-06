@@ -14,6 +14,7 @@ import NpcManager from "../components/DmScreen/NpcManager";
 import SettingsView from "../components/DmScreen/SettingsView";
 import PlayerManager from "../components/DmScreen/PlayerManager";
 import PlayerMapView from "../components/DmScreen/PlayerMapView";
+import QuestManager from "../components/DmScreen/QuestManager";
 import StoryBoard from "../components/DmScreen/StoryBoard";
 import { formatDate, passedEvents, type CalendarDate } from "../utils/dmCalendar";
 import { STORAGE_KEY, createDefaultData, parseData, type DmScreenData } from "../utils/dmScreen";
@@ -22,6 +23,7 @@ const TABS = [
     { id: "tracker", label: "Encounter Tracker" },
     { id: "players", label: "Players" },
     { id: "npcs", label: "NPCs" },
+    { id: "quests", label: "Quests" },
     { id: "monsters", label: "Monsters" },
     { id: "locations", label: "Locations" },
     { id: "items", label: "Items" },
@@ -119,7 +121,12 @@ function DmScreen() {
         showTab("notes");
     };
 
-    const openMonster = (monsterId: string) => {
+    const openQuest = (questId: string) => {
+        setData((current) => ({ ...current, activeQuestId: questId }));
+        showTab("quests");
+    };
+
+    const openMonster =(monsterId: string) => {
         setData((current) => ({ ...current, activeMonsterId: monsterId }));
         showTab("monsters");
     };
@@ -224,7 +231,10 @@ function DmScreen() {
                 {tab === "tracker" && <EncounterTracker data={data} setData={setData} onOpenNpc={openNpc} onOpenPlayer={openPlayer} onOpenMonster={openMonster} />}
                 {tab === "monsters" && <MonsterManager data={data} setData={setData} onRunEncounter={runEncounter} />}
                 {tab === "players" && <PlayerManager data={data} setData={setData} onOpenEncounter={runEncounter} />}
-                {tab === "npcs" && <NpcManager data={data} setData={setData} onShowCard={showCard} onOpenItem={openItem} />}
+                {tab === "npcs" && <NpcManager data={data} setData={setData} onShowCard={showCard} onOpenItem={openItem} onOpenQuest={openQuest} />}
+                {tab === "quests" && (
+                    <QuestManager data={data} setData={setData} onShowCard={showCard} onOpenNpc={openNpc} onOpenItem={openItem} />
+                )}
                 {tab === "items" && <ItemManager data={data} setData={setData} onShowCard={showCard} />}
                 {tab === "locations" && <LocationManager data={data} setData={setData} onShowCard={showCard} />}
                 {tab === "notes" && <NoteManager data={data} setData={setData} onShowCard={showCard} />}
@@ -239,6 +249,7 @@ function DmScreen() {
                         onOpenNpc={openNpc}
                         onOpenItem={openItem}
                         onOpenNote={openNote}
+                        onOpenQuest={openQuest}
                         onOpenLocation={openLocation}
                         onOpenCalendar={openCalendar}
                         focusNodeId={focusNodeId}

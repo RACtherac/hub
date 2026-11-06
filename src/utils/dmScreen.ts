@@ -118,7 +118,7 @@ export interface EncounterResult {
     at: number;
 }
 
-export type NodeKind = "scene" | "encounter" | "npc" | "item" | "location" | "time" | "travel" | "clue" | "note" | "image" | "end" | "resume";
+export type NodeKind = "scene" | "encounter" | "npc" | "item" | "location" | "time" | "travel" | "clue" | "note" | "quest" | "image" | "end" | "resume";
 
 // One card the story went through, as it was when the story ended.
 export interface RecapStep {
@@ -157,6 +157,9 @@ export interface BoardNode {
     itemId?: string;
     // Note cards: the note from the Notes tab.
     noteId?: string;
+    // Quest cards: the quest, and which of its stages the card shows.
+    questId?: string;
+    questStage?: QuestStageId;
     // Location cards: the location from the Locations tab.
     locationId?: string;
     // Time cards: an event on the calendar.
@@ -328,6 +331,48 @@ export interface Note {
 }
 
 // One of several story boards, e.g. one per adventure or session.
+// ---- Quests
+// A quest runs through four fixed stages, each with the NPCs involved and
+// lines of dialogue that come up once something has happened.
+
+export type QuestStageId = "begin" | "middle" | "end" | "reward";
+
+export const QUEST_STAGES: { value: QuestStageId; label: string; icon: string; hint: string }[] = [
+    { value: "begin", label: "Beginning", icon: "📜", hint: "The hook: who gives the quest and what the party is asked to do." },
+    { value: "middle", label: "Midway", icon: "🧭", hint: "The twist or obstacle halfway: what they learn, who helps or gets in the way." },
+    { value: "end", label: "End", icon: "⚔", hint: "The climax: the final confrontation, choice or discovery." },
+    { value: "reward", label: "Finished & reward", icon: "🏆", hint: "Wrapping up: who thanks them, and what they get." },
+];
+
+export interface QuestDialog {
+    id: string;
+    // When the line comes up: "After they find the ring", "If they lie to her"…
+    trigger: string;
+    // Who says it; "" for narration or anyone.
+    npcId: string;
+    text: string;
+    // Ticked once it has been said at the table.
+    said: boolean;
+}
+
+export interface QuestStage {
+    description: string;
+    npcIds: string[];
+    dialogs: QuestDialog[];
+    done: boolean;
+}
+
+export interface Quest {
+    id: string;
+    title: string;
+    summary: string;
+    stages: Record<QuestStageId, QuestStage>;
+    // What the party gets at the end: gold, favours, XP…
+    reward: string;
+    // Items from the Items tab handed out as the reward.
+    rewardItemIds: string[];
+}
+
 export interface NamedBoard extends Board {
     id: string;
     name: string;
@@ -368,6 +413,9 @@ export interface DmScreenData {
     notes: Note[];
     // The note open in the Notes tab, or "" when there are none.
     activeNoteId: string;
+    quests: Quest[];
+    // The quest open in the Quests tab, or "" when there are none.
+    activeQuestId: string;
     maps: BattleMap[];
     activeMapId: string;
 }
@@ -404,6 +452,7 @@ export const NODE_KINDS: { value: NodeKind; label: string }[] = [
     { value: "travel", label: "Travel" },
     { value: "clue", label: "Clue" },
     { value: "note", label: "Note" },
+    { value: "quest", label: "Quest" },
     { value: "image", label: "Image" },
     { value: "end", label: "End story" },
     { value: "resume", label: "Resume story" },
@@ -970,6 +1019,31 @@ export function createNote(fields: Partial<Note> = {}, now = Date.now()): Note {
     return { id: makeId(), title: "New note", body: "", pinned: false, updatedAt: now, ...fields };
 }
 
+export function createQuestStage(fields: Partial<QuestStage> = {}): QuestStage {
+    return { description: "", npcIds: [], dialogs: [], done: false, ...fields };
+}
+
+export function createQuestDialog(fields: Partial<QuestDialog> = {}): QuestDialog {
+    return { id: makeId(), trigger: "", npcId: "", text: "", said: false, ...fields };
+}
+
+export function createQuest(fields: Partial<Quest> = {}): Quest {
+    return {
+        id: makeId(),
+        title: "New quest",
+        summary: "",
+        stages: {
+            begin: createQuestStage(),
+            middle: createQuestStage(),
+            end: createQuestStage(),
+            reward: createQuestStage(),
+        },
+        reward: "",
+        rewardItemIds: [],
+        ...fields,
+    };
+}
+
 export function createBoard(name = "New story board"): NamedBoard {
     return { id: makeId(), name, nodes: [], links: [], view: { x: 0, y: 0, zoom: 1 } };
 }
@@ -998,6 +1072,8 @@ export function createDefaultData(): DmScreenData {
         activeItemId: "",
         notes: [],
         activeNoteId: "",
+        quests: [],
+        activeQuestId: "",
         maps: [map],
         activeMapId: map.id,
     };
@@ -1335,7 +1411,9 @@ export function storyRecap(data: DmScreenData, board: NamedBoard, endId: string)
         return {
             kind: node.kind,
             title: title(node),
-            text: linkedNote(data, node)?.body ?? node.text,
+            text: linkedNote(data, node)?.body
+                ?? linkedQuest(data, node)?.stages[node.questStage ?? "begin"].description
+                ?? node.text,
             via: incoming.find((l) => l.label.trim())?.label.trim() ?? "",
             taken: !!node.taken,
             passedOver,
@@ -1413,6 +1491,21 @@ export function removeNpc(data: DmScreenData, id: string): DmScreenData {
             ...e,
             combatants: e.combatants.map((c) => (c.npcId === id ? { ...c, npcId: undefined } : c)),
         })),
+        // They leave the quests they were in; their lines stay, unattributed.
+        quests: data.quests.map((q) => ({ ...q, stages: mapQuestStages(q, (s) => ({
+            ...s,
+            npcIds: s.npcIds.filter((n) => n !== id),
+            dialogs: s.dialogs.map((d) => (d.npcId === id ? { ...d, npcId: "" } : d)),
+        })) })),
+    };
+}
+
+function mapQuestStages(quest: Quest, change: (stage: QuestStage) => QuestStage): Record<QuestStageId, QuestStage> {
+    return {
+        begin: change(quest.stages.begin),
+        middle: change(quest.stages.middle),
+        end: change(quest.stages.end),
+        reward: change(quest.stages.reward),
     };
 }
 
@@ -1466,9 +1559,85 @@ export function removeEvent(data: DmScreenData, id: string): DmScreenData {
     };
 }
 
+export function linkedQuest(data: DmScreenData, node: BoardNode): Quest | undefined {
+    return node.questId ? data.quests.find((q) => q.id === node.questId) : undefined;
+}
+
 export function cardTitle(data: DmScreenData, node: BoardNode): string {
+    const quest = linkedQuest(data, node);
     return linkedNpc(data, node)?.name ?? linkedItem(data, node)?.name ?? linkedNote(data, node)?.title
-        ?? linkedLocation(data, node)?.name ?? linkedEvent(data, node)?.title ?? node.title;
+        ?? linkedLocation(data, node)?.name ?? linkedEvent(data, node)?.title
+        ?? (quest ? questCardTitle(quest, node.questStage ?? "begin") : node.title);
+}
+
+// ---- Quests
+
+export const questStageInfo = (stage: QuestStageId) => QUEST_STAGES.find((s) => s.value === stage) ?? QUEST_STAGES[0];
+
+export function questCardTitle(quest: Quest, stage: QuestStageId): string {
+    return `${quest.title || "Untitled quest"}: ${questStageInfo(stage).label}`;
+}
+
+// The first stage not yet done, or null when the whole quest is finished.
+export function currentQuestStage(quest: Quest): QuestStageId | null {
+    return QUEST_STAGES.find((s) => !quest.stages[s.value].done)?.value ?? null;
+}
+
+export function updateQuest(data: DmScreenData, id: string, change: (quest: Quest) => Quest): DmScreenData {
+    return { ...data, quests: data.quests.map((q) => (q.id === id ? change(q) : q)) };
+}
+
+export function updateQuestStage(data: DmScreenData, id: string, stage: QuestStageId, fields: Partial<QuestStage>): DmScreenData {
+    return updateQuest(data, id, (q) => ({ ...q, stages: { ...q.stages, [stage]: { ...q.stages[stage], ...fields } } }));
+}
+
+// Cards linked to the quest stay on the board, unlinked, keeping their title.
+export function removeQuest(data: DmScreenData, id: string): DmScreenData {
+    const quest = data.quests.find((q) => q.id === id);
+    const quests = data.quests.filter((q) => q.id !== id);
+    return {
+        ...data,
+        quests,
+        activeQuestId: data.activeQuestId === id ? (quests[0]?.id ?? "") : data.activeQuestId,
+        boards: data.boards.map((b) => ({
+            ...b,
+            nodes: b.nodes.map((n) => (n.questId === id
+                ? { ...n, questId: undefined, questStage: undefined, title: quest ? questCardTitle(quest, n.questStage ?? "begin") : n.title }
+                : n)),
+        })),
+    };
+}
+
+export function questCards(data: DmScreenData, questId: string): { board: NamedBoard; node: BoardNode }[] {
+    return data.boards.flatMap((board) => board.nodes.filter((n) => n.questId === questId).map((node) => ({ board, node })));
+}
+
+// Quests an NPC takes part in, with the stages they appear in.
+export function npcQuests(data: DmScreenData, npcId: string): { quest: Quest; stages: QuestStageId[] }[] {
+    return data.quests
+        .map((quest) => ({
+            quest,
+            stages: QUEST_STAGES.map((s) => s.value).filter((stage) =>
+                quest.stages[stage].npcIds.includes(npcId) || quest.stages[stage].dialogs.some((d) => d.npcId === npcId)),
+        }))
+        .filter(({ stages }) => stages.length > 0);
+}
+
+// Four cards on the open board, one per stage, joined in order. Returns the first.
+export function putQuestOnBoard(data: DmScreenData, questId: string): { data: DmScreenData; boardId: string; nodeId: string } {
+    const board = activeBoard(data);
+    const offset = (board.nodes.length % 5) * 24;
+    const nodes = QUEST_STAGES.map((s, i) => ({
+        ...createNode("quest", 40 + offset + i * 280, 40 + offset),
+        questId,
+        questStage: s.value,
+    }));
+    const links = nodes.slice(1).map((n, i) => ({ id: makeId(), from: nodes[i].id, to: n.id, label: "" }));
+    return {
+        data: updateActiveBoard(data, (b) => ({ ...b, nodes: [...b.nodes, ...nodes], links: [...b.links, ...links] })),
+        boardId: board.id,
+        nodeId: nodes[0].id,
+    };
 }
 
 // ---- Notes
@@ -1525,6 +1694,17 @@ export function noteMatches(note: Note, query: string): boolean {
     return matchesQuery(query, [note.title, note.body]);
 }
 
+export function questMatches(quest: Quest, query: string): boolean {
+    const stages = QUEST_STAGES.map((s) => quest.stages[s.value]);
+    return matchesQuery(query, [
+        quest.title,
+        quest.summary,
+        quest.reward,
+        ...stages.map((s) => s.description),
+        ...stages.flatMap((s) => s.dialogs.flatMap((d) => [d.trigger, d.text])),
+    ]);
+}
+
 // Searches the name, type, rarity, who has it, description and stats,
 // so "rare", "with the party", "slashing" or "Vex" all work.
 export function itemMatches(data: DmScreenData, item: Item, query: string): boolean {
@@ -1551,6 +1731,7 @@ export function removeItem(data: DmScreenData, id: string): DmScreenData {
             ...b,
             nodes: b.nodes.map((n) => (n.itemId === id ? { ...n, itemId: undefined } : n)),
         })),
+        quests: data.quests.map((q) => ({ ...q, rewardItemIds: q.rewardItemIds.filter((i) => i !== id) })),
     };
 }
 
@@ -1772,6 +1953,11 @@ function normalizeNode(value: unknown): BoardNode | null {
     if (itemId) node.itemId = itemId;
     const noteId = str(value.noteId);
     if (noteId) node.noteId = noteId;
+    const questId = str(value.questId);
+    if (questId) {
+        node.questId = questId;
+        node.questStage = QUEST_STAGES.find((s) => s.value === value.questStage)?.value ?? "begin";
+    }
     const locationId = str(value.locationId);
     if (locationId) node.locationId = locationId;
     const eventId = str(value.eventId);
@@ -1938,6 +2124,48 @@ function normalizeNote(value: unknown): Note | null {
     };
 }
 
+const strList = (value: unknown, valid: Set<string>) =>
+    Array.isArray(value) ? [...new Set(value.filter((v): v is string => typeof v === "string" && valid.has(v)))] : [];
+
+function normalizeQuestStage(value: unknown, npcIds: Set<string>): QuestStage {
+    const source = isObject(value) ? value : {};
+    return {
+        description: str(source.description),
+        npcIds: strList(source.npcIds, npcIds),
+        dialogs: Array.isArray(source.dialogs)
+            ? source.dialogs.filter(isObject).map((d) => {
+                const npcId = str(d.npcId);
+                return {
+                    id: str(d.id) || makeId(),
+                    trigger: str(d.trigger),
+                    npcId: npcIds.has(npcId) ? npcId : "",
+                    text: str(d.text),
+                    said: d.said === true,
+                };
+            })
+            : [],
+        done: source.done === true,
+    };
+}
+
+function normalizeQuest(value: unknown, npcIds: Set<string>, itemIds: Set<string>): Quest | null {
+    if (!isObject(value)) return null;
+    const stages = isObject(value.stages) ? value.stages : {};
+    return {
+        id: str(value.id) || makeId(),
+        title: str(value.title, "Untitled quest"),
+        summary: str(value.summary),
+        stages: {
+            begin: normalizeQuestStage(stages.begin, npcIds),
+            middle: normalizeQuestStage(stages.middle, npcIds),
+            end: normalizeQuestStage(stages.end, npcIds),
+            reward: normalizeQuestStage(stages.reward, npcIds),
+        },
+        reward: str(value.reward),
+        rewardItemIds: strList(value.rewardItemIds, itemIds),
+    };
+}
+
 function normalizeNamedBoard(value: unknown, fallbackName: string): NamedBoard {
     const source = isObject(value) ? value : {};
     return { id: str(source.id) || makeId(), name: str(source.name, fallbackName), ...normalizeBoard(source) };
@@ -2004,6 +2232,12 @@ export function normalizeData(value: unknown): DmScreenData | null {
         : [];
     const activeNoteId = str(value.activeNoteId);
     const noteIds = new Set(notes.map((n) => n.id));
+    // Saves from before the Quests tab have none.
+    const quests = Array.isArray(value.quests)
+        ? value.quests.map((q) => normalizeQuest(q, npcIds, itemIds)).filter((q): q is Quest => q !== null)
+        : [];
+    const activeQuestId = str(value.activeQuestId);
+    const questIds = new Set(quests.map((q) => q.id));
     const locationIds = new Set(locations.map((l) => l.id));
     const calendar = normalizeCalendar(value.calendar);
     const eventIds = new Set(calendar.events.map((e) => e.id));
@@ -2013,6 +2247,10 @@ export function normalizeData(value: unknown): DmScreenData | null {
         if (node.npcId && !npcIds.has(node.npcId)) delete node.npcId;
         if (node.itemId && !itemIds.has(node.itemId)) delete node.itemId;
         if (node.noteId && !noteIds.has(node.noteId)) delete node.noteId;
+        if (node.questId && !questIds.has(node.questId)) {
+            delete node.questId;
+            delete node.questStage;
+        }
         if (node.locationId && !locationIds.has(node.locationId)) delete node.locationId;
         if (node.eventId && !eventIds.has(node.eventId)) delete node.eventId;
     }));
@@ -2044,6 +2282,8 @@ export function normalizeData(value: unknown): DmScreenData | null {
         activeItemId: itemIds.has(activeItemId) ? activeItemId : (items[0]?.id ?? ""),
         notes,
         activeNoteId: noteIds.has(activeNoteId) ? activeNoteId : (sortedNotes(notes)[0]?.id ?? ""),
+        quests,
+        activeQuestId: questIds.has(activeQuestId) ? activeQuestId : (quests[0]?.id ?? ""),
         maps,
         activeMapId: maps.some((m) => m.id === activeMapId) ? activeMapId : maps[0].id,
     };

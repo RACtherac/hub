@@ -32,6 +32,11 @@ import {
     linkedLocation,
     linkedNote,
     linkedNpc,
+    linkedQuest,
+    createQuest,
+    QUEST_STAGES,
+    questStageInfo,
+    updateQuestStage,
     cardTravel,
     timeSkip,
     travelFields,
@@ -63,6 +68,9 @@ import {
     type NodeKind,
     type Note,
     type Npc,
+    type Quest,
+    type QuestStage,
+    type QuestStageId,
     type StoryRecap,
 } from "../../utils/dmScreen";
 import { KM_PER_MILE, MINUTES_PER_DAY, TRAVEL_MODES, createEvent, dayNumber, formatDate, formatDuration, type Calendar, type CalendarDate, type CalendarEvent } from "../../utils/dmCalendar";
@@ -79,6 +87,7 @@ interface StoryBoardProps {
     onOpenNpc: (npcId: string) => void;
     onOpenItem: (itemId: string) => void;
     onOpenNote: (noteId: string) => void;
+    onOpenQuest: (questId: string) => void;
     onOpenLocation: (locationId: string) => void;
     onOpenCalendar: (date: CalendarDate) => void;
     // Select this card and bring it into view when the board opens.
@@ -261,7 +270,7 @@ function linkGeometry(a: BoardNode, aSize: Size, b: BoardNode, bSize: Size) {
     };
 }
 
-export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, onOpenItem, onOpenNote, onOpenLocation, onOpenCalendar, focusNodeId, onFocused }: StoryBoardProps) {
+export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, onOpenItem, onOpenNote, onOpenQuest, onOpenLocation, onOpenCalendar, focusNodeId, onFocused }: StoryBoardProps) {
     const board = activeBoard(data);
     const { view } = board;
 
@@ -745,6 +754,7 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                             const npc = linkedNpc(data, node);
                             const item = linkedItem(data, node);
                             const note = linkedNote(data, node);
+                            const quest = linkedQuest(data, node);
                             const location = linkedLocation(data, node);
                             const event = linkedEvent(data, node);
                             return (
@@ -760,6 +770,11 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                                     item={item}
                                     note={note}
                                     onOpenNote={onOpenNote}
+                                    quest={quest}
+                                    questNpcs={quest ? quest.stages[node.questStage ?? "begin"].npcIds
+                                        .map((id) => data.npcs.find((n) => n.id === id))
+                                        .filter((n): n is Npc => n !== undefined) : []}
+                                    onOpenQuest={onOpenQuest}
                                     location={location}
                                     onOpenLocation={onOpenLocation}
                                     event={event}
@@ -862,6 +877,17 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                         }}
                         onOpenNote={onOpenNote}
                         onUpdateNote={(noteId, fields) => setData((current) => updateNote(current, noteId, fields))}
+                        onCreateQuest={() => {
+                            // The card's text becomes the quest's beginning.
+                            const base = createQuest({ title: selectedNode.title || "New quest" });
+                            const quest = { ...base, stages: { ...base.stages, begin: { ...base.stages.begin, description: selectedNode.text } } };
+                            setData((current) => updateActiveBoard(
+                                { ...current, quests: [...current.quests, quest], activeQuestId: quest.id },
+                                (b) => ({ ...b, nodes: b.nodes.map((n) => (n.id === selectedNode.id ? { ...n, questId: quest.id, questStage: "begin", text: "" } : n)) })
+                            ));
+                        }}
+                        onOpenQuest={onOpenQuest}
+                        onUpdateQuestStage={(questId, stage, fields) => setData((current) => updateQuestStage(current, questId, stage, fields))}
                         onCreateLocation={() => {
                             const location = createLocation({ name: selectedNode.title || "New location", description: selectedNode.text });
                             setData((current) => updateActiveBoard(
@@ -963,6 +989,10 @@ interface NodeCardProps {
     // The linked note, whose title and text the card shows.
     note?: Note;
     onOpenNote: (noteId: string) => void;
+    // The linked quest; the card shows one of its stages, with that stage's NPCs.
+    quest?: Quest;
+    questNpcs: Npc[];
+    onOpenQuest: (questId: string) => void;
     // The linked location, shown as a tag that opens its sheet.
     location?: Location;
     onOpenLocation: (locationId: string) => void;
@@ -1001,6 +1031,9 @@ function NodeCard({
     onOpenItem,
     note,
     onOpenNote,
+    quest,
+    questNpcs,
+    onOpenQuest,
     location,
     onOpenLocation,
     event,
@@ -1021,9 +1054,12 @@ function NodeCard({
 }: NodeCardProps) {
     const ref = useRef<HTMLDivElement>(null);
     // A linked NPC's or item's name is the card's title.
-    const title = npc?.name ?? item?.name ?? note?.title ?? location?.name ?? event?.title ?? node.title;
-    // A linked note's text replaces the card's own.
-    const text = note ? note.body : node.text;
+    const questStage = quest ? quest.stages[node.questStage ?? "begin"] : undefined;
+    const stageInfo = questStageInfo(node.questStage ?? "begin");
+    const title = npc?.name ?? item?.name ?? note?.title ?? location?.name ?? event?.title
+        ?? (quest ? quest.title || "Untitled quest" : node.title);
+    // A linked note's or quest stage's text replaces the card's own.
+    const text = note ? note.body : questStage ? questStage.description : node.text;
 
     // Report the card's size so connections meet its edges.
     useLayoutEffect(() => {
@@ -1129,6 +1165,28 @@ function NodeCard({
             {note && (
                 <div className="dms-node-carrying">
                     <CardTag label={note.pinned ? "★ 📝 Note" : "📝 Note"} title={`Open ${note.title || "this note"} in the Notes tab`} onOpen={() => onOpenNote(note.id)} />
+                </div>
+            )}
+            {quest && questStage && (
+                <div className="dms-node-npc-info">
+                    <CardTag
+                        label={`${questStage.done ? "✓" : stageInfo.icon} ${stageInfo.label}`}
+                        title={`Open ${quest.title || "this quest"} in the Quests tab`}
+                        onOpen={() => onOpenQuest(quest.id)}
+                    />
+                    {questNpcs.length > 0 && (
+                        <div className="dms-node-carrying" aria-label="NPCs in this stage">
+                            {questNpcs.map((n) => (
+                                <CardTag key={n.id} label={`👤 ${n.name || "Unnamed"}`} title={`Open ${n.name || "this NPC"} in the NPCs tab`} onOpen={() => onOpenNpc(n.id)} />
+                            ))}
+                        </div>
+                    )}
+                    {questStage.dialogs.length > 0 && (
+                        <span className="dms-node-npc-meta">
+                            💬 {questStage.dialogs.filter((d) => d.said).length}/{questStage.dialogs.length} lines said
+                        </span>
+                    )}
+                    {node.questStage === "reward" && quest.reward && <span className="dms-node-item-stats">🏆 {quest.reward}</span>}
                 </div>
             )}
             {location && (
@@ -1267,6 +1325,9 @@ interface NodeInspectorProps {
     onCreateNote: () => void;
     onOpenNote: (noteId: string) => void;
     onUpdateNote: (noteId: string, fields: Partial<Pick<Note, "title" | "body">>) => void;
+    onCreateQuest: () => void;
+    onOpenQuest: (questId: string) => void;
+    onUpdateQuestStage: (questId: string, stage: QuestStageId, fields: Partial<QuestStage>) => void;
     onCreateLocation: () => void;
     onOpenLocation: (locationId: string) => void;
     onCreateEvent: () => void;
@@ -1299,6 +1360,9 @@ function NodeInspector({
     onCreateNote,
     onOpenNote,
     onUpdateNote,
+    onCreateQuest,
+    onOpenQuest,
+    onUpdateQuestStage,
     onCreateLocation,
     onOpenLocation,
     onCreateEvent,
@@ -1315,8 +1379,10 @@ function NodeInspector({
     const note = linkedNote(data, node);
     const location = linkedLocation(data, node);
     const event = linkedEvent(data, node);
-    // A linked NPC, item, location or event owns the card's name.
-    const linkedName = npc?.name ?? item?.name ?? location?.name ?? event?.title;
+    const quest = linkedQuest(data, node);
+    const questStage = quest?.stages[node.questStage ?? "begin"];
+    // A linked NPC, item, location, event or quest owns the card's name.
+    const linkedName = npc?.name ?? item?.name ?? location?.name ?? event?.title ?? quest?.title;
     const sortedEvents = [...data.calendar.events].sort((a, b) => dayNumber(data.calendar, a) - dayNumber(data.calendar, b));
     const title = (id: string) => {
         const other = nodes.find((n) => n.id === id);
@@ -1511,6 +1577,88 @@ function NodeInspector({
                 </div>
             )}
 
+            {/* Quest cards show one stage of a quest from the Quests tab. The
+                stage's text is edited right here, like a note's. */}
+            {(node.kind === "quest" || quest) && !npc && !item && !note && !location && !event && (
+                <div className="dms-inspector-section">
+                    <label className="dms-field">
+                        <span>Quest</span>
+                        <select
+                            value={quest?.id ?? ""}
+                            onChange={(e) => {
+                                const id = e.target.value;
+                                update(id
+                                    ? { questId: id, questStage: node.questStage ?? "begin" }
+                                    : { questId: undefined, questStage: undefined, title: quest?.title ?? node.title, text: questStage?.description ?? node.text });
+                            }}
+                        >
+                            <option value="">Not linked (write it yourself)</option>
+                            {data.quests.map((q) => <option key={q.id} value={q.id}>{q.title || "Untitled quest"}</option>)}
+                        </select>
+                    </label>
+                    {quest && questStage && (
+                        <>
+                            <label className="dms-field">
+                                <span>Stage</span>
+                                <select value={node.questStage ?? "begin"} onChange={(e) => update({ questStage: e.target.value as QuestStageId })}>
+                                    {QUEST_STAGES.map((s) => <option key={s.value} value={s.value}>{s.icon} {s.label}</option>)}
+                                </select>
+                            </label>
+                            <label className="dms-field">
+                                <span>What happens</span>
+                                <textarea
+                                    rows={6}
+                                    value={questStage.description}
+                                    placeholder={questStageInfo(node.questStage ?? "begin").hint}
+                                    onChange={(e) => onUpdateQuestStage(quest.id, node.questStage ?? "begin", { description: e.target.value })}
+                                />
+                            </label>
+                            <button
+                                type="button"
+                                className={questStage.done ? "dms-button" : "dms-button dms-button--ghost"}
+                                aria-pressed={questStage.done}
+                                onClick={() => onUpdateQuestStage(quest.id, node.questStage ?? "begin", { done: !questStage.done })}
+                            >
+                                {questStage.done ? "✓ Stage done" : "Mark stage as done"}
+                            </button>
+                            {questStage.dialogs.length > 0 && (
+                                <ul className="dms-quest-card-dialogs">
+                                    {questStage.dialogs.map((d) => (
+                                        <li key={d.id} className={d.said ? "said" : ""}>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={d.said}
+                                                    onChange={(e) => onUpdateQuestStage(quest.id, node.questStage ?? "begin", {
+                                                        dialogs: questStage.dialogs.map((x) => (x.id === d.id ? { ...x, said: e.target.checked } : x)),
+                                                    })}
+                                                />
+                                                <span>
+                                                    {d.trigger && <em>When {d.trigger}: </em>}
+                                                    {d.npcId && <strong>{data.npcs.find((n) => n.id === d.npcId)?.name || "Unnamed"}: </strong>}
+                                                    {d.text || "…"}
+                                                </span>
+                                            </label>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </>
+                    )}
+                    <div className="dms-inspector-buttons">
+                        {quest ? (
+                            <button type="button" className="dms-button" onClick={() => onOpenQuest(quest.id)}>
+                                Open in Quests →
+                            </button>
+                        ) : (
+                            <button type="button" className="dms-button dms-button--ghost" onClick={onCreateQuest}>
+                                + Create quest from this card
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {/* Travel cards work out the trip's length and skip it on the calendar. */}
             {node.kind === "travel" && !npc && !item && !note && !location && !event && (
                 <div className="dms-inspector-section">
@@ -1542,7 +1690,9 @@ function NodeInspector({
                                 ? "The name, details and image come from the Items tab. Unlink the item to write this card yourself."
                                 : location
                                     ? "The name, type and description come from the Locations tab. Unlink it to write this card yourself."
-                                    : "The title and date come from the Calendar tab. Unlink the event to write this card yourself."}
+                                    : quest
+                                        ? "The quest's name comes from the Quests tab. Unlink it to write this card yourself."
+                                        : "The title and date come from the Calendar tab. Unlink the event to write this card yourself."}
                     </p>
                 </div>
             ) : (
@@ -1559,7 +1709,7 @@ function NodeInspector({
                     </label>
                 </>
             )}
-            {!note && (
+            {!note && !quest && (
                 <label className="dms-field">
                     <span>Notes</span>
                     <textarea rows={6} value={node.text} onChange={(e) => update({ text: e.target.value })} />

@@ -12,6 +12,8 @@ import {
     npcCards,
     npcCombatants,
     npcMatches,
+    npcQuests,
+    questStageInfo,
     shareWithNpc,
     removeNpc,
     updateActiveBoard,
@@ -29,9 +31,10 @@ interface NpcManagerProps {
     setData: Dispatch<SetStateAction<DmScreenData>>;
     onShowCard: (boardId: string, nodeId: string) => void;
     onOpenItem: (itemId: string) => void;
+    onOpenQuest: (questId: string) => void;
 }
 
-export default function NpcManager({ data, setData, onShowCard, onOpenItem }: NpcManagerProps) {
+export default function NpcManager({ data, setData, onShowCard, onOpenItem, onOpenQuest }: NpcManagerProps) {
     const [query, setQuery] = useState("");
     const npc = data.npcs.find((n) => n.id === data.activeNpcId) ?? data.npcs[0];
     const shown = data.npcs.filter((n) => npcMatches(n, query));
@@ -87,7 +90,7 @@ export default function NpcManager({ data, setData, onShowCard, onOpenItem }: Np
             {/* ---------------- Selected NPC ---------------- */}
             <section className="dms-panel dms-encounter">
                 {npc ? (
-                    <NpcSheet key={npc.id} npc={npc} data={data} setData={setData} onShowCard={onShowCard} onOpenItem={onOpenItem} />
+                    <NpcSheet key={npc.id} npc={npc} data={data} setData={setData} onShowCard={onShowCard} onOpenItem={onOpenItem} onOpenQuest={onOpenQuest} />
                 ) : (
                     <p className="dms-empty">
                         No NPCs yet. Add the named characters worth a sheet: the innkeeper, the villain, the quest giver.
@@ -103,7 +106,8 @@ interface NpcSheetProps extends NpcManagerProps {
     npc: Npc;
 }
 
-function NpcSheet({ npc, data, setData, onShowCard, onOpenItem }: NpcSheetProps) {
+function NpcSheet({ npc, data, setData, onShowCard, onOpenItem, onOpenQuest }: NpcSheetProps) {
+    const quests = npcQuests(data, npc.id);
     const [addedTo, setAddedTo] = useState("");
     const carrying = itemsHeldBy(data, npc.id);
     // Attacks and loot also change on every combatant added from this NPC.
@@ -266,6 +270,21 @@ function NpcSheet({ npc, data, setData, onShowCard, onOpenItem }: NpcSheetProps)
                             </label>
                         )}
                     </div>
+
+                    {quests.length > 0 && (
+                        <div className="dms-inspector-section">
+                            <span className="dms-subtitle">In quests</span>
+                            <ul className="dms-connection-list">
+                                {quests.map(({ quest, stages }) => (
+                                    <li key={quest.id}>
+                                        <button type="button" className="dms-link-button" onClick={() => onOpenQuest(quest.id)}>
+                                            📜 {quest.title || "Untitled quest"} ({stages.map((s) => questStageInfo(s).label.toLowerCase()).join(", ")}) →
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
 
                     <div className="dms-inspector-section">
                         <span className="dms-subtitle">On the story board</span>

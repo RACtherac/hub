@@ -42,6 +42,12 @@ import {
     createItem,
     createNode,
     createNote,
+    createQuest,
+    createQuestDialog,
+    currentQuestStage,
+    putQuestOnBoard,
+    removeQuest,
+    updateQuestStage,
     createNpc,
     duplicateCombatant,
     duplicateName,
@@ -1146,4 +1152,81 @@ test("starter monsters have hit dice that roll around their average HP", () => {
     }
     // Fresh ids each time, so adding them twice doesn't clash.
     assert.notEqual(starterMonsters()[0].id, starters[0].id);
+});
+
+// ---- Quests
+
+test("quests and their stage cards survive a reload; missing NPCs and items are dropped", () => {
+    const elda = createNpc({ name: "Elda" });
+    const ring = createItem({ name: "Signet ring" });
+    const base = createQuest({ title: "The Lost Ring", reward: "50 gp", rewardItemIds: [ring.id, "gone"] });
+    const quest = {
+        ...base,
+        stages: {
+            ...base.stages,
+            middle: {
+                description: "The ring is in the crypt",
+                npcIds: [elda.id, "gone"],
+                dialogs: [createQuestDialog({ trigger: "they find the crypt", npcId: elda.id, text: "Careful!" }), createQuestDialog({ npcId: "gone" })],
+                done: true,
+            },
+        },
+    };
+    const board = {
+        ...createBoard("Act 1"),
+        nodes: [
+            { ...createNode("quest", 0, 0), questId: quest.id, questStage: "middle" as const },
+            { ...createNode("quest", 0, 0), questId: "gone", questStage: "end" as const },
+        ],
+    };
+    const data = { ...createDefaultData(), boards: [board], activeBoardId: board.id, npcs: [elda], items: [ring], quests: [quest], activeQuestId: quest.id };
+
+    const reloaded = parseData(JSON.stringify(data))!;
+    const q = reloaded.quests[0];
+    assert.equal(reloaded.activeQuestId, quest.id);
+    assert.deepEqual(q.rewardItemIds, [ring.id]);
+    assert.deepEqual(q.stages.middle.npcIds, [elda.id]);
+    assert.equal(q.stages.middle.dialogs[0].text, "Careful!");
+    assert.equal(q.stages.middle.dialogs[1].npcId, "");
+    assert.equal(q.stages.middle.done, true);
+    assert.equal(reloaded.boards[0].nodes[0].questStage, "middle");
+    assert.equal(reloaded.boards[0].nodes[1].questId, undefined);
+    assert.equal(reloaded.boards[0].nodes[1].questStage, undefined);
+
+    const old = parseData(JSON.stringify({ encounters: [] }))!;
+    assert.deepEqual(old.quests, []);
+    assert.equal(old.activeQuestId, "");
+});
+
+test("putting a quest on the board adds four joined stage cards; the current stage moves on", () => {
+    const quest = createQuest({ title: "The Lost Ring" });
+    const data = { ...createDefaultData(), quests: [quest] };
+    const { data: placed, nodeId } = putQuestOnBoard(data, quest.id);
+    const board = placed.boards[0];
+    assert.deepEqual(board.nodes.map((n) => n.questStage), ["begin", "middle", "end", "reward"]);
+    assert.equal(board.links.length, 3);
+    assert.equal(board.nodes[0].id, nodeId);
+    assert.equal(cardTitle(placed, board.nodes[3]), "The Lost Ring: Finished & reward");
+
+    assert.equal(currentQuestStage(quest), "begin");
+    const begun = updateQuestStage(placed, quest.id, "begin", { done: true });
+    assert.equal(currentQuestStage(begun.quests[0]), "middle");
+});
+
+test("removing an NPC takes them out of quests; removing a quest unlinks its cards", () => {
+    const elda = createNpc({ name: "Elda" });
+    const base = createQuest({ title: "The Lost Ring" });
+    const quest = { ...base, stages: { ...base.stages, begin: { ...base.stages.begin, npcIds: [elda.id], dialogs: [createQuestDialog({ npcId: elda.id })] } } };
+    const data = { ...createDefaultData(), npcs: [elda], quests: [quest] };
+
+    const gone = removeNpc(data, elda.id);
+    assert.deepEqual(gone.quests[0].stages.begin.npcIds, []);
+    assert.equal(gone.quests[0].stages.begin.dialogs[0].npcId, "");
+
+    const placed = putQuestOnBoard(data, quest.id).data;
+    const removed = removeQuest(placed, quest.id);
+    assert.deepEqual(removed.quests, []);
+    assert.equal(removed.boards[0].nodes.length, 4);
+    assert.ok(removed.boards[0].nodes.every((n) => n.questId === undefined));
+    assert.equal(removed.boards[0].nodes[0].title, "The Lost Ring: Beginning");
 });

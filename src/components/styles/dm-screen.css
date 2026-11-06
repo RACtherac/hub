@@ -17,6 +17,7 @@
     --dms-travel: #c9a46b;
     --dms-end: #e5645f;
     --dms-resume: #7fc8a9;
+    --dms-quest: #d9a441;
     --dms-taken: var(--dms-heal);
 
     position: relative;
@@ -1655,6 +1656,7 @@
 .dms-node--travel { --dms-kind: var(--dms-travel); }
 .dms-node--end { --dms-kind: var(--dms-end); }
 .dms-node--resume { --dms-kind: var(--dms-resume); }
+.dms-node--quest { --dms-kind: var(--dms-quest); }
 
 .dms-node-image {
     display: block;
@@ -2616,4 +2618,179 @@
     .dms-map-board {
         height: 60vh;
     }
+}
+
+/* ===================================
+   QUESTS
+   =================================== */
+
+.dms-quest-flow {
+    list-style: none;
+    margin: 1rem 0 1.25rem;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.4rem;
+}
+
+.dms-quest-flow li {
+    position: relative;
+    display: flex;
+}
+
+/* The arrow joining each stage to the next. */
+.dms-quest-flow li + li::before {
+    content: "→";
+    position: absolute;
+    left: -1.15rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+}
+
+.dms-quest-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    text-align: left;
+    padding: 0.7rem 0.8rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-top: 3px solid var(--dms-quest);
+    border-radius: 0.7rem;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+}
+
+.dms-quest-stage:hover { border-color: var(--accent); border-top-color: var(--dms-quest); }
+.dms-quest-stage:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dms-quest-stage.active { box-shadow: 0 0 0 2px var(--accent); }
+.dms-quest-stage.done { border-top-color: var(--dms-taken); opacity: 0.8; }
+.dms-quest-stage.current .dms-quest-stage-label { color: var(--dms-quest); }
+
+.dms-quest-stage-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.dms-quest-stage-text {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    overflow-wrap: anywhere;
+}
+
+.dms-quest-stage-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.dms-quest-stage-header .dms-subtitle { margin: 0; }
+
+.dms-quest-npcs {
+    list-style: none;
+    margin: 0 0 0.6rem;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.dms-quest-npcs li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.15rem 0.3rem 0.15rem 0.6rem;
+    border: 1px solid var(--border-2);
+    border-radius: 999px;
+    background: var(--surface-2);
+}
+
+.dms-quest-remove {
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0 0.3rem;
+}
+
+.dms-quest-remove:hover { color: var(--dms-danger); }
+
+.dms-quest-dialogs {
+    list-style: none;
+    margin: 0 0 0.6rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.dms-quest-dialog {
+    padding: 0.75rem;
+    border: 1px solid var(--border-2);
+    border-left: 3px solid var(--dms-quest);
+    border-radius: 0.6rem;
+    background: var(--surface);
+}
+
+.dms-quest-dialog.said { border-left-color: var(--dms-taken); opacity: 0.75; }
+
+.dms-quest-dialog-row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 0.6rem;
+}
+
+.dms-quest-dialog-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.4rem;
+}
+
+.dms-quest-said {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+
+.dms-quest-delete:hover { color: var(--dms-danger); }
+
+.dms-quest-card-dialogs {
+    list-style: none;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+}
+
+.dms-quest-card-dialogs label {
+    display: flex;
+    gap: 0.45rem;
+    align-items: flex-start;
+}
+
+.dms-quest-card-dialogs li.said span { color: var(--text-dim); text-decoration: line-through; }
+
+@media (max-width: 900px) {
+    .dms-quest-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .dms-quest-flow li:nth-child(3)::before { display: none; }
+}
+
+@media (max-width: 520px) {
+    .dms-quest-flow { grid-template-columns: minmax(0, 1fr); }
+    .dms-quest-flow li + li::before { content: "↓"; left: 50%; top: -1.1rem; transform: translateX(-50%); display: block; }
+    .dms-quest-dialog-row { grid-template-columns: minmax(0, 1fr); }
 }
