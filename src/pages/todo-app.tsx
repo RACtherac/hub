@@ -142,7 +142,9 @@ export default function KanbanApp() {
   }
 
   function updateNotes(id: string, notes: string) {
-    const sanitized = sanitizeText(notes, 1000);
+    // Don't trim while typing — trimming on every keystroke eats trailing spaces.
+    // Leading/trailing whitespace is trimmed on blur instead.
+    const sanitized = notes.slice(0, 1000);
     setCards((prev) =>
       prev.map((c) => (c.id === id ? { ...c, notes: sanitized || undefined } : c))
     );
@@ -337,6 +339,7 @@ export default function KanbanApp() {
                                   rows={3}
                                   value={card.notes || ""}
                                   onChange={(e) => updateNotes(card.id, e.target.value)}
+                                  onBlur={(e) => updateNotes(card.id, sanitizeText(e.target.value, 1000))}
                                 />
                               </div>
                             )}
