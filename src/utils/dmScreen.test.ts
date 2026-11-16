@@ -80,6 +80,9 @@ import {
     sortedNotes,
     updateNote,
     removeNode,
+    removeNodes,
+    moveNodes,
+    nodesInRect,
     removeNpc,
     rollInitiative,
     sortCombatants,
@@ -954,15 +957,17 @@ test("rests refill the right trackers, and a long rest restores HP and clears de
     assert.equal(long.calendar.minutes, data.calendar.minutes + 8 * 60);
 
     // The DM's own lengths: a 24-hour long rest lands on the next day.
-    const slow = restParty({ ...data, settings: { shortRestMinutes: 10, longRestMinutes: 24 * 60 } }, "long");
+    const slow = restParty({ ...data, settings: { ...data.settings, shortRestMinutes: 10, longRestMinutes: 24 * 60 } }, "long");
     assert.equal(slow.calendar.minutes, data.calendar.minutes);
     assert.equal(slow.calendar.today.day, data.calendar.today.day + 1);
-    assert.equal(restParty({ ...data, settings: { shortRestMinutes: 10, longRestMinutes: 0 } }, "short").calendar.minutes, data.calendar.minutes + 10);
+    assert.equal(restParty({ ...data, settings: { ...data.settings, shortRestMinutes: 10, longRestMinutes: 0 } }, "short").calendar.minutes, data.calendar.minutes + 10);
 
     // Settings load back, clamped; old saves get the defaults.
-    const loaded = parseData(JSON.stringify({ ...data, settings: { shortRestMinutes: -5, longRestMinutes: 99999 } }))!;
-    assert.deepEqual(loaded.settings, { shortRestMinutes: 0, longRestMinutes: 7 * 24 * 60 });
-    assert.deepEqual(parseData(JSON.stringify({ ...data, settings: undefined }))!.settings, { shortRestMinutes: 60, longRestMinutes: 480 });
+    const loaded = parseData(JSON.stringify({ ...data, settings: { shortRestMinutes: -5, longRestMinutes: 99999, linkStyle: "straight" } }))!;
+    assert.deepEqual(loaded.settings, { shortRestMinutes: 0, longRestMinutes: 7 * 24 * 60, linkStyle: "straight" });
+    assert.deepEqual(parseData(JSON.stringify({ ...data, settings: undefined }))!.settings, { shortRestMinutes: 60, longRestMinutes: 480, linkStyle: "curved" });
+    assert.equal(parseData(JSON.stringify({ ...data, settings: { linkStyle: "wavy" } }))!.settings.linkStyle, "curved");
+    assert.equal(parseData(JSON.stringify({ ...data, settings: { linkStyle: "orthogonal" } }))!.settings.linkStyle, "orthogonal");
 });
 
 test("death saves: 10+ succeeds, a 1 is two failures, a 20 is back up, and healing clears them", () => {
@@ -1229,4 +1234,24 @@ test("removing an NPC takes them out of quests; removing a quest unlinks its car
     assert.equal(removed.boards[0].nodes.length, 4);
     assert.ok(removed.boards[0].nodes.every((n) => n.questId === undefined));
     assert.equal(removed.boards[0].nodes[0].title, "The Lost Ring: Beginning");
+});
+
+test("several cards can be moved, removed and box-selected together", () => {
+    const a = createNode("scene", 0, 0);
+    const b = createNode("scene", 300, 0);
+    const c = createNode("scene", 0, 300);
+    let board: Board = { ...createBoard(), nodes: [a, b, c] };
+    board = addLink(addLink(board, a.id, b.id), b.id, c.id);
+
+    const moved = moveNodes(board, { [a.id]: { x: 0, y: 0 }, [b.id]: { x: 300, y: 0 } }, 10.4, -20);
+    assert.deepEqual(moved.nodes.map((n) => [n.x, n.y]), [[10, -20], [310, -20], [0, 300]]);
+
+    const size = () => ({ w: 200, h: 100 });
+    // Dragged from bottom-right to top-left, touching a and b but not c.
+    assert.deepEqual(nodesInRect(board.nodes, size, { x: 600, y: 50 }, { x: 150, y: -10 }), [a.id, b.id]);
+    assert.deepEqual(nodesInRect(board.nodes, size, { x: 210, y: 110 }, { x: 290, y: 290 }), []);
+
+    const left = removeNodes(board, [a.id, b.id]);
+    assert.deepEqual(left.nodes.map((n) => n.id), [c.id]);
+    assert.equal(left.links.length, 0);
 });

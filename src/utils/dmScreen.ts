@@ -383,9 +383,15 @@ export interface DmSettings {
     // How long each rest takes; the calendar moves on by this much.
     shortRestMinutes: number;
     longRestMinutes: number;
+    // How story board links are drawn between cards.
+    linkStyle: LinkStyle;
 }
 
-export const DEFAULT_SETTINGS: DmSettings = { shortRestMinutes: 60, longRestMinutes: 8 * 60 };
+export type LinkStyle = "curved" | "straight" | "orthogonal";
+
+const LINK_STYLES: LinkStyle[] = ["curved", "straight", "orthogonal"];
+
+export const DEFAULT_SETTINGS: DmSettings = { shortRestMinutes: 60, longRestMinutes: 8 * 60, linkStyle: "curved" };
 
 export interface DmScreenData {
     version: 1;
@@ -799,6 +805,7 @@ function normalizeSettings(value: unknown): DmSettings {
     return {
         shortRestMinutes: minutes(source.shortRestMinutes, DEFAULT_SETTINGS.shortRestMinutes),
         longRestMinutes: minutes(source.longRestMinutes, DEFAULT_SETTINGS.longRestMinutes),
+        linkStyle: LINK_STYLES.includes(source.linkStyle as LinkStyle) ? (source.linkStyle as LinkStyle) : DEFAULT_SETTINGS.linkStyle,
     };
 }
 
@@ -1260,6 +1267,46 @@ export function removeNode(board: Board, id: string): Board {
         nodes: board.nodes.filter((n) => n.id !== id),
         links: board.links.filter((l) => l.from !== id && l.to !== id),
     };
+}
+
+/** Removes several cards at once, and every connection touching them. */
+export function removeNodes(board: Board, ids: readonly string[]): Board {
+    const gone = new Set(ids);
+    return {
+        ...board,
+        nodes: board.nodes.filter((n) => !gone.has(n.id)),
+        links: board.links.filter((l) => !gone.has(l.from) && !gone.has(l.to)),
+    };
+}
+
+/** Places each listed card at its starting point plus (dx, dy). Cards not listed don't move. */
+export function moveNodes(board: Board, origins: Readonly<Record<string, { x: number; y: number }>>, dx: number, dy: number): Board {
+    return {
+        ...board,
+        nodes: board.nodes.map((n) => {
+            const from = origins[n.id];
+            return from ? { ...n, x: Math.round(from.x + dx), y: Math.round(from.y + dy) } : n;
+        }),
+    };
+}
+
+/** Ids of the cards that overlap a rectangle drawn between two corners (in any direction). */
+export function nodesInRect(
+    nodes: readonly BoardNode[],
+    sizeOf: (id: string) => { w: number; h: number },
+    a: { x: number; y: number },
+    b: { x: number; y: number },
+): string[] {
+    const left = Math.min(a.x, b.x);
+    const right = Math.max(a.x, b.x);
+    const top = Math.min(a.y, b.y);
+    const bottom = Math.max(a.y, b.y);
+    return nodes
+        .filter((n) => {
+            const { w, h } = sizeOf(n.id);
+            return n.x < right && n.x + w > left && n.y < bottom && n.y + h > top;
+        })
+        .map((n) => n.id);
 }
 
 export function removeLink(board: Board, id: string): Board {

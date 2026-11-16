@@ -1644,6 +1644,15 @@
     box-shadow: 0 0 0 2px var(--accent), 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
+/* Shift-drag box for selecting several cards. */
+.dms-marquee {
+    position: absolute;
+    border: 1px dashed var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    pointer-events: none;
+    z-index: 5;
+}
+
 .dms-node--scene { --dms-kind: var(--dms-scene); }
 .dms-node--encounter { --dms-kind: var(--dms-encounter); }
 .dms-node--npc { --dms-kind: var(--dms-npc); }

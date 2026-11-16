@@ -51,7 +51,9 @@ import {
     OUTCOME_LABELS,
     removeBoard,
     removeLink,
-    removeNode,
+    removeNodes,
+    moveNodes,
+    nodesInRect,
     toggleTaken,
     updateActiveBoard,
     zoomAt,
@@ -64,6 +66,7 @@ import {
     type EncounterOutcome,
     type Item,
     type ItemHolder,
+    type LinkStyle,
     type Location,
     type NodeKind,
     type Note,
@@ -99,8 +102,13 @@ type Selection = { type: "node"; id: string } | { type: "link"; id: string } | n
 
 type Drag =
     | { kind: "pan"; startX: number; startY: number; viewX: number; viewY: number }
-    | { kind: "node"; id: string; startX: number; startY: number; nodeX: number; nodeY: number }
+    | { kind: "node"; startX: number; startY: number; origins: Record<string, Point> }
+    | { kind: "marquee"; start: Point; additive: string[] }
     | { kind: "connect"; from: string };
+
+/** Shift, Ctrl or Cmd adds to / removes from a multi-card selection. */
+const isMultiKey = (event: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean }) =>
+    event.shiftKey || event.ctrlKey || event.metaKey;
 
 interface Size { w: number; h: number }
 interface Point { x: number; y: number }
@@ -238,15 +246,16 @@ function isTyping(target: EventTarget | null) {
     return !!element && (element.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(element.tagName));
 }
 
-// Curved connection between the facing sides of two cards.
-function linkGeometry(a: BoardNode, aSize: Size, b: BoardNode, bSize: Size) {
+// Connection between the facing sides of two cards, curved or straight.
+function linkGeometry(a: BoardNode, aSize: Size, b: BoardNode, bSize: Size, style: LinkStyle) {
     const ac = { x: a.x + aSize.w / 2, y: a.y + aSize.h / 2 };
     const bc = { x: b.x + bSize.w / 2, y: b.y + bSize.h / 2 };
     const dx = bc.x - ac.x;
     const dy = bc.y - ac.y;
 
     let start: Point, end: Point, c1: Point, c2: Point;
-    if (Math.abs(dx) >= Math.abs(dy)) {
+    const horizontal = Math.abs(dx) >= Math.abs(dy);
+    if (horizontal) {
         const sign = dx >= 0 ? 1 : -1;
         start = { x: sign > 0 ? a.x + aSize.w : a.x, y: ac.y };
         end = { x: sign > 0 ? b.x : b.x + bSize.w, y: bc.y };
@@ -263,6 +272,24 @@ function linkGeometry(a: BoardNode, aSize: Size, b: BoardNode, bSize: Size) {
         c2 = { x: end.x, y: end.y - sign * bend };
     }
 
+    if (style === "straight") {
+        return {
+            path: `M ${start.x} ${start.y} L ${end.x} ${end.y}`,
+            mid: { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 },
+        };
+    }
+
+    // Only horizontal and vertical runs, turning halfway between the cards.
+    if (style === "orthogonal") {
+        const mid = { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
+        return {
+            path: horizontal
+                ? `M ${start.x} ${start.y} H ${mid.x} V ${end.y} H ${end.x}`
+                : `M ${start.x} ${start.y} V ${mid.y} H ${end.x} V ${end.y}`,
+            mid,
+        };
+    }
+
     return {
         path: `M ${start.x} ${start.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${end.x} ${end.y}`,
         // Point on the curve at t = 0.5
@@ -277,7 +304,23 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
     const boardRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef<Drag | null>(null);
     const [connect, setConnect] = useState<{ from: string; point: Point } | null>(null);
-    const [selection, setSelection] = useState<Selection>(() => (focusNodeId ? { type: "node", id: focusNodeId } : null));
+    // `selection` is what the side panel shows. `group` is every selected card;
+    // it holds more than one card after Shift/Ctrl-clicking or box-selecting.
+    const [selection, setPrimary] = useState<Selection>(() => (focusNodeId ? { type: "node", id: focusNodeId } : null));
+    const [group, setGroup] = useState<string[]>(() => (focusNodeId ? [focusNodeId] : []));
+    const setSelection = (next: Selection) => {
+        setPrimary(next);
+        setGroup(next?.type === "node" ? [next.id] : []);
+    };
+    const [marquee, setMarquee] = useState<{ a: Point; b: Point } | null>(null);
+    const selectGroup = (ids: string[]) => {
+        setGroup(ids);
+        setPrimary(ids.length ? { type: "node", id: ids[ids.length - 1] } : null);
+    };
+    const toggleInGroup = (id: string) => {
+        const base = selection?.type === "node" ? group : [];
+        selectGroup(base.includes(id) ? base.filter((g) => g !== id) : [...base, id]);
+    };
     const [sizes, setSizes] = useState<Record<string, Size>>({});
     const [newKind, setNewKind] = useState<NodeKind>("scene");
     const [layout, setLayout] = useState<BoardLayout>(loadLayout);
@@ -364,7 +407,7 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
 
     const deleteSelection = () => {
         if (!selection) return;
-        updateBoard((current) => (selection.type === "node" ? removeNode(current, selection.id) : removeLink(current, selection.id)));
+        updateBoard((current) => (selection.type === "node" ? removeNodes(current, group) : removeLink(current, selection.id)));
         setSelection(null);
     };
 
@@ -480,9 +523,10 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
             const move = moves[event.key];
             if (move && selection.type === "node") {
                 event.preventDefault();
+                const moving = new Set(group);
                 updateBoard((current) => ({
                     ...current,
-                    nodes: current.nodes.map((n) => (n.id === selection.id ? { ...n, x: n.x + move.x, y: n.y + move.y } : n)),
+                    nodes: current.nodes.map((n) => (moving.has(n.id) ? { ...n, x: n.x + move.x, y: n.y + move.y } : n)),
                 }));
             }
         };
@@ -496,17 +540,47 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
 
     const onBoardPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
         if (event.button !== 0 || event.target !== event.currentTarget) return;
-        dragRef.current = { kind: "pan", startX: event.clientX, startY: event.clientY, viewX: view.x, viewY: view.y };
-        setSelection(null);
+        if (event.shiftKey) {
+            // Shift-drag on the background draws a box that selects every card it touches.
+            const start = toWorld(event.clientX, event.clientY);
+            dragRef.current = { kind: "marquee", start, additive: selection?.type === "node" ? group : [] };
+            setMarquee({ a: start, b: start });
+        }
+        else {
+            dragRef.current = { kind: "pan", startX: event.clientX, startY: event.clientY, viewX: view.x, viewY: view.y };
+            setSelection(null);
+        }
         capture(event);
     };
 
     const onNodePointerDown = (event: ReactPointerEvent, node: BoardNode) => {
         if (event.button !== 0) return;
         event.stopPropagation();
-        dragRef.current = { kind: "node", id: node.id, startX: event.clientX, startY: event.clientY, nodeX: node.x, nodeY: node.y };
-        setSelection({ type: "node", id: node.id });
+        let moving: string[];
+        if (isMultiKey(event)) {
+            const wasIn = selection?.type === "node" && group.includes(node.id);
+            toggleInGroup(node.id);
+            if (wasIn) return; // Just took it out of the selection.
+            moving = [...(selection?.type === "node" ? group : []), node.id];
+        }
+        else if (selection?.type === "node" && group.includes(node.id)) {
+            // Grabbing one card of a selection drags them all; it becomes the one shown in the panel.
+            setPrimary({ type: "node", id: node.id });
+            moving = group;
+        }
+        else {
+            setSelection({ type: "node", id: node.id });
+            moving = [node.id];
+        }
+        const origins: Record<string, Point> = {};
+        for (const n of board.nodes) if (moving.includes(n.id)) origins[n.id] = { x: n.x, y: n.y };
+        dragRef.current = { kind: "node", startX: event.clientX, startY: event.clientY, origins };
         capture(event);
+    };
+
+    const onNodeBodyPointerDown = (event: ReactPointerEvent, node: BoardNode) => {
+        if (isMultiKey(event)) toggleInGroup(node.id);
+        else setSelection({ type: "node", id: node.id });
     };
 
     const onHandlePointerDown = (event: ReactPointerEvent, node: BoardNode) => {
@@ -528,10 +602,13 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
             }));
         }
         else if (drag.kind === "node") {
-            updateNode(drag.id, {
-                x: Math.round(drag.nodeX + (event.clientX - drag.startX) / view.zoom),
-                y: Math.round(drag.nodeY + (event.clientY - drag.startY) / view.zoom),
-            });
+            const dx = (event.clientX - drag.startX) / view.zoom;
+            const dy = (event.clientY - drag.startY) / view.zoom;
+            updateBoard((current) => moveNodes(current, drag.origins, dx, dy));
+        }
+        else if (drag.kind === "marquee") {
+            const point = toWorld(event.clientX, event.clientY);
+            setMarquee({ a: drag.start, b: point });
         }
         else {
             const point = toWorld(event.clientX, event.clientY);
@@ -543,6 +620,12 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
         const drag = dragRef.current;
         dragRef.current = null;
         if (boardRef.current?.hasPointerCapture(event.pointerId)) boardRef.current.releasePointerCapture(event.pointerId);
+        if (drag?.kind === "marquee") {
+            setMarquee(null);
+            const hits = nodesInRect(board.nodes, sizeOf, drag.start, toWorld(event.clientX, event.clientY));
+            selectGroup([...drag.additive, ...hits.filter((id) => !drag.additive.includes(id))]);
+            return;
+        }
         if (drag?.kind !== "connect") return;
 
         setConnect(null);
@@ -554,6 +637,7 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
     const onPointerCancel = () => {
         dragRef.current = null;
         setConnect(null);
+        setMarquee(null);
     };
 
     const onSize = useCallback((id: string, size: Size) =>
@@ -572,7 +656,7 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
         const from = nodeById.get(link.from);
         const to = nodeById.get(link.to);
         if (!from || !to) return [];
-        return [{ link, ...linkGeometry(from, sizeOf(from.id), to, sizeOf(to.id)) }];
+        return [{ link, ...linkGeometry(from, sizeOf(from.id), to, sizeOf(to.id), data.settings.linkStyle) }];
     });
 
     // Which branches the players took, and what that rules out.
@@ -749,6 +833,19 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                             </button>
                         ))}
 
+                        {marquee && (
+                            <div
+                                className="dms-marquee"
+                                aria-hidden="true"
+                                style={{
+                                    left: Math.min(marquee.a.x, marquee.b.x),
+                                    top: Math.min(marquee.a.y, marquee.b.y),
+                                    width: Math.abs(marquee.b.x - marquee.a.x),
+                                    height: Math.abs(marquee.b.y - marquee.a.y),
+                                }}
+                            />
+                        )}
+
                         {board.nodes.map((node) => {
                             const encounter = data.encounters.find((e) => e.id === node.encounterId);
                             const npc = linkedNpc(data, node);
@@ -761,7 +858,7 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                                 <NodeCard
                                     key={node.id}
                                     node={node}
-                                    selected={selection?.type === "node" && selection.id === node.id}
+                                    selected={selection?.type === "node" && group.includes(node.id)}
                                     encounterName={encounter?.name}
                                     outcome={encounter ? encounterOutcome(encounter) : null}
                                     npc={npc}
@@ -792,7 +889,7 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                                     onSize={onSize}
                                     onHeaderPointerDown={(event) => onNodePointerDown(event, node)}
                                     onHandlePointerDown={(event) => onHandlePointerDown(event, node)}
-                                    onSelect={() => setSelection({ type: "node", id: node.id })}
+                                    onSelect={(event) => onNodeBodyPointerDown(event, node)}
                                     onOpen={() => {
                                         setSelection({ type: "node", id: node.id });
                                         setPanelOpen(true);
@@ -818,7 +915,7 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                     onDoubleClick={() => setLayout((current) => ({ ...current, height: null }))}
                 />
                 <p className="dms-hint">
-                    Drag the background to pan, scroll to zoom. Drag a card by its header. Drag ● onto another card to connect. Drop an image file on the board for an image card. Drag the bar under the board to resize it. Delete removes the selection, Esc cancels.
+                    Drag the background to pan, scroll to zoom. Drag a card by its header. Shift/Ctrl-click cards, or Shift-drag the background, to select several and drag them together. Drag ● onto another card to connect. Drop an image file on the board for an image card. Drag the bar under the board to resize it. Delete removes the selection, Esc cancels.
                     {!layout.panelOpen && " Double-click a card to edit it."}
                 </p>
             </div>
@@ -1013,7 +1110,7 @@ interface NodeCardProps {
     onSize: (id: string, size: Size) => void;
     onHeaderPointerDown: (event: ReactPointerEvent) => void;
     onHandlePointerDown: (event: ReactPointerEvent) => void;
-    onSelect: () => void;
+    onSelect: (event: ReactPointerEvent) => void;
     // Double-click: select and show the side panel.
     onOpen: () => void;
 }
@@ -1090,7 +1187,7 @@ function NodeCard({
             aria-pressed={selected}
             onPointerDown={(event) => {
                 event.stopPropagation();
-                onSelect();
+                onSelect(event);
             }}
             onDoubleClick={(event) => {
                 event.stopPropagation();
