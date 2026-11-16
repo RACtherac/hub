@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import PhotoRotator from "../components/PhotoRotator";
+import SiteBackup from "../components/SiteBackup";
 import cvPdf from "../assets/portfolio/oscar hugosson cv.docx (1).pdf";
 import "../components/styles/portfolio.css";
 
@@ -176,6 +177,7 @@ export default function Portfolio() {
       <div className="portfolio-projects-section">
         <div className="portfolio-projects-header">
           <p className="section-label">// projects</p>
+          <SiteBackup />
         </div>
         <div className="portfolio-projects-grid">
           {projects.map((project, i) => (
