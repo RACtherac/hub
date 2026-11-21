@@ -29,6 +29,62 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    id: "hub",
+    label: "Portfolio & Hub",
+    tag: "content",
+    route: "/",
+    description: "The site's front page: an about-me portfolio with CV download and links, a card grid that opens every project, a backup of everything the projects have saved in this browser, and this function index.",
+    tree: {
+      name: "Portfolio()",
+      children: [
+        { name: "PhotoRotator()" },
+        { name: "SiteBackup()" },
+      ],
+    },
+    improvements: [
+      "Generate the project card list from one shared list (route, name, description) so App.tsx, the portfolio cards and this index can't drift apart — today each one is kept by hand.",
+      "Remove the commented-out Dice Balance Tester card and the old Home.tsx / ProjectCard.tsx, which nothing renders any more.",
+      "Show a preview of what a backup file contains (projects and key counts) before the import confirm, not only the project names.",
+      "Pause PhotoRotator when the page is hidden or when the user prefers reduced motion.",
+      "Link each function entry in this index to its file on GitHub.",
+    ],
+    functions: [
+      {
+        name: "Portfolio()",
+        description: "Front page at /. About-me hero, background, skills, languages, work experience, references and a grid of project cards.",
+        detail: "Mostly static content. The hero shows the name and role, PhotoRotator(), and links to GitHub, LinkedIn and a CV PDF that downloads as 'Oscar Hugosson CV.pdf'. The projects section maps a hard-coded projects array (name, description, path) to cards that navigate to their route on click, each fading in 0.07s after the previous one. SiteBackup() sits in the projects header. The Dice Balance Tester card is commented out because that tool moved into the Warhammer Toolkit.",
+        file: "src/pages/portfolio.tsx",
+      },
+      {
+        name: "PhotoRotator()",
+        description: "Cross-fades between the portfolio photos every 4 seconds.",
+        detail: "All images are rendered on top of each other and only the one at the current index gets the 'active' class, so the fade is done in CSS (rotator.css). A setInterval advances the index and wraps around, and is cleared on unmount.",
+        file: "src/components/PhotoRotator.tsx",
+        state: ["index: number"],
+      },
+      {
+        name: "SiteBackup()",
+        description: "'Export all data' and 'Import all data' buttons that save or restore everything every project keeps in localStorage.",
+        detail: "Export builds a backup with buildBackup(localStorage) and downloads it as hub-backup-YYYY-MM-DD.json, or says 'Nothing saved yet' when storage is empty. Import reads the chosen file, checks it with parseBackup(), asks with window.confirm which projects will be replaced (projects not in the file are left alone), then writes it with restoreBackup(). The file input is reset after each pick so the same file can be chosen twice. Results and errors show in a status line, with a full browser storage reported as 'The browser's storage is full.'",
+        file: "src/components/SiteBackup.tsx",
+        state: ["message: { text: string; error?: boolean } | null"],
+      },
+      {
+        name: "Site backup (buildBackup() / parseBackup() / restoreBackup())",
+        description: "Bundles every localStorage key into one versioned JSON file and writes it back, tagging each key with its project.",
+        detail: "PROJECT_KEYS maps each known key (army-builder-saves, warhammer-game-tracker, whk-dice-tester-v1, project-tree-data, dm-screen-v1 and so on) to a project name, and unknown keys are still exported under 'Other'. buildBackup() reads every non-empty key in sorted order and keeps the value as parsed JSON only when it writes back to exactly the same string, otherwise as text, so restoring never changes a value. summarizeBackup() counts keys per project. parseBackup() throws a readable error for invalid JSON, a file that isn't a hub backup, a newer backup version or a damaged entry. restoreBackup() writes every key in the backup and leaves other keys alone. The functions take a small KeyValueStore interface instead of Storage, so siteBackup.test.ts can pass a plain object.",
+        file: "src/utils/siteBackup.ts",
+      },
+      {
+        name: "FunctionReference()",
+        description: "This page: a searchable, filterable index of every project's components and functions, with component trees and improvement ideas.",
+        detail: "PROJECTS is one hand-written array of Project objects, each with a route, a description, an optional component tree, improvements and FnEntry items (name, description, detail, file, props, state). The search box matches project labels and descriptions, and function names, descriptions, details and files, and shows only the matching functions and improvements unless the project itself matches. Tag buttons filter by project tag and the list can be sorted A → Z. The left nav scrolls to a section, and a scroll listener highlights the section nearest the top. Clicking a function card expands its detail, file, props and state; only one card is open at a time. 'Open project ↗' navigates to the project's route.",
+        file: "src/pages/function-reference.tsx",
+        state: ["active: string", "expandedFn: string | null", "search: string", "sortBy: 'default' | 'az'", "tagFilter: string | null"],
+      },
+    ],
+  },
+  {
     id: "pokemon",
     label: "Pokemon TCG Tool",
     tag: "game",
@@ -135,6 +191,12 @@ const PROJECTS: Project[] = [
         detail: "The root component for the army builder. Manages a list of ArmyUnit objects (one per unit card) in state. Handles the faction selector which filters the unit/character lists. Reads and writes armies to localStorage as JSON for save/load. Computes the running points total by summing all unit costs, wargear costs, and character costs. Provides the sidebar unit picker (filtered by faction) and the main army list area.",
         file: "src/components/Warhammer/Armybuilder/Armybuilder.tsx",
         state: ["selectedFaction: string", "armyUnits: ArmyUnit[]", "savedArmies: SavedArmy[]", "totalPoints: number"],
+      },
+      {
+        name: "ArmyBuilderPage()",
+        description: "Route component for /warhammer-army-builder. Only renders <ArmyBuilder />.",
+        detail: "A five-line wrapper so App.tsx can import the army builder from src/pages like every other route. All state and behaviour live in ArmyBuilder().",
+        file: "src/pages/army-builder.tsx",
       },
       {
         name: "UnitCard()",
@@ -620,6 +682,16 @@ const PROJECTS: Project[] = [
 
       file: "src/utils/FamilyTreeUtils.ts",
     },
+    {
+      name: "buildConnectionPaths()",
+      description:
+        "Turns the members and their card positions into SVG paths for every relationship line on the canvas.",
+
+      detail:
+        "Draws lines the way a paper family tree does. Spouses get a horizontal marriage line 40px below the top of the cards (an elbow when they sit on different rows), and ex-spouses get the same line with their own CSS class. Children with the same set of visible parents share one horizontal bus halfway between the rows, fed from the middle of the marriage line when the parents sit side by side with no card between them, or from the bottom of each parent's card otherwise. Buses between the same two rows are staggered by 8px so they don't overlap. A child with a lineColor gets its own full line in that colour on a separate lane next to the bus, and coloured lines are returned last so they are drawn on top. Siblings who don't share a visible parent, and cousins added by hand (not those already implied by linked parents, via getDerivedCousinIds()), get a bracket above their cards. With the 'curved' LineStyle, each parent-to-child link is instead an S-curve ending in an arrowhead, and brackets become arches. FamilyTree() calls it whenever the tree, positions or line style change and stores the chosen style under 'family-tree-line-style' in localStorage.",
+
+      file: "src/utils/familyTreeLines.ts",
+    },
   ],
 },
 {
@@ -768,6 +840,36 @@ const PROJECTS: Project[] = [
         "onLanguageChange(language)",
       ],
     },
+    {
+      name: "Tree helpers (toggleNode() / renameNode() / deleteNode() / addNode())",
+      description:
+        "Immutable updates to the project tree: collapse or expand, rename, delete and add a child.",
+
+      detail:
+        "Each function walks the tree recursively and returns a new tree with copies along the changed path, so React sees a new object and re-renders. toggleNode() flips the node's collapsed flag, renameNode() sets its title, addNode() appends a new node to the end of the parent's children, and deleteNode() filters the node (with its whole subtree) out of whichever children list holds it. deleteNode() only looks at children, so the root itself can't be deleted. ProjectTree() calls them inside updateTree().",
+
+      file: "src/utils/treeUtils.ts",
+    },
+    {
+      name: "moveTreeNode()",
+      description:
+        "Moves a dragged node, with its subtree, inside the node it was dropped on.",
+
+      detail:
+        "Called from Tree()'s onDragEnd with the dragged and target ids. It removes the dragged node from wherever it is, then appends it as the last child of the target and expands the target so the moved node is visible. Dropping a node on itself does nothing. There is no check that the target is outside the dragged subtree: if a node is dropped on one of its own descendants, the target is removed along with it and is not found again, so the whole branch disappears from the tree.",
+
+      file: "src/utils/treeNotionMove.ts",
+    },
+    {
+      name: "codeEditing.ts (code block helpers)",
+      description:
+        "The language list and the pure text-editing functions behind CodeBlock().",
+
+      detail:
+        "CODE_LANGUAGES lists the 17 languages a code block can be labelled with (Plain text, TypeScript, C#, SQL, Shell and so on), DEFAULT_LANGUAGE is TypeScript for new blocks, and languageLabel() falls back to 'Plain text' for unknown values. Every editing helper takes the current value and selection and returns an Edit ({ value, selectionStart, selectionEnd }), or null when it doesn't apply: indentSelection() for Tab and Shift+Tab with a two-space INDENT, newlineWithIndent() for Enter, typeOpener() / typeCloser() for bracket pairs, and backspacePair() for removing an empty pair. lineCount() feeds the line-number gutter. Keeping these free of the DOM is what lets codeEditing.test.ts cover them.",
+
+      file: "src/utils/codeEditing.ts",
+    },
   ],
 },
   {
@@ -775,7 +877,7 @@ const PROJECTS: Project[] = [
     label: "Warhammer Toolkit",
     tag: "tool",
     route: "/warhammer-toolkit",
-    description: "Exact-odds toolkit for Warhammer 40K 10th edition — a Mathhammer calculator for one attack sequence, a Battle tab that pits two units against each other over several rounds, and a Game Tracker for rounds, phases, CP and victory points.",
+    description: "Exact-odds toolkit for Warhammer 40K 10th edition — a Mathhammer calculator for one attack sequence, a Battle tab that pits two units against each other over several rounds, a Game Tracker for rounds, phases, CP and victory points, and a Dice Tester that checks whether a physical die is fair.",
     tree: {
       name: "WarhammerToolkit()",
       children: [
@@ -826,6 +928,7 @@ const PROJECTS: Project[] = [
             { name: "GameLog()" },
           ],
         },
+        { name: "DiceTester()" },
       ],
     },
     improvements: [
@@ -911,6 +1014,13 @@ const PROJECTS: Project[] = [
         state: ["drafts: [PlayerDraft, PlayerDraft]", "firstPlayer: 0 | 1", "mission: string"],
       },
       {
+        name: "DiceTester()",
+        description: "Dice Tester tab: roll a real d4–d20, tap each result, and see whether the die looks fair.",
+        detail: "Holds the chosen die and a separate count list per die size, so switching dice keeps each one's rolls, and saves both under 'whk-dice-tester-v1' in localStorage (a broken or blocked store just falls back to memory). Each tap adds one to a face and pushes it onto an undo history, which is not saved and is cleared when the die changes. 'Type in totals instead' shows a number input per face, and 'Reset' clears the current die. The results panel runs analyzeRolls() on every render and shows a verdict box, tiles for rolls, average (against the fair average) and chi-square, a bar per face with a marker for what a fair die would give and a ▲/▼ flag for faces rolled too often or too rarely, and a 'Rolling X or higher' table comparing this die with a fair one, in percentage points. This tab replaced the old Dice Balance Tester page: /dice-balance-tester now redirects to /warhammer-toolkit?tab=dice.",
+        file: "src/components/WarhammerToolkit/DiceTester.tsx",
+        state: ["stored: { die: DieSize; counts: Partial<Record<DieSize, number[]>> }", "history: number[]", "typing: boolean"],
+      },
+      {
         name: "calculate()",
         description: "Exact Mathhammer result for a set of attack profiles against one target — expected values per weapon, kill distribution and wipe chance.",
         detail: "Validates the target (T ≥ 1, Sv 2–7, W and models 1–100), then builds full probability distributions with no random simulation. The steps are attacks (including Blast and Rapid Fire), hit roll (Torrent, Heavy, crits, Sustained / Lethal Hits, re-rolls), wound roll (S vs T table, Lance, Anti-X, Twin-linked), save (AP, cover, invuln, Devastating Wounds), damage (Melta, −1 Damage, Feel No Pain), and finally allocation model by model, where excess damage on a model is lost. Returns a MathhammerResult with per-profile ProfileResult rows, expectedDamage, expectedKills, killDistribution, killAtLeast and wipeChance. Bad stat strings throw MathhammerInputError with a readable message.",
@@ -933,6 +1043,30 @@ const PROJECTS: Project[] = [
         description: "Pure reducer for the game tracker — advances phases and turns, adjusts CP, scores VP, toggles the painted bonus and unit casualties, and ends the game.",
         detail: "Handles the GameAction union: nextPhase, adjustCp, score, togglePainted, toggleUnit and endGame. nextPhase steps through PHASES (command → movement → shooting → charge → fight), hands over to the second player, then moves to the next round. Both players gain 1 CP at every Command phase, and the game ends automatically after round 5 (ROUNDS). CP and per-round scores never go below 0. getScore() caps primary at 50 and secondary at 40, and adds 10 for a painted army. Every change appends a LogEntry. Actions on a finished game, and changes that don't change anything, return the same object so the UI can skip undo entries. createGame() builds the initial GameState.",
         file: "src/utils/gameTracker.ts",
+      },
+      {
+        name: "analyzeRolls()",
+        description: "Says how far a die's face counts are from what a fair die would give: chi-square, p-value, a verdict and per-face ranges.",
+        detail: "Pure function, tested in diceTest.test.ts. chiSquare() compares each count with total / sides, and chiSquarePValue() turns it into the chance that a fair die would look at least this uneven, using the regularised upper incomplete gamma function (a series or continued fraction, with a Lanczos logGamma). The verdict is 'empty' with no rolls, 'need-more' below 5 rolls per face, 'biased' when p < 0.01, 'suspicious' when p < 0.05 and 'fair' otherwise. Each face gets a 95% Wilson score interval for its true share (wilsonInterval(), which behaves well with few rolls), and is flagged high or low once there are enough rolls and 1 / sides falls outside that range. It also returns the average roll against (sides + 1) / 2 and the share of rolls at 2+, 3+ and so on up to the top face, the way Warhammer rolls are read. DIE_SIZES lists the supported dice (4, 6, 8, 10, 12, 20).",
+        file: "src/utils/diceTest.ts",
+      },
+      {
+        name: "Army data helpers (listFactions() / listDatasheets() / listWeapons() / loadArmyLists())",
+        description: "Reads the Army Builder's units, characters and saved armies into the shapes the toolkit's pickers need.",
+        detail: "listFactions() collects the distinct faction ids from units and characters, and factionLabel() turns 'space-marines' into 'Space Marines'. listDatasheets() gives one Datasheet per unit and character in a faction, with its first model-count option as the default model count and every wargear option marked as default or optional, dropping sheets that have no weapon profiles. listWeapons() flattens a sheet into one choice per weapon profile, labelled 'Name – profile (range)', with default wargear counting for every model and optional wargear for one. loadArmyLists() reads 'army-builder-saves' from localStorage, skips entries that don't look like a saved army, and lists each army's units (with model count and points for that count), attached characters, attached units and standalone characters as { name, points }. Used by WeaponRowsEditor() and GameSetup().",
+        file: "src/components/WarhammerToolkit/armyData.ts",
+      },
+      {
+        name: "ProfileRow / newRow() / rowsToProfiles()",
+        description: "The weapon row type edited in Mathhammer and Battle, a factory for a blank row, and the conversion to AttackProfile.",
+        detail: "A ProfileRow is an AttackProfile with a React key, keywords kept as one comma-separated string so they can be typed freely, and the faction, sheet and weapon picked in WeaponRowsEditor(). newRow(models = 10) returns a Boltgun row (A2, BS 3+, S4, AP0, D1) with a key from a module-level counter. rowsToProfiles() splits the keyword string on commas, trims each keyword and drops empty ones before the rows go to calculate() or the battle functions.",
+        file: "src/components/WarhammerToolkit/profileRows.ts",
+      },
+      {
+        name: "percent() / decimal()",
+        description: "Number formatting shared by Mathhammer, Battle and DuelChart.",
+        detail: "percent() writes a 0–1 chance as a whole percentage, with one decimal below 1% and '<0.1%' for anything smaller than that but above zero, so a tiny chance never shows as 0%. decimal() gives two decimals, or none from 100 upwards.",
+        file: "src/components/WarhammerToolkit/format.ts",
       },
     ],
   },
@@ -1075,6 +1209,12 @@ const PROJECTS: Project[] = [
         detail: "wrathGloryData.derivedTraits() and skillPool(); dragonbaneData.derivedStats(), baseChance(), skillLevel(), damageBonus() and movement(); cocData.derivedStats(), thresholds(), damageBonusAndBuild(), moveRate() and skillValue(); dwRealData.bonusOf() and skillTarget(). Each data file also exports createDefault*() and normalize*() for its system. Covered by src/utils/rpgSystems.test.ts, which checks the rules tables and a JSON round trip for the new templates.",
         file: "src/components/WrathGlory/wrathGloryData.ts, src/components/Dragonbane/dragonbaneData.ts, src/components/CallOfCthulhu/cocData.ts, src/components/DeathwatchReal/dwRealData.ts",
       },
+      {
+        name: "makeId() / toInt()",
+        description: "Small shared helpers: a short unique id for new list items, and a forgiving whole-number parser for sheet inputs.",
+        detail: "makeId() joins Date.now() with six random hex characters, which is unique enough for rows created in one browser and short enough to read in saved JSON. toInt() parses a typed value into a whole number, returning the fallback (0 unless given) for blanks and junk, and truncating decimals. Used by the character sheets, rpgSheets.ts, the DM Screen and the Warhammer Toolkit's DiceTester().",
+        file: "src/utils/makeId.ts",
+      },
     ],
   },
   {
@@ -1082,7 +1222,7 @@ const PROJECTS: Project[] = [
     label: "DM Screen",
     tag: "tool",
     route: "/dm-screen",
-    description: "A game master's screen for any tabletop system — an initiative and HP tracker, sheets for named NPCs and loot, notes, story boards of connected cards, and a map maker with fog of war and a live players' window.",
+    description: "A game master's screen for any tabletop system — an initiative and HP tracker, sheets for the party, NPCs, monsters, locations, items and quests, notes and session recaps, a campaign wiki that links them all, an in-game calendar with weather and time skips, story boards of connected cards, and a map maker with fog of war and a live players' window.",
     tree: {
       name: "DmScreenPage()",
       children: [
@@ -1094,7 +1234,26 @@ const PROJECTS: Project[] = [
               children: [
                 {
                   name: "CombatantRow()",
-                  children: [{ name: "AttackList()" }],
+                  children: [
+                    { name: "AttackList()" },
+                    { name: "TrackerList()" },
+                    { name: "DeathSaveTracker()" },
+                    { name: "ConfirmButton()" },
+                  ],
+                },
+              ],
+            },
+            {
+              name: "PlayerManager()",
+              children: [
+                {
+                  name: "PlayerSheet()",
+                  children: [
+                    { name: "TrackerList()" },
+                    { name: "DeathSaveTracker()" },
+                    { name: "ImageField()" },
+                    { name: "RecordDialog()" },
+                  ],
                 },
               ],
             },
@@ -1106,6 +1265,23 @@ const PROJECTS: Project[] = [
                   children: [{ name: "AttackList()" }, { name: "ImageField()" }],
                 },
               ],
+            },
+            {
+              name: "QuestManager()",
+              children: [{ name: "QuestSheet()" }],
+            },
+            {
+              name: "MonsterManager()",
+              children: [
+                {
+                  name: "MonsterSheet()",
+                  children: [{ name: "AttackList()" }, { name: "ImageField()" }],
+                },
+              ],
+            },
+            {
+              name: "LocationManager()",
+              children: [{ name: "LocationSheet()" }],
             },
             {
               name: "ItemManager()",
@@ -1121,72 +1297,169 @@ const PROJECTS: Project[] = [
               children: [{ name: "NoteSheet()" }],
             },
             {
+              name: "RecapManager()",
+              children: [
+                {
+                  name: "RecapSheet()",
+                  children: [{ name: "RecapReader()" }, { name: "RecapDialog()" }],
+                },
+              ],
+            },
+            {
+              name: "LoreWiki()",
+              children: [
+                { name: "LoreHelp()" },
+                { name: "PageListItem()" },
+                {
+                  name: "LorePageView()",
+                  children: [{ name: "LinkedText()" }, { name: "LinkList()" }, { name: "CreatePrompt()" }],
+                },
+                { name: "LoreHome()", children: [{ name: "CreatePrompt()" }] },
+              ],
+            },
+            {
+              name: "CalendarView()",
+              children: [{ name: "CalendarSettings()" }],
+            },
+            {
               name: "StoryBoard()",
               children: [
-                { name: "NodeCard()", children: [{ name: "CardTag()" }] },
-                { name: "NodeInspector()", children: [{ name: "HolderField()" }, { name: "ImageField()" }] },
+                { name: "NodeCard()", children: [{ name: "CardTag()" }, { name: "CardButton()" }] },
+                {
+                  name: "NodeInspector()",
+                  children: [
+                    { name: "HolderField()" },
+                    { name: "ImageField()" },
+                    { name: "TravelField()" },
+                    { name: "TimeSkipField()" },
+                  ],
+                },
                 { name: "LinkInspector()" },
+                { name: "RecapDialog()" },
               ],
             },
             {
               name: "MapMaker()",
               children: [
-                { name: "MapContent()" },
+                { name: "MapContent()", children: [{ name: "ItemShape()", children: [{ name: "AssetArt()" }] }, { name: "StrokeShape()" }] },
+                { name: "FogLayer()" },
+                { name: "AssetIcon()" },
                 { name: "ItemInspector()" },
                 { name: "StrokeInspector()" },
                 { name: "RoomInspector()" },
               ],
             },
+            { name: "SettingsView()" },
           ],
         },
-        { name: "PlayerMapView()" },
+        {
+          name: "PlayerMapView()",
+          children: [{ name: "MapContent()" }, { name: "FogLayer()" }],
+        },
       ],
     },
     improvements: [
-      "Warn when localStorage is full — saving fails silently today, and imported images (even downscaled) can fill the ~5 MB quota.",
+      "Warn when localStorage is full — saving still fails silently (the page keeps working in memory), and imported images (even downscaled) can fill the ~5 MB quota.",
       "Add dice rolling to attacks in the tracker: click an attack to roll its to-hit and damage, and apply the damage to the target.",
-      "Let a PC combatant link to a character in Roleplaying Sheets so their HP and AC stay in sync between the two pages.",
+      "Let a player sheet in the Players tab link to a character in Roleplaying Sheets so HP, AC and trackers stay in sync between the two pages.",
       "Add undo to the story board and tracker (the map maker already has a 100-step history).",
-      "Search across everything — encounters, NPCs, items and cards on every board — from one box.",
+      "Search everything from one box — the Lore search already covers every sheet, note and recap, but not encounters or story board cards.",
       "Let several DMs share a campaign by syncing the data to a backend instead of only localStorage and JSON export.",
+      "Suggest [[links]] while typing in a text field, from the names in buildLoreIndex(), instead of having to spell the page name exactly.",
+      "Export or print a session recap as a players' handout, with [[links]] turned into plain names.",
     ],
     functions: [
       {
         name: "DmScreen()",
-        description: "Root page. Owns all DM screen data, saves it to localStorage, and switches between the Tracker, NPCs, Items, Notes, Story Board and Map tabs.",
-        detail: "Loads a DmScreenData object with parseData() (falling back to createDefaultData()) and writes it back to localStorage under STORAGE_KEY \"dm-screen-v1\" in a useEffect on every change. The active tab is in the ?tab= search parameter. Export/Import JSON back up everything in one file. Jump helpers connect the tabs: runEncounter() opens an encounter in the tracker, openNpc() / openItem() / openNote() open a sheet, and showCard() switches the story board to a board and sets focusNodeId so that card is selected and centred. DmScreenPage() renders PlayerMapView instead when the URL has ?view=player.",
+        description: "Root page. Owns all DM screen data, saves it to localStorage, and switches between the Encounter Tracker, Players, NPCs, Quests, Monsters, Locations, Items, Notes, Session Recaps, Lore, Calendar, Story Board, Map and Settings tabs.",
+        detail: "Loads a DmScreenData object with parseData() (falling back to createDefaultData()) and writes it back to localStorage under STORAGE_KEY \"dm-screen-v1\" in a useEffect on every change; a full or blocked storage is caught and the page keeps working in memory. The active tab is in the ?tab= search parameter, and the Lore tab also keeps the open page in ?page= so Back walks through followed links. Export/Import JSON back up everything in one file. Jump helpers connect the tabs: runEncounter() opens an encounter in the tracker, openNpc() / openPlayer() / openItem() / openNote() / openQuest() / openMonster() / openLocation() / openRecap() open a sheet, openCalendar() shows a day, openForEditing() maps a Lore page kind to its own tab, openLore() opens a Lore page, and showCard() switches the story board to a board and sets focusNodeId so that card is selected and centred. When the calendar moves onto or past an event, a 'Time passed' banner lists them (passedEvents()) until dismissed. DmScreenPage() renders PlayerMapView instead when the URL has ?view=player.",
         file: "src/pages/dm-screen.tsx",
-        state: ["data: DmScreenData", "importError: string", "focusNodeId: string | null"],
+        state: ["data: DmScreenData", "importError: string", "focusNodeId: string | null", "focusDate: CalendarDate | null"],
       },
       {
         name: "EncounterTracker()",
-        description: "Initiative tracker: a list of encounters, the turn and round bar, initiative rolls, an add-combatants form and one row per combatant.",
-        detail: "Combatants are sorted with sortCombatants() (initiative, then modifier, then name). nextTurn() and previousTurn() move the turn and roll over into new rounds. 'Roll initiative' rolls d20 + modifier for everyone or only non-PCs. The add form can add up to 20 copies at once, numbering duplicate names with duplicateName(). Once every PC or every monster is at 0 HP, encounterOutcome() decides the winner and a 'Combat over' banner shows it, which linked story board cards also show. Deleting an encounter unlinks it from cards on every board.",
+        description: "Initiative tracker: a list of encounters, the turn and round bar, initiative rolls, add-the-party buttons, an add-combatants form, the monster library and one row per combatant.",
+        detail: "Combatants are sorted with sortCombatants() (initiative, then modifier, then name). nextTurn() and previousTurn() move the turn and roll over into new rounds. 'Roll initiative' rolls d20 + modifier for everyone or only non-PCs. '+ Add party' adds every player not yet in the fight (addPartyToEncounter()) and '+ Player…' adds one. The add form can add up to 20 copies at once, numbering duplicate names with duplicateName(), and 'From the monster library' adds copies of a saved monster with combatantsFromMonster(). Once every PC or every monster is at 0 HP, encounterOutcome() shows a 'Combat over' banner with 'Record the win / loss & remove the party', which runs recordResult(): the win or loss goes on each player's sheet, the players leave the encounter and the encounter remembers the result until 'Reopen encounter'. Deleting an encounter unlinks it from cards on every board.",
         file: "src/components/DmScreen/EncounterTracker.tsx",
-        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onOpenNpc: (npcId: string) => void"],
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onOpenNpc: (npcId: string) => void", "onOpenPlayer: (playerId: string) => void", "onOpenMonster: (monsterId: string) => void"],
         state: ["form: typeof EMPTY_FORM"],
       },
       {
         name: "CombatantRow()",
-        description: "One combatant: initiative, name, type, AC, size/type and alignment, HP with damage/heal, conditions, attacks, loot and notes.",
-        detail: "Damage eats temporary HP first (applyDamage()) and healing stops at max HP (applyHeal()). A combatant at 0 HP is marked Down. Conditions come from STANDARD_CONDITIONS or a custom text box. Attacks, loot and notes stay hidden behind '+ Attacks', '+ Loot' and '+ Notes' links until they have content, so rows stay compact. Loot and notes have a confirm-to-remove button. A combatant added from an NPC shows a '🔗 shared with … NPC sheet' line, sends attack and loot edits through onShare (shareWithNpc()) instead of changing only itself, and lists the items that NPC carries under the loot.",
+        description: "One combatant: initiative, name, type, AC, size/type and alignment, HP with damage/heal, death saves, conditions, trackers, attacks, loot and notes.",
+        detail: "Damage eats temporary HP first (applyDamage()) and healing stops at max HP (applyHeal()); healing back above 0 clears death saves (clearDeathSavesIfUp()). A combatant at 0 HP is marked Down, and a PC at 0 HP shows a DeathSaveTracker. Conditions come from STANDARD_CONDITIONS or a custom text box. Trackers, attacks, loot and notes stay hidden behind '+ Trackers', '+ Attacks', '+ Loot' and '+ Notes' links until they have content, so rows stay compact. A combatant added from an NPC sends attack and loot edits through onShare (shareWithNpc()) and lists the items that NPC carries; one added from a player shares HP, AC, trackers and death saves with the player sheet through shareWithPlayer(). 'Save to library' turns a typed-in combatant into a library monster (monsterFromCombatant()) and then shows '✓ In library →'.",
         file: "src/components/DmScreen/EncounterTracker.tsx",
-        props: ["combatant: Combatant", "isTurn: boolean", "update: (change: (current: Combatant) => Combatant) => void", "onDuplicate: () => void", "onRemove: () => void", "npc?: Npc", "carrying: Item[]", "onShare: (fields: SharedNpcFields) => void", "onOpenNpc: (npcId: string) => void"],
+        props: ["combatant: Combatant", "isTurn: boolean", "update: (change: (current: Combatant) => Combatant) => void", "onDuplicate: () => void", "onRemove: () => void", "npc?: Npc", "carrying: Item[]", "onShare: (fields: SharedNpcFields) => void", "onOpenNpc: (npcId: string) => void", "player?: Player", "onOpenPlayer: (playerId: string) => void", "onSaveToLibrary: () => string", "onOpenMonster: (monsterId: string) => void"],
         state: ["amount: string", "custom: string", "notesOpen: boolean", "attacksOpen: boolean", "lootOpen: boolean"],
       },
       {
         name: "AttackList()",
-        description: "Editable weapon and spell list with a Weapon / Magic toggle per row, shared by NPC sheets and combatants.",
+        description: "Editable weapon and spell list with a Weapon / Magic toggle per row, shared by NPC sheets, monster sheets and combatants.",
         detail: "Each Attack has a kind, name, to hit (or DC), damage and range, all free text so it works for any system. Switching to Magic relabels the fields (Spell, Attack / DC, Damage / effect) and changes the placeholders. '+ Weapon' and '+ Magic' add rows with createAttack(), and × removes one.",
         file: "src/components/DmScreen/AttackList.tsx",
         props: ["attacks: Attack[]", "onChange: (attacks: Attack[]) => void"],
       },
       {
+        name: "TrackerList()",
+        description: "Named counters with − and +, an optional max, what rest refills them and a short note — spell slots, inspiration, hit dice, ammo.",
+        detail: "Each Tracker is changed through stepTracker(), which keeps the value between 0 and its max (no max means it only stops at 0). 'Refills on' (TRACKER_RESETS: never, short rest, long rest) is only enabled once the tracker has a max, and restParty() uses it. Quick-pick buttons add Inspiration, Spell slots, Hit dice and Ammo with sensible maxes, and hide once the list already has one of that name. Used on player sheets and on combatant rows.",
+        file: "src/components/DmScreen/TrackerList.tsx",
+        props: ["trackers: Tracker[]", "onChange: (trackers: Tracker[]) => void"],
+      },
+      {
+        name: "DeathSaveTracker()",
+        description: "Three success and three failure boxes for someone at 0 HP, with a 'Roll d20' button and a Dying / Stable / Dead label.",
+        detail: "Clicking a box sets the count to that box, and clicking the last filled box empties it so a misclick is easy to undo. 'Roll d20' uses rollD20() and rollDeathSave(): 10 or more is a success, a 1 counts as two failures, and a 20 brings them back with 1 HP. deathSaveState() decides the label; once stable or dead the roll button becomes 'Clear'. The last roll is shown with what it meant.",
+        file: "src/components/DmScreen/DeathSaveTracker.tsx",
+        props: ["target: { hp: number; deathSaves: DeathSaves }", "onChange: (fields: { hp: number; deathSaves: DeathSaves }) => void"],
+        state: ["lastRoll: number | null"],
+      },
+      {
+        name: "ConfirmButton()",
+        description: "A delete button that needs a second click instead of a browser confirm().",
+        detail: "The first click arms it and swaps the label to confirmLabel (\"Click again to delete\" by default); a second click runs onConfirm. It disarms itself after 3 seconds or when it loses focus. Used for every delete in the DM screen, the party rest buttons and removing calendar events and win/loss results.",
+        file: "src/components/DmScreen/ConfirmButton.tsx",
+        props: ["label: string", "confirmLabel?: string", "className?: string", "onConfirm: () => void"],
+        state: ["armed: boolean"],
+      },
+      {
+        name: "PlayerManager()",
+        description: "The Players tab: a searchable list of the party, party short and long rests, and the selected player's sheet.",
+        detail: "playerMatches() filters the list, which shows class, player name, HP and the win–loss record. The party rest buttons run restParty(): every player and every combatant linked to one gets what the rest gives back (restFields()) and the calendar moves on by the rest length from Settings. PlayerSheet() edits player name, ancestry and class, level, AC, HP, max and temp HP, initiative modifier, passive perception, speed, trackers, notes and an image. HP, AC, trackers and death saves go through shareWithPlayer() so they also change on the player in every encounter, and a '🔗 shared with … in Ambush, Finale' line says where. A DeathSaveTracker shows at 0 HP. '+ Add to encounter' adds them with combatantFromPlayer(), and the 'W/L 3–1' button opens RecordDialog() with wins, losses, win rate and average rounds from playerRecord(), and a list of fights that link back to the encounter.",
+        file: "src/components/DmScreen/PlayerManager.tsx",
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onOpenEncounter: (encounterId: string) => void"],
+        state: ["query: string", "rested: string"],
+      },
+      {
         name: "NpcManager()",
         description: "The NPCs tab: a searchable list of named NPCs and the selected NPC's sheet.",
-        detail: "npcMatches() filters the list so every typed word has to appear somewhere on the sheet. NpcSheet() edits race, alignment, AC, HP, attacks, loot, location (suggesting Location card titles from locationNames()), notes and an image. Its side column lists the story board cards linked to the NPC (npcCards()), the items they carry (itemsHeldBy(), with '→ Party' and 'Give an item…'), and buttons that put the NPC on the current board or add them to the active encounter through combatantFromNpc().",
+        detail: "npcMatches() filters the list so every typed word has to appear somewhere on the sheet. NpcSheet() edits race, alignment, AC, HP, attacks, loot, location (suggesting Location card titles from locationNames()), notes and an image. Its side column lists the story board cards linked to the NPC (npcCards()), the quests they take part in and in which stages (npcQuests()), the items they carry (itemsHeldBy(), with '→ Party' and 'Give an item…'), and buttons that put the NPC on the current board or add them to the active encounter through combatantFromNpc().",
         file: "src/components/DmScreen/NpcManager.tsx",
-        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onShowCard: (boardId: string, nodeId: string) => void", "onOpenItem: (itemId: string) => void"],
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onShowCard: (boardId: string, nodeId: string) => void", "onOpenItem: (itemId: string) => void", "onOpenQuest: (questId: string) => void"],
+        state: ["query: string"],
+      },
+      {
+        name: "QuestManager()",
+        description: "The Quests tab: quests with four fixed stages (beginning, midway, end, reward), the NPCs in each stage and lines of dialogue that come up once something has happened.",
+        detail: "The list shows each quest's current stage from currentQuestStage() (the first stage not yet done, or '✓ Finished') and is searched with questMatches(). QuestSheet() opens on the stage the party is on and edits the title, summary and, per stage, what happens, a done tick, the NPCs involved and dialogue lines with a 'When…' trigger, a speaker (stage NPCs first) and a 'Said it' tick. The Reward stage also has free-text rewards and reward items from the Items tab. Changes go through updateQuest() and updateQuestStage(). '+ Put on story board' runs putQuestOnBoard(), which adds four connected Quest cards, one per stage, that show what is written here.",
+        file: "src/components/DmScreen/QuestManager.tsx",
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onShowCard: (boardId: string, nodeId: string) => void", "onOpenNpc: (npcId: string) => void", "onOpenItem: (itemId: string) => void"],
+        state: ["query: string", "stageId: QuestStageId (QuestSheet)"],
+      },
+      {
+        name: "MonsterManager()",
+        description: "The Monsters tab: a library of reusable stat blocks that can be added to any encounter as many times as needed.",
+        detail: "monsterMatches() searches name, type, challenge and traits. An empty library offers '+ Add starter monsters' (starterMonsters()). MonsterSheet() edits creature type, alignment, challenge, AC, average HP, hit dice, initiative modifier, speed, attacks, traits, loot and an image; hit dice that rollFormula() can't read show a warning and copies fall back to the average. 'Add to an encounter' picks an encounter and a count (up to 20) and runs combatantsFromMonster(), which names copies so they don't clash ('Goblin', 'Goblin 2') and can roll each copy's HP. Each copy is its own combatant, so editing the library later doesn't change fights already set up.",
+        file: "src/components/DmScreen/MonsterManager.tsx",
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onRunEncounter: (encounterId: string) => void"],
+        state: ["query: string", "encounterId: string", "count: string", "rollHp: boolean", "added: string"],
+      },
+      {
+        name: "LocationManager()",
+        description: "The Locations tab: towns, taverns and dungeons with a description, notable feature, who's there, a rumour and a danger, each typed or generated.",
+        detail: "locationMatches() searches the list. '+ Blank location' or '🎲 Generate one' (generateLocation()) adds a location. LocationSheet() has a 🎲 button next to every field that rerolls only that field for the location's type (generateField()), and '🎲 Generate all' refills every generated field while keeping the notes. The type field suggests LOCATION_KINDS. The side column lists NPCs whose location matches the name, the location's story board cards (locationCards()) and '+ Put on story board', which adds a linked Location card.",
+        file: "src/components/DmScreen/LocationManager.tsx",
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onShowCard: (boardId: string, nodeId: string) => void"],
         state: ["query: string"],
       },
       {
@@ -1198,14 +1471,6 @@ const PROJECTS: Project[] = [
         state: ["filter: Filter", "query: string"],
       },
       {
-        name: "NoteManager()",
-        description: "The Notes tab: free-form notes for lore, rumours and recaps, searchable and pinnable, which Note cards on the story board link to.",
-        detail: "Lists notes with sortedNotes() (pinned first, then most recently edited) filtered by noteMatches(). NoteSheet() edits the title and a large text box through updateNote(), which stamps updatedAt for the 'Edited 2 days ago' line, and has a pin toggle, the note's story board cards (noteCards()) and '+ Put on story board'. Unlike NPC and item cards, a linked Note card edits the note itself from the story board's side panel. removeNote() leaves its cards on the board with the note's title and text copied back onto them.",
-        file: "src/components/DmScreen/NoteManager.tsx",
-        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onShowCard: (boardId: string, nodeId: string) => void"],
-        state: ["query: string"],
-      },
-      {
         name: "HolderField()",
         description: "'Who has it' control for an item: not found yet, an NPC, a location or the party.",
         detail: "Changing the holder kind goes through holderOfKind() so nothing from the old holder is kept. An NPC holder picks from the NPCs tab (the option is disabled when there are none), a location holder suggests Location card titles, and a party holder has an optional 'Carried by' name. Used on item sheets and in the story board side panel for linked item cards.",
@@ -1213,20 +1478,87 @@ const PROJECTS: Project[] = [
         props: ["id: string", "holder: ItemHolder", "data: DmScreenData", "onChange: (holder: ItemHolder) => void"],
       },
       {
+        name: "ImageField()",
+        description: "Import, replace or remove an image on a sheet or card; image files can also be dropped on it.",
+        detail: "Reads the file with readImageFile() from imageFile.ts and shows its error message if the browser can't read it. Dropped files go through imageFileIn(), which picks the first image from the drop. Used on NPC, player, monster and item sheets and in the story board side panel.",
+        file: "src/components/DmScreen/ImageField.tsx",
+        props: ["image?: string", "alt: string", "onChange: (image: string | undefined) => void"],
+        state: ["error: string"],
+      },
+      {
+        name: "readImageFile()",
+        description: "Scales an imported image down to at most 800 px on its longest side and re-encodes it as WebP, so the DM screen still fits in localStorage.",
+        detail: "Loads the file through an object URL into an Image, draws it onto a canvas at the reduced size and returns canvas.toDataURL(\"image/webp\", 0.85), which keeps transparency and stays small. Rejects with \"That file isn't an image the browser can read.\" when it fails to load. imageFileIn() finds the first image file in a DataTransfer, for drops on ImageField and on the story board.",
+        file: "src/components/DmScreen/imageFile.ts",
+      },
+      {
+        name: "NoteManager()",
+        description: "The Notes tab: free-form notes for lore, rumours and secrets, searchable and pinnable, which Note cards on the story board link to.",
+        detail: "Lists notes with sortedNotes() (pinned first, then most recently edited) filtered by noteMatches(). NoteSheet() edits the title and a large text box through updateNote(), which stamps updatedAt for the 'Edited 2 days ago' line, and has a pin toggle, the note's story board cards (noteCards()) and '+ Put on story board'. '🎬 Make session recap' moves a note written as a session write-up into the Session Recaps tab with noteToRecap() and opens it there. Unlike NPC and item cards, a linked Note card edits the note itself from the story board's side panel. removeNote() leaves its cards on the board with the note's title and text copied back onto them.",
+        file: "src/components/DmScreen/NoteManager.tsx",
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onShowCard: (boardId: string, nodeId: string) => void", "onOpenRecap: (recapId: string) => void"],
+        state: ["query: string"],
+      },
+      {
+        name: "RecapManager()",
+        description: "The Session Recaps tab: a numbered write-up of each session, with the real-world day it was played, the in-game date and what happened.",
+        detail: "Sessions are listed newest first with sortedRecaps() and searched with recapMatches(). '+ New session recap' numbers it with nextSessionNumber(), dates it today with todayIso() and fills the in-game date from the calendar. RecapSheet() edits the number, title, dates ('📅 Today in game' copies the calendar's date) and the text, and switches between ✍ Write and 📖 Read; RecapReader() shows the text with [[Name]] links that open the page in the Lore tab, and names with no page in red. A recap can be linked to an ended End story card (endedCards(), each card only once): then '📜 What happened on the board' opens RecapDialog, '+ Add board summary to the text' appends recapDraft() and 'Show card →' jumps to the card. ← and → move to the older and newer session.",
+        file: "src/components/DmScreen/RecapManager.tsx",
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onShowCard: (boardId: string, nodeId: string) => void", "onOpenLore: (ref: LoreRef) => void"],
+        state: ["query: string", "mode: 'write' | 'read' (RecapSheet)", "boardRecapShown: boolean (RecapSheet)"],
+      },
+      {
+        name: "RecapDialog()",
+        description: "'Previously on…': what happened on a story board as a modal, one step per card in story order.",
+        detail: "Opens a <dialog> with showModal() on mount and closes on ×, Escape or a click on the backdrop. Each step shows how the story got there, the card kind, its title, '✓ chosen' for a ticked branch, 'Instead of: …' for the branches passed over, details such as a fight's outcome, and the card's text. When the board was never ended it says this is the story so far. Used by the story board's Show / Preview recap and by linked session recaps.",
+        file: "src/components/DmScreen/RecapDialog.tsx",
+        props: ["recap: StoryRecap", "ended: boolean", "onClose: () => void"],
+      },
+      {
+        name: "LoreWiki()",
+        description: "The Lore tab: a campaign wiki where every NPC, player, monster, location, item, quest, note and session recap is a page, linked to the others.",
+        detail: "Builds the whole wiki with buildLoreIndex(data) in a useMemo; nothing is stored separately. The open page is in ?page=npc:id so the browser's Back button walks back through followed links. The side list groups pages by kind (or shows searchLore() results). LorePageView() shows the page's text sections through LinkedText(), an info box with the image and facts, 'Links to' and 'Mentioned in' grouped by reason through LinkList() ('carries', 'is found at', 'involves', 'mentions'…), its story board cards (loreCards()), the story recaps that mention it (loreSessions()) and '✎ Edit in …', which opens the page's own tab. A red [[link]] to a name with no page opens CreatePrompt(), which creates it as a note, NPC, location or item. LoreHome() shows counts per kind, the most linked pages and 'Wanted pages'. A 'ⓘ How it works' button in the panel header opens LoreHelp(), a dialog explaining pages, the automatic links from the data, [[Name]] and [[Name|text]] links, red wanted links that can be created, Mentioned in / Links to, the story board and recap sections, and that everything is worked out from DmScreenData by buildLoreIndex().",
+        file: "src/components/DmScreen/LoreWiki.tsx",
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onEdit: (kind: LoreKind, id: string) => void", "onShowCard: (boardId: string, nodeId: string) => void"],
+        state: ["query: string", "creating: string | null (LorePageView, LoreHome)"],
+      },
+      {
+        name: "CalendarView()",
+        description: "The Calendar tab: today's in-game date and time, weather and moon, buttons to move time, a month grid with events and a list of what's coming up.",
+        detail: "Time moves with −1 h, +10 min, +1 h, +8 h, +1 day and +1 week through advanceTime(), and the hour and minute can be typed. 'Make … today' jumps to the picked day with goToDate(). Each day can show its weather (weatherOn(), with 🎲 to reroll that day) and a dot for events. The picked day lists its events with notes, '+ Story board' to add a linked Time card, and links to cards already on a board (eventCards()); removeEvent() leaves those cards unlinked. 'Coming up' lists upcomingEvents(). CalendarSettings() edits the year, era, moon cycle, whether weather is generated, the weekdays and the months with their lengths (setMonths() keeps today and every event on a valid day). focusDate opens on a day, e.g. from a Time card.",
+        file: "src/components/DmScreen/CalendarView.tsx",
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "focusDate: CalendarDate | null", "onFocused: () => void", "onShowCard: (boardId: string, nodeId: string) => void"],
+        state: ["view: { year: number; month: number }", "selected: CalendarDate", "eventTitle: string", "settingsOpen: boolean"],
+      },
+      {
         name: "StoryBoard()",
-        description: "Pan-and-zoom board of story cards joined by labelled arrows, with several named boards and a side panel for editing.",
-        detail: "Works on activeBoard(data) and writes changes back with updateActiveBoard(). The board captures the pointer for panning, dragging cards by their header and dragging the ● handle onto another card to connect them. Wheel zoom uses a non-passive listener and zoomAt(). Ticking the branch the players took runs branchState(), which greys out the other branches and everything only reachable through them. Cards can link to an encounter, a named NPC, an item or a note; linked NPC and item cards take their title from it (cardTitle()) and only their notes can be edited, while a linked Note card shows the note and edits it in place. Dropping an image file on the board makes an image card. The side panel can be hidden and the board height dragged, both remembered per browser.",
+        description: "Pan-and-zoom board of story cards joined by labelled arrows, with several named boards, branch choices, time and travel cards, ending and resuming stories, and a side panel for editing.",
+        detail: "Works on activeBoard(data) and writes changes back with updateActiveBoard(). The board captures the pointer for panning, dragging cards by their header and dragging the ● handle onto another card to connect them. Shift/Ctrl-click or Shift-drag a box (nodesInRect()) selects several cards, which move and delete together (moveNodes(), removeNodes()); arrow keys nudge them. Wheel zoom uses a non-passive listener and zoomAt(). Links are drawn curved, straight or with right angles from the Settings tab. Ticking the branch the players took runs branchState(), which greys out the other branches. Cards can link to an encounter, NPC, item, note, quest stage, location or calendar event; Time and Travel cards skip the calendar on with timeSkip() (travel length from travelMinutes()). An End story card saves what happened with endStory() / storyRecap(), shows it in RecapDialog, can start a new board that resumes it, and '✍ Write recap' / '🎬 Session recap' runs recapFromEndCard() and opens the write-up in the Session Recaps tab. Dropping an image file makes an image card. The side panel can be hidden and the board height dragged, both remembered per browser.",
         file: "src/components/DmScreen/StoryBoard.tsx",
-        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onRunEncounter: (encounterId: string) => void", "onOpenNpc: (npcId: string) => void", "onOpenItem: (itemId: string) => void", "onOpenNote: (noteId: string) => void", "focusNodeId: string | null", "onFocused: () => void"],
-        state: ["connect: { from: string; point: Point } | null", "selection: Selection", "sizes: Record<string, Size>", "newKind: NodeKind", "layout: BoardLayout"],
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>", "onRunEncounter: (encounterId: string) => void", "onOpenNpc: (npcId: string) => void", "onOpenItem: (itemId: string) => void", "onOpenNote: (noteId: string) => void", "onOpenQuest: (questId: string) => void", "onOpenLocation: (locationId: string) => void", "onOpenCalendar: (date: CalendarDate) => void", "onOpenRecap: (recapId: string) => void", "focusNodeId: string | null", "onFocused: () => void"],
+        state: ["connect: { from: string; point: Point } | null", "selection: Selection", "group: string[]", "marquee: { a: Point; b: Point } | null", "sizes: Record<string, Size>", "newKind: NodeKind", "layout: BoardLayout", "recapShown: { recap: StoryRecap; ended: boolean } | null"],
       },
       {
         name: "MapMaker()",
-        description: "Battle map editor with premade pieces, freehand brushes, rooms, fog of war, PNG export and a players' window.",
-        detail: "Tools are select, erase, room, fog reveal/hide and the brushes. Pieces from the asset palette snap to the GRID (40 px) when snapping is on and can be rotated, duplicated and restacked. Rooms are drawn by dragging corners (roomFromCorners()), fog is painted with a brush or box (fogBox()) or revealed per room (revealRoom()). Changes are checkpointed into an undo/redo history of up to 100 steps. Export draws the map layers into a canvas and downloads a PNG. 'Open player view' opens /dm-screen?view=player in a popup, and another button moves the players' view to show what the DM is looking at. MapContent() from MapLayers.tsx draws the map for both, with audience \"player\" hiding hidden pieces and making fog solid.",
+        description: "Battle map editor with several maps, premade pieces, freehand brushes, rooms, fog of war, PNG export and a players' window.",
+        detail: "Tools are select, erase, room, fog reveal/hide and the brushes. Pieces from the asset palette snap to the GRID (40 px) when snapping is on (snapItem()) and can be rotated, duplicated and restacked. Rooms are drawn by dragging corners (roomFromCorners()), fog is painted with a brush or box (fogBox()) or revealed per room (revealRoom()). Changes are checkpointed into an undo/redo history of up to 100 steps, with Ctrl+Z / Ctrl+Y, Ctrl+D, Delete, R to rotate and V / E for tools. Export draws the map layers into a canvas and downloads a PNG. 'Open player view' opens /dm-screen?view=player in a popup, and another button moves the players' view to show what the DM is looking at.",
         file: "src/components/DmScreen/MapMaker.tsx",
         props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>"],
         state: ["tool: Tool", "selection: Selection", "draft: Draft | null", "category: AssetCategory", "snap: boolean", "historySize: { past: number; future: number }", "exporting: boolean", "fogShape: 'brush' | 'box'"],
+      },
+      {
+        name: "MapContent()",
+        description: "Draws one map as SVG — ground, rooms, pieces and strokes in stacking order — for both the DM's map maker and the players' window.",
+        detail: "MapPatterns() defines ground and floor patterns in world units so they line up with the grid. RoomLayer() draws all walls first and then all floors, so touching rooms open into each other. Road tiles and drawn roads are drawn in two passes (all edges, then all fills) so they merge without seams, and so do rivers and walls. With audience \"dm\" pieces marked hidden are faded; with \"player\" they aren't drawn. FogLayer() draws fog as an SVG mask that starts all fogged or all clear and applies each fog op in order: see-through for the DM, solid for the players.",
+        file: "src/components/DmScreen/MapLayers.tsx",
+        props: ["map: BattleMap", "audience: Audience"],
+      },
+      {
+        name: "AssetArt()",
+        description: "The top-down drawing for one map piece — houses, roofs, road tiles, trees, props and dungeon pieces — centred on 0,0.",
+        detail: "ART maps each asset key to an SVG drawing built from small helpers like GableRoof(), HipRoof(), Chimney() and Tree(). Colours are inline so an exported PNG looks the same as the screen. Road pieces take a RoadPart (\"edge\" or \"fill\") for the two-pass drawing. AssetIcon() draws a small preview of a piece for the palette. Sizes and names live in ASSETS in dmMap.ts.",
+        file: "src/components/DmScreen/mapAssets.tsx",
+        props: ["asset: string", "label?: string", "part?: RoadPart"],
       },
       {
         name: "PlayerMapView()",
@@ -1236,9 +1568,16 @@ const PROJECTS: Project[] = [
         state: ["data: DmScreenData | null", "view: MapView"],
       },
       {
+        name: "SettingsView()",
+        description: "The Settings tab: how long a short and a long rest take at your table, and how story board links are drawn.",
+        detail: "Rest lengths are edited as hours and minutes and stored as minutes in DmSettings (capped at a week), with a 'Reset to …' link when they differ from DEFAULT_SETTINGS (1 h and 8 h). The party rest buttons in the Players tab move the calendar on by this much. Link style chips switch the story board between curved, straight and right-angle links.",
+        file: "src/components/DmScreen/SettingsView.tsx",
+        props: ["data: DmScreenData", "setData: Dispatch<SetStateAction<DmScreenData>>"],
+      },
+      {
         name: "normalizeData()",
         description: "Turns any parsed JSON (old saves, imports, hand-edited files) into valid DmScreenData, or null if it isn't a DM screen.",
-        detail: "Validates every encounter, combatant, attack, board, card, link, NPC, item and map, filling in defaults for anything missing. Saves from before multiple boards had a single board, which becomes the first of the list. Links to encounters, NPCs or items that no longer exist are dropped, and links are re-added through addLink() so duplicate and dangling arrows disappear. parseData() wraps it with JSON.parse.",
+        detail: "Validates every encounter, combatant, attack, board, card, link, NPC, player, monster, location, item, note, session recap, quest, map, the calendar (normalizeCalendar()) and settings, filling in defaults for anything missing. Saves from before a tab existed simply get an empty list for it, and a single old board becomes the first of the list. Links to encounters, NPCs or items that no longer exist are dropped, links are re-added through addLink() so duplicate and dangling arrows disappear, and a session recap linked to an End story card that no longer exists keeps its text but loses the link. parseData() wraps it with JSON.parse.",
         file: "src/utils/dmScreen.ts",
       },
       {
@@ -1248,16 +1587,76 @@ const PROJECTS: Project[] = [
         file: "src/utils/dmScreen.ts",
       },
       {
+        name: "storyRecap()",
+        description: "What happened on a board up to an End story card: every card leading to it that isn't greyed out, in story order.",
+        detail: "Walks the arrows backwards from the end card (or takes the whole board if the end card isn't connected yet), drops cards ruled out by branchState(), and records each step's kind, title, text, the branch taken and the ones passed over, and details like a fight's outcome. endStory() saves it on the card, latestRecap() finds the newest one for a Resume story card, and recapDraft() turns it into one '- Title: text (details)' line per card for a session write-up.",
+        file: "src/utils/dmScreen.ts",
+      },
+      {
+        name: "recapFromEndCard()",
+        description: "Opens the session recap for an End story card, writing a first draft (and ending the story) if there isn't one yet.",
+        detail: "If recapForCard() already finds a recap for the card it just makes it the active one. Otherwise it ends the story if needed, then creates a SessionRecap titled after the board, numbered with nextSessionNumber(), played on todayIso(), dated in game from the recap's end date, with recapDraft() as the body and linked to the card. Returns the new data and the recap id. Related helpers: createSessionRecap(), recapLabel() ('Session 3: The Old Mill'), sortedRecaps(), updateSessionRecap(), removeSessionRecap(), endedCards() and noteToRecap(). Covered by src/utils/dmRecaps.test.ts.",
+        file: "src/utils/dmScreen.ts",
+      },
+      {
         name: "combatantFromNpc()",
         description: "Builds a tracker combatant from an NPC sheet, linked back to it by npcId.",
         detail: "Copies name, AC, HP, race (as size/type), alignment and notes once, so HP can drop mid-fight without touching the sheet. Attacks and loot are copied too, but stay shared with the sheet from then on through shareWithNpc().",
         file: "src/utils/dmScreen.ts",
       },
       {
-        name: "shareWithNpc()",
-        description: "Changes attacks and/or loot on an NPC and on every combatant added from it, in any encounter.",
-        detail: "Both the NPC sheet and the tracker's combatant row call it, so a change on either side shows on both, and on the same NPC in other encounters. Every combatant also keeps its own copy, so removeNpc() can unlink them without losing anything. npcCombatants() lists the linked combatants for the sheet's 'shared with … in Ambush, Finale' line.",
+        name: "shareWithNpc() / shareWithPlayer()",
+        description: "Change shared fields on a sheet and on every combatant added from it, in any encounter.",
+        detail: "shareWithNpc() shares attacks and loot; shareWithPlayer() shares HP, max and temp HP, AC, trackers and death saves, so a hit in one fight is still there in the next. Both the sheet and the tracker's combatant row call them, so a change on either side shows on both. Every combatant also keeps its own copy, so removeNpc() and removePlayer() can unlink them without losing anything. npcCombatants() lists the linked combatants for the sheet's 'shared with … in Ambush, Finale' line.",
         file: "src/utils/dmScreen.ts",
+      },
+      {
+        name: "restParty()",
+        description: "The whole party rests at once, on their sheets and in every encounter, and the calendar moves on by the rest's length.",
+        detail: "restFields() decides what a rest gives back: trackers that refill on it go to their max, and a long rest also restores HP, drops temp HP and clears death saves. Each player's fields go through shareWithPlayer(), and advanceTime() moves the calendar by restMinutes() from the Settings tab.",
+        file: "src/utils/dmScreen.ts",
+      },
+      {
+        name: "recordResult()",
+        description: "Ends a fight: the win or loss goes on every linked player's sheet and the players leave the encounter.",
+        detail: "Adds an EncounterResult (encounter, name, outcome, round, time) to each player in the fight, removes their combatants and stores the result on the encounter, so it still shows 'Won in round 4 by Mira, Tor' with the players gone. playerRecord() adds up wins, losses, win rate and average rounds for the RecordDialog.",
+        file: "src/utils/dmScreen.ts",
+      },
+      {
+        name: "combatantsFromMonster()",
+        description: "Copies of a library monster for an encounter, named so they don't clash and optionally with rolled HP.",
+        detail: "Numbers copies after the names already in the encounter ('Goblin', 'Goblin 2'…). With rollHp and hit dice rollFormula() can read ('2d6 + 2', '3d8-1', 'd20'), each copy rolls its own HP; otherwise they use the average. Traits go into each copy's notes. monsterFromCombatant() goes the other way for 'Save to library', and starterMonsters() in dmMonsters.ts gives a fresh Goblin, Orc, Skeleton, Zombie, Wolf and Bandit with D&D 5e SRD stats.",
+        file: "src/utils/dmScreen.ts, src/utils/dmMonsters.ts",
+      },
+      {
+        name: "putQuestOnBoard()",
+        description: "Adds four connected Quest cards to the open board, one per stage, and returns the first.",
+        detail: "Each card is linked to the quest and a stage, so it shows that stage's text and done tick. currentQuestStage() gives the first stage not yet done, npcQuests() lists the quests and stages an NPC appears in, and removeQuest() leaves its cards on the board, unlinked, with their titles.",
+        file: "src/utils/dmScreen.ts",
+      },
+      {
+        name: "advanceTime()",
+        description: "Moves the in-game clock by any number of minutes, forwards or back, rolling over days, months and years.",
+        detail: "Dates are turned into a day count from year 0 (dayNumber() / dateFromDayNumber()) so any calendar the DM names works. Events on the days moved onto are added to calendar.passed for the 'Time passed' banner, and moving back drops ones that are in the future again. Also in dmCalendar.ts: weekday(), moonPhase() (eight phases over moonCycle days), weatherOn() (a seasonal weather table picked by a hash of the day, the same every time until rerollWeather()), travelMinutes() (full travel days count as 24 hours, using TRAVEL_MODES), formatDate(), formatDuration(), upcomingEvents() and setMonths(). Covered by src/utils/dmCalendar.test.ts.",
+        file: "src/utils/dmCalendar.ts",
+      },
+      {
+        name: "generateLocation()",
+        description: "A whole random location — name, kind, description, feature, who's there, rumour and danger — fantasy but system-neutral.",
+        detail: "Keeps the given kind or picks one of LOCATION_KINDS. generateName() picks a name pattern by kind group (taverns get 'The Gilded Stag'-style names, temples 'Shrine of …', keeps '…Keep', ruins and wilds their own), and generateField() rerolls one field from that group's tables. Every function takes a random function so tests can pin the result.",
+        file: "src/utils/dmGenerators.ts",
+      },
+      {
+        name: "buildLoreIndex()",
+        description: "Builds the Lore tab's wiki from DmScreenData: every page, every link between them and every [[Name]] that has no page.",
+        detail: "buildPages() turns each NPC, player, location, quest, item, monster, note and session recap into a LorePage with facts and text sections. Links come from what the data already holds (an item's holder 'carries' / 'holds', an NPC's location 'is found at', a location's 'Who's there' 'is home to', a quest's stage NPCs 'involves' and reward items 'rewards') and from [[Name]] or [[Name|text]] written in any text (splitLinks(), linkNames()), matched case-insensitively by nameKey(). A mention adds nothing when two pages are already linked some other way. Unmatched names become the 'missing' list for wanted pages. Also exports loreCards(), loreSessions(), searchLore() and parseLoreRef(). Covered by src/utils/dmLore.test.ts.",
+        file: "src/utils/dmLore.ts",
+      },
+      {
+        name: "normalizeMap()",
+        description: "Validates a saved battle map: pieces, strokes, rooms, fog and view, dropping anything unknown.",
+        detail: "dmMap.ts holds the Map tab's pure helpers so they can be tested without React: ASSETS and ASSET_CATEGORIES (names and sizes of every piece), BRUSHES, GROUNDS and ROOM_FLOORS, createMap(), snapItem(), roomFromCorners(), fogBox(), revealRoom(), duplicateItem(), restackItem(), simplifyPoints() (Ramer-Douglas-Peucker, so freehand strokes stay small in storage), strokePath(), mapBounds() for fit and export, and zoomMapAt(). Covered by src/utils/dmMap.test.ts.",
+        file: "src/utils/dmMap.ts",
       },
     ],
   },
@@ -1441,6 +1840,20 @@ const PROJECTS: Project[] = [
         description: "UUID v4 generator with formats, and SHA-1 / SHA-256 / SHA-384 / SHA-512 hashes of any text.",
         detail: "UuidGenerator() makes up to 100 UUIDs with randomUuid(), which uses crypto.randomUUID and falls back to uuidFromBytes() over crypto.getRandomValues on pages where randomUUID isn't available, setting the version and variant bits by hand. They can be shown lower case, upper case, without dashes or in braces. HashGenerator() hashes the text's UTF-8 bytes with Web Crypto's crypto.subtle.digest, ignoring results from older text if typing is faster than hashing.",
         file: "src/components/Tools/Generators.tsx",
+      },
+      {
+        name: "CopyButton()",
+        description: "Copy-to-clipboard button used by most of the tools, which shows 'Copied ✓' for 1.5 seconds.",
+        detail: "Writes text with navigator.clipboard.writeText and switches its label to 'Copied ✓', with a timeout that is cleared if the button unmounts. It is disabled when there is nothing to copy. If the clipboard is blocked (for example on a page that isn't https), the error is swallowed and the text can still be selected by hand. Defaults to the ghost button style, and the label and class can be overridden.",
+        file: "src/components/Tools/CopyButton.tsx",
+        props: ["text: string", "label?: string", "className?: string"],
+        state: ["copied: boolean"],
+      },
+      {
+        name: "devTools.ts (shared tool logic)",
+        description: "The pure functions behind every tool except the JSON converter, grouped by tool.",
+        detail: "One file with sections for encode/decode (encode(), decode(), base64Encode() over UTF-8 bytes, htmlUnescape()), the JWT decoder (decodeJwt(), jwtStatus()), the regex tester (buildRegex(), runRegex(), highlightSegments(), regexReplace(), MAX_MATCHES), timestamps (parseTimestamp(), relativeTime()), colours (parseColor(), toHex(), contrastRatio(), wcagLevel()), text (splitWords(), convertCase(), textStats(), applyLineOperation()) and generators (hashText(), randomUuid(), uuidFromBytes(), formatUuid()). Nothing here touches React or the DOM, so all of it is covered by devTools.test.ts. Problems are thrown as ToolError with a message written for the page. relativeTime() is also used by the DM Screen for 'Edited 3 days ago' labels.",
+        file: "src/utils/devTools.ts",
       },
     ],
   },

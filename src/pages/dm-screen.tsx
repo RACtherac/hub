@@ -7,6 +7,7 @@ import CalendarView from "../components/DmScreen/CalendarView";
 import EncounterTracker from "../components/DmScreen/EncounterTracker";
 import ItemManager from "../components/DmScreen/ItemManager";
 import LocationManager from "../components/DmScreen/LocationManager";
+import LoreWiki from "../components/DmScreen/LoreWiki";
 import MapMaker from "../components/DmScreen/MapMaker";
 import NoteManager from "../components/DmScreen/NoteManager";
 import MonsterManager from "../components/DmScreen/MonsterManager";
@@ -15,8 +16,10 @@ import SettingsView from "../components/DmScreen/SettingsView";
 import PlayerManager from "../components/DmScreen/PlayerManager";
 import PlayerMapView from "../components/DmScreen/PlayerMapView";
 import QuestManager from "../components/DmScreen/QuestManager";
+import RecapManager from "../components/DmScreen/RecapManager";
 import StoryBoard from "../components/DmScreen/StoryBoard";
 import { formatDate, passedEvents, type CalendarDate } from "../utils/dmCalendar";
+import type { LoreKind, LoreRef } from "../utils/dmLore";
 import { STORAGE_KEY, createDefaultData, parseData, type DmScreenData } from "../utils/dmScreen";
 
 const TABS = [
@@ -28,6 +31,8 @@ const TABS = [
     { id: "locations", label: "Locations" },
     { id: "items", label: "Items" },
     { id: "notes", label: "Notes" },
+    { id: "recaps", label: "Session Recaps" },
+    { id: "lore", label: "Lore" },
     { id: "calendar", label: "Calendar" },
     { id: "board", label: "Story Board" },
     { id: "map", label: "Map" },
@@ -141,6 +146,20 @@ function DmScreen() {
         showTab("calendar");
     };
 
+    const openRecap = (recapId: string) => {
+        setData((current) => ({ ...current, activeRecapId: recapId }));
+        showTab("recaps");
+    };
+
+    // The Lore tab's "Edit" button opens the page's own tab.
+    const openForEditing = (kind: LoreKind, id: string) => {
+        const open = { npc: openNpc, player: openPlayer, monster: openMonster, location: openLocation, item: openItem, quest: openQuest, note: openNote, recap: openRecap };
+        open[kind](id);
+    };
+
+    // A page in the Lore tab, kept in history so Back returns here.
+    const openLore = (ref: LoreRef) => setSearchParams({ tab: "lore", page: ref });
+
     const showCard = (boardId: string, nodeId: string) => {
         setData((current) => ({ ...current, activeBoardId: boardId }));
         setFocusNodeId(nodeId);
@@ -237,7 +256,9 @@ function DmScreen() {
                 )}
                 {tab === "items" && <ItemManager data={data} setData={setData} onShowCard={showCard} />}
                 {tab === "locations" && <LocationManager data={data} setData={setData} onShowCard={showCard} />}
-                {tab === "notes" && <NoteManager data={data} setData={setData} onShowCard={showCard} />}
+                {tab === "notes" && <NoteManager data={data} setData={setData} onShowCard={showCard} onOpenRecap={openRecap} />}
+                {tab === "recaps" && <RecapManager data={data} setData={setData} onShowCard={showCard} onOpenLore={openLore} />}
+                {tab === "lore" && <LoreWiki data={data} setData={setData} onEdit={openForEditing} onShowCard={showCard} />}
                 {tab === "calendar" && (
                     <CalendarView data={data} setData={setData} focusDate={focusDate} onFocused={() => setFocusDate(null)} onShowCard={showCard} />
                 )}
@@ -252,6 +273,7 @@ function DmScreen() {
                         onOpenQuest={openQuest}
                         onOpenLocation={openLocation}
                         onOpenCalendar={openCalendar}
+                        onOpenRecap={openRecap}
                         focusNodeId={focusNodeId}
                         onFocused={() => setFocusNodeId(null)}
                     />

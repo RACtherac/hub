@@ -330,6 +330,23 @@ export interface Note {
     updatedAt: number;
 }
 
+// What happened in one session, written up by the DM (the Session Recaps tab).
+export interface SessionRecap {
+    id: string;
+    title: string;
+    // Session 1, 2, 3...; 0 when not numbered.
+    number: number;
+    // The real-world day it was played, as YYYY-MM-DD, or "".
+    playedOn: string;
+    // When it happened in the game world, free text (filled from the calendar).
+    inGameDate: string;
+    body: string;
+    // The End story card the session finished on, if it's linked to one.
+    boardId?: string;
+    endNodeId?: string;
+    updatedAt: number;
+}
+
 // One of several story boards, e.g. one per adventure or session.
 // ---- Quests
 // A quest runs through four fixed stages, each with the NPCs involved and
@@ -419,6 +436,9 @@ export interface DmScreenData {
     notes: Note[];
     // The note open in the Notes tab, or "" when there are none.
     activeNoteId: string;
+    recaps: SessionRecap[];
+    // The recap open in the Session Recaps tab, or "" when there are none.
+    activeRecapId: string;
     quests: Quest[];
     // The quest open in the Quests tab, or "" when there are none.
     activeQuestId: string;
@@ -1079,6 +1099,8 @@ export function createDefaultData(): DmScreenData {
         activeItemId: "",
         notes: [],
         activeNoteId: "",
+        recaps: [],
+        activeRecapId: "",
         quests: [],
         activeQuestId: "",
         maps: [map],
@@ -1720,6 +1742,111 @@ export function noteCards(data: DmScreenData, noteId: string): { board: NamedBoa
     return data.boards.flatMap((board) => board.nodes.filter((n) => n.noteId === noteId).map((node) => ({ board, node })));
 }
 
+// ---- Session recaps
+
+export function createSessionRecap(fields: Partial<SessionRecap> = {}, now = Date.now()): SessionRecap {
+    return { id: makeId(), title: "", number: 0, playedOn: "", inGameDate: "", body: "", updatedAt: now, ...fields };
+}
+
+/** "Session 3: The Old Mill", "Session 3", or the title alone. */
+export function recapLabel(recap: SessionRecap): string {
+    const title = recap.title.trim();
+    if (!recap.number) return title || "Untitled session";
+    return title ? `Session ${recap.number}: ${title}` : `Session ${recap.number}`;
+}
+
+/** Newest session first: by number, then by the day played, then by last edit. */
+export function sortedRecaps(recaps: readonly SessionRecap[]): SessionRecap[] {
+    return [...recaps].sort((a, b) => b.number - a.number || b.playedOn.localeCompare(a.playedOn) || b.updatedAt - a.updatedAt);
+}
+
+export function nextSessionNumber(recaps: readonly SessionRecap[]): number {
+    return recaps.reduce((max, r) => Math.max(max, r.number), 0) + 1;
+}
+
+/** Today's date in the browser's time zone, as YYYY-MM-DD for a date input. */
+export function todayIso(now = new Date()): string {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+export function updateSessionRecap(data: DmScreenData, id: string, fields: Partial<Omit<SessionRecap, "id" | "updatedAt">>, now = Date.now()): DmScreenData {
+    return { ...data, recaps: data.recaps.map((r) => (r.id === id ? { ...r, ...fields, updatedAt: now } : r)) };
+}
+
+export function removeSessionRecap(data: DmScreenData, id: string): DmScreenData {
+    const recaps = data.recaps.filter((r) => r.id !== id);
+    return { ...data, recaps, activeRecapId: data.activeRecapId === id ? (sortedRecaps(recaps)[0]?.id ?? "") : data.activeRecapId };
+}
+
+/** The written recap linked to an End story card. */
+export function recapForCard(data: DmScreenData, boardId: string, nodeId: string): SessionRecap | undefined {
+    return data.recaps.find((r) => r.boardId === boardId && r.endNodeId === nodeId);
+}
+
+/** Every ended End story card, newest first, for linking a recap to one. */
+export function endedCards(data: DmScreenData): { board: NamedBoard; node: BoardNode; recap: StoryRecap }[] {
+    return data.boards
+        .flatMap((board) => board.nodes.flatMap((node) => (node.kind === "end" && node.recap ? [{ board, node, recap: node.recap }] : [])))
+        .sort((a, b) => b.recap.endedAt - a.recap.endedAt);
+}
+
+/** A first draft of the write-up from what the End story card saved: one line per card. */
+export function recapDraft(recap: StoryRecap): string {
+    return recap.steps
+        .map((step) => {
+            const extra = [...step.details, step.passedOver.length ? `instead of ${step.passedOver.join(", ")}` : ""].filter(Boolean);
+            const text = step.text.trim().replace(/\s*\n\s*/g, " ");
+            return `- ${step.title.trim() || "Untitled"}${text ? `: ${text}` : ""}${extra.length ? ` (${extra.join("; ")})` : ""}`;
+        })
+        .join("\n");
+}
+
+/**
+ * A new recap for an End story card, ending the story first if it wasn't, and
+ * opened in the Session Recaps tab. Returns the data unchanged plus the
+ * existing recap's id when the card already has one.
+ */
+export function recapFromEndCard(data: DmScreenData, boardId: string, nodeId: string, now = Date.now()): { data: DmScreenData; recapId: string } {
+    const existing = recapForCard(data, boardId, nodeId);
+    if (existing) return { data: { ...data, activeRecapId: existing.id }, recapId: existing.id };
+
+    const board = data.boards.find((b) => b.id === boardId);
+    const node = board?.nodes.find((n) => n.id === nodeId);
+    if (!board || !node || node.kind !== "end") return { data, recapId: "" };
+
+    const story = node.recap ?? storyRecap(data, board, nodeId);
+    const ended: DmScreenData = node.recap
+        ? data
+        : { ...data, boards: data.boards.map((b) => (b.id === boardId ? { ...b, nodes: b.nodes.map((n) => (n.id === nodeId ? { ...n, recap: story } : n)) } : b)) };
+    const recap = createSessionRecap(
+        {
+            title: board.name.trim(),
+            number: nextSessionNumber(data.recaps),
+            playedOn: todayIso(new Date(now)),
+            inGameDate: story.endedOn,
+            body: recapDraft(story),
+            boardId,
+            endNodeId: nodeId,
+        },
+        now,
+    );
+    return { data: { ...ended, recaps: [...ended.recaps, recap], activeRecapId: recap.id }, recapId: recap.id };
+}
+
+/** Turns a note into a session recap (for recaps written in Notes before this tab existed). */
+export function noteToRecap(data: DmScreenData, noteId: string): { data: DmScreenData; recapId: string } {
+    const note = data.notes.find((n) => n.id === noteId);
+    if (!note) return { data, recapId: "" };
+    const recap = createSessionRecap({ title: note.title, body: note.body, number: nextSessionNumber(data.recaps) }, note.updatedAt || Date.now());
+    const withoutNote = removeNote(data, noteId);
+    return { data: { ...withoutNote, recaps: [...withoutNote.recaps, recap], activeRecapId: recap.id }, recapId: recap.id };
+}
+
+export function recapMatches(recap: SessionRecap, query: string): boolean {
+    return matchesQuery(query, [recapLabel(recap), recap.inGameDate, recap.playedOn, recap.body]);
+}
+
 // ---- Search
 
 // True when every word of the query appears somewhere in the texts, ignoring case.
@@ -2171,6 +2298,24 @@ function normalizeNote(value: unknown): Note | null {
     };
 }
 
+function normalizeSessionRecap(value: unknown): SessionRecap | null {
+    if (!isObject(value)) return null;
+    const recap: SessionRecap = {
+        id: str(value.id) || makeId(),
+        title: str(value.title),
+        number: Math.max(0, Math.trunc(num(value.number))),
+        playedOn: /^\d{4}-\d{2}-\d{2}$/.test(str(value.playedOn)) ? str(value.playedOn) : "",
+        inGameDate: str(value.inGameDate),
+        body: str(value.body),
+        updatedAt: num(value.updatedAt),
+    };
+    if (str(value.boardId) && str(value.endNodeId)) {
+        recap.boardId = str(value.boardId);
+        recap.endNodeId = str(value.endNodeId);
+    }
+    return recap;
+}
+
 const strList = (value: unknown, valid: Set<string>) =>
     Array.isArray(value) ? [...new Set(value.filter((v): v is string => typeof v === "string" && valid.has(v)))] : [];
 
@@ -2279,6 +2424,19 @@ export function normalizeData(value: unknown): DmScreenData | null {
         : [];
     const activeNoteId = str(value.activeNoteId);
     const noteIds = new Set(notes.map((n) => n.id));
+    // Saves from before the Session Recaps tab have none. A link to an End
+    // story card that no longer exists is dropped; the write-up stays.
+    const endCards = new Set(boards.flatMap((b) => b.nodes.filter((n) => n.kind === "end").map((n) => `${b.id}>${n.id}`)));
+    const recaps = Array.isArray(value.recaps)
+        ? value.recaps.map(normalizeSessionRecap).filter((r): r is SessionRecap => r !== null)
+        : [];
+    recaps.forEach((r) => {
+        if (r.boardId && !endCards.has(`${r.boardId}>${r.endNodeId}`)) {
+            delete r.boardId;
+            delete r.endNodeId;
+        }
+    });
+    const activeRecapId = str(value.activeRecapId);
     // Saves from before the Quests tab have none.
     const quests = Array.isArray(value.quests)
         ? value.quests.map((q) => normalizeQuest(q, npcIds, itemIds)).filter((q): q is Quest => q !== null)
@@ -2329,6 +2487,8 @@ export function normalizeData(value: unknown): DmScreenData | null {
         activeItemId: itemIds.has(activeItemId) ? activeItemId : (items[0]?.id ?? ""),
         notes,
         activeNoteId: noteIds.has(activeNoteId) ? activeNoteId : (sortedNotes(notes)[0]?.id ?? ""),
+        recaps,
+        activeRecapId: recaps.some((r) => r.id === activeRecapId) ? activeRecapId : (sortedRecaps(recaps)[0]?.id ?? ""),
         quests,
         activeQuestId: questIds.has(activeQuestId) ? activeQuestId : (quests[0]?.id ?? ""),
         maps,

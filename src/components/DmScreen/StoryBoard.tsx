@@ -46,6 +46,9 @@ import {
     createNode,
     endStory,
     latestRecap,
+    recapForCard,
+    recapFromEndCard,
+    recapLabel,
     storyRecap,
     encounterOutcome,
     OUTCOME_LABELS,
@@ -93,6 +96,7 @@ interface StoryBoardProps {
     onOpenQuest: (questId: string) => void;
     onOpenLocation: (locationId: string) => void;
     onOpenCalendar: (date: CalendarDate) => void;
+    onOpenRecap: (recapId: string) => void;
     // Select this card and bring it into view when the board opens.
     focusNodeId: string | null;
     onFocused: () => void;
@@ -297,7 +301,7 @@ function linkGeometry(a: BoardNode, aSize: Size, b: BoardNode, bSize: Size, styl
     };
 }
 
-export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, onOpenItem, onOpenNote, onOpenQuest, onOpenLocation, onOpenCalendar, focusNodeId, onFocused }: StoryBoardProps) {
+export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, onOpenItem, onOpenNote, onOpenQuest, onOpenLocation, onOpenCalendar, onOpenRecap, focusNodeId, onFocused }: StoryBoardProps) {
     const board = activeBoard(data);
     const { view } = board;
 
@@ -688,6 +692,18 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
             return { ...ended, boards: [...ended.boards, next], activeBoardId: next.id };
         });
     };
+    // End story cards and the session recap written for them.
+    const recapNameFor = (nodeId: string) => {
+        const recap = recapForCard(data, board.id, nodeId);
+        return recap ? recapLabel(recap) : undefined;
+    };
+    // Opens the card's session recap, writing a first draft (and ending the story) if there isn't one.
+    const writeRecap = (nodeId: string) => {
+        const result = recapFromEndCard(data, board.id, nodeId);
+        if (!result.recapId) return;
+        setData(result.data);
+        onOpenRecap(result.recapId);
+    };
     const boardName = (id: string | undefined) => {
         const found = data.boards.find((b) => b.id === id);
         return found ? found.name || "Untitled" : undefined;
@@ -886,6 +902,8 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                                     resumeBoardName={boardName(node.resumeBoardId)}
                                     onEndStory={() => onEndStory(node.id)}
                                     onShowRecap={() => showRecapOn(node)}
+                                    hasRecap={recapNameFor(node.id) !== undefined}
+                                    onWriteRecap={() => writeRecap(node.id)}
                                     onSize={onSize}
                                     onHeaderPointerDown={(event) => onNodePointerDown(event, node)}
                                     onHandlePointerDown={(event) => onHandlePointerDown(event, node)}
@@ -933,6 +951,8 @@ export default function StoryBoard({ data, setData, onRunEncounter, onOpenNpc, o
                         onTimeSkip={(undo) => onTimeSkip(selectedNode.id, undo)}
                         onEndStory={() => onEndStory(selectedNode.id)}
                         onShowRecap={() => showRecapOn(selectedNode)}
+                        recapName={recapNameFor(selectedNode.id)}
+                        onWriteRecap={() => writeRecap(selectedNode.id)}
                         onStartNextBoard={() => startNextBoard(selectedNode.id)}
                         onResumeBoard={(id) => {
                             updateNode(selectedNode.id, { resumeBoardId: id || undefined });
@@ -1107,6 +1127,9 @@ interface NodeCardProps {
     resumeBoardName?: string;
     onEndStory: () => void;
     onShowRecap: () => void;
+    // End story cards: whether a session recap is written for this card.
+    hasRecap: boolean;
+    onWriteRecap: () => void;
     onSize: (id: string, size: Size) => void;
     onHeaderPointerDown: (event: ReactPointerEvent) => void;
     onHandlePointerDown: (event: ReactPointerEvent) => void;
@@ -1143,6 +1166,8 @@ function NodeCard({
     resumeBoardName,
     onEndStory,
     onShowRecap,
+    hasRecap,
+    onWriteRecap,
     onSize,
     onHeaderPointerDown,
     onHandlePointerDown,
@@ -1340,6 +1365,11 @@ function NodeCard({
                     ) : (
                         <CardButton label="■ End story" title="Save everything that happened on the way to this card" onClick={onEndStory} />
                     )}
+                    <CardButton
+                        label={hasRecap ? "🎬 Session recap" : "✍ Write recap"}
+                        title={hasRecap ? "Open the session recap for this story" : "Write a session recap, starting from what happened on this board"}
+                        onClick={onWriteRecap}
+                    />
                 </div>
             )}
             {node.kind === "resume" && (
@@ -1410,6 +1440,9 @@ interface NodeInspectorProps {
     onTimeSkip: (undo: boolean) => void;
     onEndStory: () => void;
     onShowRecap: () => void;
+    // End story cards: the session recap written for this card, if any.
+    recapName?: string;
+    onWriteRecap: () => void;
     onStartNextBoard: () => void;
     onResumeBoard: (boardId: string) => void;
     onSwitchBoard: (boardId: string) => void;
@@ -1445,6 +1478,8 @@ function NodeInspector({
     onTimeSkip,
     onEndStory,
     onShowRecap,
+    recapName,
+    onWriteRecap,
     onStartNextBoard,
     onResumeBoard,
     onSwitchBoard,
@@ -1817,7 +1852,7 @@ function NodeInspector({
                 <div className="dms-inspector-section">
                     <p className="dms-inspector-help">
                         Ending the story saves every card leading here that wasn't greyed out, which branches the
-                        players took, and how fights went. A Resume story card on another board shows it.
+                        players took, and how fights went. A Resume story card on another board shows it, and Write session recap starts a write-up in the Session Recaps tab.
                     </p>
                     {node.recap && (
                         <p className="dms-inspector-help">
@@ -1830,6 +1865,9 @@ function NodeInspector({
                         </button>
                         <button type="button" className="dms-button dms-button--ghost" onClick={onShowRecap}>
                             📜 {node.recap ? "Show recap" : "Preview recap"}
+                        </button>
+                        <button type="button" className={recapName ? "dms-button dms-button--ghost" : "dms-button"} onClick={onWriteRecap}>
+                            {recapName ? `🎬 Open ${recapName}` : "✍ Write session recap"}
                         </button>
                         <button type="button" className="dms-button dms-button--ghost" onClick={onStartNextBoard}>
                             + Carry on in a new board →

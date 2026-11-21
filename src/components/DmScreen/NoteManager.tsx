@@ -7,6 +7,7 @@ import {
     createNote,
     noteCards,
     noteMatches,
+    noteToRecap,
     removeNote,
     sortedNotes,
     updateActiveBoard,
@@ -20,12 +21,13 @@ interface NoteManagerProps {
     data: DmScreenData;
     setData: Dispatch<SetStateAction<DmScreenData>>;
     onShowCard: (boardId: string, nodeId: string) => void;
+    onOpenRecap: (recapId: string) => void;
 }
 
 // The first line of a note's body, for the list.
 const preview = (body: string) => body.trim().split("\n")[0]?.slice(0, 80) ?? "";
 
-export default function NoteManager({ data, setData, onShowCard }: NoteManagerProps) {
+export default function NoteManager({ data, setData, onShowCard, onOpenRecap }: NoteManagerProps) {
     const [query, setQuery] = useState("");
     const note = data.notes.find((n) => n.id === data.activeNoteId) ?? sortedNotes(data.notes)[0];
     const shown = sortedNotes(data.notes).filter((n) => noteMatches(n, query));
@@ -74,10 +76,10 @@ export default function NoteManager({ data, setData, onShowCard }: NoteManagerPr
             {/* ---------------- Selected note ---------------- */}
             <section className="dms-panel dms-encounter">
                 {note ? (
-                    <NoteSheet key={note.id} note={note} data={data} setData={setData} onShowCard={onShowCard} />
+                    <NoteSheet key={note.id} note={note} data={data} setData={setData} onShowCard={onShowCard} onOpenRecap={onOpenRecap} />
                 ) : (
                     <p className="dms-empty">
-                        No notes yet. Keep lore, rumours, session recaps and anything else worth remembering here,
+                        No notes yet. Keep lore, rumours and anything else worth remembering here (session write-ups have their own Session Recaps tab),
                         and put them on the story board as Note cards.
                     </p>
                 )}
@@ -90,7 +92,7 @@ interface NoteSheetProps extends NoteManagerProps {
     note: Note;
 }
 
-function NoteSheet({ note, data, setData, onShowCard }: NoteSheetProps) {
+function NoteSheet({ note, data, setData, onShowCard, onOpenRecap }: NoteSheetProps) {
     const set = (fields: Partial<Omit<Note, "id" | "updatedAt">>) => setData((current) => updateNote(current, note.id, fields));
     const cards = noteCards(data, note.id);
 
@@ -117,6 +119,18 @@ function NoteSheet({ note, data, setData, onShowCard }: NoteSheetProps) {
                 >
                     {note.pinned ? "★ Pinned" : "☆ Pin"}
                 </button>
+                <button
+                    type="button"
+                    className="dms-button dms-button--ghost"
+                    title="Move this note to the Session Recaps tab, for write-ups of a session"
+                    onClick={() => {
+                        const moved = noteToRecap(data, note.id);
+                        setData(moved.data);
+                        onOpenRecap(moved.recapId);
+                    }}
+                >
+                    🎬 Make session recap
+                </button>
                 <ConfirmButton label="Delete note" onConfirm={() => setData((current) => removeNote(current, note.id))} />
             </div>
 
@@ -126,7 +140,7 @@ function NoteSheet({ note, data, setData, onShowCard }: NoteSheetProps) {
                     <textarea
                         rows={18}
                         value={note.body}
-                        placeholder="Lore, rumours, what happened last session, a riddle's answer…"
+                        placeholder="Lore, rumours, a riddle's answer…"
                         onChange={(e) => set({ body: e.target.value })}
                     />
                     {note.updatedAt > 0 && <small className="dms-inspector-help">Edited {relativeTime(new Date(note.updatedAt), new Date())}</small>}
